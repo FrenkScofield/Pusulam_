@@ -1,0 +1,211 @@
+﻿<style>
+    .optionGroup {
+        font-weight: bold;
+        font-style: italic;
+    }
+
+    .optionChild {
+        margin-left: 15px !important;
+    }
+
+    .divider {
+        background: #337ab7 !important;
+        margin: 0px !important;
+    }
+
+    .dropdown-header {
+        padding: 0px !important;
+    }
+</style>
+
+<div class="page-head">
+    <div class="page-title col-md-12">
+        <h1>
+            Yetenek Gelişim Seçim Ayarları
+             <span onclick="YardimGoster(ID_MENU);" class="pull-right" style="cursor:pointer;"><img src="assets/global/img/info.gif" class="info-image-icon" /> </span>
+        </h1>
+    </div>
+</div>
+
+<div class="row" id="app">
+    <div class="portlet light col-md-12" id="Tablodiv" style="min-height:100px;padding:0px;">
+
+        <div class="col-md-12" style="padding-top:10px; padding:8px !important">
+            <c-donem controller="YG_SecimAyar"
+                     @OnChange="DonemSelected">
+            </c-donem>
+        </div>
+        <div class="col-md-12" style="padding:8px">
+            <label class="form-group col-md-3"> Eski Öğrenci Yetenek Seçim Takvimi</label>
+            <c-tarih-id tarihid="ebasTarih"
+                        :tarih="ESKI_BAS_TARIH"
+                        @change-date="eBasTarihSelected">
+            </c-tarih-id>
+            <c-tarih-id tarihid="ebitTarih"
+                        :tarih="ESKI_BIT_TARIH"
+                        @change-date="eBitTarihSelected">
+            </c-tarih-id>
+        </div>
+        <div class="col-md-12" style="padding:8px">
+            <label class="form-group col-md-3"> Yeni Öğrenci Yetenek Seçim Takvimi</label>
+            <c-tarih-id tarihid="ybasTarih"
+                        :tarih="YENI_BAS_TARIH"
+                        @change-date="yBasTarihSelected">
+            </c-tarih-id>
+            <c-tarih-id tarihid="ybitTarih"
+                        :tarih="YENI_BIT_TARIH"
+                        @change-date="yBitTarihSelected">
+            </c-tarih-id>
+        </div>
+
+
+        <div class="col-md-12" style="padding-top:20px">
+            <input style="float:right;margin: 10px;" type="button" class="btn btn-success" v-on:click="Kaydet" value="Kaydet">
+        </div>
+
+    </div>
+
+
+    <div class="portlet light col-md-12" id="Tablodiv" style="min-height:100px;padding:0px;">
+
+        <div class="col-md-12" style="padding-top:10px; padding:8px !important">
+            <c-donem controller="YG_SecimAyar"
+                     baslik="Aktarılacak Yeni Dönemi Seçiniz :"
+                     @OnChange="AktarmaDonemSelected">
+            </c-donem>
+        </div>
+
+        <div class="col-md-12" style="padding-top:20px">
+            <input style="float:right;margin: 10px;" type="button" class="btn btn-success" v-on:click="Aktar" :value='"Bir Önceki Dönemden "+ DONEMAKTAR + " Dönemine Öğrenci Aktar"'>
+        </div>
+
+    </div>
+
+</div>
+
+<script src="../../VueComponents/YetenekGelisim/Filtreler.js"></script>
+<script src="../../VueComponents/SoruFiltreleri.js"></script>
+<script>
+    var vue = new Vue({
+        el: "#app",
+        name: "YG_SecimAyar.html",
+
+        data: {
+            DONEM: undefined,
+            DONEMAKTAR: undefined,
+            ESKI_BAS_TARIH: '',
+            ESKI_BIT_TARIH: '',
+
+            YENI_BAS_TARIH: '',
+            YENI_BIT_TARIH: '',
+
+        },
+        mounted() {
+            this.SecimTarihGetir();
+        },
+        methods: {
+
+            eBasTarihSelected(val) {
+                this.ESKI_BAS_TARIH = val;
+            },
+            eBitTarihSelected(val) {
+                this.ESKI_BIT_TARIH = val;
+            },
+            yBasTarihSelected(val) {
+                this.YENI_BAS_TARIH = val;
+            },
+            yBitTarihSelected(val) {
+                this.YENI_BIT_TARIH = val;
+            },
+            DonemSelected(val) {
+                this.DONEM = val;
+            },
+            AktarmaDonemSelected(val) {
+                this.DONEMAKTAR = val;
+            },
+
+            SecimTarihGetir() {
+                var _this = this;
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    DONEM: this.DONEM,
+                };
+
+                WebPost(this, "YG_SecimAyar", "SecimTarihGetir", p, "", "Yükleniyor...", function (data, parent) {
+                    if (data != '[]') {
+                        var dt = JSON.parse(data);
+                        _this.ESKI_BAS_TARIH = dt[0].ESKI_BAS_TARIH;
+                        _this.ESKI_BIT_TARIH = dt[0].ESKI_BIT_TARIH;
+                        _this.YENI_BAS_TARIH = dt[0].YENI_BAS_TARIH;
+                        _this.YENI_BIT_TARIH = dt[0].YENI_BIT_TARIH;
+                    }
+                });
+            },
+
+            Kaydet() {
+
+
+                if (strToDate(this.ESKI_BAS_TARIH) > strToDate(this.ESKI_BIT_TARIH)) {
+                    Alert_Error("Eski Öğrenciler için Başlangıç Tarihi Bitiş Tarihinden Küçük Olamaz.");
+                    return;
+                }
+                //else if (strToDate(this.ESKI_BIT_TARIH) >= strToDate(this.YENI_BAS_TARIH)) {
+                //    Alert_Error("Yeni Öğrencilerin Seçim Takvimi Eski Öğrencilerin Seçim Takviminden Sonra Tanımlanması Gerekiyor.");
+                //    return;
+                //}
+                else if (strToDate(this.YENI_BAS_TARIH) > strToDate(this.YENI_BIT_TARIH)) {
+                    Alert_Error("Yeni Öğrenciler için Başlangıç Tarihi Bitiş Tarihinden Küçük Olamaz.");
+                    return;
+                }
+                else {
+
+
+
+                    var _this = this;
+                    var p = {
+                        TCKIMLIKNO: session.TCKIMLIKNO,
+                        OTURUM: session.OTURUM,
+                        DONEM: this.DONEM,
+                        ESKI_BAS_TARIH: this.ESKI_BAS_TARIH,
+                        ESKI_BIT_TARIH: this.ESKI_BIT_TARIH,
+                        YENI_BAS_TARIH: this.YENI_BAS_TARIH,
+                        YENI_BIT_TARIH: this.YENI_BIT_TARIH,
+                    };
+
+                    WebPost(this, "YG_SecimAyar", "TarihAyarla", p, "", "Yükleniyor...", function (data, parent) {
+                        if (data != null) {
+                            Alert_Info("Kayıt İşlemi Yapıldı");
+                        } else {
+                            Alert_Warning("Kayıt İşlemi Yapılamadı..!");
+                        }
+                    });
+                }
+
+            },
+
+            Aktar() {
+                var _this = this;
+                Alert_OkCancelConfirm("Öğrenci Aktarma", this.DONEMAKTAR + " yılındaki tüm öğrencilerin yetenekleri silinecektir. Devam etmek istiyor musunuz ? ", function () {
+                    var p = {
+                        TCKIMLIKNO: session.TCKIMLIKNO,
+                        OTURUM: session.OTURUM,
+                        DONEM: _this.DONEMAKTAR,
+                    };
+
+                    WebPost(_this, "YG_SecimAyar", "OgrenciAktar", p, "", "Yükleniyor...", function (data, parent) {
+                        if (data != null) {
+                            Alert_Info("Kayıt İşlemi Yapıldı");
+                        } else {
+                            Alert_Warning("Kayıt İşlemi Yapılamadı..!");
+                        }
+                    });
+                }, function () {
+                    Alert_Info("İşlem İptal Edildi");
+                })
+            },
+
+        },
+    });
+</script>
+<script src="../../../Scripts/PublicMethods.js"></script>

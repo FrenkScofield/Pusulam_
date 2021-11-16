@@ -1,0 +1,135 @@
+﻿<style>
+    td {
+        max-height: 100px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+</style>
+<div class="page-head">
+    <div class="page-title col-md-12">
+        <h1>
+            Kullanıcı Menü Yetkilendirme <small>Kullanıcı Yetkilendirme</small> <span onclick="YardimGoster(ID_MENU);" class="pull-right" style="cursor:pointer;"><img src="assets/global/img/info.gif" class="info-image-icon" /> </span>
+        </h1>
+    </div>
+</div>
+
+<div class="row" id="app">
+
+    <div class="col-md-12" v-if="LISTE.length>0">
+        <div class="portlet light">
+            <div class="portlet-title">
+                <div class="caption">
+                    <i class="icon-list font-green"></i>
+                    <span class="caption-subject bold font-green uppercase"> Menü Listesi </span>
+                    <span class="caption-helper"></span>
+                </div>
+            </div>
+            <div class="portlet-body form">
+                <form role="form">
+                    <div class="portlet light bordered">
+                        <div class="portlet-body">
+                            <table id="ogrencisonuc" class="table table-striped table-bordered table-checkable">
+                                <thead>
+                                    <tr>
+                                        <th>TC Kimlik No</th>
+                                        <th>Ad</th>
+                                        <th>Soyad</th>
+                                        <th>Kullanıcı Tipi</th>
+                                        <th>Menü</th>
+                                        <th>İşlem</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="u in LISTE" style="cursor:pointer;">
+                                        <td>{{u.TCKIMLIKNO}}</td>
+                                        <td>{{u.AD}}</td>
+                                        <td>{{u.SOYAD}}</td>
+                                        <td>
+                                            <div v-for="kt in u.KULLANICITIPILIST">
+                                                {{kt.KULLANICITIPI}}
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div v-for="kt in u.MENULIST">
+                                                {{kt.MENU}}
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <a class="btn btn-danger" @click="KullaniciMenuYetkiSil(u.TCKIMLIKNO)">
+                                                <i class="fa fa-trash"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="VueComponents/SubeGrupSinif.js?v=3"></script>
+<script src="VueComponents/YetkilendirmeFiltreleri.js?v=3"></script>
+
+<script>
+    var vue = new Vue({
+        el: "#app",
+        name: "KullaniciYetkilendirmeKaldir",
+
+        data: {
+            ID_KADEME: 0,
+            ID_KULLANICITIPI: 0,
+            ID_SUBE: 0,
+            ID_KADEME3: 0,
+            LISTE: [],
+            TCKIMLIKNO: '',
+            controller: 'KullaniciYetkilendirmeKaldir'
+        },
+
+        mounted() {
+            this.Listele();
+        },
+
+        methods: {
+
+            Listele() {
+                ListeTemizle(this.LISTE);
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM
+                };
+
+                WebPost(this, this.controller, "MenuKullaniciYetkiListele", p, '', '', function (data, parent) {
+                    if (data != null) {
+                        parent.LISTE = JSON.parse(data);
+                    }
+                    else {
+                        Alert_Warning("Hata!");
+                    }
+                })
+            },
+
+            KullaniciMenuYetkiSil(tcKullanici) {
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    TC_KULLANICI: tcKullanici
+                };
+
+                WebPost(this, this.controller, "MenuKullaniciYetkiKaldir", p, '', '', function (data, parent) {
+                    if (data){
+                        Alert_Info("Kullanıcıya Ait Menü Yetkileri Kaldırıldı");
+                        parent.Listele();
+                    }
+                    else {
+                        Alert_Warning("Hata!");
+                    }
+                })
+            }
+
+        }
+    });
+</script>
+<script src="Scripts/PublicMethods.js"></script>

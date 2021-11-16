@@ -1,0 +1,431 @@
+﻿<style>
+    td {
+        vertical-align: middle !important;
+    }
+
+    .row {
+        margin-top: 10px !important;
+    }
+
+    .TarihSecici {
+        cursor: pointer;
+        text-align: left;
+        width: 100%;
+        background: transparent;
+        border: none;
+        padding-left: 14px;
+        padding-right: 14px;
+        padding-top: 8px;
+        padding-bottom: 7px;
+    }
+
+    .modal.right .modal-dialog {
+        position: fixed;
+        margin: auto;
+        width: 990px;
+        height: 100%;
+        -webkit-transform: translate3d(0%, 0, 0);
+        -ms-transform: translate3d(0%, 0, 0);
+        -o-transform: translate3d(0%, 0, 0);
+        transform: translate3d(0%, 0, 0);
+    }
+
+    .modal.right .modal-content {
+        height: 100%;
+        overflow-y: auto;
+    }
+
+    .modal.right .modal-body {
+        padding: 15px 15px 15px;
+    }
+
+    /*Right*/
+    .modal.right.fade .modal-dialog {
+        right: -990px;
+        -webkit-transition: opacity 0.3s linear, right 0.3s ease-out;
+        -moz-transition: opacity 0.3s linear, right 0.3s ease-out;
+        -o-transition: opacity 0.3s linear, right 0.3s ease-out;
+        transition: opacity 0.3s linear, right 0.3s ease-out;
+    }
+
+    .modal.right.fade.in .modal-dialog {
+        right: 0;
+    }
+
+    /* ----- MODAL STYLE ----- */
+    .modal-content {
+        border-radius: 0;
+        border: none;
+    }
+
+    .modal-header {
+        border-bottom-color: #EEEEEE;
+        background-color: #FAFAFA;
+    }
+
+    th {
+        text-align: center;
+        font-weight: 700;
+    }
+</style>
+<div class="page-head">
+    <!-- BEGIN PAGE TITLE -->
+    <div class="page-title col-md-12">
+        <h1>
+            İdareci Öğrenci Değerlendirme <span onclick="YardimGoster(ID_MENU);" class="pull-right" style="cursor:pointer;"><img src="assets/global/img/info.gif" class="info-image-icon" /> </span>
+        </h1>
+    </div>
+    <!-- END PAGE TITLE -->
+</div>
+
+<div class="row" id="app">
+    <div class="col-md-12">
+        <div class="portlet box blue-hoki dd-item" style="border:none">
+            <div class="portlet-title dd-handle" data-toggle='collapse' data-target='#filters' style="cursor:pointer;">
+                <div class="caption">
+                    <i class="icon-list"></i>
+                    <span class="caption-subject bold uppercase"> Filtreler </span>
+                    <span class="caption-helper"></span>
+                </div>
+                <div class='actions'>
+                    <a href='javascript:;' class='btn btn-default btn-sm' style='border:none;'>
+                        <i class='fa fa-chevron-down'></i>
+                    </a>
+                </div>
+            </div>
+            <!-- BEGIN PORTLET-->
+            <div class="portlet-body form collapse in" id="filters">
+                <form role="form" style="padding:12px 20px">
+                    <div class="row">
+                        <c-sube controller="DegerlendirmeGenel"
+                                @OnChange="SubeSelected" />
+                    </div>
+                    <div class="row">
+                        <c-kademe3 controller="DegerlendirmeGenel"
+                                   :idsube="ID_SUBE"
+                                   @OnChange="IdKademe3Selected" />
+                    </div>
+                    <div class="row">
+                        <c-sinif controller="DegerlendirmeGenel"
+                                 :idsube="ID_SUBE"
+                                 :idkademe3="ID_KADEME3"
+                                 @OnChange="SinifSelected" />
+                    </div>
+                    <div class="row">
+                        <c-listelemetipi @OnChange="ListelemeTipiSelected" />
+                    </div>
+                    <div class="row">
+                        <c-ogrenci controller="DegerlendirmeGenel"
+                                   :idsube="ID_SUBE"
+                                   :idkademe3="ID_KADEME3"
+                                   :idsinif="ID_SINIF"
+                                   :idlistelemetipi="ID_LISTELEMETIPI"
+                                   :tc="TCPERSONEL"
+                                   :tur="3"
+                                   @OnChange="OgrenciSelected" />
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-12" v-if="TCPERSONEL != '' && NESNE != null">
+        <div class="portlet light">
+            <div class="portlet-title">
+                <div class="caption">
+                    <i class="icon-list font-green"></i>
+                    <span class="caption-subject bold font-green uppercase"> Soru Listesi </span>
+                    <span class="caption-helper"></span>
+                </div>
+            </div>
+            <!-- BEGIN PORTLET-->
+            <div class="portlet-body form">
+                <form role="form">
+                    <div class="portlet light bordered">
+                        <div class="portlet-body" style="overflow-x:auto;">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>AD SOYAD</th>
+                                        <th>GİRİŞ</th>
+                                        <th v-for="(S, index) in NESNE[0].SORULIST" :title="S.SORU">
+                                            {{(index + 1) + '. SORU'}}
+                                        </th>
+                                        <th>YORUM</th>
+                                        <th>DURUM</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="odd gradeX" v-for="u in NESNE">
+                                        <td style="text-align: justify; font-weight: 700;">
+                                            {{u.ADSOYAD}}
+                                            <span v-if="u.TUR==1"> (REHBERLİK)</span>
+                                            <span v-if="u.TUR==2"> (DANIŞMAN)</span>
+                                        </td>
+                                        <td style="text-align:center;">
+                                            <i class="fa fa-lg fa-check" style="color:green;" v-if="u.GIRIS"></i>
+                                            <i class="fa fa-lg fa-times" style="color:red;" v-else></i>
+                                        </td>
+                                        <td v-if="!u.GIRIS" :colspan="u.SORULIST.length > 0 ? NESNE[0].SORULIST.length + 5:5" style="text-align:center;">GİRİŞ YOK</td>
+                                        <td v-if="u.GIRIS" v-for="S in u.SORULIST" style="text-align:center;">
+                                            {{S.PUAN}}
+                                        </td>
+                                        <td v-if="u.GIRIS" :colspan="u.SORULIST.length == 0 ? NESNE[0].SORULIST.length + 1:1">{{u.YORUM}}</td>
+                                        <td v-if="u.GIRIS">
+                                            <div class="md-radio-list" v-if="u.YORUM!=null">
+                                                <div class="md-radio">
+                                                    <input type="radio" @change="handleChange(true, u.ID_DEGERLENDIRMEYORUM)" :name="'status'+u.TUR+''+u.ID_DEGERLENDIRMEYORUM" :id="'status'+u.TUR+'x'+u.ID_DEGERLENDIRMEYORUM" class="md-radiobtn" value="true" v-model="u.DURUM">
+                                                    <label :for="'status'+u.TUR+'x'+u.ID_DEGERLENDIRMEYORUM">
+                                                        <span></span>
+                                                        <span class="check"></span>
+                                                        <span class="box"></span> OLUMLU
+                                                    </label>
+                                                </div>
+                                                <div class="md-radio">
+                                                    <input type="radio" @change="handleChange(false, u.ID_DEGERLENDIRMEYORUM)" :name="'status'+u.TUR+''+u.ID_DEGERLENDIRMEYORUM" :id="'status'+u.TUR+'y'+u.ID_DEGERLENDIRMEYORUM" class="md-radiobtn" value="false" v-model="u.DURUM">
+                                                    <label :for="'status'+u.TUR+'y'+u.ID_DEGERLENDIRMEYORUM">
+                                                        <span></span>
+                                                        <span class="check"></span>
+                                                        <span class="box"></span> OLUMSUZ
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr></tr>
+                                    <tr>
+                                        <td style="text-align: justify; font-weight: 700;">Yorum</td>
+                                        <td :colspan="NESNE[0].SORULIST.length + 4"><textarea v-model="NESNE[0].GENELYORUM" class="form-control" rows="3" style="resize:vertical;" /></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <button type="button" style="float:right; margin: 0px 10px;" class="btn yellow" @click='RaporGoster()'>Rapor Gör</button>
+                    <button type="button" style="float:right; margin: 0px 10px;" class="btn green" @click='Kaydet()'>Kaydet</button>
+                    <button type="button" style="float:right; margin: 0px 10px;" class="btn gray" @click='Sonraki()'>Sonraki ></button>
+                    <button type="button" style="float:right; margin: 0px 10px;" class="btn gray" @click='Onceki()'>< Önceki</button>
+                </div>
+            </div>
+            <!-- END PORTLET-->
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal right fade" id="Rapor" tabindex="-1" role="dialog" aria-labelledby="myModalLabel2" v-show="TCPERSONEL!=''">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel2">Öğrenci Gelişim Raporu</h4>
+                </div>
+
+                <div class="modal-body">
+                    <embed id="GelisimRaporu" alt="pdf" pluginspage="http://www.adobe.com/products/acrobat/readstep2.html"
+                           width="960"
+                           style="background: transparent url(../../assets/global/img/loading2.gif) no-repeat center;">
+                </div>
+
+            </div><!-- modal-content -->
+        </div><!-- modal-dialog -->
+    </div><!-- modal -->
+</div>
+<script src="../../VueComponents/SinavFiltreleri.js"></script>
+<script src="../../VueComponents/YetkilendirmeFiltreleri.js"></script>
+<script src="../../VueComponents/Degerlendirme/Filtreler.js?v=1"></script>
+
+<script>
+    var vue = new Vue({
+
+        el: "#app",
+        name: "DegerlendirmeGenel.html",
+
+        data: {
+            ID_KADEME3: null,
+            ID_SUBE: null,
+            ID_KULLANICITIPI: 4,
+            ID_SINIF: null,
+            TCPERSONEL: '',
+            ID_LISTELEMETIPI: 0,
+            NESNE: null,
+            OGRENCILIST: [],
+            TCKIMLIKNO: '',
+            OTURUM: '',
+            PUANTURLIST: []
+        },
+
+        mounted() {
+            this.TCKIMLIKNO = session.TCKIMLIKNO;
+            this.OTURUM = session.OTURUM;
+            var p = {
+                TCKIMLIKNO: session.TCKIMLIKNO,
+                OTURUM: session.OTURUM
+            };
+
+            WebPost(this, "DegerlendirmeGenel", "PuanTurListele", p, '', '', function (data, parent) {
+                if (data != null && data.length > 0) {
+                    vue.PUANTURLIST = JSON.parse(data);
+                }
+                else {
+                    vue.PUANTURLIST = null;
+                }
+            });
+        },
+
+        methods: {
+            RaporGoster() {
+                var game = document.getElementById("GelisimRaporu");
+                if (game != null && game != undefined) {
+                    var clone = game.cloneNode(true);
+                    clone.height = parseInt(screen.height * 0.78);
+                    clone.setAttribute('src', '../Rapor.aspx?rapor=Sinav.GelisimRaporuOOMain&raporTur=pdf&p=' + session.TCKIMLIKNO + ';' + session.OTURUM + ';' + vue.TCPERSONEL + ';' + vue.ID_SINIF + ';[1,2,3,4,5,6,7,8,9,10];0;1;1149');
+                    game.parentNode.replaceChild(clone, game)
+                }
+
+                var Ogrenci = getObjects(vue.OGRENCILIST, 'TCKIMLIKNO', vue.TCPERSONEL)[0];
+                $('#myModalLabel2').text('Öğrenci Gelişim Raporu - ' + Ogrenci.AD + ' ' + Ogrenci.SOYAD);
+
+                $('#Rapor').modal();
+            },
+            IdKademe3Selected(ID_KADEME3) {
+                this.ID_KADEME3 = ID_KADEME3;
+                this.ID_SINIF = null;
+                vue.NESNE = null;
+            },
+
+            SubeSelected(ID_SUBE) {
+                this.ID_SUBE = ID_SUBE;
+                this.ID_KADEME3 = null;
+                this.ID_SINIF = null;
+                vue.NESNE = null;
+            },
+
+            SinifSelected(ID_SINIF) {
+                this.ID_SINIF = ID_SINIF;
+                vue.NESNE = null;
+            },
+
+            OgrenciSelected(TCPERSONEL) {
+                this.TCPERSONEL = TCPERSONEL;
+                this.Listele();
+            },
+
+            ListelemeTipiSelected(ID_LISTELEMETIPI) {
+                this.ID_LISTELEMETIPI = ID_LISTELEMETIPI;
+                this.TCPERSONEL = null;
+                this.Listele();
+            },
+
+            Listele() {
+                if (this.TCPERSONEL != null && this.TCPERSONEL != null) {
+                    var p = {
+                        TCKIMLIKNO: session.TCKIMLIKNO,
+                        OTURUM: session.OTURUM,
+                        ID_KADEME: this.ID_KADEME,
+                        ID_KULLANICITIPI: this.ID_KULLANICITIPI,
+                        TCPERSONEL: this.TCPERSONEL,
+                        YORUMTUR: 3
+                    };
+
+                    WebPost(this, "DegerlendirmeGenel", "Listele", p, '', '', function (data, parent) {
+                        if (data != null && data.length > 0) {
+                            vue.NESNE = JSON.parse(data);
+                            for (var i = 0; i < vue.NESNE.length; i++) {
+                                try {
+                                    vue.NESNE[i].SORULIST = JSON.parse(vue.NESNE[i].SORULIST);
+                                } catch (e) {
+                                    vue.NESNE[i].SORULIST = [];
+                                }
+                            }
+                            //$('#filters').collapse();
+                        }
+                        else {
+                            vue.NESNE = null;
+                        }
+                    });
+                } else {
+                    vue.NESNE = null;
+                }
+            },
+
+            Kaydet() {
+                var JSONx = new Object;
+                var YORUMLIST = [];
+
+                for (var i = 0; i < this.NESNE.length; i++) {
+                    if (this.NESNE[i].ID_DEGERLENDIRMEYORUM != null && this.NESNE[i].DURUM != null) {
+                        var OBJ = new Object();
+                        OBJ.ID_DEGERLENDIRMEYORUM = this.NESNE[i].ID_DEGERLENDIRMEYORUM;
+                        OBJ.DURUM = this.NESNE[i].DURUM;
+                        OBJ.ID_DEGERLENDIRMEYORUM = this.NESNE[i].ID_DEGERLENDIRMEYORUM;
+                        if (getObjects(YORUMLIST, 'ID_DEGERLENDIRMEYORUM', OBJ.ID_DEGERLENDIRMEYORUM).length == 0) {
+                            YORUMLIST.push(OBJ);
+                        }
+                    }
+                }
+
+                JSONx.YORUMLIST = YORUMLIST;
+                JSONx.YORUM = this.NESNE[0].GENELYORUM;
+                JSONx.TCPERSONEL = this.NESNE[0].TCPERSONEL;
+
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    SQLJSON: JSON.stringify(JSONx),
+                    ID_KADEME: this.ID_KADEME,
+                    ID_KULLANICITIPI: this.ID_KULLANICITIPI,
+                    YORUMTUR: 3
+                };
+
+                WebPost(this, "DegerlendirmeGenel", "Kaydet", p, '', '', function (data, parent) {
+                    if (data != null && data.length > 0) {
+                        vue.NESNE = JSON.parse(data);
+                        for (var i = 0; i < vue.NESNE.length; i++) {
+                            try {
+                                vue.NESNE[i].SORULIST = JSON.parse(vue.NESNE[i].SORULIST);
+                            } catch (e) {
+                                vue.NESNE[i].SORULIST = [];
+                            }
+                        }
+                        //$('#filters').collapse();
+                    }
+                    else {
+                        vue.NESNE = null;
+                    }
+                });
+            },
+
+            Sonraki() {
+                var index = vue.OGRENCILIST.indexOf(getObjects(vue.OGRENCILIST, 'TCKIMLIKNO', vue.TCPERSONEL)[0]);
+                if (index < vue.OGRENCILIST.length - 1) {
+                    vue.TCPERSONEL = vue.OGRENCILIST[index + 1].TCKIMLIKNO;
+                    vue.Listele();
+                } else {
+                    Alert_Warning("Son öğrenci seçili!");
+                }
+            },
+
+            Onceki() {
+                var index = vue.OGRENCILIST.indexOf(getObjects(vue.OGRENCILIST, 'TCKIMLIKNO', vue.TCPERSONEL)[0]);
+                if (index > 0) {
+                    vue.TCPERSONEL = vue.OGRENCILIST[index - 1].TCKIMLIKNO;
+                    vue.Listele();
+                } else {
+                    Alert_Warning("İlk öğrenci seçili!");
+                }
+            },
+
+            handleChange(DURUM, ID) {
+                $.each(getObjects(this.NESNE, 'ID_DEGERLENDIRMEYORUM', ID), function (key, value) {
+                    value.DURUM = DURUM;
+                });
+            }
+        }
+    });
+</script>
+<script src="Scripts/PublicMethods.js"></script>

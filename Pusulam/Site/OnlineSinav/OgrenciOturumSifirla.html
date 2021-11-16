@@ -1,0 +1,268 @@
+﻿
+<link href="assets/global/plugins/bootstrap-datepicker/css/bootstrap-datepicker3.min.css" rel="stylesheet" type="text/css" />
+<div class="page-head">
+    <div class="page-title col-md-12">
+        <h1> Sınav Listesi <span onclick="YardimGoster(ID_MENU);" class="pull-right" style="cursor:pointer;"><img src="assets/global/img/info.gif" class="info-image-icon" /> </span> </h1>
+    </div>
+</div>
+
+<div class="row" id="app">
+    <div class="col-md-12">
+        <div class="portlet box blue-hoki dd-item" style="border:none">
+            <div class="portlet-title dd-handle" data-toggle='collapse' data-target='#filters' style="cursor:pointer;">
+                <div class="caption">
+                    <i class="icon-magnifier"></i>
+                    <span class="caption-subject bold uppercase"> Filtreler </span>
+                    <span class="caption-helper"></span>
+                </div>
+                <div class='actions'>
+                    <a href='javascript:;' class='btn btn-default btn-sm' style='border:none;'>
+                        <i class='fa fa-chevron-down'></i>
+                    </a>
+                </div>
+            </div>
+            <div class="portlet-body form collapse in" id="filters">
+                <form role="form" style="padding: 12px 20px">
+                    <div class="row">
+                        <label class="control-label col-md-3" style="vertical-align:middle;">Dış Öğrenci</label>
+                        <div class="col-md-9" style="height:34px; vertical-align:middle;">
+                            <div class="md-checkbox" style="margin:auto!important; width:20px!important; height:20px; margin:0px; margin-top:6px; display:block;">
+                                <input type="checkbox" v-model="disOgrenci" id="disOgrenci" class="md-check" v-bind:true-value="true" v-bind:false-value="false" v-on:click="disOgrenciChanged()" />
+                                <label for="disOgrenci">
+                                    <span></span>
+                                    <span class="check"></span>
+                                    <span class="box"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <c-donem :controller="controller"
+                                 @OnChange="DonemSelected">
+                        </c-donem>
+                    </div>
+                    <div class="row">
+                        <c-kademe3 :controller="controller"
+                                   @OnChange="SinavGrupSelected">
+                        </c-kademe3>
+                    </div>
+                    <div class="row">
+                        <c-sinav-turu :controller="controller"
+                                      :idkademe3="ID_KADEME3"
+                                      :sinavdurum=true
+                                      :idset="ID_SINAVTURU"
+                                      @OnChange="SinavTuruSelected">
+                        </c-sinav-turu>
+                    </div>
+                    <div class="row">
+                        <c-sinav :controller="controller"
+                                 :idkademe3="ID_KADEME3"
+                                 :idsinavturu="ID_SINAVTURU"
+                                 :donem="DONEM"
+                                 :onlinesinav=true
+                                 :idset="ID_SINAV"
+                                 @OnChange="SinavSelected">
+                        </c-sinav>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3"><label>Çıktı Al</label></div>
+                        <c-rapor-tur-buton @Yazdir="Yazdir"> </c-rapor-tur-buton>
+                    </div>
+
+                    <div class="row">
+                        <div class="form-group" style="margin-top: 10px;">
+                            <div class="col-md-12 text-right">
+                                <button type="button" :disabled="ID_SINAV==0" class="btn green" @click="Listele">Öğrenci Listele</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+   
+    <div class="col-md-12" v-if="OGRENCILIST.length>0">
+        <div class="portlet light">
+            <div class="portlet-title">
+                <div class="caption">
+                    <i class="icon-list font-green"></i>
+                    <span class="caption-subject bold font-green uppercase"> Öğrenci Online Sınav Oturum Sıfırlama </span>
+                    <span class="caption-helper"></span>
+                </div>
+            </div>
+
+            <div class="portlet-body form">
+                <div class="portlet light bordered">
+
+                    <div class="row">
+                        <div class="form-group col-md-12" style="margin-top:10px;">
+                            <table class="table" id="ogrenciTable">
+                                <thead>
+                                    <tr>
+                                        <th> T.C. Kimlik No </th>
+                                        <th> Ad </th>
+                                        <th> Soyad </th>
+                                        <th> Kampüs </th>
+                                        <th> Sınıf </th>
+                                        <template v-for="o in OGRENCILIST[0].OTURUMLIST">
+                                            <th> {{o.OTURUM}}. Oturum Tarihi </th>
+                                            <th> {{o.OTURUM}}. Oturum </th>
+                                            <th> {{o.OTURUM}}. Oturum  Sıfırla</th>
+                                        </template>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="u in OGRENCILIST">
+                                        <td> {{u.TCKIMLIKNO}} </td>
+                                        <td> {{u.AD}} </td>
+                                        <td> {{u.SOYAD}} </td>
+                                        <td> {{u.SUBEAD}} </td>
+                                        <td> {{u.SINIFAD}} </td>
+                                        <template v-for="o in u.OTURUMLIST">
+                                            <td>
+                                                {{ o.BASTARIH}}
+                                            </td>
+                                            <td>
+                                                <button type="button" class="btn red" :disabled="o.ID_ONLINESINAVOGRENCIOTURUM==null" @click="OturumSil(u,o)">Oturum Sil</button>
+                                            </td>
+                                            <td>
+                                                <button type="button" class="btn red" :disabled="o.ID_ONLINESINAVOGRENCIOTURUM==null" @click="OturumSifirla(u,o)">Oturum Sıfırla</button>
+                                            </td>
+                                        </template>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+<script src="../../VueComponents/Filtre.js"></script>
+<script src="../../VueComponents/FiltreEk.js"></script>
+<script src="../../../VueComponents/Genel.js?v=4"></script>
+<script src="../../assets/global/plugins/bootstrap-select/js/i18n/defaults-tr_TR.js"></script>
+
+<script>
+    var vue = new Vue({
+
+        el: "#app",
+        name: "OnlineSinavOgrenciOturumSifirla",
+
+        data: {
+            TCKIMLIKNO: '',
+            OTURUM: '',
+            controller: 'OnlineSinavOgrenciOturumSifirla',
+
+            DONEM: '',
+            ID_SINAVTURU: 0,
+            ID_KADEME3: 0,
+            ID_SINAV: 0,
+            disOgrenci: false,
+            OGRENCILIST: [],
+        },
+
+        mounted() {
+            this.TCKIMLIKNO = session.TCKIMLIKNO;
+            this.OTURUM = session.OTURUM;
+        },
+
+        methods: {
+            disOgrenciChanged() {
+                disOgrenci = this.disOgrenci;
+            },
+            DonemSelected(val) {
+                this.DONEM = val;
+                this.ID_SINAVTURU = 0;
+                this.ID_SINAV = 0;
+            },
+            SinavGrupSelected(val) {
+                this.ID_KADEME3 = val;
+                this.ID_SINAVTURU = 0;
+                this.ID_SINAV = 0;
+            },
+            SinavTuruSelected(val) {
+                this.ID_SINAVTURU = val
+                this.ID_SINAV = 0;
+            },
+            SinavSelected(val) {
+                this.ID_SINAV = val;
+            },
+
+            Listele() {
+                var p = { TCKIMLIKNO: this.TCKIMLIKNO, OTURUM: this.OTURUM, ID_SINAV: this.ID_SINAV, DIS_OGRENCI: this.disOgrenci };
+                WebPost(this, vue.controller, "OnlineSinavOgrenciOturumListele", p, '', '', function (data, parent) {
+                    parent.OGRENCILIST = JSON.parse(data).OGRENCILIST;
+                    let sort = [
+                        [3, 'asc'],
+                        [4, 'asc'],
+                        [1, 'asc'],
+                        [2, 'asc']
+                    ];
+                    ListeOlustur("ogrenciTable", sort);
+                });
+            },
+            Yazdir(ciktiTuru) {
+                if (ciktiTuru == "") {
+                    Alert_Warning("Çıktı Türünü Seçiniz.");
+                    return;
+                }
+
+                //string tc,string oturum,string donem,string idKademe3,string idSinavturu,string idSinav,string idSubes,string idSinifs
+                window.open('../Rapor.aspx?rapor=Sinav.OgrenciOturumSifirla&raporTur=' + ciktiTuru + '&p=' + this.TCKIMLIKNO + ';' + this.OTURUM + ';' + this.ID_SINAV + ';' + this.disOgrenci, '_blank');
+
+            },
+            OturumSil(ogrenci, oturum) {
+                Alert_Confirm("Öğrenci Oturum Sıfırlama", ogrenci.AD + " " + ogrenci.SOYAD + " adlı öğrencinin " + oturum.OTURUM + ". oturumdaki cevapları ve giriş bilgileri temizlenecektir. Öğrenci tekrardan sınava giriş yapabilir. İşleme devam etmek istiyor musunuz?", () => {
+                    var p = { TCKIMLIKNO: vue.TCKIMLIKNO, OTURUM: vue.OTURUM, ID_ONLINESINAVOGRENCIOTURUM: oturum.ID_ONLINESINAVOGRENCIOTURUM, TC_OGRENCI: ogrenci.TCKIMLIKNO, ID_SINAV: vue.ID_SINAV };
+                    WebPost(this, vue.controller, "OnlineSinavOgrenciOturumSil", p, '', '', function (data, parent) {
+                        if (data) {
+                            oturum.BASTARIH = null;
+                            oturum.ID_ONLINESINAVOGRENCIOTURUM = null;
+
+                            let sort = [
+                                [3, 'asc'],
+                                [4, 'asc'],
+                                [1, 'asc'],
+                                [2, 'asc']
+                            ];
+                            ListeOlustur("ogrenciTable", sort);
+                        }
+                    });
+                });
+            },
+            OturumSifirla(ogrenci, oturum) {
+                Alert_Confirm("Öğrenci Oturum Sıfırlama", ogrenci.AD + " " + ogrenci.SOYAD + " adlı öğrencinin " + oturum.OTURUM + ". oturumdaki süresini sıfırlayacaktır. Öğrenci tekrardan sınava giriş yapabilir. İşleme devam etmek istiyor musunuz?", () => {
+                    var p = { TCKIMLIKNO: vue.TCKIMLIKNO, OTURUM: vue.OTURUM, ID_ONLINESINAVOGRENCIOTURUM: oturum.ID_ONLINESINAVOGRENCIOTURUM, TC_OGRENCI: ogrenci.TCKIMLIKNO, ID_SINAV: vue.ID_SINAV };
+                    WebPost(this, vue.controller, "OnlineSinavOgrenciOturumSifirla", p, '', '', function (data, parent) {
+                        if (data) {
+                            oturum.BASTARIH = null;
+                            oturum.ID_ONLINESINAVOGRENCIOTURUM = null;
+
+                            let sort = [
+                                [3, 'asc'],
+                                [4, 'asc'],
+                                [1, 'asc'],
+                                [2, 'asc']
+                            ];
+                            ListeOlustur("ogrenciTable", sort);
+                        }
+                    });
+                });
+            }
+
+
+
+        }
+    });
+</script>
+<script src="Scripts/PublicMethods.js"></script>
+
+<script src="assets/global/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js" type="text/javascript"></script>
+<script src="assets/global/plugins/bootstrap-datepicker/locales/bootstrap-datepicker.tr.min.js" type="text/javascript"></script>
+<script src="assets/pages/scripts/components-date-time-pickers.min.js" type="text/javascript"></script>

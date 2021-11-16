@@ -1,0 +1,293 @@
+﻿<head>
+    <script src="../../../Scripts/Tools.js"></script>
+    <script src="../../../Scripts/Rapor/amcharts.js"></script>
+    <script src="../../../Scripts/Rapor/jquery.easypiechart.js"></script>
+    <script src="../../../Scripts/Rapor/light.js"></script>
+    <script src="../../../Scripts/Rapor/serial.js"></script>
+    <script src="../../../Scripts/Rapor/pie.js"></script>
+</head>
+<style>
+    #chartdiv {
+        width: 100%;
+        height: 500px;
+        font-size: 11px;
+    }
+
+    #chartdivAnaliz {
+        width: 100%;
+        height: 500px;
+        font-size: 11px;
+    }
+
+    .table > tbody > tr > td, .table > tbody > tr > th, .table > tfoot > tr > td, .table > tfoot > tr > th, .table > thead > tr > td, .table > thead > tr > th {
+        font-size: 11px;
+    }
+
+    .turuncu {
+        background-color: #EA5702;
+        color: white;
+        font-size: 12px !important;
+    }
+
+    .fontsize12 {
+        font-size: 12px !important;
+    }
+
+    .koyumavi {
+        background-color: #0E3170;
+        color: white;
+    }
+
+    .acikmavi {
+        background-color: #2786C3;
+        color: white;
+    }
+
+    .bordermavi {
+        border: #2786C3 1px solid;
+        text-align: center;
+        color: black;
+    }
+
+    .bordersag {
+        border-right: #b4d2e6 1px solid;
+        text-align: center;
+    }
+
+    .analizbaslik {
+        background-color: #FFA500 !important;
+    }
+
+    .fixed-table-body {
+        overflow-x: hidden !important;
+    }
+
+    .red {
+        color: red;
+    }
+</style>
+
+
+<div class="page-head">
+    <div class="page-title col-md-12">
+        <h1>
+            Sınav Sonuçları <small>Sınav Sonuç Veriler</small> <span onclick="YardimGoster(ID_MENU);" class="pull-right" style="cursor:pointer;"><img src="assets/global/img/info.gif" class="info-image-icon" /> </span>
+        </h1>
+    </div>
+</div>
+
+<div class="row" id="app">
+
+    <div class="col-md-12">
+        <div class="portlet box green-haze dd-item" style="border:none">
+            <div class="portlet-title dd-handle" data-toggle='collapse' data-target='#filters' style="cursor:pointer;">
+                <div class="caption">
+                    <i class="icon-magnifier"></i>
+                    <span class="caption-subject bold uppercase"> Filtreler </span>
+                    <span class="caption-helper"></span>
+                </div>
+                <div class='actions'>
+                    <a href='javascript:;' class='btn btn-default btn-sm' style='border:none;'>
+                        <i class='fa fa-chevron-down'></i>
+                    </a>
+                </div>
+            </div>
+            <div class="portlet-body form collapse in" id="filters">
+                <form role="form" style="padding:12px 20px">
+                    <div class="form-body form-group-lg form-horizontal row" style="padding: 0px;margin-top: 0px !important;">
+
+                        <div class="portlet light col-md-12" id="FiltreDivOgretmen" style="margin:0px; border-bottom-style: solid;border-bottom-width: 3px;border-bottom-color: rgb(0, 173, 239);">
+                            <div class="portlet-body">
+                                <div class="form-inline">
+                                    <c-donem controller="OgrenciBelgeSinavSonuclari"
+                                             @OnChange="DonemSelected">
+                                    </c-donem>
+                                    <c-sube controller="OgrenciBelgeSinavSonuclari"
+                                            @OnChange="SubeSelected">
+                                    </c-sube>
+                                    <c-kademe3 controller="OgrenciBelgeSinavSonuclari"
+                                               :idsube="idsube"
+                                               @OnChange="Kademe3Selected">
+                                    </c-kademe3>
+                                    <c-sinav-turu-obsinavsonuc controller="OgrenciBelgeSinavSonuclari"
+                                                               :idkademe3="idkademe3"
+                                                               @OnChange="SinavTuruSelected">
+                                    </c-sinav-turu-obsinavsonuc>
+                                    <c-sinav-obsinavsonuc controller="OgrenciBelgeSinavSonuclari"
+                                                          :idsinavturu="idsinavturu"
+                                                          :donem="DONEM"
+                                                          :idkademe3="idkademe3"
+                                                          @OnChange="SinavSelected">
+                                    </c-sinav-obsinavsonuc>
+                                    <div class="col-md-2">
+                                        <select v-model="icDisOgrenci" @change="OgrenciGrubuSelected" class="selectpicker form-control" title="Öğrenci Grubunu Seçiniz..">
+                                            <option value="1"> Okyanus Öğrencileri</option>
+                                            <option value="2"> Okyanus Dışı Öğrenciler</option>
+                                        </select>
+                                    </div>
+                                    <c-sinif controller="OgrenciBelgeSinavSonuclari"
+                                             :idsube="idsube"
+                                             :idkademe3="idkademe3"
+                                             :idsinif="idsinif"
+                                             @OnChange="SinifSelected"
+                                             v-show="icDisOgrenci==1">
+                                    </c-sinif>
+                                    <c-ogrenci controller="OgrenciBelgeSinavSonuclari"
+                                               :idsinif="idsinif"
+                                               :tcogrenci="tcogrenci"
+                                               @OnChange="OgrenciSelected"
+                                               v-show="icDisOgrenci==1">
+                                    </c-ogrenci>
+                                    <div class="form-md-line-input">
+                                        <div class="col-md-3" style="line-height:34px;">
+                                            <label class="control-label" style="vertical-align:middle;">Konu Analizleri</label>
+                                            <div style="height:34px; vertical-align:middle; display:inline-block; margin-left:20px!important;">
+                                                <div class="md-checkbox" style="margin:auto!important; width:20px!important; height:20px; margin:0px; margin-top:6px; display:block;">
+                                                    <input type="checkbox" v-model="konuanaliz" id="konuanaliz" class="md-check" v-bind:true-value="true" v-bind:false-value="false" />
+                                                    <label for="konuanaliz">
+                                                        <span></span>
+                                                        <span class="check"></span>
+                                                        <span class="box"></span>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-3" style="line-height:34px;" v-if="idsinavturu==12">
+                                            <label class="control-label" style="vertical-align:middle;">Puan Bilgileri</label>
+                                            <div style="height:34px; vertical-align:middle; display:inline-block; margin-left:20px!important;">
+                                                <div class="md-checkbox" style="margin:auto!important; width:20px!important; height:20px; margin:0px; margin-top:6px; display:block;">
+                                                    <input type="checkbox" v-model="bursPuanBilgileri" id="bursPuanBilgileri" class="md-check" v-bind:true-value="true" v-bind:false-value="false" />
+                                                    <label for="bursPuanBilgileri">
+                                                        <span></span>
+                                                        <span class="check"></span>
+                                                        <span class="box"></span>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-3" style="line-height:34px;" v-if="idsinavturu==12">
+                                            <label class="control-label" style="vertical-align:middle;">Sıralama Bilgileri</label>
+                                            <div style="height:34px; vertical-align:middle; display:inline-block; margin-left:20px!important;">
+                                                <div class="md-checkbox" style="margin:auto!important; width:20px!important; height:20px; margin:0px; margin-top:6px; display:block;">
+                                                    <input type="checkbox" v-model="bursSiralamaBilgileri" id="bursSiralamaBilgileri" class="md-check" v-bind:true-value="true" v-bind:false-value="false" />
+                                                    <label for="bursSiralamaBilgileri">
+                                                        <span></span>
+                                                        <span class="check"></span>
+                                                        <span class="box"></span>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-3" style="line-height:34px;" v-if="idsinavturu==12">
+                                            <label class="control-label" style="vertical-align:middle;">Burs Oranı</label>
+                                            <div style="height:34px; vertical-align:middle; display:inline-block; margin-left:20px!important;">
+                                                <div class="md-checkbox" style="margin:auto!important; width:20px!important; height:20px; margin:0px; margin-top:6px; display:block;">
+                                                    <input type="checkbox" v-model="bursBursOrani" id="bursBursOrani" class="md-check" v-bind:true-value="true" v-bind:false-value="false" />
+                                                    <label for="bursBursOrani">
+                                                        <span></span>
+                                                        <span class="check"></span>
+                                                        <span class="box"></span>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                    <input style="float:right;margin: 10px;" type="button" class="btn btn-success" v-on:click="Kaydet" value="Kaydet">
+                                    <input style="float:right;margin: 10px;" type="button" class="btn btn-success" v-on:click="Yazdir" value="Raporla">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+</div>
+<script src="../../../VueComponents/SinavIstatistikFiltreleri.js?v=4"></script>
+<script src="../../../VueComponents/OgrenciBelgeSinavSonuclari.js?v=4"></script>
+<script>
+    var vue = new Vue({
+        el: "#app",
+        name: "OgrenciBelge_SinavSonuclari.html",
+
+        data: {
+            dID_SINAVPUANTURU: 0,
+            TCKIMLIKNO: '',
+            DONEM: 0,
+            idsinav: 0,
+            dersler: [],
+            idsube: 0,
+            idkademe3: 0,
+            idsinif: 0,
+            tcogrenci: '',
+            idsinavturu: 0,
+            idkullanicitur: 0,
+            ListKullaniciTipi: [],
+            konuanaliz: true,
+            icDisOgrenci: 0,
+            bursPuanBilgileri: true,
+            bursSiralamaBilgileri: true,
+            bursBursOrani: true,
+        },
+
+        methods: {
+            Yazdir: function (event) {
+                if ((this.icDisOgrenci == 1 && this.idsinif>0) || this.icDisOgrenci==2) {
+                    window.open('../Rapor.aspx?rapor=Sinav.TopluSinavSonuclari&raporTur=pdf&p=' + session.TCKIMLIKNO + ';' + session.OTURUM + ';' + this.idsinav + ';[' + this.idsube + '];[' + (this.idsinif == 0 ? '' : this.idsinif) + '];[' + this.tcogrenci + '];' + (this.konuanaliz ? 1 : 0) + ';0;' + (this.bursPuanBilgileri ? 1 : 0) + ';' + (this.bursSiralamaBilgileri ? 1 : 0) + ';' + (this.bursBursOrani ? 1 : 0) , '_blank');
+                }
+                else
+                    Alert_Warning("Öğrenci Grubunu seçiniz.")
+            },
+            Kaydet: function (event) {
+                if ((this.icDisOgrenci == 1 && this.idsinif>0) || this.icDisOgrenci==2) {
+                    window.open('../RaporSinavSonuc.aspx?rapor=Sinav.TopluSinavSonuclari&raporTur=pdf&p=' + session.TCKIMLIKNO + ';' + session.OTURUM + ';' + this.idsinav + ';[' + this.idsube + '];[' + (this.idsinif == 0 ? '' : this.idsinif) + '];[' + this.tcogrenci + '];' + (this.konuanaliz ? 1 : 0) + ';1;' + (this.bursPuanBilgileri ? 1 : 0) + ';' + (this.bursSiralamaBilgileri ? 1 : 0) + ';' + (this.bursBursOrani ? 1 : 0), '_blank');
+                }
+                else
+                    Alert_Warning("Öğrenci Grubunu seçiniz.")
+            },
+
+            SubeSelected(item) {
+                this.idsube = item;
+                this.idkademe3 = 0;
+                this.idsinif = 0;
+            },
+            Kademe3Selected(item) {
+                this.idkademe3 = item;
+                this.idsinif = 0;
+            },
+            SinifSelected(item) {
+                this.idsinif = item;
+            },
+            OgrenciSelected(item) {
+                this.tcogrenci = item == '0' || item == undefined ? '' : item;
+            },
+            DonemSelected(item) {
+                this.DONEM = item;
+            },
+            SinavTuruSelected(item) {
+                this.idsinavturu = item;
+                this.bursPuanBilgileri = true;
+                this.bursSiralamaBilgileri= true;
+                this.bursBursOrani= true;
+            },
+            SinavSelected(item) {
+                this.idsinav = item;
+            },
+            OgrenciGrubuSelected() {
+                this.idsinif = 0;
+                this.tcogrenci = '';
+            },
+
+        },
+    });
+</script>
+
+
+
+
+<script src="Scripts/PublicMethods.js"></script>

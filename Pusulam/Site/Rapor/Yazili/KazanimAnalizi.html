@@ -1,0 +1,390 @@
+﻿<style>
+    .stil {
+        text-align: center;
+        vertical-align: middle;
+        /*height: 80px !important;
+        max-height: 80px !important;*/
+    }
+
+    .stil2 {
+        vertical-align: middle;
+        /*height: 80px !important;
+        max-height: 80px !important;*/
+    }
+
+    .field1 {
+        width: 158px !important;
+        max-width: 158px !important;
+        min-width: 158px !important;
+    }
+
+    .field2 {
+        width: 170px !important;
+        max-width: 170px !important;
+        min-width: 170px !important;
+    }
+
+    .field3 {
+        width: 127px !important;
+        max-width: 127px !important;
+        min-width: 127px !important;
+        border-right: double 1px #000;
+    }
+
+    table {
+        font-family: 'Open Sans', sans-serif;
+        width: 100%;
+        border-collapse: collapse;
+        border: 3px solid #44475C;
+        margin: 0px;
+    }
+
+
+        table th {
+            text-transform: uppercase;
+            text-align: left;
+            background: #44475C;
+            color: #FFF;
+            padding: 8px;
+            min-width: 30px;
+            text-align: center;
+        }
+
+        table td {
+            text-align: left;
+            padding: 8px;
+            border-right: 2px solid #7D82A8;
+            font-size: 10px !important;
+            cursor: default !important;
+            color: #000;
+            font-weight: 700;
+            text-align: center;
+            height: 80px !important;
+            max-height: 80px !important;
+        }
+
+            table td:last-child {
+                border-right: none;
+            }
+
+        table tbody tr:nth-child(2n) td {
+            background: #D4D8F9;
+        }
+
+    .fixed-table-body-columns {
+        margin-top: 1px !important;
+        z-index: 12;
+    }
+
+        .fixed-table-body-columns table {
+            border-top: 0px !important;
+        }
+</style>
+
+<div class="page-head">
+    <!-- BEGIN PAGE TITLE -->
+    <div class="page-title col-md-12">
+        <h1>
+            Kazanım Analizi <span onclick="YardimGoster(ID_MENU);" class="pull-right" style="cursor:pointer;"><img src="assets/global/img/info.gif" class="info-image-icon" /> </span>
+        </h1>
+    </div>
+    <!-- END PAGE TITLE -->
+</div>
+
+<div class="row" id="app">
+    <div class="col-md-12">
+        <div class="portlet box green-haze dd-item" style="border:none; margin-bottom:0px!important;">
+            <div class="portlet-title dd-handle" data-toggle='collapse' data-target='#filters' style="cursor:pointer;">
+                <div class="caption">
+                    <i class="icon-magnifier"></i>
+                    <span class="caption-subject bold uppercase"> Filtreler </span>
+                    <span class="caption-helper"></span>
+                </div>
+                <div class='actions'>
+                    <a href='javascript:;' class='btn btn-default btn-sm' style='border:none;'>
+                        <i class='fa fa-chevron-down'></i>
+                    </a>
+                </div>
+            </div>
+            <div class="portlet-body form collapse in" id="filters">
+                <div class="portlet light col-md-12" style="margin:0px; border-bottom-style: solid;border-bottom-width: 3px;border-bottom-color: rgb(0, 173, 239);">
+                    <div class="portlet-body">
+                        <div class="form-inline">
+                            <div class="row">
+                                <c-sube-multi controller="KazanimAnalizi"
+                                              @OnChange="SubeSelected">
+                                </c-sube-multi>
+                                <c-kademe3-multisube controller="KazanimAnalizi"
+                                                     :idsube="SUBELER"
+                                                     @OnChange="Kademe3Selected">
+                                </c-kademe3-multisube>
+                                <c-sinif-multi controller="KazanimAnalizi"
+                                               :idsube="SUBELER"
+                                               :idkademe3="ID_KADEME3"
+                                               @OnChange="SinifSelected">
+                                </c-sinif-multi>
+                            </div>
+                            <div class="row">
+                                <c-donem controller="KazanimAnalizi"
+                                         @OnChange="DonemSelected">
+                                </c-donem>
+                                <c-genel-ders-multi controller="KazanimAnalizi"
+                                                    :idkademe3="ID_KADEME3"
+                                                    :donem="DONEM"
+                                                    @OnChange="GenelDersSelected">
+                                </c-genel-ders-multi>
+                                <c-yariyil @OnChange="YariyilSelected"
+                                           tumu="Tüm Dönemler">
+                                </c-yariyil>
+                                <c-yazili-genel-multi-ders-sinifs controller="KazanimAnalizi"
+                                                                :donem="DONEM"
+                                                                :yariyil="YARIYIL"
+                                                                :idders="ID_DERSLER"                                              
+                                                                :siniflar="SINIFLAR"
+                                                                @OnChange="YaziliSelected">
+                                </c-yazili-genel-multi-ders-sinifs>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="portlet light" style="padding:0px;">
+            <div style="padding:0px;">
+                <input style="float:right;margin: 10px;" type="button" class="btn btn-success" @click="Excel()" value="Excel">
+                <input style="float:right;margin: 10px;" type="button" class="btn btn-success" @click="Raporla()" value="Raporla">
+            </div>
+            <table id="tablobaslik" v-show="T1.length>0" data-height="500" class="table table-striped table-condensed" style="color:#111; min-width:1024px !important; margin:0px!important;">
+                <thead>
+
+                </thead>
+                <tbody id="tbody"></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<link href="assets/global/plugins/bootstrap-table-master/bootstrap-table-fixed-columns.css" rel="stylesheet" />
+<link href="assets/global/plugins/bootstrap-table/bootstrap-table.min.css" rel="stylesheet" />
+<link href="assets/fixed-table/css/component.css?v=4" rel="stylesheet" />
+<script src="/VueComponents/YaziliYoklamaFiltreleri.js?v=3"></script>
+<script src="/VueComponents/Genel.js?v=3"></script>
+<script src="assets/global/plugins/bootstrap-table/bootstrap-table.min.js"></script>
+<script src="assets/global/plugins/bootstrap-table-master/bootstrap-table-fixed-columns.js"></script>
+<script>
+    var vue = new Vue({
+        el: "#app",
+        name: "KazanimAnalizi.html",
+
+        data: {
+            DONEM: '',
+            ID_SINAVLAR: [],
+            ID_KADEME3: 0,
+            ID_DERSLER: [],
+            ID_SINAVTURU: 0,
+            SUBELER: [],
+            T1: [],
+            T2: [],
+            YARIYIL: '',
+            SINIFLAR: []
+        },
+
+        mounted() {
+
+        },
+
+        methods: {
+            SubeSelected(SUBELER) {
+                this.SUBELER = SUBELER;
+            },
+
+            Kademe3Selected(ID_KADEME3) {
+                this.ID_KADEME3 = ID_KADEME3;
+            },
+
+            DonemSelected(DONEM) {
+                this.DONEM = DONEM;
+            },
+
+            YaziliSelected(ID_SINAV) {
+                this.ID_SINAVLAR = ID_SINAV;
+            },
+
+            YariyilSelected(YARIYIL) {
+                this.YARIYIL = YARIYIL;
+            },
+
+            SinifSelected(SINIFLAR) {
+                this.SINIFLAR = SINIFLAR;
+            },
+
+            GenelDersSelected(ID_DERSLER) {
+                this.ID_DERSLER = ID_DERSLER;
+            },
+
+            Excel() {
+                if (this.DONEM == ''
+                    || this.ID_SINAVLAR.length == 0
+                    || this.ID_DERSLER.length == 0
+                    || this.SUBELER.length == 0
+                    || this.ID_KADEME3 == 0) {
+                    Alert_Warning("Seçimleri yapmanız gerekmektedir.");
+                    this.T1 = [];
+                    this.T2 = [];
+                    $table.bootstrapTable('destroy');
+                    return;
+                } else {
+                    window.open('../Rapor.aspx?rapor=Yazili.KazanimAnalizi&raporTur=XLSX&p='
+                        + session.TCKIMLIKNO + ';'
+                        + session.OTURUM + ';'
+                        + JSON.stringify(this.ID_SINAVLAR) + ';'
+                        + JSON.stringify(this.SINIFLAR) + ';'
+                        + this.DONEM, '_blank');
+                }
+            },
+
+            Raporla() {
+                var $table = $('#tablobaslik');
+
+                if (this.DONEM == ''
+                    || this.ID_SINAVLAR.length == 0
+                    || this.ID_DERSLER.length == 0
+                    || this.SUBELER.length == 0
+                    || this.ID_KADEME3 == 0) {
+                    Alert_Warning("Seçimleri yapmanız gerekmektedir.");
+                    this.T1 = [];
+                    this.T2 = [];
+                    $table.bootstrapTable('destroy');
+                    return;
+                } else {
+                    var p = {
+                        TCKIMLIKNO: session.TCKIMLIKNO,
+                        OTURUM: session.OTURUM,
+                        ID_SINAVLAR: JSON.stringify(this.ID_SINAVLAR),
+                        ID_SINIFLAR: JSON.stringify(this.SINIFLAR),
+                        DONEM: this.DONEM
+                    };
+                    $('#tablobaslik').bootstrapTable('destroy');
+                    WebPost(this, "KazanimAnalizi", "KazanimAnalizi", p, "#app", "Yükleniyor...", function (data, parent) {
+                        if (data != '[{}]' && JSON.parse(data)[0].T1 != null && JSON.parse(data)[0].T2 != null) {
+                            $('#filters').collapse('hide');
+                            parent.T1 = JSON.parse(data)[0].T1;
+                            parent.T2 = JSON.parse(data)[0].T2;
+                            var field = 1;
+                            var columns = [];
+                            var datalar = [];
+                            var baslik1satir = [];
+                            var baslik2satir = [];
+                            var baslik3satir = [];
+                            var row = {};
+                            var subedegisti = 0;
+                            baslik1satir.push({ title: "DERS<br>KAZANIMKODU", rowspan: 3, field: "field" + field, "class": "field" + field });
+                            field++;
+                            baslik1satir.push({ title: "KAZANIM", rowspan: 3, field: "field" + field, "class": "field" + field });
+                            field++;
+                            baslik1satir.push({ title: "SORU SAYISI", rowspan: 3, field: "field" + field, "class": "field" + field });
+                            field++;
+                            var subelen = parent.SUBELER.length;
+
+                            if (parent.T1.length === 0) {
+                                Alert_Warning("Liste Bulunamadı..!");
+                                return;
+                            }
+
+                            var sayac = 0;
+                            var index = 1;
+                            var sinifdizi = [];
+                            for (var i = 0; i < (parent.T1.length) ; i++) {
+                                for (var j = 0; j < parent.T1[0].SUBEADET; j++) {
+                                    if (parent.T1[i] != undefined) {
+                                        baslik1satir.push({ title: parent.T1[i].SUBE, colspan: parent.T1[i].SUBESAYI + (2 * parent.T1[i].SINAVADET), halign: "center" });
+                                        var SINAVADET = parent.T1[i].SINAVADET;
+                                        for (var k = 0; k < SINAVADET; k++) {
+                                            if (parent.T1[i] != undefined) {
+                                                baslik2satir.push({ title: parent.T1[i].SINAVAD, colspan: parent.T1[i].SINIFSAYI + 2, halign: "center" });
+                                                var sinifsayi = parent.T1[i].SINIFSAYI
+                                                sinifdizi.push(sinifsayi);
+                                                for (var z = 0; z < sinifsayi; z++) {
+                                                    baslik3satir.push({ title: parent.T1[i].SINIF, field: parent.T1[i].ID_SUBE + "/" + parent.T1[i].SINAVAD.replace(' ', '') + "/" + parent.T1[i].SINIF, halign: "center" });
+                                                    field++;
+                                                    i++;
+                                                }
+                                                baslik3satir.push({ title: "KAMPÜS ORTALAMA", field: "KAM" + parent.T1[i - 1].ID_SUBE + "/" + parent.T1[i - 1].SINAVAD.replace(' ', '') + "/" + parent.T1[i - 1].SINIF, halign: "center" });
+                                                field++;
+                                                baslik3satir.push({ title: "GENEL ORTALAMA", field: "GEN" + parent.T1[i - 1].ID_SUBE + "/" + parent.T1[i - 1].SINAVAD.replace(' ', '') + "/" + parent.T1[i - 1].SINIF, halign: "center" });
+                                                field++;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            columns.push(baslik1satir, baslik2satir, baslik3satir);
+                            //satır başlangıc
+                            var i = 0;
+                            for (var l = 0; l < parent.T2[0].TOPLAMSATIRSAYISI; l++) {
+                                row["field1"] = parent.T2[i].DERSAD + "<br>" + parent.T2[i].KOD;
+                                row["field2"] = parent.T2[i].KAZANIM;
+                                row["field3"] = parent.T2[i].SORUSAYISI;
+                                var kolonsayisi = parent.T2[i].KONUSATIRSAYISI;
+                                for (var z = 0; z < kolonsayisi; z++) {
+                                    row[parent.T2[i].ID_SUBE + "/" + parent.T2[i].SINAVAD.replace(' ', '') + "/" + parent.T2[i].SINIF] = parent.T2[i].SINIFYUZDE.toFixed(2) + '%';
+                                    //if (i > 0 && parent.T2[i].SINAVAD == parent.T2[i - 1].SINAVAD) {
+                                    row["KAM" + parent.T2[i].ID_SUBE + "/" + parent.T2[i].SINAVAD.replace(' ', '') + "/" + parent.T2[i].SINIF] = parent.T2[i].SUBEYUZDE.toFixed(2) + '%';
+                                    row["GEN" + parent.T2[i].ID_SUBE + "/" + parent.T2[i].SINAVAD.replace(' ', '') + "/" + parent.T2[i].SINIF] = parent.T2[i].GENELYUZDE.toFixed(2) + '%';
+                                    //}
+                                    i++;
+                                }
+
+                                datalar.push(row);
+                                row = {};
+                            }
+
+                            console.log(JSON.stringify(datalar));
+
+                            $table.bootstrapTable('destroy').bootstrapTable({
+                                columns: columns,
+                                search: false,
+                                fixedColumns: true,
+                                fixedNumber: 3,
+                                data: datalar,
+                                rowStyle: function (row, index) {
+                                    index = index + 1;
+                                    if (index % 2 == 0) {
+                                        return { classes: 'satir1 stil' };
+                                    }
+                                    else {
+                                        return { classes: 'satir2 stil' };
+                                    }
+                                }
+                            });
+
+                            $table.bootstrapTable('resetView');
+                            //parent.$nextTick(function () {
+                            //    $("td.field1").each(function () {
+                            //        $(this).replaceWith('<th>' + $(this).text() + '</th>');
+                            //    });
+                            //    $("td.field2").each(function () {
+                            //        $(this).replaceWith('<th>' + $(this).text() + '</th>');
+                            //    });
+                            //    $("td.field3").each(function () {
+                            //        $(this).replaceWith('<th>' + $(this).text() + '</th>');
+                            //    });
+
+                            //    fixedTableCreate()
+                            //});
+                        } else {
+                            parent.T1 = [];
+                            parent.T2 = [];
+                            Alert_Warning("Liste Bulunamadı..!");
+                            //$table.bootstrapTable('destroy');
+                            return;
+                        }
+                    });
+                }
+            },
+        },
+    });
+</script>
+
+<script src="Scripts/PublicMethods.js"></script>

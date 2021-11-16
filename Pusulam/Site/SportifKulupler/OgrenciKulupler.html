@@ -1,0 +1,299 @@
+﻿<head>
+    <script src="/Scripts/Tools.js"></script>
+    <script src="../../../assets/global/plugins/nouislider/jquery.nouislider.js"></script>
+</head>
+
+<div class="page-head">
+    <div class="page-title col-md-12">
+        <h1>
+            Sportif Kulüpler <small>Öğrenci Kulüpler Raporu</small>
+            <span onclick="YardimGoster(ID_MENU);" class="pull-right" style="cursor:pointer;"><img src="assets/global/img/info.gif" class="info-image-icon" /> </span>
+        </h1>
+    </div>
+</div>
+
+<div class="row" id="app" style="margin-top:0px!important;">
+    <div class="col-md-12">
+
+        <div class="portlet box blue-hoki dd-item" style="border:none">
+            <div class="portlet-title dd-handle" data-toggle='collapse'>
+                <div class="caption">
+                    <i class="icon-magnifier"></i>
+                    <span class="caption-subject bold uppercase"> Rapor </span>
+                    <span class="caption-helper"></span>
+                </div>
+                <div class='actions'>
+                    <a href='javascript:;' class='btn btn-default btn-sm' style='border:none;'>
+                        <i class='fa fa-chevron-down'></i>
+                    </a>
+                </div>
+            </div>
+            <!-- BEGIN PORTLET-->
+            <div class="portlet-body form collapse in" id="filters">
+                <form role="form" style="padding:12px 20px">
+                    <div class="form-body form-group-lg form-horizontal row" style="padding: 0px;margin-top: 0px !important;">
+                        <div class="portlet light col-md-12" id="FiltreDivOgretmen" style="margin:0px; border-bottom-style: solid;border-bottom-width: 3px;border-bottom-color: rgb(0, 173, 239);">
+                            <div class="portlet-body form collapse in" id="filters">
+                                <c-periyot controller="OgrenciKulupler"
+                                           @OnChange="PeriyotSelected">
+                                </c-periyot>
+                                <!--<c-sube-multi controller="GenelYaziliYoklamaSonuclari"
+                                              @OnChange="SubeSelected">
+                                </c-sube-multi>-->
+                                <c-sube-multi :controller="controller"
+                                              @OnChange="SubeSelected"
+                                              >
+                                </c-sube-multi>
+
+                                <c-kademe3-multi :controller="controller"
+                                                 :idsubelist="ID_SUBEs"
+                                                 @OnChange="Kademe3Selected">
+                                </c-kademe3-multi>
+
+                                <!--<c-kademe3-multisube controller="GenelYaziliYoklamaSonuclari"
+                                                     :idsube="ID_SUBEs"
+                                                     @OnChange="Kademe3Selected">
+                                </c-kademe3-multisube>-->
+                                <c-sinif-multi :controller="controller"
+                                               :idsubelist="ID_SUBEs"
+                                               :idkademe3list="ID_KADEME3"
+                                               @OnChange="SinifSelected">
+                                </c-sinif-multi>
+                                <!--<c-sinif-multi-donem controller="GenelSoruAnalizi"
+                                                     :idsubelist="ID_SUBEs"
+                                                     :idkademe3="ID_KADEME3"
+                                                     :donem="DONEM"
+                                                     @OnChange="SinifSelected">
+                                </c-sinif-multi-donem>-->
+
+                                <input style="float:right;margin: 10px;" type="button" class="btn btn-success" v-on:click="Listele" value="Raporla">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-12" style="margin-top: 15px !important;">
+                                <c-rapor-tur-buton @Yazdir="Yazdir"> </c-rapor-tur-buton>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-12" v-if="RAPORLA">
+        <div class="portlet box blue-hoki dd-item" style="border:none">
+            <div class="portlet-title " data-toggle='collapse'>
+                <div class="caption">
+                    <i class="icon-magnifier"></i>
+                    <span class="caption-subject bold uppercase"> Öğrenci Kulüp Listesi </span>
+                    <span class="caption-helper"></span>
+                </div>
+                <div class='actions'>
+                    <a href='javascript:;' class='btn btn-default btn-sm' style='border:none;'>
+                        <i class='fa fa-chevron-down'></i>
+                    </a>
+                </div>
+            </div>
+            <div class="portlet-body form">
+                <form role="form">
+                    <div class="portlet light bordered">
+                        <div class="portlet-body">
+
+                            <table class="table table-striped table-bordered table-hover table-checkable order-column" id="tblListe">
+                                <thead>
+                                    <tr>
+                                        <th>TC</th>
+                                        <th>Adı Soyadı</th>
+                                        <th>Periyot</th>
+                                        <th>Kulüp Adı</th>
+                                        <th>Kaydeden</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="odd gradeX" v-for="u in LISTE">
+                                        <td>{{u.TC}}</td>
+                                        <td>{{u.ADSOYAD}}</td>
+                                        <td>{{u.PERIYOT}}</td>
+                                        <td class="text-center">
+                                            <a v-if="u.KULUPADI != undefined" class="text-info" @click="ModalAc(false, u.TC)">{{u.KULUPADI}}</a>
+                                            <a v-else class="text-info"><i class="fa fa-plus" @click="ModalAc(true, u.TC)"></i></a>
+                                        </td>
+                                        <td>{{u.KAYDEDEN}}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div id="modalSec" class="modal fade in" tabindex="-1" data-replace="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body" style="padding-bottom:0px;" id="modal-body">
+                    <div class="row">
+                        <label class="control-label col-md-3">
+                            Kulüp
+                        </label>
+                        <c-kulup :controller="controller"
+                                 @OnChange="KulupDuzenleSelected"
+                                 :kotali="true"
+                                 :id_kulup="ID_KULUP"
+                                 :ogrenci_tc="OGRENCI_TC"
+                                 :id_periyot="ID_KULUPPERIYOT" />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn green" @click="Kaydet()">Kaydet</button>
+                    <button type="button" class="btn default" data-dismiss="modal">Kapat</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!--<script src="VueComponents/SinavFiltreleri.js?v=4"></script>-->
+<!--<script src="VueComponents/KonuAnaliziFiltreleri.js?v=3"></script>-->
+
+<script src="VueComponents/KulupFiltreleri.js?v=4"></script>
+<!--<script src="VueComponents/YaziliYoklamaFiltreleri.js?v=3"></script>-->
+<script src="VueComponents/Genel.js?v=3"></script>
+<!--<script src="VueComponents/GenelSinavRaporuFiltreleri.js"></script>-->
+<script>
+    var vue = new Vue({
+        el: "#app",
+        name: "PeriyotBelirle",
+
+        data: {
+            controller: 'OgrenciKulupler',
+            LISTE: [],
+            ID_KULUPPERIYOT: 0,
+            DONEM: '',
+            ID_KADEME3:[],
+            ID_SINIFs: [],
+            ID_SUBEs: [],
+            RAPORLA: false,
+            ID_KULUP: 0,
+            OGRENCI_TC: 0,
+            YENI_KULUP: false,
+        },
+
+        mounted() {
+        },
+
+        methods: {
+            KulupDuzenleSelected(item) {
+                this.ID_KULUP = item;
+            },
+
+            PeriyotSelected(item) {
+                this.ID_KULUPPERIYOT = item;
+            },
+
+            SubeSelected(item) {
+                this.ID_SUBEs = item;
+            },
+
+            Kademe3Selected(item) {
+                this.ID_KADEME3 = item;
+                this.SINIFLISTE = [];
+            },
+
+            SinifSelected(item) {
+                this.ID_SINIFs = item;
+            },
+
+            Listele() {
+                if (this.ID_KULUPPERIYOT == 0) {
+                    Alert_Warning("Periyot Seçiniz.");
+                    return;
+                }
+                if (this.ID_SINIFs.length == 0) {
+                    Alert_Warning("Sınıf Seçiniz.");
+                    return;
+                }
+                this.RAPORLA = true;
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    ID_SINIFs: JSON.stringify(this.ID_SINIFs),
+                    ID_KULUPPERIYOT: this.ID_KULUPPERIYOT
+                };
+
+                WebPost(this, this.controller, "OgrenciKulupListele", p, '', '', function (data, parent) {
+                    parent.LISTE = JSON.parse(data);
+                    ListeOlustur('tblListe');
+                })
+
+            },
+
+            Yazdir(ciktiTuru) {
+                if (ciktiTuru == "") {
+                    Alert_Warning("Çıktı Türünü Seçiniz.");
+                    return;
+                }
+                if (this.ID_KULUPPERIYOT == 0) {
+                    Alert_Warning("Periyot Seçiniz.");
+                    return;
+                }
+                if (this.ID_SINIFs.length == 0) {
+                    Alert_Warning("Sınıf Seçiniz.");
+                    return;
+                }
+                window.open('../Rapor.aspx?rapor=SportifKulupler.OgrenciKulupler&raporTur=' + ciktiTuru + '&p=' + session.TCKIMLIKNO + ';' + session.OTURUM + ';' + this.ID_KULUPPERIYOT + ';' + JSON.stringify(this.ID_SINIFs), '_blank');
+
+            },
+
+            ModalAc(yeni, tc) {
+                $('#modalSec').modal();
+                this.OGRENCI_TC = tc;
+                this.YENI_KULUP = yeni;
+            },
+
+            Kaydet() {
+                if (this.YENI_KULUP) {
+                    var p = {
+                        TCKIMLIKNO: session.TCKIMLIKNO,
+                        OTURUM: session.OTURUM,
+                        ID_KULUP: this.ID_KULUP,
+                        OGRENCI_TC: this.OGRENCI_TC,
+                        KulupPeriyotId: this.ID_KULUPPERIYOT
+                    }
+
+                    if (this.ID_KULUP == 0) {
+                        Alert_Info("Kulüp seçiniz.");
+                        return;
+                    }
+
+                    WebPost(this, this.controller, "KulupEkle", p, '', '', function (data, parent) {
+                        if (data) {
+                            parent.Listele();
+                            $('#modalSec').modal("hide");
+                            parent.ID_KULUP = 0;
+                            Alert_Info("Kulüp başarılı bir şekilde kaydedildi.");
+                        } else {
+                            Alert_Warning("Kulüp eklenirken bir hata oluştu.");
+                        }
+                    });
+                } else {
+                    var p = {
+                        TCKIMLIKNO: session.TCKIMLIKNO,
+                        OTURUM: session.OTURUM,
+                        ID_KULUP: this.ID_KULUP,
+                        OGRENCI_TC: this.OGRENCI_TC,
+                        KulupPeriyotId: this.ID_KULUPPERIYOT
+                    };
+                    WebPost(this, this.controller, "KulupDuzenle", p, '', '', function (data, parent) {
+                        parent.Listele();
+                        $('#modalSec').modal("hide");
+                        parent.ID_KULUP = 0;
+                        Alert_Info("Kulüp başarılı bir şekilde güncellendi.");
+
+                    });
+                }
+            }
+        },
+    });
+</script>
+<script src="Scripts/PublicMethods.js"></script>

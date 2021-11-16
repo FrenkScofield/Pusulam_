@@ -1,0 +1,135 @@
+﻿
+<link href="assets/global/plugins/bootstrap-datepicker/css/bootstrap-datepicker3.min.css" rel="stylesheet" type="text/css" />
+<div class="page-head">
+    <div class="page-title col-md-12">
+        <h1> Sınav Listesi <span onclick="YardimGoster(ID_MENU);" class="pull-right" style="cursor:pointer;"><img src="assets/global/img/info.gif" class="info-image-icon" /> </span> </h1>
+    </div>
+</div>
+
+<div class="row" id="app">
+    <div class="col-md-12">
+        <div class="portlet box blue-hoki dd-item" style="border:none">
+            <div class="portlet-title dd-handle" data-toggle='collapse' data-target='#filters' style="cursor:pointer;">
+                <div class="caption">
+                    <i class="icon-magnifier"></i>
+                    <span class="caption-subject bold uppercase"> Filtreler </span>
+                    <span class="caption-helper"></span>
+                </div>
+                <div class='actions'>
+                    <a href='javascript:;' class='btn btn-default btn-sm' style='border:none;'>
+                        <i class='fa fa-chevron-down'></i>
+                    </a>
+                </div>
+            </div>
+            <div class="portlet-body form collapse in" id="filters">
+                <form role="form" style="padding:12px 20px">
+                    <div class="row">
+                        <c-donem :controller="controller"
+                                 @OnChange="DonemSelected">
+                        </c-donem>
+                    </div>
+                    <div class="row">
+                        <c-kademe3 :controller="controller"
+                                   @OnChange="SinavGrupSelected">
+                        </c-kademe3>
+                    </div>
+                    <div class="row">
+                        <c-sinav-turu :controller="controller"
+                                      :idkademe3="ID_KADEME3"
+                                      :sinavdurum=true
+                                      :idset="ID_SINAVTURU"
+                                      @OnChange="SinavTuruSelected">
+                        </c-sinav-turu>
+                    </div>
+                    <div class="row">
+                        <c-sinav :controller="controller"
+                                 :idkademe3="ID_KADEME3"
+                                 :idsinavturu="ID_SINAVTURU"
+                                 :donem="DONEM"
+                                 :onlinesinav=true
+                                 :idset="ID_SINAV"
+                                 @OnChange="SinavSelected">
+                        </c-sinav>
+                    </div>
+
+                    <div class="row">
+                        <div class="form-group" style="margin-top:10px;">
+                            <div class="col-md-12 text-right">
+                                <button type="button" :disabled="ID_SINAV==0" class="btn green" @click="SinavAc">Sınavı İncele</button>
+                                <button type="button" :disabled="ID_SINAV==0" class="btn blue" @click="Rapor(false)">Sınav Çıktısını Al</button>
+                                <button type="button" :disabled="ID_SINAV==0" class="btn grey-cascade" @click="Rapor(true)">Cevap Anahtarı ile Çıktı Al</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../../VueComponents/Filtre.js"></script>
+<script src="../../VueComponents/FiltreEk.js?v=1"></script>
+
+<script>
+    var vue = new Vue({
+
+        el: "#app",
+        name: "OnlineSinavOnizlemeListe",
+
+        data: {
+            TCKIMLIKNO: '',
+            OTURUM: '',
+            controller: 'OnlineSinavOnizlemeListe',
+
+            DONEM: '',
+            ID_SINAVTURU: 0,
+            ID_KADEME3: 0,
+            ID_SINAV: 0,
+        },
+
+        mounted() {
+            this.TCKIMLIKNO = session.TCKIMLIKNO;
+            this.OTURUM = session.OTURUM;
+        },
+
+        methods: {
+
+            DonemSelected(val) {
+                this.DONEM = val;
+                this.ID_SINAVTURU = 0;
+                this.ID_SINAV = 0;
+            },
+            SinavGrupSelected(val) {
+                this.ID_KADEME3 = val;
+                this.ID_SINAVTURU = 0;
+                this.ID_SINAV = 0;
+            },
+            SinavTuruSelected(val) {
+                this.ID_SINAVTURU = val
+                this.ID_SINAV = 0;
+            },
+            SinavSelected(val) {
+                this.ID_SINAV = val;
+            },
+            SinavAc() {
+                window.open('/AnaSayfa.html#OnlineSinav/OnlineSinavOnizleme?ID_SINAV=' + this.ID_SINAV, '_blank');
+            },
+
+            Rapor(cevapAnahtari) {
+                window.open('/AnaSayfa.html#OnlineSinav/OnlineSinavCikti?ID_SINAV=' + this.ID_SINAV + '&CEVAPANAHTARI=' + cevapAnahtari, '_blank');
+                return;
+                window.open("Rapor.aspx?raporTur=pdf&rapor=Sinav.Online.Sinav&p="
+                    + session.TCKIMLIKNO + ";"
+                    + session.OTURUM + ";"
+                    + this.ID_SINAV + ";"
+                    + cevapAnahtari);
+            }
+
+
+        }
+    });
+</script>
+<script src="Scripts/PublicMethods.js"></script>
+
+<script src="assets/global/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js" type="text/javascript"></script>
+<script src="assets/global/plugins/bootstrap-datepicker/locales/bootstrap-datepicker.tr.min.js" type="text/javascript"></script>
+<script src="assets/pages/scripts/components-date-time-pickers.min.js" type="text/javascript"></script>

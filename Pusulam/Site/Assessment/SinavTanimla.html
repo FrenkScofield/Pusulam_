@@ -1,0 +1,650 @@
+﻿<style>
+    td {
+        vertical-align: middle !important;
+    }
+
+    .row {
+        margin-top: 10px !important;
+    }
+</style>
+
+<div class="page-head">
+    <!-- BEGIN PAGE TITLE -->
+    <div class="page-title col-md-12">
+        <h1>
+            Progress Check Sınav Tanımla <span onclick="YardimGoster(ID_MENU);" class="pull-right" style="cursor:pointer;"><img src="assets/global/img/info.gif" class="info-image-icon" /> </span>
+        </h1>
+    </div>
+    <!-- END PAGE TITLE -->
+</div>
+<div id="ilkYukleme">
+
+    <div class="row" id="app">
+        <div class="row" style="margin:0px!important;">
+
+            <div class="col-md-4">
+                <div class="portlet light">
+                    <div class="portlet-title">
+                        <div class="caption">
+                            <i class="icon-pencil font-green"></i>
+                            <span class="caption-subject bold font-green uppercase"> Sınav Detay </span>
+                            <span class="caption-helper"></span>
+                        </div>
+                    </div>
+                    <!-- BEGIN PORTLET-->
+                    <div class="portlet-body form">
+                        <form role="form">
+                            <div class="form-body form-horizontal">
+
+                                <div class="row">
+                                    <is-donem controller="OptikTanimla"
+                                              :idset="DONEM"
+                                              @OnChange="DonemSelected">
+                                    </is-donem>
+                                </div>
+                                <div class="row">
+                                    <c-sinavgrup controller="OptikTanimla"
+                                                 :id_kademe3="ID_KADEME3"
+                                                 @OnChange="SinavGrupSelected">
+                                    </c-sinavgrup>
+                                </div>
+                                <div class="row">
+                                    <label class="control-label col-md-3" style="vertical-align:middle;"> Sınav Adı </label>
+                                    <div class="col-md-9">
+                                        <input type="text" class="form-control" v-model="AD" />
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <is-excel-sutun baslik="T.C. Kimlik No"
+                                                    :count="COUNT_TCKIMLIKNO"
+                                                    :idset="SUTUN_TCKIMLIKNO"
+                                                    :liste="SUTUNLISTE"
+                                                    @OnChange="TckimliknoSutunSelected">
+                                    </is-excel-sutun>
+                                </div>
+                                <div class="row">
+                                    <is-excel-sutun baslik="Adı Soyadı"
+                                                    :count="COUNT_ADSOYAD"
+                                                    :idset="SUTUN_ADSOYAD"
+                                                    :liste="SUTUNLISTE"
+                                                    @OnChange="AdSoyadSutunSelected">
+                                    </is-excel-sutun>
+                                </div>
+                                <div class="row">
+                                    <is-excel-sutun baslik="Ses Kaydı"
+                                                    :count="COUNT_SESKAYDI"
+                                                    :idset="SUTUN_SESKAYDI"
+                                                    :liste="SUTUNLISTE"
+                                                    @OnChange="SesKaydiSutunSelected">
+                                    </is-excel-sutun>
+                                </div>
+                                <div class="row">
+                                    <is-excel-sutun baslik="Fotoğraf"
+                                                    :count="COUNT_FOTOGRAF"
+                                                    :idset="SUTUN_FOTOGRAF"
+                                                    :liste="SUTUNLISTE"
+                                                    @OnChange="FotografSutunSelected">
+                                    </is-excel-sutun>
+                                </div>
+                                <div class="row">
+                                    <is-excel-sutun baslik="Özel Not"
+                                                    :count="COUNT_OZELNOT"
+                                                    :idset="SUTUN_OZELNOT"
+                                                    :liste="SUTUNLISTE"
+                                                    @OnChange="OzelNotSutunSelected">
+                                    </is-excel-sutun>
+                                </div>
+
+
+                            </div>
+                        </form>
+
+                    </div>
+                    <!-- END PORTLET-->
+                </div>
+            </div>
+
+            <div class="col-md-8">
+                <div class="portlet light">
+                    <div class="portlet-title">
+                        <div class="caption">
+                            <i class="icon-list font-green"></i>
+                            <span class="caption-subject bold font-green uppercase"> Soru Listesi </span>
+                            <span class="caption-helper"></span>
+                        </div>
+                    </div>
+                    <!-- BEGIN PORTLET-->
+                    <div class="portlet-body form">
+                        <form role="form">
+                            <div class="form-body form-horizontal">
+
+                                <table class="table table-striped table-bordered"
+                                       data-height="700"
+                                       data-width="100%"
+                                       style="margin-bottom:0px; color:#111; width:100%;">
+                                    <thead>
+                                        <tr>
+                                            <th colspan="12">
+                                                <label class="control-label col-md-3" style="vertical-align:middle;"> Soru Adedi </label>
+                                                <div class="col-md-9">
+                                                    <input type="number" class="form-control" min="0" v-model="SORUADET" placeholder="Soru Adedini Giriniz.." />
+                                                </div>
+                                            </th>
+                                            <th colspan="4">
+                                                <button type="button" class="btn green pull-right" @click="SoruOlustur"> Soru Oluştur</button>
+                                            </th>
+                                        </tr>
+                                        <tr>
+                                            <th>Soru No</th>
+                                            <th colspan="5"> Soru </th>
+                                            <th colspan="3"> Excel Sütun </th>
+                                            <th colspan="3"> Soru Kategori </th>
+                                            <th colspan="4"> Doğru Cevap </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr v-for="(item,i) in SORULIST" @click="index = i">
+                                            <td>{{item.SORUNO}}</td>
+                                            <td colspan="5"><input type="text" class="form-control" style="text-align:center;" v-model="item.SORU" /></td>
+                                            <td colspan="3">
+                                                <is-excel-sutun :count="item.COUNT"
+                                                                :idset="item.SUTUN"
+                                                                :liste="SUTUNLISTE"
+                                                                @OnChange="SoruSutunSelected">
+                                                </is-excel-sutun>
+                                            </td>
+                                            <td colspan="3">
+                                                <is-assessment-kategori controller="AssessmentSinavTanimla"
+                                                                        :idset="item.ID_ASSESSMENTKATEGORI"
+                                                                        :kategorilist="KATEGORILIST"
+                                                                        @OnChange="SoruKategoriSelected">
+                                                </is-assessment-kategori>
+                                            </td>
+                                            <td colspan="4"><input type="text" class="form-control" style="text-align:center;" v-model="item.CEVAP" /></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+
+
+
+                            </div>
+                        </form>
+
+                    </div>
+                    <!-- END PORTLET-->
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="form-group" style="margin-top:10px;">
+                <div class="col-md-12 text-right">
+                    <button type="button" class="btn green" @click="Kaydet">Kaydet</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<script src="../../VueComponents/idset/Filtreler.js?v=5"></script>
+<script src="VueComponents/SinavFiltreleri.js?v=7"></script>
+
+<script>
+    function Kilitle() {
+
+        App.blockUI({
+            target: '#ilkYukleme',
+            boxed: true,
+            message: 'Sınav Detayları Yükleniyor. Bu işlem biraz uzun sürebilir. Lütfen Bekleyiniz...'
+        });
+    }
+    function Ac() {
+
+        App.unblockUI('#ilkYukleme');
+    }
+
+    var vue = new Vue({
+
+        el: "#app",
+        name: "SinavTanimla.html",
+
+        data: {
+            DONEM: 0,
+            ID_KADEME3: 0,
+            ID_ASSESSMENT: 0,
+            AD: '',
+
+            SECILISUTUNLISTE: [],
+            SUTUNLISTE: [],
+
+            SUTUN_ADSOYAD: undefined,
+            SUTUN_TCKIMLIKNO: undefined,
+            SUTUN_SESKAYDI: undefined,
+            SUTUN_FOTOGRAF: undefined,
+            SUTUN_OZELNOT: undefined,
+
+            COUNT_ADSOYAD: 0,
+            COUNT_TCKIMLIKNO: 0,
+            COUNT_SESKAYDI: 0,
+            COUNT_FOTOGRAF: 0,
+            COUNT_OZELNOT: 0,
+
+            SORUTASLAK: {
+                SORUNO: 0,
+                SUTUN: undefined,
+                COUNT: 0,
+                ID_ASSESSMENTKATEGORI: 0,
+                CEVAP: '',
+                SORU: '',
+            },
+
+            KATEGORILIST: [],
+
+            SORULIST: [],
+
+            index: 0,
+            SORUADET: undefined,
+            duzenleYukle: false,
+
+        },
+
+        created() {
+            var p = { TCKIMLIKNO: session.TCKIMLIKNO, OTURUM: session.OTURUM, DONEM: this.donem };
+            WebPost(this, "AssessmentSinavTanimla", "AssessmentKategoriListesi", p, '', '', function (data, parent) {
+                parent.KATEGORILIST = JSON.parse(data);
+            });
+        },
+        mounted() {
+
+            this.SUTUNLISTE = ExcelSutunListesi();
+            var _this = this;
+
+            this.$nextTick(function () {
+                if (parseInt(getParameterByName("ID_ASSESSMENT")) > 0) {
+                    var p = {
+                        TCKIMLIKNO: session.TCKIMLIKNO,
+                        OTURUM: session.OTURUM,
+                        ID_ASSESSMENT: parseInt(getParameterByName("ID_ASSESSMENT")),
+                    };
+                    _this.duzenleYukle = true;
+                    Kilitle();
+                    WebPost(this, "AssessmentSinavTanimla", "SinavDetay", p, '#sinavtable', 'Yükleniyor..', function (data, parent) {
+                        if (data != null) {
+                            var k = JSON.parse(data)[0];
+
+                            _this.DONEM = k.DONEM;
+                            _this.AD = k.AD;
+                            //_this.ID_KADEME3 = parseInt(k.ID_KADEME3);
+                            _this.ID_ASSESSMENT = (parseInt(getParameterByName("ID_ASSESSMENT")));
+
+                            _this.COUNT_FOTOGRAF = 1000;
+                            _this.COUNT_OZELNOT = 1000;
+                            _this.COUNT_SESKAYDI = 1000;
+                            _this.COUNT_TCKIMLIKNO = 1000;
+                            _this.COUNT_ADSOYAD = 1000;
+
+                            _this.AdSoyadSutunSelected(undefined, k.SUTUN_ADSOYAD)
+                            _this.TckimliknoSutunSelected(undefined, k.SUTUN_TCKIMLIKNO)
+                            _this.SesKaydiSutunSelected(undefined, k.SUTUN_SESKAYDI)
+                            _this.FotografSutunSelected(undefined, k.SUTUN_FOTOGRAF)
+                            _this.OzelNotSutunSelected(undefined, k.SUTUN_OZELNOT)
+
+                            _this.SORUADET = k.SORULIST.length;
+                            _this.SoruOlustur();
+
+                            _this.$nextTick(function () {
+
+
+                                _this.SORULIST = k.SORULIST;
+                                $.each(_this.SORULIST, function (j, el) {
+                                    _this.SECILISUTUNLISTE.push(el.SUTUN);
+                                });
+
+                                _this.$nextTick(function () {
+
+                                    Ac();
+
+                                    _this.ID_KADEME3 = parseInt(k.ID_KADEME3);
+
+                                    _this.SECILISUTUNLISTE = getDistinctTek(_this.SECILISUTUNLISTE)
+
+                                    _this.duzenleYukle = false;
+
+                                    _this.COUNT_FOTOGRAF = 1;
+                                    _this.COUNT_OZELNOT = 1;
+                                    _this.COUNT_SESKAYDI = 1;
+                                    _this.COUNT_TCKIMLIKNO = 1;
+                                    _this.COUNT_ADSOYAD = 1;
+                                })
+
+                            })
+
+                        }
+                    });
+                }
+            });
+
+        },
+
+        methods: {
+            DonemSelected(DONEM) {
+                this.DONEM = DONEM;
+            },
+            SinavGrupSelected(val) {
+                this.ID_KADEME3 = val;
+            },
+
+            AdSoyadSutunSelected(old, val) {
+
+                if (this.COUNT_ADSOYAD == 1000) {
+                    this.SUTUN_ADSOYAD = val;
+                    this.SECILISUTUNLISTE.push(val);
+                }
+                else {
+                    this.COUNT_ADSOYAD++;
+                    this.$nextTick(function () {
+                        if (this.SutunSeciliKontrol(old, val)) {
+                            this.COUNT_ADSOYAD = 0;
+                            this.SUTUN_ADSOYAD = undefined;
+                        }
+                        else {
+                            this.SUTUN_ADSOYAD = val;
+                        }
+                    });
+                }
+
+            },
+            TckimliknoSutunSelected(old, val) {
+
+                if (this.COUNT_TCKIMLIKNO == 1000) {
+                    this.SUTUN_TCKIMLIKNO = val;
+                    this.SECILISUTUNLISTE.push(val);
+                }
+                else {
+                    this.COUNT_TCKIMLIKNO++;
+                    this.$nextTick(function () {
+                        if (this.SutunSeciliKontrol(old, val)) {
+                            this.COUNT_TCKIMLIKNO = 0;
+                            this.SUTUN_TCKIMLIKNO = undefined;
+                        }
+                        else {
+                            this.SUTUN_TCKIMLIKNO = val;
+                        }
+                    });
+                }
+
+            },
+            SesKaydiSutunSelected(old, val) {
+
+                if (this.COUNT_SESKAYDI == 1000) {
+                    this.SUTUN_SESKAYDI = val;
+                    this.SECILISUTUNLISTE.push(val);
+                } else {
+
+                    this.COUNT_SESKAYDI++;
+                    this.$nextTick(function () {
+                        if (this.SutunSeciliKontrol(old, val)) {
+                            this.COUNT_SESKAYDI = 0;
+                            this.SUTUN_SESKAYDI = undefined;
+                        }
+                        else {
+                            this.SUTUN_SESKAYDI = val;
+                        }
+                    });
+                }
+            },
+            FotografSutunSelected(old, val) {
+
+                if (this.COUNT_FOTOGRAF == 1000) {
+                    this.SUTUN_FOTOGRAF = val;
+                    this.SECILISUTUNLISTE.push(val);
+                } else {
+
+                    this.COUNT_FOTOGRAF++;
+                    this.$nextTick(function () {
+                        if (this.SutunSeciliKontrol(old, val)) {
+                            this.COUNT_FOTOGRAF = 0;
+                            this.SUTUN_FOTOGRAF = undefined;
+                        }
+                        else {
+                            this.SUTUN_FOTOGRAF = val;
+                        }
+                    });
+                }
+            },
+            OzelNotSutunSelected(old, val) {
+
+                if (this.COUNT_OZELNOT == 1000) {
+                    this.SUTUN_OZELNOT = val;
+                    this.SECILISUTUNLISTE.push(val);
+                }
+                else {
+
+                    this.COUNT_OZELNOT++;
+                    this.$nextTick(function () {
+                        if (this.SutunSeciliKontrol(old, val)) {
+                            this.COUNT_OZELNOT = 0;
+                            this.SUTUN_OZELNOT = undefined;
+                        }
+                        else {
+                            this.SUTUN_OZELNOT = val;
+                        }
+                    });
+                }
+
+            },
+
+            SoruSutunSelected(old, val) {
+
+                var soru = this.SORULIST[this.index];
+                //if (!this.duzenleYukle) {
+                //    //val = soru.SUTUN;
+                //    //this.SECILISUTUNLISTE.push(val);
+                //    console.log(old, val)
+                //    console.log(soru.SUTUN)
+                //}
+                if (!this.duzenleYukle) {
+                    //console.log(old, val)
+                    soru.COUNT++;
+                    this.$nextTick(function () {
+                        if (this.SutunSeciliKontrol(old, val) && old != val) {
+                            soru.COUNT = 0;
+                            soru.SUTUN = undefined;
+                        }
+                        else {
+                            soru.SUTUN = val;
+                        }
+                    });
+                }
+
+            },
+
+            SoruKategoriSelected(val) {
+                if (!this.duzenleYukle) {
+                    var soru = this.SORULIST[this.index];
+                    soru.ID_ASSESSMENTKATEGORI = val;
+                }
+            },
+
+            SutunSeciliKontrol(old, val) {
+                var _this = this;
+
+                if (val == undefined) {
+                    return true;
+                }
+
+                var result = this.SECILISUTUNLISTE.indexOf(val) > -1;
+
+                this.SECILISUTUNLISTE = $.grep(this.SECILISUTUNLISTE, function (el, j) {
+                    return el != old && el != undefined;
+                });
+
+                this.SECILISUTUNLISTE.push(val);
+
+                this.SECILISUTUNLISTE = getDistinctTek(this.SECILISUTUNLISTE)
+
+                if (result) {
+                    Alert_Warning(val + " Sütunu Daha Önceden Seçilmiştir. Farklı Bir Sütun Seçiniz");
+                }
+
+                return result
+            },
+
+            SoruEkle() {
+
+
+                var _this = this;
+                if (!this.duzenleYukle) {
+                    $.each(this.SORULIST, function (j, el) {
+                        _this.SECILISUTUNLISTE = $.grep(_this.SECILISUTUNLISTE, function (sel, sj) {
+                            return sel != el.SUTUN && el != undefined;
+                        });
+                    });
+                }
+
+                ListeTemizle(this.SORULIST);
+                for (var i = 0; i < this.SORUADET; i++) {
+                    var SORUTASLAK = JSON.parse(JSON.stringify(this.SORUTASLAK));
+                    SORUTASLAK.SORUNO = i + 1;
+                    this.SORULIST.push(SORUTASLAK);
+                }
+            },
+
+            SoruOlustur() {
+                var _this = this;
+                if (this.SORULIST.length == 0) {
+                    vue.SoruEkle();
+                }
+                else if (this.SORUADET > 0) {
+                    Alert_OkCancelConfirm("Soru Tanımlama", "Devam Ederseniz Eski Soru ve Cevapların Hepsi Silinecek", function () { vue.SoruEkle(); }, function () { vue.SORUADET = vue.SORULIST.length });
+                }
+                else {
+                    Alert_Warning("Soru adedini 0 dan büyük giriniz.")
+                }
+            },
+
+            SoruSil(j) {
+
+                var soru = this.SORULIST[j];
+
+                this.SECILISUTUNLISTE = $.grep(this.SECILISUTUNLISTE, function (el, j) {
+                    return el != soru.SUTUN && el != undefined;
+                });
+
+                this.SORULIST.splice(j, 1);
+
+                vue.$forceUpdate();
+
+                if (this.SORULIST.length == 0) {
+                    this.SoruEkle();
+                }
+            },
+
+            Kaydet() {
+
+                $.grep(this.SORULIST, function (el) { return el.SUTUN == undefined; })
+
+
+                if (this.DONEM == ''
+                    || this.AD == ''
+                    || this.ID_KADEME3 == 0
+                    || this.SUTUN_ADSOYAD == undefined
+                    || this.SUTUN_TCKIMLIKNO == undefined
+                    || this.SUTUN_SESKAYDI == undefined
+                    || this.SUTUN_FOTOGRAF == undefined
+                    || this.SUTUN_OZELNOT == undefined
+                ) {
+                    Alert_Warning("Sınav Bilgileri Tam Olarak Girilmedi!");
+                    return;
+                }
+                else if (this.SORULIST.length == 0) {
+                    Alert_Warning("Soru Oluşturulmadan Kayıt Yapamazsınız!");
+                    return;
+                }
+                else if ($.grep(this.SORULIST, function (el) { return el.SUTUN == undefined; }).length > 0) {
+
+                    Alert_Warning("Sınav Sorularının Sütunları Seçilmedi!");
+                    return;
+                }
+                else if ($.grep(this.SORULIST, function (el) { return el.ID_ASSESSMENTKATEGORI == 0; }).length > 0) {
+
+                    Alert_Warning("Sınav Sorularının Kategorileri Seçilmedi!");
+                    return;
+                }
+                else if ($.grep(this.SORULIST, function (el) { return el.CEVAP == ""; }).length > 0) {
+
+                    Alert_Warning("Sınav Sorularının Cevapları Girilmedi!");
+                    return;
+                }
+                else if ($.grep(this.SORULIST, function (el) { return el.SORU == ""; }).length > 0) {
+
+                    Alert_Warning("Sınav Soru Metni Girilmedi!");
+                    return;
+                }
+                else {
+
+                    if (this.ID_ASSESSMENT == 0) {
+                        this.SinavKaydet();
+                    }
+                    else {
+
+                        Alert_Confirm("Emin misiniz?", "Kaydettiğiniz Öğrenciler Silinecek ve Mevcut Sınavın Excel Datasını Tekrar Yüklemeniz Gerekir.", function () {
+                            vue.SinavKaydet();
+                        }, function () {
+
+                            Alert_Warning("Düzenleme İptal Edildi!");
+                        });
+                    }
+
+
+
+
+                }
+            },
+            SinavKaydet() {
+                var _this = this;
+                var sinav = {
+                    ID_ASSESSMENT: _this.ID_ASSESSMENT,
+                    ID_KADEME3: _this.ID_KADEME3,
+                    DONEM: _this.DONEM,
+                    AD: _this.AD,
+                    SUTUN_ADSOYAD: _this.SUTUN_ADSOYAD,
+                    SUTUN_TCKIMLIKNO: _this.SUTUN_TCKIMLIKNO,
+                    SUTUN_SESKAYDI: _this.SUTUN_SESKAYDI,
+                    SUTUN_FOTOGRAF: _this.SUTUN_FOTOGRAF,
+                    SUTUN_OZELNOT: _this.SUTUN_OZELNOT,
+                    SORULIST: JSON.stringify(_this.SORULIST),
+                }
+
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    ID_ASSESSMENT: _this.ID_ASSESSMENT,
+                    SINAV: JSON.stringify(sinav),
+                };
+
+                WebPost(this, "AssessmentSinavTanimla", "SinavKaydet", p, '', 'Yükleniyor..', function (data, parent) {
+                    if (data) {
+                        parent.ID_ASSESSMENT > 0
+                            ? Alert_Info("Progress Check Sınavı Düzenlendi")
+                            : Alert_Info("Progress Check Sınavı Eklendi");
+                        parent.ID_ASSESSMENT = data;
+
+                    }
+                    else {
+                        Alert_Error("Sınav Kaydedilemedi!");
+                    }
+                });
+            },
+        },
+        //watch: {
+        //    SECILISUTUNLISTE() {
+        //        //var k = getDistinctTek(this.SECILISUTUNLISTE);
+        //        //console.log(k);
+        //        //this.SECILISUTUNLISTE = k;
+        //    }
+        //},
+    });
+
+</script>
+<script src="Scripts/PublicMethods.js"></script>

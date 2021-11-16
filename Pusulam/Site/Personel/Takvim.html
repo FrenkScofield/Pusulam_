@@ -1,0 +1,1361 @@
+﻿<link href="assets/global/plugins/icheck/skins/all.css" rel="stylesheet" />
+<link href="assets/global/plugins/bootstrap-fileinput/bootstrap-fileinput.css" rel="stylesheet" type="text/css" />
+<style type="text/css">
+    .HaftalikGorunum tr:hover {
+        color: #333333;
+        font-weight: bolder;
+    }
+
+    .etkinlik:hover {
+        background-color: #0B88CE;
+        color: #FFF;
+    }
+
+    #takvim td {
+        text-align: center;
+    }
+
+    #takvim .container {
+        position: relative;
+        width: 130px;
+        height: 100px;
+        overflow-x: hidden;
+    }
+
+    .gun {
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        margin-top: 80px;
+        width: 20px;
+        text-align: center;
+        color: #777;
+        font-weight: bold;
+    }
+
+    .gun2 {
+        bottom: 0;
+        right: 0;
+        margin-top: 80px;
+        width: 37px;
+        text-align: center;
+        float: right;
+        font-size: xx-large;
+        color: White;
+        height: 24px;
+        text-align: right;
+    }
+
+    .etkinlik {
+        background-color: rgb(255, 255, 255);
+        color: rgb(114, 110, 110);
+        -webkit-border-radius: 3px;
+        -moz-border-radius: 3px;
+        border-radius: 3px;
+        margin: 3px;
+        cursor: pointer;
+        font-size: 12px;
+        border-style: solid;
+        border-width: thin;
+        border-color: #D8D8D8;
+        overflow-wrap: break-word;
+        font-weight: lighter;
+    }
+
+    #cbx_kullanicitip li {
+        display: inline;
+        float: left;
+        width: 160px;
+        overflow: hidden;
+    }
+
+    #cbx_kullanicitip label, input {
+        min-height: 15px;
+        height: 15px;
+        font-size: 12px;
+    }
+
+    .portlet.calendar .fc-button {
+        -webkit-box-shadow: none;
+        -moz-box-shadow: none;
+        box-shadow: none;
+        text-shadow: none;
+        border: 0;
+        padding: 6px 10px 31px 5px;
+        margin-left: 2px;
+        border-top-style: none;
+        border-bottom-style: none;
+        border-right-style: solid;
+        border-left-style: solid;
+        border-color: #ddd;
+        background: transparent;
+        color: #fff;
+        top: 0px;
+    }
+
+    .row {
+        margin-top: 0px !important;
+    }
+
+    .modal-dialog {
+        margin-top: 100px !important;
+    }
+
+    #TakvimEtkinlikModal .table-striped > tbody > tr:nth-of-type(odd) {
+        background-color: #50575D !important;
+        color: white;
+    }
+
+    #TakvimEtkinlikModal .table-striped > tbody > tr:nth-of-type(even) {
+        background-color: #676F75 !important;
+        color: white;
+    }
+
+    textarea {
+        resize: none;
+    }
+
+    #OdevAciklama p {
+        margin: 0px !important;
+    }
+</style>
+<div id="app" style="margin-top:10px;">
+    <div class="col-md-3" id="SolDiv">
+        <div v-if="KullaniciTipListe.indexOf(1)>-1" class="portlet light" style="margin:0px; border-bottom-style: solid;
+    border-bottom-width: 3px;
+    border-bottom-color: rgb(0, 173, 239);">
+            <div class="row">
+                <div class="col-md-6">
+                    <select class="form-control" id="view_Select" @Change="ViewSelected()">
+                        <option value="1">Takvim</option>
+                        <option value="2">Duyurular</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="portlet light" id="Tablodiv" style="min-height: 100px; padding:0px;">
+            <div class="row">
+                <div class="col-md-12 form-horizontal">
+                    <div class="portlet light portlet-fit bordered" style="margin-bottom:0px!important;">
+                        <div class="portlet-title" style="margin-bottom:0px !important;">
+                            <div class="caption">
+                                <i class="icon-settings font-red"></i>
+                                <span class="caption-subject font-red sbold uppercase">{{WHICH==1?'TAKVİMLER':'DUYURULAR'}}</span>
+                            </div>
+                            <div class="actions" v-if="KullaniciTipListe.indexOf(1)>-1 && WHICH==1">
+                                <div class="btn-group btn-group-devided" data-toggle="buttons">
+                                    <label class="btn grey-salsa btn-sm" @click="YeniTakvimModal()">
+                                        <input type="radio" name="options" class="toggle" id="option1">Yeni Takvim
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="portlet-body" style="padding:0px !important">
+                            <div style="margin:0px !important;overflow-y: visible;">
+                                <div class="tab-content">
+                                    <div class="tab-pane" id="tab_takvim">
+                                        <table class="table table-hover table-light" style="cursor:default; margin-bottom:0px!important;">
+                                            <tbody id="tbodylist">
+                                                <tr v-for="takvim in TakvimListe">
+                                                    <td :style='"border-left:8px solid " + takvim.RENK + "; width:45px !important;"'><input type='checkbox' name='iCheck' :id='"iCheck_"+takvim.ID_TAKVIM' :ID_TAKVIM="takvim.ID_TAKVIM" checked></td>
+                                                    <td><div style="vertical-align:middle; padding:8px;"><strong>{{takvim.AD}}</strong><br>{{takvim.ETKINLIKSAYISI}}</div></td>
+                                                    <td style='width:150px;text-align:right'>
+                                                        <div class='task-config-btn btn-group'>
+                                                            <a class='btn btn-sm default' href='javascript:;' data-toggle='dropdown' data-hover='dropdown' data-close-others='true' style="padding:8px!important;">
+                                                                <i class='fa fa-cog'></i><i class='fa fa-angle-down'></i>
+                                                            </a>
+                                                            <ul class='dropdown-menu pull-right'>
+                                                                <li><a href='javascript:;' @click='EtkinlikEkle(takvim.ID_TAKVIM)'><i class='fa fa-pencil'></i>Etkinlik Ekle</a></li>
+                                                                <li><a href='javascript:;' @click='ExcelYukle(takvim.ID_TAKVIM)'><i class='fa fa-cloud-upload'></i>Excel Yükle</a></li>
+                                                                <li><a href='javascript:;' @click='ExcelTaslakIndir()'><i class='fa fa-cloud-upload'></i>Excel Taslak İndir</a></li>
+                                                                <li><a href='javascript:;' @click='Yetkilendir(takvim.ID_TAKVIM)'><i class='fa fa-user'></i>Yetkilendir</a></li>
+                                                                <li><a href='javascript:;' @click='TakvimSil(takvim.ID_TAKVIM)'><i class='fa fa-trash-o'></i>Sil</a></li>
+                                                            </ul>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div class="tab-pane fade active in" id="tab_duyuru">
+                                        <table class="table table-hover table-light" style="cursor:default; margin-bottom:0px!important;">
+                                            <tbody id="tbodylist">
+                                                <tr v-for="duyuru in DuyuruListe">
+                                                    <td style="border-left:3px solid #1BBC9B" @click="DuyuruIncele(duyuru)">
+                                                        <strong>{{duyuru.BASLIK}}</strong><br><p>{{duyuru.TARIH}}</p>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-9">
+        <div v-if="KullaniciTipListe.indexOf(1)>-1" class="portlet light" style="margin:0px; border-bottom-style: solid;
+    border-bottom-width: 3px;
+    border-bottom-color: rgb(0, 173, 239);">
+            <div class="row">
+                <div class="col-md-2">
+                    <select class="form-control" id="Yetkiler" @change="TakvimGetir();" v-model="ID_KULLANICITIPI">
+                        <option value="0">Tüm Yetkiler</option>
+                        <option v-for="tip in GenelKullaniciTipListe" :value="tip.ID_KULLANICITIPI">{{tip.AD}}</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <select class="form-control" id="Gruplar" @change="TakvimGetir();" v-model="ID_KADEME3">
+                        <option value="0">Tüm Gruplar</option>
+                        <option v-for="tip in Kademe3Liste" :value="tip.ID_KADEME3">{{tip.AD}}</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="portlet light" id="Tablodiv" style="min-height: 100px;padding:0px">
+            <div class="portlet-body">
+                <div class="portlet box calendar">
+                    <div class="row" style="padding-left:10px!important; padding-right:10px!important; line-height:34px;">
+                        <div class="col-md-9">
+                            <input type="text" id="BasTarih" class="form-control form-control-inline input-small date-picker" name="from" readonly style="text-align:center;">
+                        </div>
+
+                        <div class="col-md-3" style="vertical-align:middle;">
+                            <div class="pull-right" style="vertical-align:middle;">
+                                <i class="fa fa-4x fa-angle-left" style="cursor: pointer; vertical-align:middle;" @click="Undo()"></i>
+                                <button type="button" class="btn btn-success" @click="Bugun()" style="margin-left:10px; margin-right:10px;">BUGÜN</button>
+                                <i class="fa fa-4x fa-angle-right" style="cursor: pointer; vertical-align:middle;" @click="Redo()"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row" style="margin:0px!important;">
+                        <div class="m-grid m-grid-responsive-xs m-grid-demo margin-top-10" id="Liste"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal draggable fade bd-example-modal-lg" id="TakvimModal" tabindex="-1" role="dialog" aria-hidden="true"
+         style="display: none;">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header" style="background-color:#005189;border-bottom:3px solid #00adef">
+                    <div class="col-md-12" id="RaporTool">
+                        <div class="col-md-6">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                            <h4 class="modal-title" style="color:#ffffff">Takvim Tanımla</h4>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-body" id="ModalTableDiv" style="background-color:#ffffff;font-size:18px;">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <div class="row" style="line-height:34px;">
+                                    <label class="input-label col-md-2" style="text-align:right">Takvim</label>
+                                    <div class="col-md-8">
+                                        <input type="text" class="form-control" id="YeniTakvim" maxlength="250" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="row" style="line-height:34px;">
+                                    <label class="input-label col-md-2" style="text-align:right">Renk</label>
+                                    <div class="col-md-8">
+                                        <select class="form-control" @change="RenkDegistir()" id="Renkler">
+                                            <option value="0">Renk Seçiniz</option>
+                                            <option value="#E9EDEF" style="background-color:#3598DC;color:white">BLUE</option>
+                                            <option value="#94A0B2" style="background-color:#94A0B2;color:white">BLUE-OLEO</option>
+                                            <option value="#5C9BD1" style="background-color:#5C9BD1;color:white">BLUE-SHARP</option>
+                                            <option value="#1BBC9B" style="background-color:#1BBC9B;color:white">GREEN-MEADOW</option>
+                                            <option value="#E43A45" style="background-color:#E43A45;color:white">RED-MINT</option>
+                                            <option value="#E87E04" style="background-color:#E87E04;color:white">YELLOW-GOLD</option>
+                                            <option value="#F4D03F" style="background-color:#F4D03F;color:white">YELLOW-SAFFRON</option>
+                                            <option value="#8E44AD" style="background-color:#8E44AD;color:white">PURPLE-STUDIO</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="modal-footer" style="background-color:#3b434c;">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">
+                        Kapat
+                    </button>
+                    <button type="button" class="btn blue" @click="YeniTakvimKaydet()" id="YeniTakvimKaydetButon">
+                        Kaydet
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="TakvimEtkinlikYetkiModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+         aria-hidden="true" style="display: none;">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                        &times;
+                    </button>
+                    <h4 class="modal-title" id="H1">
+                        Etkinlik Yetkilendirme
+                    </h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-vertical">
+                        <div class="row">
+                            <div class="form-group col-md-6">
+                                <div class="row">
+                                    <div class="col-md-12" style="max-height:400px; overflow-y:scroll">
+                                        <table class="table-bordered table-striped table-condensed cf display col-md-12"
+                                               id="TableKT">
+                                            <thead>
+                                                <tr>
+                                                    <th style="width:30px;text-align:center">#</th>
+                                                    <th>Kullanıcı Tipleri</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="KullaniciTipleri">
+                                                <tr v-for="tip in GenelKullaniciTipListe" @click="SelectTip(tip)" style="cursor:pointer;">
+                                                    <td>
+                                                        <div class="md-checkbox" style="margin:auto!important; width:20px!important; display:block;">
+                                                            <input type="checkbox" v-model="tip.SELECTED" class="md-check" v-bind:true-value="true" v-bind:false-value="false" />
+                                                            <label>
+                                                                <span></span>
+                                                                <span class="check"></span>
+                                                                <span class="box"></span>
+                                                            </label>
+                                                        </div>
+                                                    </td>
+                                                    <td>{{tip.AD}}</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group col-md-6" id="GrupDiv" style="display:none;">
+                                <div class="row">
+                                    <div class="col-md-12" style="max-height:400px; overflow-y:scroll">
+                                        <table class="table-bordered table-striped table-condensed cf display col-md-12"
+                                               id="TableSD">
+                                            <thead>
+                                                <tr>
+                                                    <th style="width:30px;text-align:center">#</th>
+                                                    <th>Sınıf Düzeyleri</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="SinifDuzeyleri">
+                                                <tr v-for="k3 in Kademe3Liste" @click="SelectKademe3(k3)" style="cursor:pointer;">
+                                                    <td>
+                                                        <div class="md-checkbox" style="margin:auto!important; width:20px!important; display:block;">
+                                                            <input type="checkbox" v-model="k3.SELECTED" class="md-check" v-bind:true-value="true" v-bind:false-value="false" />
+                                                            <label>
+                                                                <span></span>
+                                                                <span class="check"></span>
+                                                                <span class="box"></span>
+                                                            </label>
+                                                        </div>
+                                                    </td>
+                                                    <td>{{k3.AD}}</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer row" style="padding-left:30px; padding-right:30px; padding-top:0px;">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">
+                        Kapat
+                    </button>
+                    <button type="button" class="btn blue" @click="YetkiKaydet()">
+                        Kaydet
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal draggable fade bd-example-modal-lg" id="TakvimEtkinlikModal" tabindex="-1" role="dialog" aria-hidden="true"
+         style="display: none;">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header" style="background-color:#005189;border-bottom:3px solid #00adef">
+                    <div class="col-md-12" id="RaporTool">
+                        <div class="col-md-6">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                            <h4 class="modal-title" id="ModalBaslik" style="color:#ffffff">Takvime Etkinlik Ekle</h4>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-body" id="ModalTableDiv" style="background-color:#ffffff;font-size:18px; padding:0px;">
+                    <ul class="nav nav-tabs">
+                        <li class="active" style="display: none;">
+                            <a href="#tab_1_1" data-toggle="tab"></a>
+                        </li>
+                        <li style="display: none;"><a href="#tab_1_2" data-toggle="tab"></a></li>
+                    </ul>
+                    <div class="tab-content">
+                        <div class="tab-pane fade active in" id="tab_etkinlik_1">
+                            <div class="form-body form-horizontal form-bordered">
+                                <div class="form-group" style="padding-right:20px;">
+                                    <div class="col-md-10">
+                                    </div>
+                                    <div class="col-md-2" style="text-align:right;"><button class="btn blue" id="YeniEtk" @click="YeniEtkinlik()"><i class="fa fa-plus"></i>Yeni Etkinlik</button></div>
+                                </div>
+                                <div>
+                                    <table id="tablotakvimetkinlik" data-height="500" class="table table-striped table-bordered table-condensed" style="margin-bottom:0px; color:#111; text-align:center;">
+                                        <thead>
+                                            <tr>
+                                                <th style="text-align:center;">ETKİNLİK</th>
+                                                <th style="text-align:center;">AÇIKLAMA</th>
+                                                <th style="text-align:center;">BAŞLANGIÇ</th>
+                                                <th style="text-align:center;">BİTİŞ</th>
+                                                <th style="text-align:center; width:100px;">DÜZENLE</th>
+                                                <th style="text-align:center; width:60px;">SİL</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr v-for="etkinlik in TakvimEtkinlikListe">
+                                                <td>{{etkinlik.AD}}</td>
+                                                <td>{{etkinlik.ACIKLAMA}}</td>
+                                                <td>{{etkinlik.BAS_TARIH}}</td>
+                                                <td>{{etkinlik.BIT_TARIH}}</td>
+                                                <td><button type="button" class="btn blue" @click="TakvimEtkinlikDuzenle(etkinlik)">DÜZENLE</button></td>
+                                                <td><button type="button" class="btn red" @click="TakvimEtkinlikSil(etkinlik.ID_TAKVIMETKINLIK)">SİL</button></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="tab_etkinlik_2">
+                            <div class="form-body form-horizontal form-bordered">
+                                <div class="form-group" style="padding-right:20px;">
+                                    <div class="col-md-10">
+                                    </div>
+                                    <div class="col-md-2" style="text-align:right;"><button class="btn" @click="Geri();" v-if="TakvimEtkinlikListe.length>0">Geri</button></div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="row">
+                                        <label class="control-label col-md-3">
+                                            Etkinlik
+                                        </label>
+                                        <div class="col-md-6">
+                                            <input type="text" class="form-control" id="EtkinlikAd" maxlength="50" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="row">
+                                        <label class="control-label col-md-3">
+                                            Açıklama
+                                        </label>
+                                        <div class="col-md-6">
+                                            <input type="text" class="form-control" id="EtkinlikAciklama" maxlength="500" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="row">
+                                        <label class="control-label col-md-3">
+                                            Başlangıç Tarihi
+                                        </label>
+                                        <div class="col-md-6">
+                                            <input type="text" id="dpBasTarih" data-date-format="dd-mm-yyyy" placeholder="Başlangıç Tarihi" class="form-control form-control-inline date-picker">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="row">
+                                        <label class="control-label col-md-3">
+                                            Bitiş Tarihi
+                                        </label>
+                                        <div class="col-md-6">
+                                            <input type="text" id="dpBitTarih" data-date-format="dd-mm-yyyy" placeholder="Bitiş Tarihi" class="form-control form-control-inline date-picker">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="row">
+                                        <label class="control-label col-md-3">
+                                        </label>
+                                        <div class="col-md-6">
+                                            <button type="button" class="btn blue" @click="YeniEtkinlikTakvimKaydet()">
+                                                Kaydet
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer" style="background-color:#3b434c;">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">
+                        Kapat
+                    </button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+    <div class="modal fade" id="DuyuruModal" tabindex="-1" role="dialog"
+         aria-hidden="true" style="display: none;">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                    <h4 class="modal-title" id="DuyuruBaslik"></h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-horizontal">
+                        <div id="DuyuruIcerik">
+
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">
+                        Kapat
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="ModalEtkinlikIncele" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+         aria-hidden="true" style="display: none;">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                        &times;
+                    </button>
+                    <h4 class="modal-title" id="H1">
+                        Etkinlik
+                    </h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-horizontal">
+                        <div class="form-group">
+                            <label class="control-label col-md-3">
+                                Etkinlik
+                            </label>
+                            <div class="col-md-9">
+                                <input type="text" readonly="readonly" class="form-control" maxlength="40" id="txtInceleEtkinlik" />
+                            </div>
+                        </div>
+                        <br />
+                        <div class="form-group">
+                            <label class="control-label col-md-3">
+                                Açıklama
+                            </label>
+                            <div class="col-md-9">
+                                <textarea id="txtInceleAciklama" class="form-control" readonly="readonly" rows="3"></textarea>
+                            </div>
+                        </div>
+                        <br />
+                        <div class="form-group">
+                            <label class="control-label col-md-3">
+                                Başlangıç Tarihi
+                            </label>
+                            <div class="col-md-9">
+                                <input type="text" id="dpInceleBasTarih" class="form-control" readonly="readonly" />
+                            </div>
+                        </div>
+                        <br />
+                        <div class="form-group">
+                            <label class="control-label col-md-3">
+                                Bitiş Tarihi
+                            </label>
+                            <div class="col-md-9">
+                                <input type="text" id="dpInceleBitTarih" class="form-control" readonly="readonly" />
+                            </div>
+                        </div>
+                        <br />
+                        <div class="form-group">
+                            <label class="control-label col-md-3">
+                                Yetki
+                            </label>
+                            <div class="col-md-9">
+                                <input type="text" id="YetkiText" class="form-control" readonly="readonly" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">
+                        Kapat
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="ExcelModal" tabindex="-1" role="dialog"
+         aria-hidden="true" style="display: none;">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                    <h4 class="modal-title">Excel ile Etkinlik Yükleme</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-horizontal">
+                        <div class="fileinput fileinput-new" data-provides="fileinput">
+                            <div class="form-control uneditable-input input-fixed input-medium" data-trigger="fileinput">
+                                <i class="fa fa-file fileinput-exists"></i>&nbsp;
+                                <span class="fileinput-filename"> </span>
+                            </div>
+                            <span class="btn default btn-file">
+                                <span class="fileinput-new yellow"> Excel'den Yükle </span>
+                                <span class="fileinput-exists"> Değiştir </span>
+                                <input type="file" name="..." accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" id="Dosya" data-preview-file-type="text">
+                            </span>
+                            <a href="javascript:;" class="btn red fileinput-exists" data-dismiss="fileinput"> Sil </a>
+                            <a href="javascript:;" @click="DosyaKaydet()" class="btn green fileinput-exists" data-dismiss="modal"> Tamam </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">
+                        Kapat
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="OdevDetayModal" class="modal fade in" tabindex="-1" data-replace="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body" style="padding-bottom:0px;" id="modal-body">
+                    <div class="row">
+                        <div class="col-md-12"><h4><strong>Ders</strong></h4></div>
+                        <div class="col-md-12" v-html="ODEVDETAY.DERSAD">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12"><h4><strong>Açıklama</strong></h4></div>
+                        <div class="col-md-12" v-html="ODEVDETAY.ACIKLAMA" id="OdevAciklama">
+                        </div>
+                    </div>
+                    <div class="row" v-if="ODEVDETAY.LINKLIST!=undefined && ODEVDETAY.LINKLIST.length>0">
+                        <div class="col-md-12"><h4><strong>Linkler</strong></h4></div>
+                        <div class="col-md-12" v-for="(ITEM, index) in ODEVDETAY.LINKLIST">
+                            <span>{{(index + 1) + '. '}}</span><a :href="ITEM.LINK" target="_blank">{{ITEM.AD}}</a>
+                        </div>
+                    </div>
+                    <div class="row" v-if="ODEVDETAY.DOSYALIST!=undefined && ODEVDETAY.DOSYALIST.length>0">
+                        <div class="col-md-12"><h4><strong>Dosyalar</strong></h4></div>
+                        <div class="col-md-12" v-for="(ITEM, index) in ODEVDETAY.DOSYALIST">
+                            <span>{{(index + 1) + '. '}}</span><a :href="'../../Dosyalar/Odev/' + ITEM.GUID + '.' + ITEM.UZANTI" target="_blank">{{ITEM.AD}}</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn default" data-dismiss="modal">Kapat</button>
+                    <button type="button" class="btn default" @click="MorpaAc" v-if="this.TC_OGRENCI != 0">Morpama Git</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="EtutDetayModal" class="modal fade in" tabindex="-1" data-replace="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body" style="padding-bottom:0px;" id="modal-body">
+                    <div class="row">
+                        <div class="col-md-12"><h4><strong>Ders</strong></h4></div>
+                        <div class="col-md-12" v-html="ETUTDETAY.DERSAD">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12"><h4><strong>Etüt Konusu ve Üniteler</strong></h4></div>
+                        <div class="col-md-12" id="OdevAciklama">
+                            {{ETUTDETAY.ETUT}}
+                            <!--<hr style="margin: 5px !important" />-->
+                            <table class="table table-striped" style="margin-top: 15px;">
+                                <tr v-for="u in ETUTDETAY.UNITELIST">
+                                    <td> {{u.KOD}} </td>
+                                    <td> {{u.AD}} </td>
+                                </tr>
+                            </table>
+                            <hr />
+                            <div class="pull-right">
+                                <table>
+                                    <tr>
+                                        <td style="text-align:right">Öğretmen :</td>
+                                        <td><strong style="margin-left: 5px;">{{ETUTDETAY.ADSOYAD}}</strong></td>
+                                    </tr>
+                                    <tr>
+                                        <td style="text-align:right">Yer :</td>
+                                        <td><strong style="margin-left: 5px;">{{ETUTDETAY.YER}}</strong></td>
+                                    </tr>
+                                </table>
+                                <hr style="margin: 5px !important" />
+                                {{ETUTDETAY.TARIH}} - {{ETUTDETAY.SAAT}}
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn default" data-dismiss="modal">Kapat</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="VueComponents/SinavFiltreleri.js"></script>
+
+<script>
+    var vue = new Vue({
+        el: "#app",
+        name: "Takvim.html",
+
+        data: {
+            WHICH: 1,
+            TakvimListe: [],
+            KullaniciTipListe: [],
+            GenelKullaniciTipListe: [],
+            Kademe3Liste: [],
+            ID_TAKVIM: 0,
+            ID_TAKVIMETKINLIK: 0,
+            TakvimEtkinlikListe: [],
+            DuyuruListe: [],
+            ID_KULLANICITIPI: 0,
+            ID_KADEME3: 0,
+            ODEVDETAY: {},
+            ETUTDETAY: {},
+            TC_OGRENCI: ''
+        },
+
+        mounted() {
+            this.KullaniciTipiGetir(0);
+            this.GrupListele(0);
+
+            vue = this;
+            var p = {
+                TCKIMLIKNO: session.TCKIMLIKNO,
+                OTURUM: session.OTURUM
+            };
+
+            $('#dpBasTarih').datepicker({
+                format: 'dd.mm.yyyy',
+                language: 'tr'
+            });
+
+            $('#dpBitTarih').datepicker({
+                format: 'dd.mm.yyyy',
+                language: 'tr'
+            });
+
+            $("#BasTarih").datepicker({
+                format: 'dd.mm.yyyy',
+                language: 'tr'
+            });
+
+            WebPost(this, "Takvim", "KullaniciTipiGetir", p, "#app", "Yükleniyor...", function (data, parent) {
+                if (data != null) {
+                    $.each(data, function (j, el) {
+                        parent.KullaniciTipListe.push(this.ID_KULLANICITIPI)
+                    });
+
+                    var d = new Date();
+                    var BasTarih = d.getDate() + "." + (d.getMonth() + 1) + "." + d.getFullYear();
+                    $("#BasTarih").datepicker("setDate", BasTarih);
+
+                    $('#BasTarih').datepicker().on('changeDate', function (ev) {
+                        var BasTarih = $("#BasTarih").val();
+                        parent.TakvimGetir();
+                    });
+
+                    if (parent.KullaniciTipListe.indexOf(1) > -1) {
+                        $("#tab_takvim").attr("class", "tab-pane fade active in");
+                        $("#tab_duyuru").attr("class", "tab-pane");
+                        parent.TakvimListele();
+                    } else {
+                        parent.WHICH = 2;
+                        $("#tab_duyuru").attr("class", "tab-pane fade active in");
+                        $("#tab_takvim").attr("class", "tab-pane");
+                        parent.DuyuruListele();
+                        parent.TakvimGetir();
+                    }
+                } else {
+                    Alert_Warning("Kullanıcı Bulunamadı..!");
+                }
+            });
+        },
+
+        methods: {
+            ViewSelected() {
+                this.WHICH = parseInt($('#view_Select').val());
+                if (this.WHICH == 1) {
+                    this.TakvimListele();
+                } else {
+                    this.DuyuruListele();
+                }
+                this.$forceUpdate()
+            },
+
+            DuyuruListele() {
+                $("#tab_duyuru").attr("class", "tab-pane fade active in");
+                $("#tab_takvim").attr("class", "tab-pane");
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM
+                };
+                WebPost(this, "Takvim", "DuyuruListele", p, '#SolDiv', '', function (data, parent) {
+                    if (data != null) {
+                        parent.DuyuruListe = JSON.parse(data);
+                    } else {
+
+                    }
+                })
+            },
+
+            TakvimListele() {
+                $("#tab_takvim").attr("class", "tab-pane fade active in");
+                $("#tab_duyuru").attr("class", "tab-pane");
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM
+                };
+                WebPost(this, "Takvim", "TakvimListele", p, '#SolDiv', '', function (data, parent) {
+                    if (data != null) {
+                        parent.TakvimListe = JSON.parse(data);
+
+                        parent.$nextTick(function () {
+                            for (var i = 0; i < parent.TakvimListe.length; i++) {
+                                $('#iCheck_' + parent.TakvimListe[i].ID_TAKVIM + '').iCheck({
+                                    checkboxClass: 'icheckbox_square-blue',
+                                    radioClass: 'iradio_square-blue',
+                                    increaseArea: '20%'
+                                });
+
+                                $('#iCheck_' + parent.TakvimListe[i].ID_TAKVIM + '').on('ifChanged', function (event) {
+                                    parent.TakvimGetir();
+                                })
+                            }
+                        })
+                    } else {
+
+                    }
+
+                    parent.$nextTick(function () {
+                        parent.TakvimGetir();
+                    })
+                })
+            },
+
+            YeniTakvimModal() {
+                $("#TakvimModal").modal("show");
+            },
+
+            RenkDegistir() {
+                var renk = $("#Renkler option:selected").val() == "0" ? "#c2cad8" : $("#Renkler option:selected").val();
+                $("#Renkler").css({ "border-color": renk });
+            },
+
+            YeniTakvimKaydet() {
+                var takvim = $("#YeniTakvim").val();
+                if (takvim === "") {
+                    bootbox.alert("Lütfen bir takvim adı giriniz.");
+                    return;
+                }
+                var renk = $("#Renkler option:selected").val();
+                if (renk === "0") {
+                    bootbox.alert("Lütfen renk seçiniz");
+                    return;
+                }
+
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    TAKVIM: takvim,
+                    RENK: renk
+                };
+                WebPost(this, "Takvim", "TakvimEkle", p, '', '', function (data, parent) {
+                    if (data) {
+                        parent.TakvimListele();
+                        parent.TakvimGetir();
+                        $("#TakvimModal").modal("hide");
+                    } else {
+                        Alert_Warning("Bir sorun oluştu. Daha sonra tekrar deneyiniz...");
+                    }
+                });
+            },
+
+            TakvimSil(ID_TAKVIM) {
+                Alert_Confirm("Emin misiniz?", "Seçili takvim ve takvime bağlı etkinlikler silinecek. Onaylıyor musunuz?", function () {
+                    var p = { TCKIMLIKNO: session.TCKIMLIKNO, OTURUM: session.OTURUM, ID_TAKVIM: ID_TAKVIM };
+                    WebPost(vue, "Takvim", "TakvimSil", p, '', '', function (data, parent) {
+                        if (data) {
+                            parent.TakvimListele();
+                            parent.TakvimGetir();
+                        } else {
+                            Alert_Warning("Bir sorun oluştu. Daha sonra tekrar deneyiniz...");
+                        }
+                    });
+                });
+            },
+
+            Yetkilendir(ID_TAKVIM) {
+                this.ID_TAKVIM = ID_TAKVIM;
+                $("#TakvimEtkinlikYetkiModal").modal("show");
+                this.KullaniciTipiGetir(ID_TAKVIM);
+            },
+
+            KullaniciTipiGetir(ID_TAKVIM) {
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    ID_TAKVIM: ID_TAKVIM
+                };
+
+                WebPost(this, "Takvim", "KullaniciTipListele", p, '', '', function (data, parent) {
+                    if (data != null) {
+                        parent.GenelKullaniciTipListe = JSON.parse(data);
+                        if (ID_TAKVIM != 0) {
+                            if (parent.getObjects(parent.GenelKullaniciTipListe, 'ID_KULLANICITIPI', 4)[0].SELECTED) {
+                                parent.GrupListele(4);
+                            } else if (parent.getObjects(parent.GenelKullaniciTipListe, 'ID_KULLANICITIPI', 5)[0].SELECTED) {
+                                parent.GrupListele(5);
+                            }
+                        }
+                    } else {
+                        Alert_Warning("Bir sorun oluştu. Daha sonra tekrar deneyiniz...");
+                    }
+                })
+            },
+
+            SelectTip(TIP) {
+                TIP.SELECTED = !TIP.SELECTED;
+                var cont = false;
+
+                for (var i = 0; i < this.GenelKullaniciTipListe.length; i++) {
+                    if ((this.GenelKullaniciTipListe[i].ID_KULLANICITIPI == 4 || this.GenelKullaniciTipListe[i].ID_KULLANICITIPI == 5) && this.GenelKullaniciTipListe[i].SELECTED) {
+                        cont = true;
+                    }
+                }
+
+                if (cont) {
+                    this.GrupListele(TIP.ID_KULLANICITIPI);
+                } else {
+                    $('#GrupDiv').css("display", "none");
+                }
+            },
+
+            GrupListele(ID_KULLANICITIPI) {
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    ID_TAKVIM: this.ID_TAKVIM,
+                    ID_KULLANICITIPI: ID_KULLANICITIPI
+                };
+
+                WebPost(this, "Takvim", "GrupListele", p, '', '', function (data, parent) {
+                    if (data != null) {
+                        parent.Kademe3Liste = JSON.parse(data);
+                        if (parent.ID_TAKVIM != 0) {
+                            parent.$nextTick(function () {
+                                $('#GrupDiv').css("display", "inline-block");
+                            })
+                        }
+                    } else {
+                        Alert_Warning("Bir sorun oluştu. Daha sonra tekrar deneyiniz...");
+                    }
+                })
+            },
+
+            SelectKademe3(K3) {
+                K3.SELECTED = !K3.SELECTED;
+            },
+
+            YetkiKaydet() {
+                var list1 = this.getObjects(this.GenelKullaniciTipListe, "SELECTED", true);
+                var list2 = this.getObjects(this.Kademe3Liste, "SELECTED", true);
+                var list3 = [];
+
+                for (var i = 0; i < list1.length; i++) {
+                    if (list1[i].ID_KULLANICITIPI == 4 || list1[i].ID_KULLANICITIPI == 5) {
+                        for (var j = 0; j < list2.length; j++) {
+                            var item = JSON.parse(JSON.stringify(list1[i]));
+                            item.ID_KADEME3 = list2[j].ID_KADEME3;
+                            list3.push(item);
+                        }
+                    } else {
+                        list1[i].ID_KADEME3 = 0
+                        list3.push(list1[i]);
+                    }
+                }
+
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    JSONKULLANICITIPI: JSON.stringify(list3),
+                    ID_TAKVIM: this.ID_TAKVIM
+                };
+
+                WebPost(this, "Takvim", "YetkiKaydet", p, '', '', function (data, parent) {
+                    if (data) {
+                        $("#TakvimEtkinlikYetkiModal").modal("hide");
+                        Alert_Info("Yetkiler başarılı bir şekilde güncellendi...");
+                        parent.TakvimListele();
+                        parent.TakvimGetir();
+                    } else {
+                        Alert_Warning("Bir sorun oluştu. Daha sonra tekrar deneyiniz...");
+                    }
+                })
+            },
+
+            EtkinlikEkle(ID_TAKVIM) {
+                this.ID_TAKVIM = ID_TAKVIM;
+                this.ID_TAKVIMETKINLIK = 0;
+                $('#TakvimEtkinlikModal').modal("show");
+                this.TakvimEtkinlikListele();
+            },
+
+            TakvimEtkinlikListele() {
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    ID_TAKVIM: this.ID_TAKVIM
+                };
+
+                WebPost(this, "Takvim", "TakvimEtkinlikListele", p, '', '', function (data, parent) {
+                    if (data != null) {
+                        parent.TakvimEtkinlikListe = JSON.parse(data);
+                    } else {
+                        parent.TakvimEtkinlikListe = [];
+                        $("#tab_etkinlik_2").attr("class", "tab-pane fade active in");
+                        $("#tab_etkinlik_1").attr("class", "tab-pane");
+                    }
+                })
+            },
+
+            Geri() {
+                $("#tab_etkinlik_1").attr("class", "tab-pane fade active in");
+                $("#tab_etkinlik_2").attr("class", "tab-pane");
+            },
+
+            YeniEtkinlik() {
+                this.ID_TAKVIMETKINLIK = 0;
+                var etkinlik = $("#EtkinlikAd").val("");
+                var aciklama = $("#EtkinlikAciklama").val("");
+                var bastarih = $("#dpBasTarih").val("");
+                var bittarih = $("#dpBitTarih").val("");
+                $("#tab_etkinlik_1").attr("class", "tab-pane");
+                $("#tab_etkinlik_2").attr("class", "tab-pane fade active in");
+            },
+
+            YeniEtkinlikTakvimKaydet() {
+                var etkinlik = $("#EtkinlikAd").val();
+                if (etkinlik === "") {
+                    bootbox.alert("Lütfen bir etkinlik adı giriniz.");
+                    return;
+                }
+                var aciklama = $("#EtkinlikAciklama").val();
+                if (aciklama === "") {
+                    bootbox.alert("Lütfen açıklama giriniz");
+                    return;
+                }
+                var bastarih = $("#dpBasTarih").val();
+                if (bastarih === "") {
+                    bootbox.alert("Lütfen açıklama giriniz");
+                    return;
+                }
+                var bittarih = $("#dpBitTarih").val();
+                if (bittarih === "") {
+                    bootbox.alert("Lütfen açıklama giriniz");
+                    return;
+                }
+
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    ID_TAKVIM: this.ID_TAKVIM,
+                    AD: etkinlik,
+                    ACIKLAMA: aciklama,
+                    BAS_TARIH: bastarih,
+                    BIT_TARIH: bittarih,
+                    ID_TAKVIMETKINLIK: this.ID_TAKVIMETKINLIK
+                };
+
+                WebPost(vue, "Takvim", this.ID_TAKVIMETKINLIK == 0 ? "TakvimEtkinlikEkle" : "TakvimEtkinlikGuncelle", p, '', '', function (data, parent) {
+                    if (data) {
+                        parent.Geri();
+                        parent.TakvimEtkinlikListele();
+                        parent.TakvimListele();
+                        parent.TakvimGetir();
+                    } else {
+                        Alert_Warning("Bir sorun oluştu. Daha sonra tekrar deneyiniz...");
+                    }
+                });
+            },
+
+            TakvimEtkinlikSil(ID_TAKVIMETKINLIK) {
+                Alert_Confirm("Emin misiniz?", "Seçili etkinlik silinecek. Onaylıyor musunuz?", function () {
+                    var p = {
+                        TCKIMLIKNO: session.TCKIMLIKNO,
+                        OTURUM: session.OTURUM,
+                        ID_TAKVIMETKINLIK: ID_TAKVIMETKINLIK
+                    };
+
+                    WebPost(vue, "Takvim", "TakvimEtkinlikSil", p, '', '', function (data, parent) {
+                        if (data) {
+                            parent.TakvimEtkinlikListele();
+                            parent.TakvimListele();
+                            parent.TakvimGetir();
+                        } else {
+                            Alert_Warning("Bir sorun oluştu. Daha sonra tekrar deneyiniz...");
+                        }
+                    });
+                });
+            },
+
+            TakvimEtkinlikDuzenle(etkinlik) {
+                this.ID_TAKVIMETKINLIK = etkinlik.ID_TAKVIMETKINLIK;
+                $("#tab_etkinlik_1").attr("class", "tab-pane");
+                $("#tab_etkinlik_2").attr("class", "tab-pane fade active in");
+                $("#EtkinlikAd").val(etkinlik.AD);
+                $("#EtkinlikAciklama").val(etkinlik.ACIKLAMA);
+                $("#dpBasTarih").val(etkinlik.BAS_TARIH);
+                $("#dpBitTarih").val(etkinlik.BIT_TARIH);
+            },
+
+            DuyuruIncele(duyuru) {
+                var duyuruhtml = '';
+                if (duyuru.BANNER === true) {
+                    duyuruhtml = '<div class="row"><div class="col-md-12"><img style="width:100%" src="../../img/BosBanner.jpg" /></div></div>' +
+                        '<div class="row"><div class="col-md-12"><br>' + duyuru.ICERIK + '</div></div>';
+                }
+                else {
+                    duyuruhtml = '<div class="row"><div class="col-md-12"><img style="width:100%" src="https://interaktif.okyanuskoleji.k12.tr' + duyuru.FOTOGRAF + '" /></div></div>' +
+                        '<div class="row"><div class="col-md-12"><br>' + duyuru.ICERIK + '</div></div>';
+                }
+
+                $("#DuyuruIcerik").empty();
+                var ekdosya = '<div class="col-md-6"><table class="table table-striped"><tbody>';
+                if (duyuru.EKDOSYA !== "yok") {
+                    var dosyalar = duyuru.EKDOSYA;
+                    var dosyaadedi = duyuru.EKDOSYA.toString().split(',').length - 1;
+
+                    for (var i = 0; i < dosyaadedi; i++) {
+                        var filenam = duyuru.EKDOSYA.toString().split(',')[i];
+                        var filetype = filenam.substring(filenam.length - 3, filenam.length);
+                        ekdosya += '<tr class="template-upload fade in">' +
+                            '<td class="name" width="50%"><a href="https://interaktif.okyanuskoleji.k12.tr/site/Ortak/DuyuruFoto/' + duyuru.EKDOSYA.toString().split(',')[i] + '">EkDosya' + (i + 1) + '</a></td></tr>';
+                        if (dosyaadedi === (i + 1)) {
+                            ekdosya += '</tbody></table></div>';
+                        }
+                    }
+                }
+                $("#DuyuruIcerik").append($(duyuruhtml + ekdosya));
+                $("#DuyuruBaslik").empty();
+                $("#DuyuruBaslik").append($('<strong>' + duyuru.BASLIK + '</strong>'));
+                $("#DuyuruModal").modal("show");
+            },
+
+            getObjects(obj, key, val) {
+                var objects = [];
+                for (var i in obj) {
+                    if (!obj.hasOwnProperty(i)) continue;
+                    if (typeof obj[i] == 'object') {
+                        objects = objects.concat(this.getObjects(obj[i], key, val));
+                    } else if (i == key && obj[key] == val) {
+                        objects.push(obj);
+                    }
+                }
+                return objects;
+            },
+
+            TakvimGetir() {
+                var BasTarih = $("#BasTarih").val();
+                $("#Liste").empty();
+                var row = "";
+
+                var ID_TAKVIMS = [];
+
+                for (var i = 0; i < this.TakvimListe.length; i++) {
+                    if ($('#iCheck_' + this.TakvimListe[i].ID_TAKVIM + '').is(':checked')) {
+                        ID_TAKVIMS.push($('#iCheck_' + this.TakvimListe[i].ID_TAKVIM + '').attr("id_takvim"));
+                    }
+                }
+
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    BAS_TARIH: BasTarih,
+                    ID_KULLANICITIPI: this.ID_KULLANICITIPI,
+                    ID_KADEME3: this.ID_KADEME3,
+                    ID_TAKVIMS: JSON.stringify(ID_TAKVIMS)
+                };
+
+                WebPost(vue, "Takvim", "TakvimGetir", p, '', '', function (data, parent) {
+                    if (data != null) {
+                        $.each(JSON.parse(data), function (index, value) {
+                            if (index % 7 == 0) {
+                                row += "<div class='m-grid-row'>";
+                            }
+
+                            var Detay = "<div>";
+                            $.each(this.Liste, function (indexSub, valueSub) {
+                                Detay += '<div onclick="DetayGoster(\'' + this.AD.replace(new RegExp("'", 'g'), "") + '\',\'' + this.ACIKLAMA.replace(new RegExp("'", 'g'), "") + '\',\'' + this.BAS_TARIH + '\',\'' + this.BIT_TARIH + '\',\'' + this.YETKI + '\');" style="cursor:pointer; width:100%; padding-left:10px; padding-right:10px; border-bottom: solid 1px #fff; background-color:white;"><font style="color:' + valueSub.RENK + '; font-size: 12px;">' + valueSub.AD + '</font></div>';
+                            });
+                            $.each(this.ListeOdev, function (indexSub, valueSub) {
+                                Detay += '<div onclick="OdevDetayGoster(' + valueSub.ID_ODEV + ',' + valueSub.TC_OGRENCI + ');" style="cursor:pointer; width:100%; padding-left:10px; padding-right:10px; border-bottom: solid 1px #fff; background-color:white;"><font style="color:' + valueSub.RENK + '; font-size: 12px;">' + valueSub.AD + '</font></div>';
+                            });
+                            $.each(this.ListeEtut, function (indexSub, valueSub) {
+                                Detay += '<div onclick="EtutDetayGoster(' + valueSub.ID_ETUT + ',' + valueSub.TC_OGRENCI + ');" style="cursor:pointer; width:100%; padding-left:10px; padding-right:10px; border-bottom: solid 1px #fff; background-color:white;"><font style="color:' + valueSub.RENK + '; font-size: 12px;">' + valueSub.AD + '</font></div>';
+                            });
+                            Detay += "</div>";
+
+                            var bgColor = (value.Bugun == true) ? "aliceblue" : "white";
+                            var bgColorHeader = (value.Bugun == true) ? "#045f67" : "#36c6d3";
+
+                            row += "<div class='m-grid-col' style='background-color: " + bgColor + " ;WORD-WRAP: break-word;'><h6 style='background-color: " + bgColorHeader + "; color: white; text-align: center; font-weight: 500; padding: 2px; margin:0px!important; padding:8px!important;'>" + value.GUN + ' ' + value.AYAD + ' ' + value.YIL + '<br />' + value.GUNAD + "</h6> " + Detay + " </div>";
+
+                            if (index % 7 == 6) {
+                                row += "</div>";
+                            }
+                        });
+
+                        $("#Liste").html(row);
+                    } else {
+                        Alert_Warning("Bir sorun oluştu. Daha sonra tekrar deneyiniz...");
+                    }
+                });
+            },
+            Bugun() {
+                var d = new Date();
+                var BasTarih = d.getDate() + "." + (d.getMonth() + 1) + "." + d.getFullYear();
+                $("#BasTarih").datepicker("setDate", BasTarih);
+            },
+            Undo() {
+                var date = $("#BasTarih").datepicker('getDate');
+                var d = new Date(date);
+                d.setDate(1);
+                d.setMonth(d.getMonth() - 1);
+
+                var BasTarih = d.getDate() + "." + (d.getMonth() + 1) + "." + d.getFullYear();
+                $("#BasTarih").datepicker("setDate", BasTarih);
+            },
+            Redo() {
+                var date = $("#BasTarih").datepicker('getDate');
+                var d = new Date(date);
+                d.setDate(1);
+                d.setMonth(d.getMonth() + 1);
+
+                var BasTarih = d.getDate() + "." + (d.getMonth() + 1) + "." + d.getFullYear();
+                $("#BasTarih").datepicker("setDate", BasTarih);
+            },
+
+            ExcelYukle(ID_TAKVIM) {
+                this.ID_TAKVIM = ID_TAKVIM;
+                $('#ExcelModal').modal();
+            },
+
+            DosyaKaydet() {
+                var dosya = document.getElementById('Dosya').files;
+                if (dosya.length == 0) {
+                    Alert_Info('Lütfen Dosya Seçiniz.');
+                    return;
+                }
+
+                EtkinlikYukle(dosya, function (response) {
+                    $('.fileinput').fileinput("clear");
+                    var json = JSON.parse(response);
+
+                    var p = {
+                        TCKIMLIKNO: session.TCKIMLIKNO,
+                        OTURUM: session.OTURUM,
+                        ID_TAKVIM: vue.ID_TAKVIM,
+                        SQLJSON: JSON.stringify(json)
+                    };
+
+                    WebPost(vue, "Takvim", "TakvimEtkinlikEkleExcel", p, '', '', function (data, parent) {
+                        if (data) {
+                            parent.TakvimEtkinlikListele();
+                            parent.TakvimListele();
+                            parent.TakvimGetir();
+                            $('#ExcelModal').modal("hide");
+                        } else {
+                            Alert_Warning("Bir sorun oluştu. Daha sonra tekrar deneyiniz...");
+                        }
+                    });
+                });
+            },
+
+            ExcelTaslakIndir() {
+                window.open("Dosyalar/SinavTemplate/ETKINLIKTASLAK.xlsx", "_blank")
+            },
+
+            MorpaLinkGetir() {
+                WebPost(this, "Takvim", "MorpaLinkGetirGiris", { TCKIMLIKNO: this.TC_OGRENCI, IP: myIP() }, '#divkazanim', '', function (data, parent) {
+                    if (data.SUCCESS) {
+                        vue.MORPALINK = "https://" + data.URL;
+                    } else {
+                        console.log("MorpaHata: " + vue.ERROR);
+                    }
+                })
+            },
+
+            MorpaAc() {
+                window.open(this.MORPALINK);
+            },
+        }
+    });
+
+    function DetayGoster(AD, ACIKLAMA, BAS_TARIH, BIT_TARIH, YETKI) {
+        $("#ModalEtkinlikIncele").modal("toggle");
+        $("#txtInceleEtkinlik").val(AD);
+        $("#txtInceleAciklama").html(ACIKLAMA);
+        $("#YetkiText").val(YETKI);
+        $("#YetkiText").attr('title', YETKI);
+        $("#dpInceleBasTarih").val(BAS_TARIH);
+        $("#dpInceleBitTarih").val(BIT_TARIH);
+    }
+
+    function OdevDetayGoster(ID_ODEV, TC_OGRENCI) {
+        vue.TC_OGRENCI = TC_OGRENCI;
+        if (TC_OGRENCI != '') {
+            vue.MorpaLinkGetir();
+        }
+
+        var p = { TCKIMLIKNO: session.TCKIMLIKNO, OTURUM: session.OTURUM, ID_ODEV: ID_ODEV };
+        WebPost(vue, 'Takvim', "OdevDetayGetir", p, '', '', function (data, parent) {
+            if (data != null) {
+                vue.ODEVDETAY = JSON.parse(data);
+                $('#OdevDetayModal').modal();
+            }
+            else {
+                Alert_Warning("Bir Hata Oluştu!");
+            }
+        })
+    }
+    function EtutDetayGoster(ID_ETUT, TC_OGRENCI) {
+        vue.TC_OGRENCI = TC_OGRENCI;
+
+        var p = { TCKIMLIKNO: session.TCKIMLIKNO, OTURUM: session.OTURUM, ID_ETUT: ID_ETUT };
+        WebPost(vue, 'Takvim', "EtutDetayGetir", p, '', '', function (data, parent) {
+            if (data != null) {
+                vue.ETUTDETAY = JSON.parse(data)[0];
+                $('#EtutDetayModal').modal();
+            }
+            else {
+                Alert_Warning("Bir Hata Oluştu!");
+            }
+        })
+    }
+</script>
+<script src="Scripts/PublicMethods.js"></script>
+<script src="assets/global/plugins/icheck/icheck.min.js"></script>
+<script src="assets/global/plugins/bootstrap-fileinput/bootstrap-fileinput.js" type="text/javascript"></script>

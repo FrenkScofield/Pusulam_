@@ -1,0 +1,142 @@
+﻿<style>
+    .optionGroup {
+        font-weight: bold;
+        font-style: italic;
+    }
+
+    .optionChild {
+        margin-left: 15px !important;
+    }
+
+    .divider {
+        background: #337ab7 !important;
+        margin: 0px !important;
+    }
+
+    .dropdown-header {
+        padding: 0px !important;
+    }
+</style>
+
+<div class="page-head">
+    <div class="page-title col-md-12">
+        <h1>
+            Yetenek Gelişim Mevcut Dağılım Rapor
+             <span onclick="YardimGoster(ID_MENU);" class="pull-right" style="cursor:pointer;"><img src="assets/global/img/info.gif" class="info-image-icon" /> </span>
+        </h1>
+    </div>
+</div>
+
+<div class="row" id="app">
+
+    <div class="col-md-12">
+        <div class="portlet box green-haze dd-item" style="border:none">
+            <div class="portlet-title dd-handle" data-toggle='collapse' data-target='#filters' style="cursor:pointer;">
+                <div class="caption">
+                    <i class="icon-magnifier"></i>
+                    <span class="caption-subject bold uppercase"> Filtreler </span>
+                    <span class="caption-helper"></span>
+                </div>
+                <div class='actions'>
+                    <a href='javascript:;' class='btn btn-default btn-sm' style='border:none;'>
+                        <i class='fa fa-chevron-down'></i>
+                    </a>
+                </div>
+            </div>
+            <div class="portlet-body form collapse in" id="filters">
+                <div class="form-body form-group-lg form-horizontal">
+                    <div class="form-inline list-group-item row">
+                        
+                        <!--<div class="portlet light col-md-12" id="FiltreDiv" style="margin:0px; border-bottom-style: solid;border-bottom-width: 3px;border-bottom-color: rgb(0, 173, 239);">-->
+                        <div id="FiltreDiv">
+                            <div class="portlet-body">
+                                <div class="form-inline">
+                                    <div class="col-md-6" style="padding-top:10px">
+                                        <c-donem controller="YG_MevcutDagilim"
+                                                 @OnChange="DonemSelected">
+                                        </c-donem>
+                                    </div>
+                                    <input style="float:right;margin: 10px;" type="button" class="btn btn-success" v-on:click="Raporla" value="Raporla">
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="form-inline list-group-item row">
+                        <c-rapor-tur-buton @Yazdir="Yazdir"> </c-rapor-tur-buton>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div v-for="u in LISTE">
+        <table class="table table-striped table-bordered table-hover table-checkable" style="margin: 0px;">
+            <thead>
+                <tr style="    background: #e1e5e8;">
+                    <th>{{u.KATEGORI}}</th>
+                </tr>
+            </thead>
+        </table>
+        <c-tablo :tabloadi="u.KATEGORI"
+                 :gelendata="u.K"
+                 :istisna="istisna"
+                 class="table table-striped table-bordered table-hover table-checkable"
+                 style="font-size:x-small; cursor:pointer">
+        </c-tablo>
+    </div>
+</div>
+
+<script src="../../VueComponents/YetenekGelisim/Filtreler.js"></script>
+<script src="../../VueComponents/SoruFiltreleri.js"></script>
+<script src="../../../VueComponents/Genel.js"></script>
+<script>
+    var vue = new Vue({
+        el: "#app",
+        name: "YG_MevcutDagilim.html",
+
+        data: {
+            DONEM: undefined,
+
+            LISTE: [],
+            istisna: ["KATEGORI"],
+        },
+
+        methods: {
+
+            DonemSelected(val) {
+                this.DONEM = val;
+            },
+
+            Yazdir(ciktiTuru) {
+                if (ciktiTuru == "") {
+                    Alert_Warning("Çıktı Türünü Seçiniz.");
+                    return;
+                }
+                if (this.idsinav != 0 && this.idkademe3 != 0) {
+                    //string tc,string oturum,string donem,string idKademe3,string idSinavturu,string idSinav,string idSubes,string idSinifs
+                    window.open('../Rapor.aspx?rapor=YetenekGelisim.YG_MevcutDagilim&raporTur=' + ciktiTuru + '&p=' + session.TCKIMLIKNO + ';' + session.OTURUM + ';' + this.DONEM, '_blank');//+ this.idsinavturu + ';'
+                }
+                else {
+                    Alert_Warning("Gerekli alanları seçmeniz gerekmektedir.");
+                    return;
+                }
+            },
+
+            Raporla() {
+                var _this = this;
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    DONEM: this.DONEM
+                };
+                WebPost(this, "YG_MevcutDagilim", "YG_MevcutDagilim", p, "", "Yükleniyor...", function (data, parent) {
+                    _this.LISTE = JSON.parse(data);
+                    $('#filters').collapse();
+                });
+            },
+
+        },
+    });
+</script>
+<script src="../../../Scripts/PublicMethods.js"></script>

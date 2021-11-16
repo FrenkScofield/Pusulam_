@@ -1,0 +1,357 @@
+﻿<style>
+    #OdevAciklama p {
+        margin: 0px !important;
+    }
+
+    .carousel-indicators {
+        bottom: -40px;
+    }
+
+        .carousel-indicators li {
+            background-color: #9b9b9b !important;
+            border-radius: 50% !important;
+        }
+
+        .carousel-indicators .active {
+            background-color: #00adef !important;
+        }
+</style>
+
+<div class="row" id="app">
+    <div id="DuyuruBanner">
+        <div :class="FATURALIST.length>0?'col-md-8':'col-md-12'" style="margin-bottom:50px!important;">
+            <div id="carousel-example-generic" class="carousel slide" data-ride="carousel" :style="'margin:auto;' + (FATURALIST.length>0?'max-width:100%;':'max-width:80%;')">
+                <ol class="carousel-indicators">
+                    <template v-if="DUYURULIST.length==0">
+                        <li data-target="#carousel-example-generic" :data-slide-to="0" class="active"></li>
+                    </template>
+                    <template v-for="(u,index) in DUYURULIST">
+                        <li data-target="#carousel-example-generic" :data-slide-to="index" :class="index == 0 ? 'active' : ''"></li>
+                    </template>
+                </ol>
+                <div class="carousel-inner" style="width: 100% !important; height: 100%;">
+                    <template v-if="DUYURULIST.length==0">
+                        <div class="item active">
+                            <img style="width:100%;"
+                                 :src="isMobilex ? '/img/Duyuru/BosBannerMobil.jpg' : '/img/Duyuru/BosBannerWeb.jpg'" alt="Duyuru Bulunmamaktadır ">
+                            <div class="carousel-caption" style="left: 9%;right: 20%; top:1%;padding-bottom: 0px;height: 95%;width: 80%;">
+                            </div>
+                        </div>
+                    </template>
+                    <template v-for="(u,index) in DUYURULIST">
+                        <div class="item" :class="index == 0 ? 'active' : ''" @click="DuyuruIncele(u.ID_DUYURU)">
+                            <img style="width:100%;"
+                                 :src="[!u.BANNER 
+                                         ? '/img/Duyuru/BosBanner.jpg' 
+                                         : 'https://okyanusdata.s3-eu-west-1.amazonaws.com/pusulam/Yonetim/DuyuruYonetimi/'+
+                                                [isMobilex && u.FOTOGRAF_MOBIL != '' ? u.FOTOGRAF_MOBIL : u.FOTOGRAF   ] ]"
+                                 :alt="u.BASLIK ">
+                            <div class="carousel-caption" style="left: 9%;right: 20%; top:1%;padding-bottom: 0px;height: 95%;width: 80%;">
+                                <h1 v-if="!u.BANNER">{{u.BASLIK}}</h1>
+                                <h3 v-if="!u.BANNER"> <span v-html="u.ICERIK"></span> </h3>
+                            </div>
+                        </div>
+                    </template>
+
+                </div>
+                <!-- Controls -->
+                <a class="left carousel-control" href="#carousel-example-generic" role="button" data-slide="prev">
+                    <span class="glyphicon glyphicon-chevron-left"></span>
+                </a><a class="right carousel-control" href="#carousel-example-generic" role="button" data-slide="next">
+                    <span class="glyphicon glyphicon-chevron-right"> </span>
+                </a>
+            </div>
+        </div>
+        <div class="col-md-4" v-show="FATURALIST.length>0">
+            <div class="portlet light bordered">
+                <div class="portlet-title">
+                    <div class="caption">
+                        <span class="caption-subject bold uppercase mavitext">Faturalarım</span>
+                    </div>
+                </div>
+                <div class="portlet-body">
+                    <div class="scrollable" id="faturalar" style="overflow-y: auto; width: auto; height:333px;">
+                        <ul class="chats">
+                            <li class='in' v-for="FATURA in FATURALIST" @click="FaturaIncele(FATURA)" style="cursor:pointer;">
+                                <img class='avatar' src="/img/okyanus_image.jpg" />
+                                <div class='message'>
+                                    <span class='arrow'></span>
+                                    <span class="font-green">{{FATURA.GONDEREN}}</span>
+                                    <span class='datetime'>{{FATURA.TARIH}}</span>
+                                    <span class='body'>{{FATURA.KONU}}</span>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div v-show="OGRENCILIST.length>0">
+            <div class="col-md-12">
+                <div class="portlet light bordered">
+                    <div class="portlet-body">
+                        <h4 style="margin:0px!important;">IBAN Giriş Ekranı</h4>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6" v-for="OGRENCI in OGRENCILIST">
+                <div class="portlet light bordered">
+                    <div class="portlet-title">
+                        <div class="caption">
+                            <span class="caption-subject bold uppercase mavitext">{{OGRENCI.ADSOYAD + ' (' + OGRENCI.TCKIMLIKNO + ')'}}</span>
+                        </div>
+                    </div>
+                    <div class="portlet-body">
+                        <div id="ogrencilerim" class="row">
+                            <div class="form-group">
+                                <label> Hesap Sahibi :</label>
+                                <input type="text" class="form-control" v-model="OGRENCI.HESAPSAHIBI" />
+                            </div>
+
+                            <div class="form-group">
+                                <label> IBAN :</label>
+                                <input type="text" class="form-control" placeholder="IBAN" v-model="OGRENCI.IBAN">
+
+                            </div>
+                            <div class="form-group">
+                                <button class="btn green pull-right" type="button" @click="IbanKaydet(OGRENCI)">
+                                    Kaydet
+                                </button>
+                            </div>
+
+                            <!--<div>
+                                Fatura Borçlusu: <b>{{OGRENCI.HESAPSAHIBI + ' (' + OGRENCI.BORCLUTCKIMLIKNO + ')'}}</b>
+                            </div>
+                            <div style="color:red;font-weight:bold;margin-top:16px;">
+                                {{OGRENCI.HESAPSAHIBI}}'a ait IBAN numarasını giriniz...
+                            </div>
+                            <div style="margin-bottom:20px; margin-top:8px;">
+                                <div class="form-group">
+                                    np
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" placeholder="IBAN" v-model="OGRENCI.IBAN">
+                                        <span class="input-group-btn">
+                                            <button class="btn green" type="button" @click="IbanKaydet(OGRENCI)">Kaydet</button>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>-->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="DuyuruModal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                    <h4 class="modal-title" id="DuyuruBaslik"></h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-horizontal">
+                        <div class="form-group" id="DuyuruIcerik">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">
+                        Kapat
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="FaturaModal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                    <h4 class="modal-title" id="FaturaBaslik"></h4>
+                </div>
+                <div class="modal-body">
+                    <p id="FaturaIcerik"></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">
+                        Kapat
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="../assets/plugins/iban.js-master/iban.js"></script>
+<script>
+
+    var vue = new Vue({
+        el: "#app",
+        name: "AnaSayfa",
+
+        data: {
+            TCKIMLIKNO: '',
+            OTURUM: '',
+            DUYURULIST: [],
+            isMobilex: false,
+            controller: 'AnaSayfa',
+            FATURALIST: [],
+            OGRENCILIST: []
+        },
+
+        mounted() {
+            this.TCKIMLIKNO = session.TCKIMLIKNO;
+            this.OTURUM = session.OTURUM;
+
+            if (!session.DISOGRENCI) {
+                this.DuyuruListeGetir();
+                if (!session.OV) {  // öğrenci değil ise
+                    this.OgrenciGetir();
+                    this.FaturaGetir();
+                }
+            }
+            this.isMobilex = Mobilmi();
+
+            var car = $('.carousel').carousel();
+            this.$nextTick(() => {
+                try {
+                    var myElement = document.getElementById('carousel-example-generic');
+
+                    var mc = new Hammer(myElement);
+                    //enable all directions
+                    mc.get('swipe').set({
+                        direction: Hammer.DIRECTION_HORIZONTAL,
+                        threshold: 1,
+                        velocity: 0.1,
+                    });
+
+                    // listen to events...
+                    mc.on("swipeleft", function (ev) {
+                        car.carousel('next');
+                    });
+                    mc.on("swiperight", function (ev) {
+                        car.carousel('prev');
+                    });
+                    car.carousel('dispose')
+                } catch (e) {
+
+                }
+            });
+            $('#faturalar').slimScroll({
+                height: '333px',
+                animate: false
+            });
+
+            $('.scrollable').on('mousewheel DOMMouseScroll', function (e) {
+                var e0 = e.originalEvent,
+                    delta = e0.wheelDelta || -e0.detail;
+
+                this.scrollTop += (delta < 0 ? 1 : -1) * 30;
+                e.preventDefault();
+            });
+        },
+
+        methods: {
+            DuyuruListeGetir() {
+                var p = {
+                    TCKIMLIKNO: this.TCKIMLIKNO,
+                    OTURUM: this.OTURUM
+                };
+
+                WebPost(this, this.controller, "AnasayfaDuyuruListeGetir", p, '#app', '', function (data, parent) {
+                    vue.DUYURULIST = JSON.parse(data);
+                    vue.$forceUpdate();
+                });
+            },
+
+            DuyuruIncele(id) {
+                var duyuruhtml = '';
+                var duyuru = $.grep(this.DUYURULIST, function (el, i) { return el.ID_DUYURU == id; })[0];
+                var duyuruIcerik = duyuru.ICERIK.replace(/<img/g, "<img style='max-width:100% !important' ");
+
+                if (duyuru.BANNER == false) {
+                    duyuruhtml = '<div class="col-md-12" style="margin:0px; border-bottom-style: solid;border-bottom-width: 3px;border-bottom-color: rgb(0, 173, 239);"><img style="width:100%" src="/img/Duyuru/BosBanner.jpg" /></div>' +
+                        '<div class="col-md-12" style="margin-top:5px; border-bottom-style: solid;border-bottom-width: 3px;border-bottom-color: rgb(0, 173, 239);">' + duyuruIcerik + '</div>';
+                }
+                else {
+                    var foto = duyuru.FOTOGRAF;
+                    if (vue.isMobilex && duyuru.FOTOGRAF_MOBIL != "") {
+                        foto = duyuru.FOTOGRAF_MOBIL;
+                    }
+
+                    duyuruhtml = '<div class="col-md-12" style="margin:0px; border-bottom-style: solid;border-bottom-width: 3px;border-bottom-color: rgb(0, 173, 239);"><img style="width:100%;" src="https://okyanusdata.s3-eu-west-1.amazonaws.com/pusulam/Yonetim/DuyuruYonetimi/' + foto + '" /></div>' +
+                        '<div class="col-md-12" style="margin-top:5px; border-bottom-style: solid;border-bottom-width: 3px;border-bottom-color: rgb(0, 173, 239);">' + duyuruIcerik + '</div>';
+                }
+
+                $("#DuyuruIcerik").empty();
+                var ekdosya = '<div class="col-md-12"><table class="table table-striped"><tbody>';
+                $.each(duyuru.DOSYALIST, (i, el) => {
+                    ekdosya += '<tr class="template-upload fade in">' +
+                        '<td class="name" width="50%"><a href="https://okyanusdata.s3-eu-west-1.amazonaws.com/pusulam/Yonetim/DuyuruYonetimi/' + el.DOSYA + '"  target="_blank" >EkDosya' + (i + 1) + '</a></td></tr>';
+                });
+                ekdosya += '</tbody></table></div>';
+
+                $("#DuyuruIcerik").append($(duyuruhtml + ekdosya));
+                $("#DuyuruBaslik").empty();
+                $("#DuyuruBaslik").append($('<strong>Konu : ' + duyuru.BASLIK + '</strong>'));
+                $("#DuyuruModal").modal("show");
+            },
+
+            FaturaGetir() {
+                var p = {
+                    TCKIMLIKNO: this.TCKIMLIKNO,
+                    OTURUM: this.OTURUM
+                };
+
+                WebPost(this, this.controller, "AnasayfaFaturaListeGetir", p, '#app', '', function (data, parent) {
+                    vue.FATURALIST = JSON.parse(data);
+                    vue.$forceUpdate();
+                });
+            },
+
+            OgrenciGetir() {
+                var p = {
+                    APIKEY: "483747ce-e66d-4c3f-b299-ca4761bc41a4",
+                    VELITCKIMLIKNO: this.TCKIMLIKNO
+                };
+                WebPostLink(this, 'https://api.xbase.web.tr/xBase/OgrenciSozlesmeBorclusuIbanListesi', p, '', '', function (data) {
+                    vue.OGRENCILIST = JSON.parse(data).BorcluIbanList;
+                });
+            },
+
+            IbanKaydet(OGRENCI) {
+                if (!IBAN.isValid(OGRENCI.IBAN)) {
+                    Alert_Warning("Girilen iban formatı hatalıdır.")
+                    return;
+                }
+
+                var p = {
+                    IDLER: JSON.stringify({ TC_YAPAN: this.TCKIMLIKNO, ID: OGRENCI.ID, IBAN: OGRENCI.IBAN, HESAPSAHIBI: OGRENCI.HESAPSAHIBI })
+                };
+
+                WebPostLink(this, 'https://api.xbase.web.tr/xBase/OgrenciSozlesmeBorclusuIbanSet', p, '', '', function (data) {
+                    if (data) {
+                        Alert_Info("IBAN bilgisi sisteme başarıyla eklendi.")
+                    }
+                });
+            },
+
+            FaturaIncele(FATURA) {
+                $("#FaturaBaslik").text(FATURA.GONDEREN + ' (' + FATURA.TARIH + ')');
+                $("#FaturaIcerik").html(FATURA.ICERIK);
+                $("#FaturaModal").modal("show");
+            }
+        },
+        watch: {
+            DUYURULIST(val) {
+                this.DUYURULIST = $.isArray(val) ? val : [];
+            },
+
+            FATURALIST(val) {
+                this.FATURALIST = $.isArray(val) ? val : [];
+            }
+        }
+    });
+</script>

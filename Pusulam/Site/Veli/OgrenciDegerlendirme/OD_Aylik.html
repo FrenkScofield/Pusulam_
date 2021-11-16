@@ -1,0 +1,243 @@
+﻿<div class="page-head">
+    <!-- BEGIN PAGE TITLE -->
+    <div class="page-title col-md-12">
+        <h1>
+            Öğrenci Değerlendirme <small> Aylık Değerlendirme</small> <span onclick="YardimGoster(ID_MENU);" class="pull-right" style="cursor:pointer;"><img src="assets/global/img/info.gif" class="info-image-icon" /> </span>
+        </h1>
+    </div>
+    <!-- END PAGE TITLE -->
+</div>
+
+<div class="row" id="app">
+    <div class="col-md-12">
+        <div class="portlet box green-haze dd-item" style="border:none">
+            <div class="portlet-title dd-handle" data-toggle='collapse' data-target='#filters' style="cursor:pointer;">
+                <div class="caption">
+                    <i class="icon-magnifier"></i>
+                    <span class="caption-subject bold uppercase"> Filtreler </span>
+                    <span class="caption-helper"></span>
+                </div>
+                <div class='actions'>
+                    <a href='javascript:;' class='btn btn-default btn-sm' style='border:none;'>
+                        <i class='fa fa-chevron-down'></i>
+                    </a>
+                </div>
+            </div>
+            <div class="portlet-body form collapse in" id="filters">
+                <form role="form" style="padding:12px 20px">
+                    <div class="form-body form-group-lg form-horizontal row" style="padding: 0px;margin-top: 0px !important;">
+
+                        <div class="portlet light col-md-12" id="FiltreDivVeli" style="margin:0px; border-bottom-style: solid;border-bottom-width: 3px;border-bottom-color: rgb(0, 173, 239);"
+                             v-if="ListKullaniciTipi.indexOf(5)>-1">
+
+                            <div class="portlet-body">
+                                <div class="form-inline">
+                                    <c-ogrenci-veli :controller="controller"
+                                                    :tc="TCKIMLIKNO"
+                                                    @OnChange="OgrenciVeliSelected">
+                                    </c-ogrenci-veli>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="portlet light col-md-12" id="FiltreDivOgrenci" style="margin:0px; border-bottom-style: solid;border-bottom-width: 3px;border-bottom-color: rgb(0, 173, 239);"
+                             v-show="TC_OGRENCI != ''">
+                            <div class="portlet-body">
+                                <div class="form-inline">
+                                    <c-od-donem :controller="controller"
+                                                :tcogrenci="TC_OGRENCI"
+                                                :idset="DONEM"
+                                                @OnChange="DonemSelected">
+                                    </c-od-donem>
+
+                                    <c-od-ay :controller="controller"
+                                             :donem="DONEM"
+                                             :tcogrenci="TC_OGRENCI"
+                                             :idset="AY"
+                                             @OnChange="AySelected">
+                                    </c-od-ay>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="portlet light col-md-12" v-if="OGRENCIDETAY != undefined">
+        <div class="form-group" style="text-align: center;">
+
+            <table class="table-bordered table-striped table-condensed cf display col-md-12">
+                <tbody>
+                    <tr>
+                        <td rowspan="4">
+                            <img src="../../../img/okyanus_logoyeni.png" height="150" style="border-color: #CCC; border-width: 1px; border-style: solid;" v-if="OGRENCIDETAY.FOTOGRAF==''" />
+                            <img :src="'data:image/ png;base64,'+ OGRENCIDETAY.FOTOGRAF" height="150" style="border-color: #CCC; border-width: 1px; border-style: solid;" v-else />
+                        </td>
+                        <td>AD SOYAD</td>
+                        <td>{{OGRENCIDETAY.ADSOYAD}}</td>
+                    </tr>
+
+                    <tr>
+                        <td>KAMPÜS</td>
+                        <td>{{OGRENCIDETAY.SUBEAD}}</td>
+                    </tr>
+
+                    <tr>
+                        <td>SINIF DÜZEY</td>
+                        <td>{{OGRENCIDETAY.KADEME3}}</td>
+                    </tr>
+
+                    <tr>
+                        <td>SINIF</td>
+                        <td>{{OGRENCIDETAY.SINIFAD}}</td>
+                    </tr>
+
+                </tbody>
+            </table>
+
+
+        </div>
+        <div class="form-group" style="text-align: center;" v-show="LISTE.length>0">
+
+            <table class="table-bordered table-striped table-condensed cf display col-md-12" style="margin-top:15px">
+                <tbody>
+                    <template v-for="u in LISTE">
+
+                        <tr>
+                            <td colspan='4' style='text-align:center;vertical-align:middle;background-color:#5AACDA;color:#FFF;'>{{u.ANABASLIK}}</td>
+                        </tr>
+                        <tr>
+                            <td style='text-align:center;vertical-align:middle;background-color:#5AACDA;color:#FFF; width:40%'></td>
+                            <td style='text-align:center;vertical-align:middle;background-color:#5AACDA;color:#FFF; width:20%'>
+                                <img src='/img/bronzkupa.png' height='25px' />
+                            </td>
+                            <td style='text-align:center;vertical-align:middle;background-color:#5AACDA;color:#FFF; width:20%'>
+                                <img src='/img/gumuskupa.png' height='35px' />
+                            </td>
+                            <td style='text-align:center;vertical-align:middle;background-color:#5AACDA;color:#FFF; width:20%'>
+                                <img src='/img/altınkupa.png' height='45px' />
+                            </td>
+                        </tr>
+                        <tr v-for="d in u.dfa">
+                            <td style="text-align:left">
+                                {{d.BASLIK}}
+                            </td>
+                            <td>
+                                <img src='/img/tick.png' height="25px" v-if="d.dfo[0].DEGER == 1" />
+                            </td>
+                            <td>
+                                <img src='/img/tick.png' height='25px' v-if="d.dfo[0].DEGER == 2" />
+                            </td>
+                            <td>
+                                <img src='/img/tick.png' height='25px' v-if="d.dfo[0].DEGER == 3" />
+                            </td>
+                        </tr>
+
+                    </template>
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+</div>
+<script src="../../../VueComponents/FiltreEk.js"></script>
+<script src="../../../VueComponents/OgrenciDegerlendirme.js"></script>
+<script>
+    var vue = new Vue({
+        el: "#app",
+        name: "OD_Aylik",
+
+        data: {
+            controller: 'OD_Aylik',
+            TCKIMLIKNO: '',
+            DONEM: '',
+            AY: '',
+            LISTE: [],
+            OGRENCIDETAY: undefined,
+
+            divAc: 0,
+            TC_OGRENCI: '',
+            ListKullaniciTipi: [],
+            divOgrenci: 0,
+        },
+
+        mounted() {
+
+            var p = {
+                TCKIMLIKNO: session.TCKIMLIKNO,
+                OTURUM: session.OTURUM
+            };
+            var list = [];
+            WebPost(this, this.controller, "KullaniciTipiGetir", p, "#app", "Yükleniyor...", function (data, parent) {
+                if (data != null) {
+                    $.each(data, function (j, el) {
+                        list.push(this.ID_KULLANICITIPI)
+                    });
+                    parent.ListKullaniciTipi = list;
+                    if (list.indexOf(4) > -1)
+                        parent.TC_OGRENCI = session.TCKIMLIKNO;
+                } else {
+                    Alert_Warning("Kullanıcı Bulunamadı..!");
+                }
+            });
+        },
+
+        methods: {
+            OgrenciVeliSelected(item) {
+                this.TC_OGRENCI = item;
+                this.divOgrenci = 1;
+                this.divAc = 0;
+            },
+            DonemSelected(item) {
+                this.DONEM = item;
+                this.AY = undefined;
+                this.divAc = 0;
+                this.OgrenciDetay();
+            },
+            AySelected(item) {
+                this.AY = item;
+                this.divAc = 0;
+                this.Getir();
+            },
+
+            OgrenciDetay() {
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    TC_OGRENCI: this.TC_OGRENCI,
+                    DONEM: this.DONEM,
+                }
+                WebPost(this, this.controller, "OD_OgrenciDonemDetay", p, "#app", "Yükleniyor...", function (data, parent) {
+                    parent.OGRENCIDETAY = JSON.parse(data)[0];
+                });
+            },
+
+            Getir() {
+                var _this = this;
+                if (this.DONEM != "" && this.AY != "" && this.TC_OGRENCI != "") {
+                    this.divAc = 1;
+                    var p = {
+                        TCKIMLIKNO: session.TCKIMLIKNO,
+                        OTURUM: session.OTURUM,
+                        TC_OGRENCI: this.TC_OGRENCI,
+                        DONEM: this.DONEM,
+                        AY: this.AY,
+                    }
+                    _this.LISTE = [];
+                    WebPost(this, this.controller, "OD_DegerlendirmeListele", p, "#app", "Yükleniyor...", function (data, parent) {
+                        if (JSON.parse(data) != undefined) {
+                            _this.LISTE = JSON.parse(data);
+                        } else {
+                            Alert_Warning("Hata..!");
+                        }
+                    });
+
+                }
+            },
+
+        }
+    });
+</script>
+<script src="../../../Scripts/PublicMethods.js"></script>

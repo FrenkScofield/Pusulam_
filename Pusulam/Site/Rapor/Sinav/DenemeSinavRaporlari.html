@@ -1,0 +1,358 @@
+﻿<head>
+    <script src="/Scripts/Rapor/amcharts.js"></script>
+    <script src="/Scripts/Rapor/jquery.easypiechart.js"></script>
+    <script src="/Scripts/Rapor/light.js"></script>
+    <script src="/Scripts/Rapor/serial.js"></script>
+</head>
+
+<style>
+    td {
+        vertical-align: middle !important;
+    }
+
+    tr td:first-child {
+        text-align: left !important;
+    }
+
+    tr th:first-child {
+        text-align: left !important;
+    }
+
+    .margintop0 {
+        margin-top: 0px !important;
+        margin-bottom: 10px !important;
+    }
+
+    #detay_modal tr td:first-child {
+        text-align: left !important;
+        background-color: brown;
+        color: white;
+        font-weight: 600;
+        vertical-align: top;
+    }
+
+    .nav-tabs .active {
+        border-bottom: 5px solid #32c5d2 !important;
+    }
+
+    table {
+        font-family: 'Open Sans', sans-serif;
+        width: 98%;
+        border-collapse: collapse;
+        border: 1px solid #8A9198 !important;
+        margin: 10px 10px 0 10px;
+        background-color: transparent;
+        background-color: transparent;
+    }
+
+        table th {
+            text-align: left;
+            color: #000000 !important;
+            padding: 8px;
+            border-color: grey;
+            border: 1px solid #8A9198 !important;
+            padding: 8px;
+            line-height: 24px;
+            vertical-align: top;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            font-size: 12px !important;
+            font-weight: 600;
+        }
+
+    td .sorting_1 {
+        background-color: #676F75 !important;
+    }
+
+    table td {
+        font-size: 12px !important;
+        background-color: #676F75 !important;
+        color: #EEE;
+        border: 1px solid #8A9198 !important;
+        height: 40px !important;
+        padding: 8px;
+    }
+
+        table td:last-child {
+            border-right: none;
+        }
+
+    table tbody tr:nth-child(2n) td {
+        /*background: #D4D8F9;*/
+        font-size: 12px !important;
+        background-color: #50575D !important;
+        color: #EEE;
+        border: 1px solid #8A9198 !important;
+        padding: 8px;
+    }
+
+    th {
+        font-size: 12px !important;
+        line-height: 30px !important;
+    }
+
+    .text {
+        font-size: 12px !important;
+    }
+
+    .filter-option {
+        font-size: 12px !important;
+    }
+</style>
+
+<div class="page-head">
+    <div class="page-title col-md-12">
+        <h1>
+            Deneme Sınav Raporları
+             <span onclick="YardimGoster(ID_MENU);" class="pull-right" style="cursor:pointer;"><img src="assets/global/img/info.gif" class="info-image-icon" /> </span>
+        </h1>
+    </div>
+</div>
+
+<div class="row" id="app">
+    <div class="col-md-12">
+        <div class="portlet box green-haze dd-item" style="border:none; margin-bottom:0px!important;">
+            <div class="portlet-title dd-handle" data-toggle='collapse' data-target='#filters' style="cursor:pointer;">
+                <div class="caption">
+                    <i class="icon-magnifier"></i>
+                    <span class="caption-subject bold uppercase"> Filtreler </span>
+                    <span class="caption-helper"></span>
+                </div>
+                <div class='actions'>
+                    <a href='javascript:;' class='btn btn-default btn-sm' style='border:none;'>
+                        <i class='fa fa-chevron-down'></i>
+                    </a>
+                </div>
+            </div>
+            <div class="portlet-body form collapse in" id="filters">
+                <div id="FiltreDiv" class="portlet light col-md-12" style="margin:0px; border-bottom-style: solid;border-bottom-width: 3px;border-bottom-color: rgb(0, 173, 239);">
+                    <div class="portlet-body">
+                        <div class="form-inline">
+                            <div class="row">
+                                <c-donem controller="DenemeSinavRaporlari"
+                                         @OnChange="DonemSelected">
+                                </c-donem>
+                                <c-sube controller="DenemeSinavRaporlari"
+                                        @OnChange="SubeSelected">
+                                </c-sube>
+                                <c-kademe3-multisube controller="DenemeSinavRaporlari"
+                                                     :idsube="idsube"
+                                                     @OnChange="Kademe3Selected">
+                                </c-kademe3-multisube>
+                                <c-sinav-turu-tc controller="DenemeSinavRaporlari"
+                                                 :tc="tcogrenci"
+                                                 :idkademe3="idkademe3"
+                                                 :donem="DONEM"
+                                                 @OnChange="SinavTuruSelected">
+                                </c-sinav-turu-tc>
+                                <c-sinif controller="DenemeSinavRaporlari"
+                                         :idsube="idsube"
+                                         :idsinavgrup="idkademe3"
+                                         @OnChange="SinifSelected">
+                                </c-sinif>
+                                <c-ders-multi controller="DenemeSinavRaporlari"
+                                              :idkademe3="idkademe3"
+                                              :idsinavturu="idsinavturu"
+                                              @OnChange="DersSelected">
+                                </c-ders-multi>
+                            </div>
+                            <div class="row">
+                                <input style="float:right;margin: 10px;" type="button" class="btn btn-success" @click="Raporla" value="Raporla">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-12" style="margin-top:20px!important;" v-if="Liste.length>0">
+        <div class="col-md-12" style="overflow-x:auto; padding:0px;">
+            <table id="tablobaslik" class="table table-striped table-bordered table-checkable" style="margin-bottom:0px; color:#111; margin:0px!important">
+                <thead id="thead">
+                    <tr>
+                        <th>Ad</th>
+                        <th>Sınav Tarihi</th>
+                        <th>Katılım</th>
+                        <th colspan="12" style="text-align:center;">Raporlar</th>
+                    </tr>
+                </thead>
+                <tbody id="tbody">
+                    <tr v-for="item in Liste">
+                        <td>{{item.AD}}</td>
+                        <td>{{item.SINAVTARIH}}</td>
+                        <td>{{item.KATILIM}}</td>
+                        <td style="cursor:pointer;" @click="KampusNetOrtalama(item.ID_SINAV)">Grafik</td>
+                        <td style="cursor:pointer;" @click="SubeRaporu(item.ID_SINAV)">Şube Raporu</td>
+                        <td style="cursor:pointer;" @click="SinifRaporu(item.ID_SINAV)">Sınıf Raporu</td>
+                        <td style="cursor:pointer;" @click="Katilmayan(item.ID_SINAV)">Sınava<br />Katılmayan ÖĞR.</td>
+                        <td style="cursor:pointer;" @click="Baraj150(item.ID_SINAV)" v-if="ortaOkul==false">150 Puan Barajını<br />Geçemeyen ÖĞR.</td>
+                        <td style="cursor:pointer;" @click="Baraj180(item.ID_SINAV)" v-if="ortaOkul==false">180 Puan Barajını<br />Geçemeyen ÖĞR.</td>
+                        <td style="cursor:pointer;" @click="SinifNetOrtalama(item.ID_SINAV)">Sınıf Net<br />Ortalamaları</td>
+                        <td style="cursor:pointer;" @click="OkulNetOrtalama(item.ID_SINAV)">Okul Net<br />Ortalamaları</td>
+                        <td style="cursor:pointer;" @click="SinifMaddeAnalizi(item.ID_SINAV)">Sınıf Madde<br />Analizi</td>
+                        <td style="cursor:pointer;" @click="OkulMaddeAnalizi(item.ID_SINAV)">Okul Madde<br />Analizi</td>
+                        <td style="cursor:pointer;" @click="SoruAnalizi(item.ID_SINAV)">Soru<br />Analizi</td>
+                        <td style="cursor:pointer;" @click="OkulRaporu(item.ID_SINAV)">Okul<br />Raporu</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<script src="/VueComponents/GenelSinavRaporuFiltreleri.js?v=18"></script>
+<script src="/VueComponents/DenemeSinavRaporlariFiltreleri.js?v=5"></script>
+<script>
+
+
+    var vue = new Vue({
+        el: "#app",
+        name: "DenemeSinavRaporlari.html",
+
+        data: {
+            DONEM: '',
+            idkademe3: 0,
+            idsinavturu: 0,
+            idsinif: 0,
+            idsube: [],
+            Liste: [],
+            idderslist: [],
+            ortaOkul: false,
+            ESKIDONEMSINIF: false
+        },
+
+        mounted() {
+
+        },
+        watch: {
+            idkademe3() {
+                if (this.idkademe3 == 11 || this.idkademe3 == 12 || this.idkademe3 == 13 || this.idkademe3 == 14) { // ortaokul ise 150 180 barajı gösterme
+                    this.ortaOkul = true;
+                }
+                else {
+                    this.ortaOkul = false;
+                }
+                this.Liste = [];
+            },
+        },
+
+        methods: {
+            DonemSelected(item) {
+                this.DONEM = item;
+            },
+            SubeSelected(item) {
+                this.idsube = [];
+                if (item != '0') {
+                    this.idsube.push(item);
+                }
+            },
+            Kademe3Selected(item) {
+                this.idkademe3 = item;
+            },
+            SinavTuruSelected(item) {
+                this.idsinavturu = item;
+            },
+            SinifSelected(item) {
+                this.idsinif = item;
+            },
+            DersSelected(item) {
+                this.idderslist = item;
+            },
+            Raporla() {
+                if (this.DONEM == undefined || this.DONEM == "0") {
+                    Alert_Warning("Dönem seçmeniz gerekmektedir.");
+                    this.Liste = [];
+                    return;
+                }
+
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    ID_KADEME3: this.idkademe3,
+                    ID_SINIF: this.idsinif,
+                    ID_SUBE: this.idsube[0],
+                    DONEM: this.DONEM,
+                    ID_SINAVTURU: this.idsinavturu
+                };
+
+                WebPost(this, "DenemeSinavRaporlari", "SinavListele", p, "#FiltreDiv", "", function (data, parent) {
+                    if (data != null) {
+                        parent.Liste = JSON.parse(data);
+                        $('#filters').collapse('hide');
+                    } else {
+                        Alert_Warning("Sınav Bulunamadı..!");
+                    }
+                });
+            },
+
+            KampusNetOrtalama(ID_SINAV) {
+                window.open('/Rapor.aspx?rapor=Sinav.DenemeSinavRaporNetOrtalamaGrafik&raporTur=HTML&p=' + session.TCKIMLIKNO + ';' + session.OTURUM + ';' + ID_SINAV + ';' + (this.idsube.length > 0 ? this.idsube[0] : 0) + ";" + this.idkademe3 + ";" + this.idsinif, '_blank');
+            },
+
+            SubeRaporu(ID_SINAV) {
+                if (this.idsube.length > 0 && this.idsube[0] != 0) {
+                    window.open('../Rapor.aspx?rapor=Sinav.DenemeSinavOSRaporu&raporTur=XLS&p=' + session.TCKIMLIKNO + ';' + session.OTURUM + ';' + this.DONEM + ";" + this.idkademe3 + ";" + this.idsinavturu + ";" + ID_SINAV + ";" + JSON.stringify(this.idsube) + ";[" + this.idsinif + '];false;0', '_blank');
+                } else {
+                    Alert_Warning("Şube seçmeniz gerekmektedir.");
+                }
+            },
+
+            SinifRaporu(ID_SINAV) {
+                if (this.idsube.length > 0 && this.idsube[0] != 0) {
+                    if (this.idsinif > 0) {
+                        window.open('../Rapor.aspx?rapor=Sinav.DenemeSinavOSRaporu&raporTur=XLS&p=' + session.TCKIMLIKNO + ';' + session.OTURUM + ';' + this.DONEM + ";" + this.idkademe3 + ";" + this.idsinavturu + ";" + ID_SINAV + ";" + JSON.stringify(this.idsube) + ";[" + this.idsinif + '];false;0', '_blank');
+                    } else {
+                        Alert_Warning("Sınıf seçmeniz gerekmektedir.");
+                    }
+                } else {
+                    Alert_Warning("Şube seçmeniz gerekmektedir.");
+                }
+
+            },
+
+            Katilmayan(ID_SINAV) {
+                window.open('/Rapor.aspx?rapor=Sinav.DenemeSinavRaporKatilmayanlar&raporTur=HTML&p=' + session.TCKIMLIKNO + ';' + session.OTURUM + ';' + ID_SINAV + ';' + (this.idsube.length > 0 ? this.idsube[0] : 0) + ";" + this.idkademe3 + ";" + this.idsinif, '_blank');
+            },
+
+            Baraj150(ID_SINAV) {
+                window.open('/Rapor.aspx?rapor=Sinav.DenemeSinavRaporBaraj&raporTur=XLS&p=' + session.TCKIMLIKNO + ';' + session.OTURUM + ';' + ID_SINAV + ';' + (this.idsube.length > 0 ? this.idsube[0] : 0) + ";" + this.idkademe3 + ";" + this.idsinif + ";" + 150, '_blank');
+            },
+
+            Baraj180(ID_SINAV) {
+                window.open('/Rapor.aspx?rapor=Sinav.DenemeSinavRaporBaraj&raporTur=XLS&p=' + session.TCKIMLIKNO + ';' + session.OTURUM + ';' + ID_SINAV + ';' + (this.idsube.length > 0 ? this.idsube[0] : 0) + ";" + this.idkademe3 + ";" + this.idsinif + ";" + 180, '_blank');
+            },
+
+            SinifNetOrtalama(ID_SINAV) {
+                window.open('/Rapor.aspx?rapor=Sinav.DenemeSinaviSinifNetPuanOrt&raporTur=HTML&p=' + session.TCKIMLIKNO + ';' + session.OTURUM + ';' + this.DONEM + ";" + this.idkademe3 + ";" + this.idsinavturu + ";[" + ID_SINAV + "];[" + (this.idsube.length > 0 ? this.idsube[0] : 0) + "];" + JSON.stringify(this.idderslist), '_blank');
+            },
+
+            OkulNetOrtalama(ID_SINAV) {
+                window.open('/Rapor.aspx?rapor=Sinav.DenemeSinavRaporuOkulNetPuanOrt&raporTur=HTML&p=' + session.TCKIMLIKNO + ';' + session.OTURUM + ';' + this.DONEM + ";" + this.idkademe3 + ";" + this.idsinavturu + ";[" + ID_SINAV + "];[" + (this.idsube.length > 0 ? this.idsube[0] : "") + "]", '_blank');
+            },
+
+            SinifMaddeAnalizi(ID_SINAV) {
+                window.open('/Rapor.aspx?rapor=Sinav.SoruMaddeAnaliziOS&raporTur=HTML&p=' + session.TCKIMLIKNO + ';' + session.OTURUM + ';' + this.DONEM + ";" + this.idkademe3 + ";" + this.idsinavturu + ";[" + ID_SINAV + "];" + JSON.stringify(this.idsube) + ";[" + this.idsinif + "];" + JSON.stringify(this.idderslist), '_blank');
+            },
+
+            OkulMaddeAnalizi(ID_SINAV) {
+                window.open('/Rapor.aspx?rapor=Sinav.SoruMaddeAnaliziOS&raporTur=HTML&p=' + session.TCKIMLIKNO + ';' + session.OTURUM + ';' + this.DONEM + ";" + this.idkademe3 + ";" + this.idsinavturu + ";[" + ID_SINAV + "];" + JSON.stringify(this.idsube) + ";[];" + JSON.stringify(this.idderslist), '_blank');
+            },
+
+            SoruAnalizi(ID_SINAV) {
+                if (this.idsube.length > 0 && this.idsube[0] != 0) {
+                    window.open('/Rapor.aspx?rapor=Sinav.DenemeSinavRaporSoruAnaliz&raporTur=HTML&p=' + session.TCKIMLIKNO + ';' + session.OTURUM + ';' + ID_SINAV + ';' + (this.idsube.length > 0 ? this.idsube[0] : 0) + ";" + this.idkademe3 + ";" + this.idsinif, '_blank');
+                } else {
+                    Alert_Warning("Şube seçmeniz gerekmektedir.");
+                }
+            },
+
+            OkulRaporu(ID_SINAV) {
+                if (this.idsube.length > 0 && this.idsube[0] != 0) {
+                    window.open('/Rapor.aspx?rapor=Sinav.OkulRapor.OkulRapor&raporTur=PDF&p=' + session.TCKIMLIKNO + ';' + session.OTURUM + ';' + (this.idsube.length > 0 ? this.idsube[0] : 0) + ";" + ID_SINAV, '_blank');
+                } else {
+                    Alert_Warning("Şube seçmeniz gerekmektedir.");
+                }
+            }
+        },
+    });
+</script>
+<script src="/Scripts/PublicMethods.js"></script>

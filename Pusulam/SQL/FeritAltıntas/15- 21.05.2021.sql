@@ -1,0 +1,672 @@
+﻿USE [Pusulam]
+GO
+/****** Object:  StoredProcedure [dbo].[sp_Performans]    Script Date: 20.05.2021 11:55:31 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+ALTER PROC [dbo].[sp_Performans]
+	@ISLEM							INT				= NULL,
+	@TCKIMLIKNO						VARCHAR(11)		= NULL,
+	@OTURUM							VARCHAR(36)		= NULL,
+	@ID_MENU						INT				= NULL,
+	@SQLJSON						VARCHAR(MAX)	= NULL,
+	@DONEM							VARCHAR(4)		= NULL,
+	@BASLANGICTARIH					VARCHAR(MAX)	= NULL,
+	@BITISTARIH						VARCHAR(MAX)	= NULL,
+	@ID_OGRETMENPERIYOTTANIMLAMA	INT				= NULL,
+	@PERFORMANSCEVAP				VARCHAR(MAX)	= NULL,
+	--@KATEGORISORU					VARCHAR(MAX)	= NULL,
+	@ID_KATEGORI					INT				= NULL,
+	@ID_OGRETMEN					INT				= NULL,
+	@ID_PERIYOT						INT				= NULL,
+	@TC_OGRETMEN					VARCHAR(11)		= NULL,
+	@ID_SUBE						INT				= NULL,
+	@ID_OGRETMENDEGERLENDIRME		INT				= NULL,
+	@KATEGORISORU					INT				= NULL,
+    @ID_KULLANICITIPI				INT				= NULL
+AS
+BEGIN
+
+	DECLARE @PROCNAME VARCHAR(MAX) = (SELECT OBJECT_NAME(@@PROCID))
+	DECLARE @LOGJSON VARCHAR(MAX)
+	
+	DECLARE @_ID_LOG INT = 0
+
+	BEGIN TRY    
+		DECLARE @_DESTEK_KONTROL INT
+
+			IF @DONEM IS NULL OR @DONEM=''
+			BEGIN
+				SELECT @DONEM= DONEM FROM v3AktifDonem WHERE AKTIF=1
+			END
+			IF @ISLEM = 0	--	Dönem Listele
+			BEGIN
+				SELECT * FROM [dbo].[v3AktifDonem] WHERE AKTIF = 1
+			END
+			IF @ISLEM = 1  -- Periyot Tanımlama
+			BEGIN
+				DECLARE @PERIYOT INT = NULL
+				SELECT @PERIYOT=COUNT(ID_DEGERLERDIRMEPERIYOD)  FROM dbo.OgretmenDegerlendirmePeriyot WHERE DONEM = @DONEM
+
+				IF @PERIYOT >= 2
+				BEGIN
+					RETURN;
+				END
+				ELSE
+				BEGIN
+				    INSERT INTO dbo.OgretmenDegerlendirmePeriyot
+				(
+				    DONEM,
+				    BASLANGICTARIHI,
+				    BITISTARIHI
+				)
+				VALUES
+				(   @DONEM,
+					CONVERT(date, @BASLANGICTARIH, 104), 
+				    CONVERT(date, @BITISTARIH, 104)  
+				 )
+				 
+				SELECT
+					ISNULL(
+					(
+						SELECT 
+							 ID_DEGERLERDIRMEPERIYOD
+							,DONEM  = (SELECT ACIKLAMA FROM OkyanusDB.dbo.v3AktifDonem WHERE AKTIF=1)
+							,BASLANGICTARIHI 
+							,BITISTARIHI
+						FROM dbo.OgretmenDegerlendirmePeriyot 
+						WHERE  DONEM= (SELECT DONEM FROM OkyanusDB.dbo.v3AktifDonem WHERE AKTIF=1)
+						ORDER BY BASLANGICTARIHI 
+						FOR JSON PATH
+				), '[]')
+				END				
+
+			END
+
+			IF @ISLEM = 2  -- Periyot Tanım Listele
+			BEGIN
+				SELECT
+					ISNULL(
+					(
+						SELECT 
+							 ID_DEGERLERDIRMEPERIYOD
+							,DONEM  = (SELECT ACIKLAMA FROM OkyanusDB.dbo.v3AktifDonem WHERE AKTIF=1)
+							,BASLANGICTARIHI 
+							,BITISTARIHI
+						FROM dbo.OgretmenDegerlendirmePeriyot 
+						WHERE  DONEM= (SELECT DONEM FROM OkyanusDB.dbo.v3AktifDonem WHERE AKTIF=1)
+						ORDER BY BASLANGICTARIHI 
+						FOR JSON PATH
+				), '[]')
+			END
+
+			IF @ISLEM = 3  -- Periyot Tanım Silme
+			BEGIN
+				DECLARE @KONTROL	INT = NULL
+				SELECT @KONTROL =COUNT(ID_OGRETMENDEGERLENDIRME) FROM dbo.OgretmenDegerlendirme WHERE ID_PERIYOT = @ID_OGRETMENPERIYOTTANIMLAMA
+				IF	@KONTROL > 0
+				BEGIN
+					RETURN;
+				END
+				ELSE
+				BEGIN
+					DELETE FROM dbo.OgretmenDegerlendirmePeriyot WHERE ID_DEGERLERDIRMEPERIYOD = @ID_OGRETMENPERIYOTTANIMLAMA
+				END
+			END
+			
+			IF @ISLEM = 4  -- Müdür Öğretmen Listesi
+			BEGIN
+				SET @ID_KULLANICITIPI	= 53
+
+				DROP TABLE IF EXISTS  #ID_SINIF
+
+				CREATE TABLE #ID_SINIF(ID_SINIF INT)
+
+				INSERT INTO #ID_SINIF(ID_SINIF)
+				SELECT 
+					SR.ID_SINIF
+				FROM OkyanusDB.dbo.v3SubeYetki SY
+				JOIN OkyanusDB.dbo.v3Kullanici K ON K.TCKIMLIKNO = SY.TCKIMLIKNO AND K.AKTIF = 1
+				JOIN OkyanusDB.dbo.v3SubeGrupSinif S ON S.ID_SUBE = SY.ID_SUBE
+				LEFT JOIN OkyanusDB.dbo.v3SinifPersonel SR ON SR.ID_SINIF = S.ID_SINIF AND SR.TCKIMLIKNO = SY.TCKIMLIKNO AND SR.ID_KULLANICITIPI = @ID_KULLANICITIPI
+				WHERE  SR.TCKIMLIKNO = @TCKIMLIKNO
+
+				
+					SELECT DISTINCT 
+							   do.ID_OGRETMEN,
+							   pb.AD+' '+pb.SOYAD as OGRETMENAD
+							  -- d.DERSAD					   
+						  FROM eokul_v2..DersOgretmen do
+					 LEFT JOIN OkyanusDB.dbo.v3Kullanici pb on pb.TCKIMLIKNO=do.TC_OGRETMEN
+					 INNER JOIN eokul_v2.dbo.Ders d on d.ID_DERS=do.ID_DERS
+					 INNER JOIN OkyanusDB.dbo.v3Ogretmen O ON O.ID_OGRETMEN = do.ID_OGRETMEN
+					 LEFT JOIN OKYANUSDB.DBO.V3EgitimTuru e on e.ID_EGITIMTURU=do.ID_EGITIMTURU
+					 JOIN #ID_SINIF						  S	ON S.ID_SINIF = do.ID_SINIF
+	   					 WHERE  DONEMKOD=(SELECT DONEM FROM OkyanusDB.dbo.v3AktifDonem WHERE AKTIF=1)
+						   AND d.AKTIF=1
+					  ORDER BY OGRETMENAD
+			END
+
+			IF @ISLEM = 5 -- Aktif Dönem Periyot Listele
+			BEGIN
+				SELECT
+					 ID_DEGERLERDIRMEPERIYOD
+					,TARIH = CONVERT(VARCHAR,BASLANGICTARIHI, 104)  + ' - ' + CONVERT(VARCHAR,BITISTARIHI, 104)
+				FROM dbo.OgretmenDegerlendirmePeriyot 
+				WHERE  DONEM= (SELECT DONEM FROM OkyanusDB.dbo.v3AktifDonem WHERE AKTIF=1)
+				AND BASLANGICTARIHI <= GETDATE()  AND BITISTARIHI >= GETDATE()
+				ORDER BY BASLANGICTARIHI 					
+				
+			END
+			
+			IF @ISLEM = 6 -- Kategori Listele
+			BEGIN
+				SELECT					 
+					 ID_DEGERLENDIRMEKATEGORITANIM
+					,KATEGORI
+				FROM  dbo.OgretmenDegerlendirmeKategori	
+				ORDER BY ID_DEGERLENDIRMEKATEGORITANIM		
+			END
+
+			IF @ISLEM = 7 -- Performans Soru
+			BEGIN
+				DECLARE @DEGERCEVAP BIT = 0
+
+				SELECT @TC_OGRETMEN = TCKIMLIKNO FROM OkyanusDB.dbo.v3Ogretmen WHERE ID_OGRETMEN = @ID_OGRETMEN
+
+				SELECT @DEGERCEVAP = IIF(ID_OGRETMENDEGERLENDIRME > 0  ,  1, 0) 
+				FROM dbo.OgretmenDegerlendirme 
+				WHERE TC_MUDUR = @TCKIMLIKNO AND TC_OGRETMEN = @TC_OGRETMEN
+
+
+				IF @DEGERCEVAP = 1
+				BEGIN
+					SELECT
+						ISNULL(
+						(
+							SELECT 
+								 ODC.ID_SORU
+								,ODS.GRUPADI
+								,ODS.SORU
+								,GUCLUCEVAP			= IIF(ODC.GUCLUYON > 0  ,  1, 0)
+								,GELISTIRMECEVAP	= IIF(ODC.GELISMEALANI > 0  ,  1, 0)
+							FROM dbo.OgretmenDegerlendirme			OD 
+							JOIN dbo.OgretmenDegerlendirmeCevap		ODC ON ODC.ID_OGRETMENDEGERLENDIRME = OD.ID_OGRETMENDEGERLENDIRME
+							JOIN dbo.OgretmenDegerlendirmeSoru		ODS ON ODS.ID_SORU					= ODC.ID_SORU
+							WHERE TC_MUDUR = @TCKIMLIKNO AND TC_OGRETMEN = @TC_OGRETMEN
+							FOR JSON PATH
+					), '[]')
+				END
+				ELSE
+				BEGIN
+					SELECT
+						ISNULL(
+						(
+							SELECT 
+								 ID_SORU
+								,GRUPADI
+								,SORU
+								,GUCLUCEVAP = CAST(0 AS BIT)
+								,GELISTIRMECEVAP = CAST(0 AS BIT)
+							FROM  dbo.OgretmenDegerlendirmeSoru  
+							FOR JSON PATH
+					), '[]')
+				END
+			END
+
+			IF @ISLEM = 8 -- Kategori Soru
+			BEGIN
+				DECLARE @ID_DEGERLENDRIME INT = NULL
+				SELECT @ID_DEGERLENDRIME = ID_OGRETMENDEGERLENDIRME
+				FROM dbo.OgretmenDegerlendirme	
+				WHERE TC_MUDUR = @TCKIMLIKNO AND ID_PERIYOT = @ID_PERIYOT AND TC_OGRETMEN =@TC_OGRETMEN
+
+				IF @ID_DEGERLENDRIME >0
+				BEGIN
+					SELECT
+					ISNULL(
+					(
+						SELECT 
+							 ID_OGRETMENDEGERLENDIRMEKATEGORISORU
+							,ID_KATEGORI							
+							,SORU
+							,SECILI_KATEGORI_CEVAP = ODKC.ID_SORU
+						FROM  dbo.OgretmenDegerlendirmeKategoriSoru		ODKS
+						JOIN dbo.OgretmenDegerlendirmeKategoriCevap		ODKC ON ODKC.ID_SORU= ODKS.ID_OGRETMENDEGERLENDIRMEKATEGORISORU				
+						WHERE ODKC.ID_OGRETMENDEGERLENDIRME = @ID_DEGERLENDRIME
+						FOR JSON PATH
+					), '[]')
+				END
+
+				ELSE
+				BEGIN
+					SELECT
+					ISNULL(
+					(
+						SELECT 
+							 ID_OGRETMENDEGERLENDIRMEKATEGORISORU
+							,ID_KATEGORI							
+							,SORU
+							,SECILI_KATEGORI_CEVAP = 0
+						FROM  dbo.OgretmenDegerlendirmeKategoriSoru
+						FOR JSON PATH
+				), '[]')
+				END
+			    
+			END
+
+			IF @ISLEM = 9 -- Değerlendirme Cevap Kaydet
+			BEGIN
+				DECLARE @DEGER INT = 0
+
+				SELECT @TC_OGRETMEN = TCKIMLIKNO FROM OkyanusDB.dbo.v3Ogretmen WHERE ID_OGRETMEN = @ID_OGRETMEN
+
+				SELECT @DEGER = IIF(ID_OGRETMENDEGERLENDIRME > 0  ,  ID_OGRETMENDEGERLENDIRME, 0) 
+				FROM dbo.OgretmenDegerlendirme 
+				WHERE TC_MUDUR = @TCKIMLIKNO AND TC_OGRETMEN = @TC_OGRETMEN AND ID_PERIYOT = @ID_PERIYOT
+
+				IF @DEGER >0
+				BEGIN
+					DELETE FROM dbo.OgretmenDegerlendirmeCevap WHERE ID_OGRETMENDEGERLENDIRME = @DEGER
+					
+					UPDATE dbo.OgretmenDegerlendirme SET ID_KATEGORI = @ID_KATEGORI WHERE ID_OGRETMENDEGERLENDIRME = @DEGER
+					INSERT INTO dbo.OgretmenDegerlendirmeCevap
+					(
+						ID_SORU,
+						ID_OGRETMENDEGERLENDIRME,
+						GUCLUYON,
+						GELISMEALANI
+					)
+
+					SELECT ID_SORU, @DEGER, GUCLUYON, GELISMEALANI FROM OPENJSON(@PERFORMANSCEVAP)
+					WITH(
+						 ID_SORU			INT				'$.ID_SORU' 
+						,GUCLUYON			BIT				'$.GUCLUCEVAP' 
+						,GELISMEALANI		BIT				'$.GELISTIRMECEVAP' 
+					)
+
+					IF @ID_KATEGORI = 3
+					BEGIN
+						DELETE FROM OgretmenDegerlendirmeKategoriCevap WHERE ID_OGRETMENDEGERLENDIRME = @DEGER
+						INSERT dbo.OgretmenDegerlendirmeKategoriCevap
+						(
+							ID_SORU,
+							ID_OGRETMENDEGERLENDIRME							
+						)
+						VALUES 
+						(
+							@KATEGORISORU,
+							@DEGER
+						)
+					END
+				END
+				ELSE
+				BEGIN
+					DECLARE @ID table(ID int)
+
+					SELECT @TC_OGRETMEN = TCKIMLIKNO FROM OkyanusDB.dbo.v3Ogretmen WHERE ID_OGRETMEN = @ID_OGRETMEN
+					SELECT * FROM dbo.OgretmenDegerlendirmeKategori WHERE ID_DEGERLENDIRMEKATEGORITANIM = @ID_KATEGORI
+
+								SELECT TOP 1
+									@ID_SUBE = S.ID_SUBE
+									FROM OkyanusDB.dbo.v3SubeYetki SY
+									JOIN OkyanusDB.dbo.v3Kullanici K ON K.TCKIMLIKNO = SY.TCKIMLIKNO AND K.AKTIF = 1
+									JOIN OkyanusDB.dbo.v3Sube S ON S.ID_SUBE = SY.ID_SUBE
+									WHERE K.TCKIMLIKNO = @TCKIMLIKNO
+					INSERT INTO dbo.OgretmenDegerlendirme
+					(
+						TC_MUDUR,
+						TC_OGRETMEN,
+						ID_KATEGORI,
+						ID_SUBE,
+						ID_PERIYOT
+					)
+					OUTPUT inserted.ID_OGRETMENDEGERLENDIRME into @ID 
+					VALUES
+					(   @TCKIMLIKNO,                 
+						@TC_OGRETMEN,                
+						@ID_KATEGORI,                
+						@ID_SUBE,                    
+						@ID_PERIYOT					
+						)
+					select @ID_OGRETMENDEGERLENDIRME=ID from @ID
+
+
+					INSERT INTO dbo.OgretmenDegerlendirmeCevap
+					(
+						ID_SORU,
+						ID_OGRETMENDEGERLENDIRME,
+						GUCLUYON,
+						GELISMEALANI
+					)
+
+					SELECT ID_SORU, @ID_OGRETMENDEGERLENDIRME, GUCLUYON, GELISMEALANI FROM OPENJSON(@PERFORMANSCEVAP)
+					WITH(
+						 ID_SORU			INT				'$.ID_SORU' 
+						,GUCLUYON			BIT				'$.GUCLUCEVAP' 
+						,GELISMEALANI		BIT				'$.GELISTIRMECEVAP' 
+					)
+					IF @ID_KATEGORI = 3
+					BEGIN
+						INSERT dbo.OgretmenDegerlendirmeKategoriCevap
+						(
+							ID_SORU,
+							ID_OGRETMENDEGERLENDIRME							
+						)
+						VALUES 
+						(
+							@KATEGORISORU,
+							@ID_OGRETMENDEGERLENDIRME
+						)
+					END
+				END
+ 			END
+
+			IF @ISLEM = 10 -- Değerlendirilenler 
+			BEGIN
+				SELECT TOP 1 
+					@ID_KULLANICITIPI=ID_KULLANICITIPI
+				FROM OkyanusDB..vw_KullaniciYetki WHERE TCKIMLIKNO=@TCKIMLIKNO AND ID_KULLANICITIPI=1
+				IF @ID_KULLANICITIPI = 1
+				BEGIN
+				    SELECT
+					ISNULL(
+					(
+					 SELECT 
+						 OGRETMEN = K.AD + ' ' + K.SOYAD
+						,SUBE	  = S.AD
+						,TC_OGRETMEN = OD.TC_OGRETMEN
+						,KATEGORI = ODK.KATEGORI
+						,MUDUR    = (SELECT AD + ' ' + SOYAD FROM dbo.v3Kullanici WHERE TCKIMLIKNO = OD.TC_MUDUR) 
+						,TARIH    = CONVERT(VARCHAR,ODP.BASLANGICTARIHI, 104)  + ' - ' + CONVERT(VARCHAR,ODP.BITISTARIHI, 104)
+						,CKATEGORI = ISNULL((SELECT OS.SORU 
+									  FROM OgretmenDegerlendirmeKategoriCevap O
+									  JOIN dbo.OgretmenDegerlendirmeKategoriSoru OS ON OS.ID_OGRETMENDEGERLENDIRMEKATEGORISORU = O.ID_SORU 
+									  WHERE O.ID_OGRETMENDEGERLENDIRME = OD.ID_OGRETMENDEGERLENDIRME),'')
+					 FROM  dbo.OgretmenDegerlendirme			OD
+					 JOIN  dbo.v3Kullanici						K   ON K.TCKIMLIKNO					     = OD.TC_OGRETMEN
+					 JOIN  dbo.v3Sube							S   ON S.ID_SUBE						 = OD.ID_SUBE
+					 JOIN  dbo.OgretmenDegerlendirmeKategori	ODK ON ODK.ID_DEGERLENDIRMEKATEGORITANIM = OD.ID_KATEGORI
+					 JOIN  dbo.OgretmenDegerlendirmePeriyot		ODP ON ODP.ID_DEGERLERDIRMEPERIYOD		 = OD.ID_PERIYOT
+					 WHERE  OD.ID_PERIYOT = @ID_PERIYOT
+					 FOR JSON PATH
+				), '[]')
+				END
+				ELSE
+				BEGIN
+				    SELECT
+					ISNULL(
+					(
+					 SELECT 
+						 OGRETMEN	 = K.AD + ' ' + K.SOYAD
+						,TC_OGRETMEN = K.TCKIMLIKNO
+ 						,SUBE		 = S.AD
+						,KATEGORI	 = ODK.KATEGORI
+						,MUDUR		 = (SELECT AD + ' ' + SOYAD FROM dbo.v3Kullanici WHERE TCKIMLIKNO = @TCKIMLIKNO) 
+						,TARIH		 = CONVERT(VARCHAR,ODP.BASLANGICTARIHI, 104)  + ' - ' + CONVERT(VARCHAR,ODP.BITISTARIHI, 104)
+						,CKATEGORI = ISNULL((SELECT OS.SORU 
+									  FROM OgretmenDegerlendirmeKategoriCevap O
+									  JOIN dbo.OgretmenDegerlendirmeKategoriSoru OS ON OS.ID_OGRETMENDEGERLENDIRMEKATEGORISORU = O.ID_SORU 
+									  WHERE O.ID_OGRETMENDEGERLENDIRME = OD.ID_OGRETMENDEGERLENDIRME),'')
+					 FROM  dbo.OgretmenDegerlendirme			OD
+					 JOIN  dbo.v3Kullanici						K   ON K.TCKIMLIKNO					     = OD.TC_OGRETMEN
+					 JOIN  dbo.v3Sube							S   ON S.ID_SUBE						 = OD.ID_SUBE
+					 JOIN  dbo.OgretmenDegerlendirmeKategori	ODK ON ODK.ID_DEGERLENDIRMEKATEGORITANIM = OD.ID_KATEGORI
+					 JOIN  dbo.OgretmenDegerlendirmePeriyot		ODP ON ODP.ID_DEGERLERDIRMEPERIYOD		 = OD.ID_PERIYOT
+					 WHERE OD.TC_MUDUR = @TCKIMLIKNO AND OD.ID_PERIYOT = @ID_PERIYOT
+					 FOR JSON PATH
+				), '[]')
+				END
+				
+			END
+
+			IF @ISLEM = 11 -- Değerlendirilmeyenler
+			BEGIN		
+				SELECT TOP 1 
+					@ID_KULLANICITIPI=ID_KULLANICITIPI
+				FROM OkyanusDB..vw_KullaniciYetki WHERE TCKIMLIKNO=@TCKIMLIKNO AND ID_KULLANICITIPI=1
+				IF @ID_KULLANICITIPI = 1
+				BEGIN
+									DROP TABLE IF EXISTS  #DEGERLENDRILIMEYEN_ADMIN
+
+				CREATE TABLE #DEGERLENDRILIMEYEN_ADMIN(ID_SINIF INT,TC_MUDUR VARCHAR(11))
+
+
+				INSERT INTO #DEGERLENDRILIMEYEN_ADMIN(ID_SINIF,TC_MUDUR)
+				SELECT DISTINCT
+					 SR.ID_SINIF
+					,SR.TCKIMLIKNO
+				FROM OkyanusDB.dbo.v3SubeYetki SY
+				JOIN OkyanusDB.dbo.v3Kullanici K ON K.TCKIMLIKNO = SY.TCKIMLIKNO AND K.AKTIF = 1
+				JOIN OkyanusDB.dbo.v3SubeGrupSinif S ON S.ID_SUBE = SY.ID_SUBE
+				LEFT JOIN OkyanusDB.dbo.v3SinifPersonel SR ON SR.ID_SINIF = S.ID_SINIF AND SR.TCKIMLIKNO = SY.TCKIMLIKNO AND SR.ID_KULLANICITIPI = 53
+				WHERE   SR.TCKIMLIKNO NOT IN(SELECT TC_OGRETMEN FROM dbo.OgretmenDegerlendirme  )
+
+
+				SELECT
+						ISNULL(
+						(
+						 SELECT DISTINCT 
+							 OGRETMEN = pb.AD + ' ' + pb.SOYAD
+							,TC_OGRETMEN = PB.TCKIMLIKNO
+							,SUBE	  = VS.AD
+							,MUDUR    = (SELECT AD + ' ' + SOYAD FROM dbo.v3Kullanici WHERE TCKIMLIKNO = S.TC_MUDUR)
+							,TARIH	  = (SELECT
+											TARIH = CONVERT(VARCHAR,BASLANGICTARIHI, 104)  + ' - ' + CONVERT(VARCHAR,BITISTARIHI, 104)
+										FROM dbo.OgretmenDegerlendirmePeriyot 
+										WHERE  DONEM= (SELECT DONEM FROM OkyanusDB.dbo.v3AktifDonem WHERE AKTIF=1)
+										AND BASLANGICTARIHI <= GETDATE()  AND BITISTARIHI >= GETDATE()
+										)
+							--,TARIH    = CONVERT(VARCHAR,ODP.BASLANGICTARIHI, 104)  + ' - ' + CONVERT(VARCHAR,ODP.BITISTARIHI, 104)									   
+						 FROM  #DEGERLENDRILIMEYEN_ADMIN					S
+						 JOIN eokul_v2..DersOgretmen				do ON do.ID_SINIF		 = S.ID_SINIF
+ 						 LEFT JOIN OkyanusDB.dbo.v3Kullanici		pb ON pb.TCKIMLIKNO		 = do.TC_OGRETMEN
+						 LEFT JOIN dbo.v3SubeYetki					SY ON SY.TCKIMLIKNO		 = S.TC_MUDUR
+						 LEFT JOIN dbo.v3Sube						VS ON VS.ID_SUBE		 = SY.ID_SUBE
+						 INNER JOIN eokul_v2.dbo.Ders			    d  ON d.ID_DERS			 = do.ID_DERS
+						 INNER JOIN OkyanusDB.dbo.v3Ogretmen		O  ON O.ID_OGRETMEN		 = do.ID_OGRETMEN
+						 LEFT JOIN OKYANUSDB.DBO.V3EgitimTuru	    e  ON e.ID_EGITIMTURU	 = do.ID_EGITIMTURU
+	   						 WHERE  DONEMKOD=(SELECT DONEM FROM OkyanusDB.dbo.v3AktifDonem WHERE AKTIF=1)
+							   AND d.AKTIF=1 AND DO.TC_OGRETMEN NOT IN(SELECT TC_OGRETMEN FROM dbo.OgretmenDegerlendirme OD WHERE OD.TC_MUDUR=S.TC_MUDUR AND OD.ID_PERIYOT=15 )
+						  ORDER BY OGRETMEN
+						  FOR JSON PATH
+					), '[]')				
+				END
+				ELSE
+				BEGIN
+					CREATE TABLE #DEGERLENDRILIMEYEN(ID_SINIF INT)
+
+				INSERT INTO #DEGERLENDRILIMEYEN(ID_SINIF)
+				SELECT 
+					SR.ID_SINIF
+				FROM OkyanusDB.dbo.v3SubeYetki SY
+				JOIN OkyanusDB.dbo.v3Kullanici K ON K.TCKIMLIKNO = SY.TCKIMLIKNO AND K.AKTIF = 1
+				JOIN OkyanusDB.dbo.v3SubeGrupSinif S ON S.ID_SUBE = SY.ID_SUBE
+				LEFT JOIN OkyanusDB.dbo.v3SinifPersonel SR ON SR.ID_SINIF = S.ID_SINIF AND SR.TCKIMLIKNO = SY.TCKIMLIKNO AND SR.ID_KULLANICITIPI = 53
+				WHERE  SR.TCKIMLIKNO = @TCKIMLIKNO AND SR.TCKIMLIKNO NOT IN(SELECT TC_OGRETMEN FROM dbo.OgretmenDegerlendirme WHERE TC_MUDUR=@TCKIMLIKNO )
+
+				SELECT
+						ISNULL(
+						(
+						 SELECT DISTINCT 
+							 OGRETMEN = pb.AD + ' ' + pb.SOYAD
+							,TC_OGRETMEN = pb.TCKIMLIKNO
+							,SUBE	  = VS.AD
+							,MUDUR    = (SELECT AD + ' ' + SOYAD FROM dbo.v3Kullanici WHERE TCKIMLIKNO = @TCKIMLIKNO) 
+							,TARIH	  = (SELECT
+											TARIH = CONVERT(VARCHAR,BASLANGICTARIHI, 104)  + ' - ' + CONVERT(VARCHAR,BITISTARIHI, 104)
+										FROM dbo.OgretmenDegerlendirmePeriyot 
+										WHERE  DONEM= (SELECT DONEM FROM OkyanusDB.dbo.v3AktifDonem WHERE AKTIF=1)
+										AND BASLANGICTARIHI <= GETDATE()  AND BITISTARIHI >= GETDATE()
+										)
+							--,TARIH    = CONVERT(VARCHAR,ODP.BASLANGICTARIHI, 104)  + ' - ' + CONVERT(VARCHAR,ODP.BITISTARIHI, 104)									   
+						 FROM eokul_v2..DersOgretmen do
+						 LEFT JOIN OkyanusDB.dbo.v3Kullanici		pb ON pb.TCKIMLIKNO		 = do.TC_OGRETMEN
+						 LEFT JOIN dbo.v3SubeYetki					SY ON SY.TCKIMLIKNO		 = @TCKIMLIKNO
+						 LEFT JOIN dbo.v3Sube						VS ON VS.ID_SUBE		 = SY.ID_SUBE
+						 INNER JOIN eokul_v2.dbo.Ders			    d  ON d.ID_DERS			 = do.ID_DERS
+						 INNER JOIN OkyanusDB.dbo.v3Ogretmen		O  ON O.ID_OGRETMEN		 = do.ID_OGRETMEN
+						 LEFT JOIN OKYANUSDB.DBO.V3EgitimTuru	    e  ON e.ID_EGITIMTURU	 = do.ID_EGITIMTURU
+						 JOIN #DEGERLENDRILIMEYEN					s  ON s.ID_SINIF		 = do.ID_SINIF
+	   						 WHERE  DONEMKOD=(SELECT DONEM FROM OkyanusDB.dbo.v3AktifDonem WHERE AKTIF=1)
+							   AND d.AKTIF=1 AND DO.TC_OGRETMEN NOT IN(SELECT TC_OGRETMEN FROM dbo.OgretmenDegerlendirme OD WHERE OD.TC_MUDUR=@TCKIMLIKNO AND OD.ID_PERIYOT=@ID_PERIYOT )
+						  ORDER BY OGRETMEN
+						  FOR JSON PATH
+					), '[]')
+				END
+				
+				
+					
+			END
+
+			IF @ISLEM = 12 -- Değerlendirilenler İndir
+			BEGIN
+				SELECT TOP 1 
+					@ID_KULLANICITIPI=ID_KULLANICITIPI
+				FROM OkyanusDB..vw_KullaniciYetki WHERE TCKIMLIKNO=@TCKIMLIKNO AND ID_KULLANICITIPI=1
+				IF @ID_KULLANICITIPI = 1
+				BEGIN
+				     SELECT 
+						 OGRETMEN = K.AD + ' ' + K.SOYAD
+						,SUBE	  = S.AD
+						,TC_OGRETMEN = OD.TC_OGRETMEN
+						,KATEGORI = ODK.KATEGORI
+						,MUDUR    = (SELECT AD + ' ' + SOYAD FROM dbo.v3Kullanici WHERE TCKIMLIKNO = OD.TC_MUDUR) 
+						,TARIH    = CONVERT(VARCHAR,ODP.BASLANGICTARIHI, 104)  + ' - ' + CONVERT(VARCHAR,ODP.BITISTARIHI, 104)
+						,CKATEGORI = ISNULL((SELECT OS.SORU 
+									  FROM OgretmenDegerlendirmeKategoriCevap O
+									  JOIN dbo.OgretmenDegerlendirmeKategoriSoru OS ON OS.ID_OGRETMENDEGERLENDIRMEKATEGORISORU = O.ID_SORU 
+									  WHERE O.ID_OGRETMENDEGERLENDIRME = OD.ID_OGRETMENDEGERLENDIRME),'')
+					 FROM  dbo.OgretmenDegerlendirme			OD
+					 JOIN  dbo.v3Kullanici						K   ON K.TCKIMLIKNO					     = OD.TC_OGRETMEN
+					 JOIN  dbo.v3Sube							S   ON S.ID_SUBE						 = OD.ID_SUBE
+					 JOIN  dbo.OgretmenDegerlendirmeKategori	ODK ON ODK.ID_DEGERLENDIRMEKATEGORITANIM = OD.ID_KATEGORI
+					 JOIN  dbo.OgretmenDegerlendirmePeriyot		ODP ON ODP.ID_DEGERLERDIRMEPERIYOD		 = OD.ID_PERIYOT
+					 WHERE  OD.ID_PERIYOT = @ID_PERIYOT
+				END
+				ELSE
+				BEGIN
+				      SELECT 
+						 OGRETMEN = K.AD + ' ' + K.SOYAD
+						,SUBE	  = S.AD
+						,TC_OGRETMEN = OD.TC_OGRETMEN
+						,KATEGORI = ODK.KATEGORI
+						,MUDUR    = (SELECT AD + ' ' + SOYAD FROM dbo.v3Kullanici WHERE TCKIMLIKNO = OD.TC_MUDUR) 
+						,TARIH    = CONVERT(VARCHAR,ODP.BASLANGICTARIHI, 104)  + ' - ' + CONVERT(VARCHAR,ODP.BITISTARIHI, 104)
+						,CKATEGORI = ISNULL((SELECT OS.SORU 
+									  FROM OgretmenDegerlendirmeKategoriCevap O
+									  JOIN dbo.OgretmenDegerlendirmeKategoriSoru OS ON OS.ID_OGRETMENDEGERLENDIRMEKATEGORISORU = O.ID_SORU 
+									  WHERE O.ID_OGRETMENDEGERLENDIRME = OD.ID_OGRETMENDEGERLENDIRME),'')
+					 FROM  dbo.OgretmenDegerlendirme			OD
+					 JOIN  dbo.v3Kullanici						K   ON K.TCKIMLIKNO					     = OD.TC_OGRETMEN
+					 JOIN  dbo.v3Sube							S   ON S.ID_SUBE						 = OD.ID_SUBE
+					 JOIN  dbo.OgretmenDegerlendirmeKategori	ODK ON ODK.ID_DEGERLENDIRMEKATEGORITANIM = OD.ID_KATEGORI
+					 JOIN  dbo.OgretmenDegerlendirmePeriyot		ODP ON ODP.ID_DEGERLERDIRMEPERIYOD		 = OD.ID_PERIYOT
+					 WHERE OD.TC_MUDUR = @TCKIMLIKNO AND OD.ID_PERIYOT = @ID_PERIYOT
+				END
+				
+			END
+
+			IF @ISLEM = 13 -- Değerlendirilmeyenler İndir
+			BEGIN
+				SELECT TOP 1 
+					@ID_KULLANICITIPI=ID_KULLANICITIPI
+				FROM OkyanusDB..vw_KullaniciYetki WHERE TCKIMLIKNO=@TCKIMLIKNO AND ID_KULLANICITIPI=1
+				IF @ID_KULLANICITIPI = 1
+				BEGIN
+					 SELECT DISTINCT 
+							 OGRETMEN	 = pb.AD + ' ' + pb.SOYAD
+							,TC_OGRETMEN = pb.TCKIMLIKNO
+							,SUBE		 = VS.AD
+							--,MUDUR    = (SELECT AD + ' ' + SOYAD FROM dbo.v3Kullanici WHERE TCKIMLIKNO = @TCKIMLIKNO) 
+							,TARIH		 = (SELECT
+												TARIH = CONVERT(VARCHAR,BASLANGICTARIHI, 104)  + ' - ' + CONVERT(VARCHAR,BITISTARIHI, 104)
+											FROM dbo.OgretmenDegerlendirmePeriyot 
+											WHERE  DONEM= (SELECT DONEM FROM OkyanusDB.dbo.v3AktifDonem WHERE AKTIF=1)
+											AND BASLANGICTARIHI <= GETDATE()  AND BITISTARIHI >= GETDATE()
+											)
+							--,TARIH    = CONVERT(VARCHAR,ODP.BASLANGICTARIHI, 104)  + ' - ' + CONVERT(VARCHAR,ODP.BITISTARIHI, 104)									   
+						 FROM eokul_v2..DersOgretmen do
+						 LEFT JOIN OkyanusDB.dbo.v3Kullanici		pb ON pb.TCKIMLIKNO		 = do.TC_OGRETMEN
+						 LEFT JOIN dbo.v3SubeYetki					SY ON SY.TCKIMLIKNO		 = pb.TCKIMLIKNO
+						 LEFT JOIN dbo.v3Sube		 				VS ON VS.ID_SUBE		 = SY.ID_SUBE
+						 --INNER JOIN eokul_v2.dbo.Ders			    d  ON d.ID_DERS			 = do.ID_DERS
+						 INNER JOIN OkyanusDB.dbo.v3Ogretmen		O  ON O.ID_OGRETMEN		 = do.ID_OGRETMEN
+						 LEFT JOIN OKYANUSDB.DBO.V3EgitimTuru	    e  ON e.ID_EGITIMTURU	 = do.ID_EGITIMTURU
+	   					 WHERE  DONEMKOD=(SELECT DONEM FROM OkyanusDB.dbo.v3AktifDonem WHERE AKTIF=1)
+							   AND DO.TC_OGRETMEN NOT IN(SELECT TC_OGRETMEN FROM dbo.OgretmenDegerlendirme OD WHERE OD.ID_PERIYOT=@ID_PERIYOT )
+						  ORDER BY OGRETMEN
+				END
+				ELSE
+			    DROP TABLE IF EXISTS  #DEGERLENDRILIMEYEN1
+
+				CREATE TABLE #DEGERLENDRILIMEYEN1(ID_SINIF INT)
+
+				INSERT INTO #DEGERLENDRILIMEYEN1(ID_SINIF)
+				SELECT 
+					SR.ID_SINIF
+				FROM OkyanusDB.dbo.v3SubeYetki SY
+				JOIN OkyanusDB.dbo.v3Kullanici K ON K.TCKIMLIKNO = SY.TCKIMLIKNO AND K.AKTIF = 1
+				JOIN OkyanusDB.dbo.v3SubeGrupSinif S ON S.ID_SUBE = SY.ID_SUBE
+				LEFT JOIN OkyanusDB.dbo.v3SinifPersonel SR ON SR.ID_SINIF = S.ID_SINIF AND SR.TCKIMLIKNO = SY.TCKIMLIKNO AND SR.ID_KULLANICITIPI = 53
+				WHERE  SR.TCKIMLIKNO = @TCKIMLIKNO AND SR.TCKIMLIKNO NOT IN(SELECT TC_OGRETMEN FROM dbo.OgretmenDegerlendirme WHERE TC_MUDUR=@TCKIMLIKNO )
+
+				
+				 SELECT DISTINCT 
+					 OGRETMEN = pb.AD + ' ' + pb.SOYAD
+					,TC_OGRETMEN = pb.TCKIMLIKNO
+					,SUBE	  = VS.AD
+					,MUDUR    = (SELECT AD + ' ' + SOYAD FROM dbo.v3Kullanici WHERE TCKIMLIKNO = @TCKIMLIKNO) 
+					,TARIH	  = (SELECT
+									TARIH = CONVERT(VARCHAR,BASLANGICTARIHI, 104)  + ' - ' + CONVERT(VARCHAR,BITISTARIHI, 104)
+								FROM dbo.OgretmenDegerlendirmePeriyot 
+								WHERE  DONEM= (SELECT DONEM FROM OkyanusDB.dbo.v3AktifDonem WHERE AKTIF=1)
+								AND BASLANGICTARIHI <= GETDATE()  AND BITISTARIHI >= GETDATE()
+								)
+					--,TARIH    = CONVERT(VARCHAR,ODP.BASLANGICTARIHI, 104)  + ' - ' + CONVERT(VARCHAR,ODP.BITISTARIHI, 104)									   
+				 FROM eokul_v2..DersOgretmen do
+				 LEFT JOIN OkyanusDB.dbo.v3Kullanici		pb ON pb.TCKIMLIKNO		 = do.TC_OGRETMEN
+				 LEFT JOIN dbo.v3SubeYetki					SY ON SY.TCKIMLIKNO		 = @TCKIMLIKNO
+				 LEFT JOIN dbo.v3Sube						VS ON VS.ID_SUBE		 = SY.ID_SUBE
+				 INNER JOIN eokul_v2.dbo.Ders			    d  ON d.ID_DERS			 = do.ID_DERS
+				 INNER JOIN OkyanusDB.dbo.v3Ogretmen		O  ON O.ID_OGRETMEN		 = do.ID_OGRETMEN
+				 LEFT JOIN OKYANUSDB.DBO.V3EgitimTuru	    e  ON e.ID_EGITIMTURU	 = do.ID_EGITIMTURU
+				 JOIN #DEGERLENDRILIMEYEN1					s  ON s.ID_SINIF		 = do.ID_SINIF
+	   				 WHERE  DONEMKOD=(SELECT DONEM FROM OkyanusDB.dbo.v3AktifDonem WHERE AKTIF=1)
+							   AND d.AKTIF=1 AND DO.TC_OGRETMEN NOT IN(SELECT TC_OGRETMEN FROM dbo.OgretmenDegerlendirme OD WHERE OD.TC_MUDUR=@TCKIMLIKNO AND OD.ID_PERIYOT=@ID_PERIYOT )
+				  ORDER BY OGRETMEN
+						  
+			END
+
+			IF @ISLEM = 14 -- Periyot Tarih Listele
+			BEGIN
+				SELECT
+					 ID_DEGERLERDIRMEPERIYOD
+					,TARIH = CONVERT(VARCHAR,BASLANGICTARIHI, 104)  + ' - ' + CONVERT(VARCHAR,BITISTARIHI, 104)
+				FROM dbo.OgretmenDegerlendirmePeriyot 				  
+				ORDER BY BASLANGICTARIHI	
+			END
+
+			IF @ISLEM = 15 -- Periyot Tarih Güncelle
+			BEGIN
+				UPDATE dbo.OgretmenDegerlendirmePeriyot
+				SET DONEM = @DONEM , BASLANGICTARIHI = CONVERT(date, @BASLANGICTARIH, 104) , BITISTARIHI = CONVERT(date, @BITISTARIH, 104)  
+				WHERE ID_DEGERLERDIRMEPERIYOD = @ID_OGRETMENPERIYOTTANIMLAMA
+			      
+			END
+	END TRY
+	BEGIN CATCH
+		DECLARE @_ErrorSeverity INT;
+		DECLARE @_ErrorState INT;
+
+		SELECT 
+			@_ErrorSeverity	= ERROR_SEVERITY(),
+			@_ErrorState		= ERROR_STATE()
+				
+		DECLARE @_MSG VARCHAR(4000)
+		SELECT @_MSG = ERROR_MESSAGE()
+
+		EXEC [dbo].[sp_CustomRaiseError] @MESSAGE = @_MSG, @SEVERITY = @_ErrorSeverity, @STATE = @_ErrorState, @ID_LOG = @_ID_LOG, @ID_LOGTUR = 2
+	END CATCH;
+END

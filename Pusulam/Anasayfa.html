@@ -1,0 +1,581 @@
+﻿<!DOCTYPE html>
+<!--[if IE 8]> <html lang="en" class="ie8 no-js"> <![endif]-->
+<!--[if IE 9]> <html lang="en" class="ie9 no-js"> <![endif]-->
+<!--[if !IE]><!-->
+<html lang="tr">
+<!--<![endif]-->
+<!-- BEGIN HEAD -->
+<head>
+    <meta charset="utf-8" />
+    <title>Pusulam</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta content="width=device-width, initial-scale=1" name="viewport" />
+    <meta content="" name="description" />
+    <meta content="" name="author" />
+    <!-- BEGIN GLOBAL MANDATORY STYLES -->
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700&subset=all" rel="stylesheet" type="text/css" />
+    <link href="assets/global/plugins/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
+    <link href="assets/global/plugins/simple-line-icons/simple-line-icons.min.css" rel="stylesheet" type="text/css" />
+    <link href="assets/global/plugins/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <link href="assets/global/plugins/bootstrap-select/css/bootstrap-select.min.css" rel="stylesheet" />
+    <link href="assets/global/plugins/bootstrap-timepicker/css/bootstrap-timepicker.min.css" rel="stylesheet" type="text/css" />
+    <link href="assets/global/plugins/bootstrap-datepicker/css/bootstrap-datepicker3.min.css" rel="stylesheet" type="text/css" />
+    <link href="assets/global/plugins/bootstrap-switch/css/bootstrap-switch.min.css" rel="stylesheet" type="text/css" />
+    <!-- END GLOBAL MANDATORY STYLES -->
+    <link href="assets/global/plugins/datatables/datatables.min.css" rel="stylesheet" type="text/css" />
+    <link href="assets/global/plugins/datatables/plugins/bootstrap/datatables.bootstrap.css" rel="stylesheet" type="text/css" />
+    <!-- BEGIN THEME GLOBAL STYLES -->
+    <link href="assets/global/css/components-md.min.css" rel="stylesheet" id="style_components" type="text/css" />
+    <link href="assets/global/css/plugins-md.min.css" rel="stylesheet" type="text/css" />
+    <!-- END THEME GLOBAL STYLES -->
+    <!-- BEGIN THEME LAYOUT STYLES -->
+    <link href="assets/layouts/layout4/css/layout.min.css" rel="stylesheet" type="text/css" />
+    <link href="assets/layouts/layout4/css/themes/light.min.css" rel="stylesheet" type="text/css" id="style_color" />
+    <link href="assets/layouts/layout4/css/custom.min.css" rel="stylesheet" type="text/css" />
+    <link href="assets/global/plugins/bootstrap-multiselect/css/bootstrap-multiselect.css" rel="stylesheet" />
+    <link href="assets/global/css/pusulam.css?v=1.0.1" rel="stylesheet" />
+    <link href="assets/global/plugins/jstree/dist/themes/default/style.css?v=1.0.0" rel="stylesheet" />
+    <link href="assets/global/plugins/bootstrap-daterangepicker/daterangepicker.min.css" rel="stylesheet" />
+    <link href="assets/plugins/stickyTable-js/jquery.stickytable.min.css" rel="stylesheet" />
+
+ 
+    <link rel="shortcut icon" href="img/favicon.ico" />
+    <style>
+        body {
+            font-size: 12px !important;
+            background-color: #f2f3f8;
+        }
+
+        td {
+            font-size: 12px !important;
+        }
+
+        .table-scrollable .dataTable td > .btn-group, .table-scrollable .dataTable th > .btn-group {
+            position: relative !important;
+        }
+
+        .nav-link .title {
+            font-size: 12px !important;
+        }
+
+        .filter-option {
+            padding-right: 10px !important;
+            text-overflow: ellipsis !important;
+        }
+
+
+        .page-header.navbar .menu-toggler {
+            background-image: none !important;
+        }
+
+            .page-header.navbar .menu-toggler.sidebar-toggler {
+                float: right !important;
+                margin: 20px 0 0 !important;
+            }
+
+        .page-content {
+            margin-top: -6px !important;
+            padding-top: 0px !important;
+        }
+
+        [v-cloak] {
+            display: none;
+        }
+
+        .modal-backdrop {
+            display: none;
+        }
+    </style>
+</head>
+<!-- END HEAD -->
+<body class="page-container-bg-solid page-header-fixed page-sidebar-closed-hide-logo page-md">
+    <audio id="audioContainer" style="display:none;">
+        <source src="assets/global/img/inflicted.ogg" type="audio/ogg" />
+    </audio>
+    <!-- BEGIN HEADER -->
+    <div class="page-header navbar navbar-fixed-top" style="z-index:999;">
+        <!-- BEGIN HEADER INNER -->
+        <div class="page-header-inner" id="anasayfa">
+
+            <div v-cloak>
+                <!-- BEGIN LOGO -->
+                <div class="page-logo" style="text-align:center;">
+                    <a :href="href" id="hreflogo">
+                        <!--<img src="assets/layouts/layout4/img/logo-light.png" alt="logo" class="logo-default" />-->
+                        <img class="logo-default" src="assets/global/img/logos.png" style="height:50px; margin-top:10px;" />
+                    </a>
+                    <div class="menu-toggler sidebar-toggler" style="color:white" @click="MenuDaraltSelected">
+                        <div style="text-align: center !important; float: inherit;" v-if="menuDaralt==false">Menüyü Gizle</div>
+                        <div style="text-align: center !important; float: inherit;" v-else>Menüyü Göster</div>
+                    </div>
+                    <div class="menu-toggler responsive-toggler" style="color:white; margin: 20px 10px 0 !important;" data-toggle="collapse" data-target=".navbar-collapse" @click="MenuDaraltSelected">
+                        <div style="text-align: center !important;" v-if="menuDaralt!=false">Menüyü Gizle</div> <!--Diğerine göre ters-->
+                        <div style="text-align: center !important;" v-else>Menüyü Göster</div>
+                    </div>
+                </div>
+
+
+                <!-- END LOGO -->
+                <!-- BEGIN RESPONSIVE MENU TOGGLER -->
+                <!--         <a href="javascript:;" class="menu-toggler responsive-toggler" data-toggle="collapse" data-target=".navbar-collapse">
+                            </a>
+                -->
+                <!-- END RESPONSIVE MENU TOGGLER -->
+                <!-- BEGIN PAGE TOP -->
+                <div class="page-top">
+                    <!-- BEGIN TOP NAVIGATION MENU -->
+                    <div class="top-menu">
+                        <ul class="nav navbar-nav pull-right">
+                            <li class="separator hide"> </li>
+
+                            <li class="dropdown dropdown-extended dropdown-inbox" id="mesajveli" style="display:none;">
+                                <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-close-others="true" aria-expanded="true" style="color:#fff;">
+                                    <i class="icon-envelope-open"></i> Veli
+                                    <span class="badge badge-danger"> {{VeliYeniMesajSayisi}} </span>
+                                </a>
+                                <ul class="dropdown-menu" style="width:400px; max-width:400px;">
+                                    <li class="external">
+                                        <h3>
+                                            <span class="bold">{{VeliYeniMesajSayisi}}</span> Yeni Mesaj
+                                        </h3>
+                                        <a href="#iletisim/VeliMesajListesi">Görüntüle</a>
+                                    </li>
+                                    <li style="padding:8px;">
+                                        <div class="chat">
+                                            <div id="chat-users-veli" class="scrollable" style="overflow-y:auto; height:auto; max-height:50vh">
+                                                <div class="message-users">
+                                                    <div class="message-user" v-for="KULLANICI in VeliMesajListe" @click="VeliKullaniciSec(KULLANICI)">
+                                                        <div class="message-user-image">
+                                                            <img src="../../img/okyanus_image.jpg" />
+                                                        </div>
+                                                        <div class="message-user-info">
+                                                            <div href="#"><b>{{KULLANICI.KIME[0].AD + ' ' + KULLANICI.KIME[0].SOYAD}}</b></div>
+                                                            <div href="#" class="font-green">-> {{KULLANICI.KIMICIN[0].AD + ' ' + KULLANICI.KIMICIN[0].SOYAD}}</div>
+
+                                                            <div class="message-user-last" v-if="KULLANICI.SONMESAJ.length>0" :title="KULLANICI.SONMESAJ[0].AD">
+                                                                {{KULLANICI.SONMESAJ[0].AD}}
+                                                            </div>
+                                                        </div>
+                                                        <div class="message-user-info-right" v-if="KULLANICI.SONMESAJ.length>0">
+                                                            <span class="message-user-info-right-date">
+                                                                {{KULLANICI.SONMESAJ[0].KYE_TARIH}}
+                                                                <br />
+                                                                {{KULLANICI.SONMESAJ[0].KYE_SAAT}}
+                                                                <br />
+                                                                <span class="badge badge-success" v-if="KULLANICI.OKUNMAYANMESAJSAYISI>0"> {{KULLANICI.OKUNMAYANMESAJSAYISI}} </span>
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </li>
+
+                            <li class="dropdown dropdown-extended dropdown-inbox" id="mesajogretmen" style="display:none;">
+                                <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-close-others="true" aria-expanded="true" style="color:#fff;">
+                                    <i class="icon-envelope-open"></i> Öğretmen
+                                    <span class="badge badge-danger"> {{OgretmenYeniMesajSayisi}} </span>
+                                </a>
+                                <ul class="dropdown-menu" style="width:400px; max-width:400px;">
+                                    <li class="external">
+                                        <h3>
+                                            <span class="bold">{{OgretmenYeniMesajSayisi}}</span> Yeni Mesaj
+                                        </h3>
+                                        <a href="#iletisim/Mesajlar">Görüntüle</a>
+                                    </li>
+                                    <li style="padding:8px;">
+                                        <div class="chat">
+                                            <div id="chat-users-ogretmen" class="scrollable" style="overflow-y:auto; height:auto; max-height:50vh">
+                                                <div class="classes dd-item" v-for="SINIF in OgretmenMesajListe">
+                                                    <div class="message-users">
+                                                        <div class="message-user" v-for="KULLANICI in SINIF.KULLANICILISTE" @click="OgretmenKullaniciSec(KULLANICI)">
+                                                            <div class="message-user-image">
+                                                                <img src="../../img/okyanus_image.jpg" />
+                                                            </div>
+                                                            <div class="message-user-info">
+                                                                <div href="#"><b>{{KULLANICI.KIMEAD + ' ' + KULLANICI.KIMESOYAD}}</b></div>
+                                                                <div href="#" class="font-green">-> {{KULLANICI.KIMICINAD + ' ' + KULLANICI.KIMICINSOYAD}}</div>
+
+                                                                <div class="message-user-last" v-if="KULLANICI.SONMESAJ.length>0" :title="KULLANICI.SONMESAJ[0].AD">
+                                                                    {{KULLANICI.SONMESAJ[0].AD}}
+                                                                </div>
+                                                            </div>
+                                                            <div class="message-user-info-right" v-if="KULLANICI.SONMESAJ.length>0">
+                                                                <span class="message-user-info-right-date">
+                                                                    {{KULLANICI.SONMESAJ[0].KYE_TARIH}}
+                                                                    <br />
+                                                                    {{KULLANICI.SONMESAJ[0].KYE_SAAT}}
+                                                                    <br />
+                                                                    <span class="badge badge-success" v-if="KULLANICI.OKUNMAYANMESAJSAYISI>0"> {{KULLANICI.OKUNMAYANMESAJSAYISI}} </span>
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <hr />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </li>
+
+
+                            <li class="dropdown dropdown-extended dropdown-inbox" id="divBildirim" style="display:none;">
+                                <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-close-others="true" aria-expanded="true" style="color:#fff;">
+                                    <i class="icon-bell"></i>
+                                    <!--<span class="badge badge-danger"> {{OgretmenYeniMesajSayisi}} </span>-->
+                                </a>
+                                <ul class="dropdown-menu" style="width:400px; max-width:400px;">
+                                    <li class="external">
+                                        <h3>
+                                            <span class="bold">{{BildirimSayisi}}</span> Bildirim
+                                        </h3>
+                                        <a href="#Iletisim/Bildirimler">Görüntüle</a>
+                                    </li>
+                                    <li style="padding:8px;">
+                                        <div class="chat">
+                                            <div id="chat-users-bildirim" class="scrollable" style="overflow-y:auto; height:auto; max-height:50vh">
+                                                <div class="classes dd-item">
+                                                    <div class="message-users">
+                                                        <div class="message-user" v-for="bildirim in BildirimListe" @click="BildirimAc(bildirim)">
+                                                            <div class="message-user-image">
+                                                                <img src="../../img/okyanus_image.jpg" />
+                                                            </div>
+                                                            <div class="message-user-info">
+                                                                <div href="#"><b>{{bildirim.GONDERENAD + ' ' + bildirim.GONDERENSOYAD}}</b></div>
+                                                                <div href="#" class="font-green">-> {{bildirim.HEADER}}</div>
+
+                                                                <div class="message-user-last" :title="bildirim.MESAJ">
+                                                                    {{bildirim.MESAJ}}
+                                                                </div>
+                                                            </div>
+                                                            <div class="message-user-info-right">
+                                                                <span class="message-user-info-right-date">
+                                                                    {{bildirim.TARIH}}
+                                                                    <br />
+                                                                    {{bildirim.SAAT}}
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <hr />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </li>
+
+                            <!-- BEGIN NOTIFICATION DROPDOWN -->
+                            <!--<li v-if="BildirimListe!=null" class="dropdown dropdown-extended dropdown-notification dropdown-dark" id="header_notification_bar">
+                                <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-close-others="true">
+                                    <i class="icon-bell"></i>
+                                    <span class="badge badge-success"> 1 </span>
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li class="external">
+                                        <h3>
+                                            <span class="bold">1 okunmayan</span> bildirim
+                                        </h3>
+                                        <a href="page_user_profile_1.html">Tümü</a>
+                                    </li>
+                                    <li>
+                                        <ul class="dropdown-menu-list scroller" style="height: 250px;" data-handle-color="#637283">
+                                            <li>
+                                                <a href="javascript:;">
+                                                    <span class="time">13:30</span>
+                                                    <span class="details">
+                                                        <span class="label label-sm label-icon label-info">
+                                                            <i class="fa fa-bullhorn"></i>
+                                                        </span> Örnek bir bildirim.
+                                                    </span>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </li>-->
+                            <!-- END NOTIFICATION DROPDOWN -->
+                            <li class="separator hide"> </li>
+                            <!-- BEGIN INBOX DROPDOWN -->
+                            <!-- DOC: Apply "dropdown-dark" class after below "dropdown-extended" to change the dropdown styte -->
+                            <!--<li v-if="MesajListe!=null" class="dropdown dropdown-extended dropdown-inbox dropdown-dark" id="header_inbox_bar">
+                                <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-close-others="true">
+                                    <i class="icon-envelope-open"></i>
+                                    <span class="badge badge-danger" id="lblMesajSayisi"> 0 </span>
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li class="external">
+                                        <h3 id="lblMesajSayisi2"></h3>
+                                        <a href="#Kullanici/Mesaj">Tümü</a>
+                                    </li>
+                                    <li>
+                                        <ul class="dropdown-menu-list scroller" style="height: 250px;" data-handle-color="#637283" id="lblMesajlar">
+                                            <li>
+                                                <a href="#Kullanici/Mesaj">
+                                                    <span class="subject" style="margin-left:0px !important;">
+                                                        <span class="from"> Lisa Wong </span>
+                                                        <span class="time">Just Now </span>
+                                                    </span>
+                                                    <span class="message" style="margin-left:0px !important;"> Vivamus sed auctor nibh congue nibh. auctor nibh auctor nibh... </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="#">
+                                                    <span class="photo">
+                                                        <img src="assets/layouts/layout3/img/avatar.png" class="img-circle" alt="">
+                                                    </span>
+                                                    <span class="subject">
+                                                        <span class="from"> Richard Doe </span>
+                                                        <span class="time">16 mins </span>
+                                                    </span>
+                                                    <span class="message"> Vivamus sed congue nibh auctor nibh congue nibh. auctor nibh auctor nibh... </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="#">
+                                                    <span class="photo">
+                                                        <img src="assets/layouts/layout3/img/avatar1.jpg" class="img-circle" alt="">
+                                                    </span>
+                                                    <span class="subject">
+                                                        <span class="from"> Bob Nilson </span>
+                                                        <span class="time">2 hrs </span>
+                                                    </span>
+                                                    <span class="message"> Vivamus sed nibh auctor nibh congue nibh. auctor nibh auctor nibh... </span>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </li>-->
+                            <!-- END INBOX DROPDOWN -->
+                            <li class="separator hide"> </li>
+
+                            <!-- BEGIN USER LOGIN DROPDOWN -->
+                            <!-- DOC: Apply "dropdown-dark" class after below "dropdown-extended" to change the dropdown styte -->
+                            <li class="dropdown dropdown-user dropdown-dark">
+                                <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-close-others="true">
+                                    <span v-if="Kullanici!=null" id="lblAnasayfaAdSoyad" class="username username-hide-on-mobile">
+                                        <small v-if="isTest" style="background-color:seagreen">
+                                            TestDB -
+                                        </small>
+                                        {{Kullanici.AD}} {{Kullanici.SOYAD}}
+                                    </span>
+                                    <!-- DOC: Do not remove below empty space(&nbsp;) as its purposely used -->
+                                    &nbsp;
+                                    <img id="imgAnasayfaResim" src="assets/layouts/layout3/img/avatar.png" alt="" class="img-circle" />
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-default">
+
+                                    <!--<li>
+                                        <a href="#">
+                                            <i class="icon-user"></i> Profil
+                                        </a>
+                                    </li>
+
+                                    <li>
+                                        <a href="#">
+                                            <i class="icon-settings"></i> Ayarlar
+                                        </a>
+                                    </li>-->
+                                    <!--<li v-if="KullaniciYetkiListesi!=null && KullaniciYetkiListesi.length>0">
+                                        <a><i class="icon-user"></i>Kullanıcı Türü</a>
+                                        <ul class="kademe-menu" v-for="u in KullaniciYetkiListesi">
+                                            <li @click="KullaniciTipDegistir(u.ID_KADEME)" style="cursor: pointer;">
+                                                <i class="icon-arrow-right"></i><b>{{u.AD}}</b>
+                                            </li>
+                                        </ul>
+                                    </li>-->
+                                    <li v-if="SIFREDEGITSIR_GOSTER"><a data-toggle="modal" data-target="#sifredegistir_modal"><i class="fa fa-password"></i>Şifremi Değiştir</a></li>
+                                    <li class="divider"> </li>
+                                    <li>
+                                        <a onclick="CikisYap();">
+                                            <i class="icon-key"></i> Çıkış Yap
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <!-- END USER LOGIN DROPDOWN -->
+                        </ul>
+                    </div>
+                    <!-- END TOP NAVIGATION MENU -->
+                </div>
+                <!-- END PAGE TOP -->
+            </div>
+
+            <div id="sifredegistir_modal" style="position:relative" class="modal fade" tabindex="-1" data-replace="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Şifre Değiştir</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="alert alert-danger" v-if="ERRSHOW && ERRSUCCESS===0" role="alert">
+                                {{ERRMSG}}
+                            </div>
+                            <div class="alert alert-success" v-if="ERRSHOW && ERRSUCCESS===1" role="alert">
+                                {{ERRMSG}}
+                            </div>
+                            <div class="form-group">
+                                <label for="oldPassword">Eski Şifreniz</label>
+                                <input type="password" v-model="OLDPASS" class="form-control" id="oldPassword" placeholder="Eski Şifreniz">
+                            </div>
+                            <div class="form-group">
+                                <label for="newPassword">Yeni Şifreniz</label>
+                                <input type="password" v-model="NEWPASS" class="form-control" id="newPassword" placeholder="Yeni Şifreniz">
+                            </div>
+                            <div class="form-group">
+                                <label for="rePassword">Şifre Tekrar</label>
+                                <input type="password" v-model="REPASS" class="form-control" id="rePassword" placeholder="Şifre Tekrar">
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <a @click="SifremiDegistir" :disabled="BUTTONDISABLE" class="btn btn-primary">Şifremi Kaydet</a>
+                            <button type="button" :disabled="BUTTONDISABLE" class="btn btn-secondary" data-dismiss="modal">Kapat</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- END HEADER INNER -->
+
+    </div>
+    <!-- END HEADER -->
+    <!-- BEGIN HEADER & CONTENT DIVIDER -->
+    <div class="clearfix"> </div>
+    <!-- END HEADER & CONTENT DIVIDER -->
+    <!-- BEGIN CONTAINER -->
+    <div class="page-container">
+        <!-- BEGIN SIDEBAR -->
+        <div class="page-sidebar-wrapper">
+            <!-- BEGIN SIDEBAR -->
+            <div class="page-sidebar navbar-collapse collapse" style="width:200px;">
+                <!-- BEGIN SIDEBAR MENU -->
+                <ul id="AnaMenu" style="margin-top:0px!important;" class="page-sidebar-menu" data-keep-expanded="false" data-auto-scroll="true" data-slide-speed="200"></ul>
+                <!-- END SIDEBAR MENU -->
+            </div>
+            <!-- END SIDEBAR -->
+        </div>
+        <!-- END SIDEBAR -->
+        <!-- BEGIN CONTENT -->
+        <div class="page-content-wrapper">
+            <div class="page-content" style="margin-left:200px;">
+                <!-- BEGIN CONTENT BODY -->
+                <div class="page-head page-content-body">
+                    <!-- BEGIN PAGE TITLE -->
+                    <div class="page-title">
+                        <h1>
+                            Ana Sayfa <small>Hızlı Menü</small>
+                        </h1>
+                    </div>
+                    <!-- END PAGE TITLE -->
+                </div>
+
+                <div class="light bordered">
+                    <!-- portlet-->
+                    <div class="portlet-body">
+                        <!--İçerik Buraya Yazılacak-->
+                    </div>
+                </div>
+            </div>
+
+            <style>
+                #span_yardim img {
+                    max-width: 100%;
+                }
+            </style>
+
+            <div id="yardim_modal" class="modal fade" tabindex="-1" data-replace="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-body">
+                            <span id="span_yardim" style="max-width:100%;"></span>
+                        </div>
+                        <div class="modal-header">
+                            <button type="button" class="btn default pull-right" data-dismiss="modal">Kapat</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+            <!-- END CONTENT BODY -->
+        </div>
+        <!-- END CONTENT -->
+
+    </div>
+    <!-- END CONTAINER -->
+    <!-- BEGIN FOOTER -->
+    <div class="page-footer">
+        <div class="page-footer-inner">
+            2017 &copy; Pusulam
+            <a target="_blank" href="https://www.techlife.com.tr">Techlife Bilişim</a>
+        </div>
+        <div class="scroll-to-top">
+            <i class="icon-arrow-up"></i>
+        </div>
+    </div>
+    <!-- END FOOTER -->
+    <!--[if lt IE 9]>
+    <script src="assets/global/plugins/respond.min.js"></script>
+    <script src="assets/global/plugins/excanvas.min.js"></script>
+    <script src="assets/global/plugins/ie8.fix.min.js"></script>
+    <![endif]-->
+    <!-- BEGIN CORE PLUGINS -->
+
+    <script src="assets/global/plugins/jquery.min.js" type="text/javascript"></script>
+    <script src="assets/global/plugins/bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
+    <script src="scripts/jquery.cookie.js"></script>
+    <script src="assets/global/plugins/jquery-slimscroll/jquery.slimscroll.min.js" type="text/javascript"></script>
+    <script src="assets/global/plugins/jquery.blockui.min.js" type="text/javascript"></script>
+    <script src="assets/global/plugins/bootstrap-switch/js/bootstrap-switch.min.js" type="text/javascript"></script>
+
+
+    <!-- END CORE PLUGINS -->
+    <!-- BEGIN THEME GLOBAL SCRIPTS -->
+    <script src="assets/global/plugins/bootstrap-select/js/bootstrap-select.min.js" charset="windows-1254"></script>
+    <script src="assets/global/plugins/bootstrap-select/js/i18n/defaults-tr_TR.min.js"></script>
+    <script src="assets/global/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js" type="text/javascript"></script>
+    <script src="assets/global/plugins/bootstrap-timepicker/js/bootstrap-timepicker.min.js" type="text/javascript"></script>
+    <script src="assets/global/plugins/bootstrap-datepicker/locales/bootstrap-datepicker.tr.min.js" type="text/javascript"></script>
+    <script src="assets/global/plugins/bootbox/bootbox.min.js"></script>
+    <script src="assets/global/scripts/datatable.js" type="text/javascript"></script>
+    <script src="assets/global/plugins/datatables/datatables.min.js" type="text/javascript"></script>
+    <script src="assets/global/plugins/datatables/plugins/bootstrap/datatables.bootstrap.js" type="text/javascript"></script>
+    <script src="assets/global/scripts/app.min.js" type="text/javascript"></script>
+    <script src="https://hammerjs.github.io/dist/hammer.min.js"></script>
+
+    <script src="assets/pages/scripts/table-datatables-managed.min.js" type="text/javascript"></script>
+    <script src="assets/global/plugins/datatables/plugins/date-de.js"></script>
+    <!-- END THEME GLOBAL SCRIPTS -->
+    <!-- BEGIN THEME LAYOUT SCRIPTS -->
+    <script src="assets/layouts/layout4/scripts/layout.min.js?ver=001" type="text/javascript"></script>
+    <script src="assets/layouts/layout4/scripts/demo.min.js" type="text/javascript"></script>
+    <script src="assets/layouts/global/scripts/quick-sidebar.min.js" type="text/javascript"></script>
+    <script src="assets/layouts/global/scripts/quick-nav.min.js" type="text/javascript"></script>
+    <!-- END THEME LAYOUT SCRIPTS -->
+    <!-- BEGIN Vue.js SCRIPTS -->
+    <!-- END Vue.js SCRIPTS -->
+    <!--<script src="scripts/vue.min.js"></script>-->
+
+    <script src="assets/global/plugins/moment/moment.min.js"></script>
+    <script src="assets/global/plugins/bootstrap-daterangepicker/daterangepicker.min.js"></script>
+    <script src="scripts/vue.js"></script>
+    <script src="scripts/vue-resource.min.js"></script>
+    <script src="assets/global/plugins/bootstrap-multiselect/js/bootstrap-multiselect.js"></script>
+    <script src="assets/global/plugins/jstree/dist/jstree.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.0.0/crypto-js.min.js"></script>
+    <script src="scripts/Tools.js?ver=1.2.1"></script>
+    <script src="scripts/MainPage.js?ver=3.0.13"></script>
+
+    <script src="assets/plugins/stickyTable-js/jquery.stickytable.min.js"></script>
+</body>
+</html>

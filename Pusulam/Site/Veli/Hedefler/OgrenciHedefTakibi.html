@@ -1,0 +1,706 @@
+﻿<link href="/assets/global/plugins/bootstrap-slider/bootstrap-slider.min.css" rel="stylesheet" />
+<link href="/assets/global/plugins/bootstrap-touchspin/bootstrap.touchspin.css" rel="stylesheet" />
+<script src="/assets/global/plugins/bootstrap-touchspin/bootstrap.touchspin.min.js"></script>
+<script src="Scripts/Rapor/amcharts.js"></script>
+<script src="Scripts/Rapor/jquery.easypiechart.js"></script>
+<script src="Scripts/Rapor/light.js"></script>
+<script src="Scripts/Rapor/serial.js"></script>
+<style>
+    #chartdiv {
+        width: 100%;
+        height: 500px;
+        font-size: 11px;
+    }
+
+    .chart {
+        position: relative;
+        display: inline-block;
+        width: 90px;
+        height: 90px;
+        text-align: center;
+    }
+
+        .chart canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+    td {
+        vertical-align: middle !important;
+    }
+
+    tr td:first-child {
+        text-align: left !important;
+    }
+
+    tr th:first-child {
+        text-align: left !important;
+    }
+
+    .margintop0 {
+        margin-top: 0px !important;
+        margin-bottom: 10px !important;
+    }
+
+    #detay_modal tr td:first-child {
+        text-align: left !important;
+        background-color: brown;
+        color: white;
+        font-weight: 600;
+        vertical-align: top;
+    }
+
+    .nav-tabs .active {
+        border-bottom: 5px solid #32c5d2 !important;
+    }
+
+    .slider-track {
+        cursor: default !important;
+    }
+
+    .col-lg-3 {
+        padding: 4px !important;
+    }
+
+    .col-lg-2 {
+        padding: 4px !important;
+    }
+
+    .col-lg-5 {
+        padding: 4px !important;
+    }
+
+    .progress {
+        background-color: #D2D1D1 !important;
+        margin-bottom: 0px !important;
+        height: auto !important;
+    }
+
+    .progress-bar {
+        color: #444d58;
+        font-weight: bold;
+        text-indent: 0px;
+    }
+
+    .progress-bar-gray {
+        background-color: #ADB6C1;
+    }
+
+    .table-bordered, .table-bordered > tbody > tr > td, .table-bordered > tbody > tr > th, .table-bordered > tfoot > tr > td, .table-bordered > tfoot > tr > th, .table-bordered > thead > tr > td, .table-bordered > thead > tr > th {
+        border: 1px solid #E6E8EA;
+    }
+
+    .panel-default .panel-heading {
+        border: 1px solid #B1AEAE;
+    }
+
+    .badgenew {
+        color: black !important;
+        font-size: 14px !important;
+        font-weight: bold;
+        float: right;
+        height: 23px;
+        margin-top: -3px;
+        padding-top: 5px;
+    }
+
+    @media (max-width: 1510px) {
+        .accordion-toggle {
+            font-size: 10px;
+        }
+
+        .badgenew {
+            color: black !important;
+            font-size: 10px !important;
+            font-weight: bold;
+            float: right;
+            height: 17px;
+            margin-top: -3px;
+            padding-top: 2px;
+        }
+    }
+
+    @media (max-width: 1190px) {
+        .accordion-toggle {
+            font-size: 10px;
+            padding: 10px 0px !important;
+        }
+    }
+
+    @media (max-width: 1020px) {
+        .badge {
+            padding: 2px 2px;
+        }
+    }
+
+    .badge10 {
+        background-color: #F31D13 !important;
+    }
+
+    .badge20 {
+        background-color: #F34713 !important;
+    }
+
+    .badge30 {
+        background-color: #F37013 !important;
+    }
+
+    .badge40 {
+        background-color: #F39913 !important;
+    }
+
+    .badge50 {
+        background-color: #F1CD1C !important;
+    }
+
+    .badge60 {
+        background-color: #E4DE1C !important;
+    }
+
+    .badge70 {
+        background-color: #D6EC1B !important;
+    }
+
+    .badge80 {
+        background-color: #BDF11C !important;
+    }
+
+    .badge90 {
+        background-color: #95F11C !important;
+    }
+
+    .badge100 {
+        background-color: #1CF140 !important;
+    }
+
+    .touch {
+        height: 20px !important;
+        /*  width: 20px;*/
+        line-height: 0.44 !important;
+        padding: 0px !important;
+        font-size: 12px !important;
+        text-align: center !important;
+    }
+
+    .bootstrap-touchspin-down {
+        width: 13px !important;
+    }
+
+    .bootstrap-touchspin-up {
+        width: 13px !important;
+    }
+
+    tr {
+        background-color: #F1F1F1;
+    }
+
+    thead tr {
+        background-color: #D6D5D5;
+    }
+
+    .max-slider-handle {
+        background-image: none !important;
+        background-color: #659be0 !important;
+    }
+
+    .min-slider-handle {
+        background-image: none !important;
+        background-color: #36c6d3 !important;
+    }
+
+    .slider-selection {
+        background-color: #f1f1f1;
+    }
+
+    @media only screen and (max-width: 1400px) {
+        td {
+            font-size: 10px !important;
+        }
+
+        .slider-tick {
+            background-image: linear-gradient(to bottom, #89cdef 0%, #81bfde 100%) !important;
+        }
+
+        body {
+            font-size: 10px !important;
+        }
+    }
+</style>
+
+<div class="page-head">
+    <!-- BEGIN PAGE TITLE -->
+    <div class="page-title col-md-12">
+        <h1> Veli <small>Öğrenci Hedef Takibi</small>  <span onclick="YardimGoster(ID_MENU);" class="pull-right" style="cursor:pointer;"><img src="assets/global/img/info.gif" class="info-image-icon" /> </span></h1>
+    </div>
+    <!-- END PAGE TITLE -->
+</div>
+
+<div class="row" id="app" style="margin-top:0px!important;">
+
+    <div class="portlet light  col-md-12" id="FiltreDivVeli" style="margin:0px; border-bottom-style: solid;border-bottom-width: 3px;border-bottom-color: rgb(0, 173, 239); margin-bottom:20px!important;"
+         v-if="ListKullaniciTipi.indexOf(5)>-1">
+
+        <div class="portlet-body">
+            <div class="form-inline">
+                <label>Öğrenci Seçiniz...</label>
+                <c-ogrenci-veli controller="MevcutDurumOO"
+                                :tc="TCKIMLIKNO"
+                                :idkademe="4"
+                                @OnChange="OgrenciVeliSelected">
+                </c-ogrenci-veli>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="portlet light" style="margin:0px; border-bottom-style: solid;border-bottom-width: 3px;border-bottom-color: rgb(0, 173, 239);">
+            <div class="portlet-body" style="padding:0px!important">
+                <div class="row" style="font-weight:600;font-size:16px;color:#929191; margin:0px!important;">
+                    HEDEFLER
+                </div>
+            </div>
+        </div>
+        <div class="row" style="margin-top: 0px!important;margin-bottom: 3px!important;">
+            <c-sinavturu controller="MevcutDurumOO" v-if="OGRTCKIMLIKNO!=''"
+                         :tc="OGRTCKIMLIKNO"
+                         @OnChange="SinavTuruSelected">
+            </c-sinavturu>
+        </div>
+        <div class="portlet light" id="DurumGosterge" style="min-height: 100px; padding: 10px;text-align:center">
+            <input id="hedeflerslider" type="text" data-slider-min="100000" data-slider-max="560000" data-slider-step="1" data-slider-orientation="vertical" />
+        </div>
+    </div>
+
+    <div class="col-md-9" v-if="DATA.length>0">
+        <div class="portlet light" style="margin:0px; border-bottom-style: solid;border-bottom-width: 3px;border-bottom-color: rgb(0, 173, 239);">
+            <div class="portlet-body" style="padding:0px!important">
+                <div class="row" id="SinavAdiYKS" style="font-weight:600;font-size:16px;color:#929191; margin:0px!important;">
+                    <!--({{DATA[0].SINAVAD}})-->
+
+
+                    <c-sinav-ogrenci controller="MevcutDurumOO"
+                                     :idsinavturu="SINAVTURU"
+                                     :idset="ID_SINAV"
+                                     :donem="0"
+                                     :tc="OGRTCKIMLIKNO"
+                                     @OnChange="SinavSelected">
+                        na
+                    </c-sinav-ogrenci>
+
+                </div>
+            </div>
+        </div>
+        <div class="portlet light" style="min-height: 100px;padding:0px;margin-top:1px; overflow-x:auto;">
+            <table id="tablosinavsonuc" class="table table-responsive table-bordered" style="margin:0px!important">
+                <thead>
+                    <tr style='height:45px;background-color: #D6D5D5;'>
+                        <td style='vertical-align:middle'>Ders</td>
+                        <td style='vertical-align:middle;text-align:center;width:150px;'>Bir Önceki Doğru<br />{{DATA.SINAVAD2}}</td>
+                        <td style='vertical-align:middle;text-align:center;width:60px;'>Soru Sayısı</td>
+                        <td style='vertical-align:middle;text-align:center;width:150px;font-size:10px;'>
+                            <div class='progress-bar-success' style='width:15px; height:15px;float:left;'></div> <label style='float: left;'>Güncel Doğru</label> <br style='clear:both;'>
+                            <div class='progress-bar-info' style='width:15px; height:15px;float:left;'></div><label style='float: left;'> Hedeflenen</label>  <br style='clear:both;'>
+                            <div class='progress-bar-warning' style='width:15px; height:15px;float:left;'></div><label style='float: left;'> Hedefe Kalan</label>  <br style='clear:both;'>
+                        </td>
+                        <td style='vertical-align:middle;text-align:center;width:100px;'>Doğru Artışı</td>
+                        <td style='vertical-align:middle;text-align:center;width:60px;'>Hedef Doğru</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="DOGRU in DATA" style="cursor:pointer;">
+                        <td>{{DOGRU.TAKMAAD}}</td>
+                        <td style="width:100px!important;">
+                            <div class="progress">
+                                <div class="progress-bar progress-bar-gray" role="progressbar" :style="'width: '+((DOGRU.ONCEKIDOGRU<0?0:DOGRU.ONCEKIDOGRU)/DOGRU.ONCEKISORUSAYISI*100)+'%'" :aria-valuenow="DOGRU.ONCEKIDOGRU" :aria-valuemin="0" :aria-valuemax="DOGRU.ONCEKISORUSAYISI">
+                                    {{DOGRU.ONCEKIDOGRU}}
+                                </div>
+                            </div>
+                        </td>
+                        <td>{{DOGRU.SORUSAYISI}}</td>
+                        <td style="width:150px!important;">
+                            <div class="progress">
+                                <div class="progress-bar progress-bar-success" :style="'width: '+((DOGRU.DOGRU<0?0:DOGRU.DOGRU)/DOGRU.SORUSAYISI*100)+'%'">
+                                    <span style="display:inline-block;float:left;">{{DOGRU.DOGRU}}</span>
+                                </div>
+                                <div v-if="DOGRU.HEDEFDOGRU!=null" class="progress-bar progress-bar-warning pull-right" :style="'width: '+(((DOGRU.HEDEFDOGRU-DOGRU.DOGRU)<0?0:(DOGRU.HEDEFDOGRU-DOGRU.DOGRU))/DOGRU.SORUSAYISI*100)+'%'">
+                                    <span style="display:inline-block;float:right;">{{(DOGRU.HEDEFDOGRU-(DOGRU.DOGRU)).toFixed(2)}}</span>
+                                </div>
+                            </div>
+                        </td>
+                        <td style="width:80px!important;">
+                            <input class="net_touchspin touch form-control" :SORUSAYISI="DOGRU.SORUSAYISI" :DOGRU="DOGRU.DOGRU" v-model="DOGRU.ARTIS" type='text' style='display: block;background-color: #D2D1D1;font-weight:bold;'>
+                        </td>
+                        <td style="width:80px!important; text-align:center;">
+                            {{DOGRU.HEDEFDOGRU}}
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="col-md-12" id="divkazanim" style="word-break:break-word!important;">
+        <div class="portlet light" style="margin:0px; border-bottom-style: solid;
+    border-bottom-width: 3px;
+    border-bottom-color: rgb(0, 173, 239);">
+            <div class="portlet-body" style="padding:0px!important">
+                <div class="row" id="SinavAdiYKS" style="font-weight:600;font-size:16px;color:#929191; margin:0px!important;">
+                    KAZANIMLAR
+                </div>
+            </div>
+        </div>
+        <div class="portlet light" style="min-height: 100px;padding:0px;margin-top:1px">
+            <div class="panel-group accordion" id="accordion1">
+                <div class="panel panel-default" style="margin-top:-1px;" v-for="(u,index) in KAZANIMLAR">
+                    <div class="panel-heading">
+                        <div class="panel-title" style="padding: 3px;background-color: #444d58;">
+                            <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion1" :href="'#collapse_'+index" aria-expanded="true" style="font-size:14px; color:#FFF">
+                                <div style="display:inline-block; width:calc(100% - 60px); overflow:hidden; text-overflow:ellipsis;">{{u.DERSAD}}</div>
+                                <div :class="'badge badgenew pull-right'+' badge'+parseInt(u.DERSYUZDE-u.DERSYUZDE%10)">
+                                    {{u.DERSYUZDE}}
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                    <div :id="'collapse_'+index" class="panel-collapse collapse" aria-expanded="true" style="">
+                        <table class="table table-responsive table-bordered" style="margin:0PX!important;">
+                            <tbody>
+                                <tr style="background-color: #F1F1F1; cursor:pointer;" v-for="k in u.UNITELER" :title="'Doğru: ' + k.TD + ' Yanlış: ' + k.TY+ ' Boş: ' + k.TB">
+                                    <td @click="DetayGoster(k)" v-html="k.UNITEAD"></td>
+                                    <td title="Akıllı Öğretim Barkod Videoları">
+                                        <div v-for="(item,j) in k.AKILLIBARKODLIST">
+                                            <a :href="item.LINK" target="_blank">
+                                                <i class="fa fa-2x fa-youtube-play"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                    <td title="Kazanım Videoları">
+                                        <div v-for="(item,j) in k.LINKLIST">
+                                            <a :href="item.LINK" target="_blank">
+                                                <i class="fa fa-2x fa-youtube-play"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                    <td title="Morpa Kazanımlar" v-if="MORPALINK!=undefined&&MORPALINK!=''">
+                                        <div v-for="(item,j) in k.MORPAKAZANIMLIST">
+                                            <a :href="MORPALINK + item.KOD" target="_blank">
+                                                <img src="img/morpa.ico" />
+                                            </a>
+                                        </div>
+                                    </td>
+                                    <td style="text-align:center;vertical-align:middle; width:40px;">{{k.UNITEYUZDE}}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="kazanim_modal" class="modal fade" tabindex="-1" data-replace="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                    <h4 class="modal-title">Kazanım Detayları</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-body form-horizontal">
+                        <div class="row" style="margin:0px!important;" v-if="SECILIKAZANIM!=null">
+                            <h4>
+                                {{SECILIKAZANIM.UNITEAD}}
+                            </h4>
+                            <table class="table table-striped table-bordered table-checkable">
+                                <tbody>
+                                    <tr><td>DOĞRU</td><td>{{SECILIKAZANIM.TD}}</td></tr>
+                                    <tr><td>YANLIŞ</td><td>{{SECILIKAZANIM.TY}}</td></tr>
+                                    <tr><td>BOŞ</td><td>{{SECILIKAZANIM.TB}}</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn default" data-dismiss="modal">Kapat</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-12" v-if="NETGRAFIKDATA != null">
+        <div class="portlet light" style="margin:0px; border-bottom-style: solid;border-bottom-width: 3px;border-bottom-color: rgb(0, 173, 239);">
+            <div class="portlet-body" style="padding:0px!important">
+                <div class="row" style="font-weight:600;font-size:16px;color:#929191; margin:0px!important;">
+                    SINAV NET GRAFİĞİ
+                </div>
+            </div>
+        </div>
+        <div class="row" style="margin-top: 0px!important;margin-bottom: 3px!important;">
+            <c-sinavturu controller="MevcutDurumOO" v-if="OGRTCKIMLIKNO!=''"
+                         :tc="OGRTCKIMLIKNO"
+                         @OnChange="SinavTuruGrSelected">
+            </c-sinavturu>
+            <c-sinav-ders :dersler="NETGRAFIKDATA.DERSLIST"
+                          ilksecenek="Toplam Net"
+                          @OnChange="SinavDersSelected">
+            </c-sinav-ders>
+        </div>
+        <div class="portlet light" style="min-height: 100px; padding: 10px;text-align:center">
+            <div id="chartdiv"></div>
+        </div>
+    </div>
+</div>
+
+<script src="/VueComponents/UniversiteFiltreleri.js"></script>
+<script src="/VueComponents/SinavIstatistikFiltreleri.js"></script>
+<script src="assets/global/plugins/bootstrap-slider/bootstrap-slider.min.js"></script>
+<script>
+    var vue = new Vue({
+        el: "#app",
+        name: "MevcutDurumOO.html",
+
+        data: {
+            SINAVTURU: 0,
+            SINAVTURUGR: 0,
+            ID_SINAV: 0,
+            SLIDER: null,
+            OGRENCISONDOGRU: null,
+            OGRENCIHEDEFDOGRU: null,
+            KAZANIMLAR: null,
+            DERS: null,
+            ISSTARTED: false,
+            ListKullaniciTipi: [],
+            OGRTCKIMLIKNO: '',
+            TCKIMLIKNO: '',
+            TC_OGRENCI : '',
+            SECILIKAZANIM: null,
+            DATA: [],
+            MORPALINK: '',
+            NETGRAFIKDATA: null
+        },
+
+        mounted() {
+            this.TCKIMLIKNO = session.TCKIMLIKNO;
+            vue = this;
+            var p = {
+                TCKIMLIKNO: session.TCKIMLIKNO,
+                OTURUM: session.OTURUM
+            };
+            var _this = this;
+            var list = [];
+            WebPost(this, "MevcutDurumOO", "KullaniciTipiGetir", p, "#app", "Yükleniyor...", function (data, parent) {
+                if (data != null) {
+                    $.each(data, function (j, el) {
+                        list.push(this.ID_KULLANICITIPI)
+                    });
+                    parent.ListKullaniciTipi = list;
+                    if (list.indexOf(4) > -1) {
+                        parent.OGRTCKIMLIKNO = session.TCKIMLIKNO;
+                        parent.KazanimListele();
+                    } else if (list.indexOf(5) > -1) {
+
+                    }
+                } else {
+                    Alert_Warning("Kullanıcı Bulunamadı..!");
+                }
+            });
+        },
+
+        methods: {
+            OgrenciVeliSelected(item) {
+             
+                this.TC_OGRENCI = item;
+                this.KazanimListele();
+                this.SinavNetGrafigiGetir();
+                this.OgrenciDogruGetir();
+            },
+
+            SinavTuruSelected(ID_SINAVTURU) {
+                this.SINAVTURU = ID_SINAVTURU;
+                this.ID_SINAV = 0;
+                this.OgrenciDogruGetir();
+            },
+
+            SinavTuruGrSelected(SINAVTURUGR) {
+                this.SINAVTURUGR = SINAVTURUGR;
+                this.SinavNetGrafigiGetir();
+            },
+
+            SinavDersSelected() {
+                var SinavDers = $("#Dersler option:selected").text();
+
+                var dataList = [];
+                var list = this.NETGRAFIKDATA.NETLIST.filter(x => x.DERSAD == SinavDers);
+                var maxnet = 0;
+                for (var i = 0; i < list.length; i++) {
+                    var data = { "sinavlar": list[i].SINAVAD, "netler": list[i].NET, "color": "#0D52D1" };
+                    dataList.push(data);
+                    if (maxnet > parseFloat(list[i].NET)) {
+                        maxnet = parseFloat(list[i].NET);
+                    }
+                }
+
+                console.log(dataList);
+
+                AmchartOlustur("chartdiv", dataList, (maxnet + 5), "netler", "sinavlar", "color", SinavDers + " Net", true);
+            },
+
+            SinavNetGrafigiGetir() {
+                var p = { TCKIMLIKNO: session.TCKIMLIKNO, OTURUM: session.OTURUM, ID_SINAVTURU: this.SINAVTURUGR, OGRTCKIMLIKNO: this.TC_OGRENCI };
+                WebPost(this, "MevcutDurumOO", "SinavTuruNetGrafikListele", p, '', '', function (data, parent) {
+                    console.log(data);
+                    parent.NETGRAFIKDATA = JSON.parse(data);
+                    parent.SinavDersSelected();
+                });
+            },
+
+            SinavSelected(val) {
+                if (this.ID_SINAV != val && val > 0) {
+                    this.ID_SINAV = val;
+                    this.OgrenciDogruGetir();
+                }
+            },
+
+            getObjects(obj, key, val) {
+                var objects = [];
+                for (var i in obj) {
+                    if (!obj.hasOwnProperty(i)) continue;
+                    if (typeof obj[i] == 'object') {
+                        objects = objects.concat(this.getObjects(obj[i], key, val));
+                    } else if (i == key && obj[key] == val) {
+                        objects.push(obj);
+                    }
+                }
+                return objects;
+            },
+
+            OgrenciDogruGetir() {
+                //alert(this.ID_SINAV)
+
+                var p = { TCKIMLIKNO: session.TCKIMLIKNO, OTURUM: session.OTURUM, ID_SINAVTURU: this.SINAVTURU, OGRTCKIMLIKNO: this.OGRTCKIMLIKNO, ID_SINAV: this.ID_SINAV };
+                WebPost(this, "MevcutDurumOO", "OgrenciSonDogruGetir", p, '', '', function (data, parent) {
+                    if (data != null) {
+                        parent.DATA = JSON.parse(data);
+                        var toplamDOGRU = 0;
+                        var toplamHEDEFDOGRU = 0;
+                        for (var i = 0; i < parent.DATA.length; i++) {
+                            toplamDOGRU += parseInt(parent.DATA[i].DOGRU);
+                            toplamHEDEFDOGRU += parseInt(parent.DATA[i].HEDEFDOGRU);
+                        }
+                        vue.OGRENCISONDOGRU = toplamDOGRU;
+                        vue.OGRENCIHEDEFDOGRU = toplamHEDEFDOGRU;
+
+                        parent.$nextTick(function () {
+                            if (vue.ID_SINAV != parseInt(JSON.parse(data)[0].ID_SINAV)) {
+                                vue.ID_SINAV = parseInt(JSON.parse(data)[0].ID_SINAV);
+                                //vue.OgrenciDogruGetir()
+                            }
+                        });
+
+                        parent.$nextTick(function () {
+                            $(".net_touchspin").each(function (i) {
+                                var max = parseFloat($(this).attr("SORUSAYISI")) - parseFloat($(this).attr("DOGRU"))
+                                $(this).TouchSpin({
+                                    initval: 0,
+                                    buttondown_class: "btn blue touch",
+                                    buttonup_class: "btn blue touch",
+                                    step: 1,
+                                    decimals: 0,
+                                    max: max
+                                });
+
+                                $(this).on("touchspin.on.stopupspin", function () {
+                                    this.dispatchEvent(new Event('input'));
+                                    parent.HedefKaydet();
+                                });
+
+
+                                $(this).on("touchspin.on.stopdownspin", function () {
+                                    this.dispatchEvent(new Event('input'))
+                                    parent.HedefKaydet();
+                                });
+                            });
+                            parent.ISSTARTED = false;
+
+                            vue.CreateSlider();
+                        })
+                    }
+                })
+            },
+
+            CreateSlider() {
+                var HedefPuanlar = [];
+                HedefPuanlar.push(vue.OGRENCISONDOGRU);
+                HedefPuanlar.push(vue.OGRENCIHEDEFDOGRU);
+
+                if (vue.SLIDER != null) {
+                    $("#hedeflerslider").slider('destroy');
+                }
+
+                vue.SLIDER = $("#hedeflerslider").slider({
+                    scale: 'linear',
+                    reversed: true,
+                    ticks: HedefPuanlar.reverse(),
+                    handle: 'round',
+                    enabled: false,
+                    range: true,
+                    natural_arrow_keys: true,
+                    precision: 0,
+                    tooltip: 'always',
+                    tooltip_split: true
+                });
+
+                if (vue.OGRENCISONDOGRU != null && vue.OGRENCIHEDEFDOGRU != null) {
+                    $("#hedeflerslider").slider('setValue', [parseFloat(vue.OGRENCISONDOGRU), parseFloat(vue.OGRENCIHEDEFDOGRU)]);
+                }
+
+                $(".tooltip-max").attr("class", "tooltip tooltip-max left in");
+                var stil = $(".tooltip-max").attr("style").replace("left", "right");
+                $(".tooltip-max").attr("style", stil);
+
+                $(".tooltip-min .tooltip-inner").html("Güncel :" + $(".tooltip-min .tooltip-inner").html());
+                $(".tooltip-max .tooltip-inner").html("Hedeflenen :" + $(".tooltip-max .tooltip-inner").html());
+
+                $(".tooltip-min").css("z-index", "5");
+                $(".tooltip-max").css("z-index", "5");
+            },
+
+            HedefKaydet() {
+                var p = { TCKIMLIKNO: session.TCKIMLIKNO, OTURUM: session.OTURUM, SQLJSON: JSON.stringify(vue.DATA), OGRTCKIMLIKNO: this.OGRTCKIMLIKNO, ID_SINAVTURU: this.SINAVTURU };
+                if (!this.ISSTARTED) {
+                    this.ISSTARTED = true;
+                    WebPost(vue, "MevcutDurumOO", "HedefNetEkleOO", p, '', '', function (data, parent) {
+                        if (data == true) {
+                            vue.OgrenciDogruGetir();
+                        }
+                    });
+                }
+            },
+
+            KazanimListele() {
+                WebPost(this, "MevcutDurumOO", "MorpaLinkGetir", { TCKIMLIKNO: this.OGRTCKIMLIKNO, IP: myIP() }, '#divkazanim', '', function (data, parent) {
+                    if (data.SUCCESS) {
+                        vue.MORPALINK = "https://" + data.URL;
+                    } else {
+                        console.log("MorpaHata: " + vue.ERROR);
+                    }
+                })
+
+                var p = { TCKIMLIKNO: session.TCKIMLIKNO, OTURUM: session.OTURUM, OGRTCKIMLIKNO: this.OGRTCKIMLIKNO };
+                WebPost(this, "MevcutDurumOO", "KazanimListele", p, '#divkazanim', '', function (data, parent) {
+                    vue.KAZANIMLAR = JSON.parse(data);
+                })
+            },
+
+            DetayGoster(k) {
+                this.SECILIKAZANIM = k;
+                this.$nextTick(function () {
+                    $('#kazanim_modal').modal();
+                });
+            }
+        }
+    });
+</script>
+<script src="Scripts/PublicMethods.js"></script>

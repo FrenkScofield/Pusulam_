@@ -1,0 +1,172 @@
+﻿
+<div class="page-head">
+    <!-- BEGIN PAGE TITLE -->
+    <div class="page-title col-md-12">
+        <h1>
+            Yıllık <small> Yazı Ekle / Düzenle </small> <span onclick="YardimGoster(ID_MENU);" class="pull-right" style="cursor:pointer;"><img src="assets/global/img/info.gif" class="info-image-icon" /> </span>
+        </h1>
+    </div>
+    <!-- END PAGE TITLE -->
+</div>
+
+<div class="row" id="app">
+
+
+    <div class="col-md-12" v-if="LISTE.length>0">
+        <div class="portlet box green-haze dd-item" style="border:none">
+            <div class="portlet-title dd-handle" data-toggle='collapse' data-target='#filters' style="cursor:pointer;">
+                <div class="caption">
+                    <i class="icon-magnifier"></i>
+                    <span class="caption-subject bold uppercase"> Öğrenci Listesi </span>
+                    <span class="caption-helper"></span>
+                </div>
+                <!--<div class='actions'>
+                    <a href='javascript:;' class='btn btn-default btn-sm' style='border:none;'>
+                        <i class='fa fa-chevron-down'></i>
+                    </a>
+                </div>-->
+            </div>
+            <div class="portlet-body form collapse in" id="filters">
+                <form role="form" style="padding:12px 20px">
+                    <div class="form-body form-group-lg form-horizontal row" style="padding: 0px;margin-top: 0px !important;">
+
+                        <div class="portlet light col-md-12" style="margin:0px; border-bottom-style: solid;border-bottom-width: 3px;border-bottom-color: rgb(0, 173, 239);">
+
+                            <div class="portlet-body">
+                                <div class="form-inline">
+
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <th style='width:100px;'>Resim</th>
+                                                <th style='min-width:150px;'>Sınıf</th>
+                                                <th style='min-width:150px;'>Ad</th>
+                                                <th style='min-width:150px;'>Soyad</th>
+                                                <th>İşlemler</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr v-for="u in LISTE">
+                                                <td>
+                                                    <img src="../../../img/okyanus_logoyeni.png" width="60px" v-if="u.FOTOGRAF==''" />
+                                                    <img :src="'data:image/  png;base64,'+ u.FOTOGRAF" width="60px" v-else />
+                                                </td>
+                                                <td> {{u.SINIFAD}} </td>
+                                                <td> {{u.AD}} </td>
+                                                <td> {{u.SOYAD}} </td>
+                                                <td>
+
+                                                    <button class="btn green" @click="u.DUZENLE = true" v-if="!u.DUZENLE && u.ID_YILLIK == 0">Ekle</button>
+                                                    <button class="btn blue" @click="u.DUZENLE = true" v-if="!u.DUZENLE && u.ID_YILLIK > 0">Düzenle</button>
+                                                    <button class="btn red" @click="Sil(u)" v-if="!u.DUZENLE && u.ID_YILLIK > 0">Sil</button>
+
+                                                    <div v-if="u.DUZENLE">
+                                                        <textarea rows="3" v-model="u.YAZI" class="col-md-12 form-control" style="width:100%" maxlength="500"></textarea>
+                                                        <span>Karakter Sayısı {{u.YAZI.length}} / 500 </span>
+
+                                                        <button class="btn green" @click="Kaydet(u)" :disabled="u.YAZI.length==0" style="margin-top: 10px; float: right;">Kaydet</button>
+                                                        <button class="btn red" @click="Iptal(u)" style="margin-top: 10px; float: right;">İptal</button>
+                                                    </div>
+
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+
+                                </div>
+
+
+                            </div>
+                        </div>
+
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+</div>
+<script src="../../../VueComponents/Filtre.js"></script>
+<script>
+    var vue = new Vue({
+        el: "#app",
+        name: "YillikYaz",
+
+        data: {
+            TCKIMLIKNO: undefined,
+            OTURUM: undefined,
+            controller: 'YillikYaz',
+
+            LISTE: [],
+
+        },
+
+        mounted() {
+            this.TCKIMLIKNO = session.TCKIMLIKNO;
+            this.OTURUM = session.OTURUM;
+
+            this.Listele();
+        },
+
+        methods: {
+
+
+            Listele() {
+
+                var p = {
+                    TCKIMLIKNO: this.TCKIMLIKNO,
+                    OTURUM: this.OTURUM,
+                    TC_OGRENCI: this.TCKIMLIKNO,
+                };
+                ListeTemizle(this.LISTE);
+                WebPost(this, this.controller, "OgrenciListele", p, "", "", function (data, parent) {
+                    if (data != null) {
+                        parent.LISTE = JSON.parse(data).map(x => { x.DUZENLE = false; x.YAZIORJ = x.YAZI; return x });
+                    } else {
+                        Alert_Warning("Sınav Bulunamadı..!");
+                    }
+                });
+            },
+
+            Kaydet(item) {
+                var p = {
+                    TCKIMLIKNO: this.TCKIMLIKNO,
+                    OTURUM: this.OTURUM,
+                    SQLJSON: JSON.stringify(item),
+                };
+                WebPost(this, this.controller, "YillikYaziKaydet", p, "", "", function (data, parent) {
+                    (data)
+                        ? parent.Listele()
+                        : Alert_Warning("Kaydedilirken Hata..!");
+                });
+
+            },
+
+            Sil(item) {
+                var p = {
+                    TCKIMLIKNO: this.TCKIMLIKNO,
+                    OTURUM: this.OTURUM,
+                    SQLJSON: JSON.stringify(item),
+                };
+                WebPost(this, this.controller, "YillikYaziSil", p, "", "", function (data, parent) {
+                    (data)
+                        ? parent.Listele()
+                        : Alert_Warning("Kaydedilirken Hata..!");
+                });
+
+            },
+
+            Iptal(item) {
+                item.YAZI = item.YAZIORJ;
+                item.DUZENLE = false;
+            },
+        },
+        watch: {
+            LISTE(val) {
+                this.LISTE = Array.isArray(val) ? val : [];
+            },
+        }
+    });
+</script>
+<script src="../../../Scripts/PublicMethods.js"></script>
+<script src="../../../Scripts/Rapor/amcharts.js"></script>

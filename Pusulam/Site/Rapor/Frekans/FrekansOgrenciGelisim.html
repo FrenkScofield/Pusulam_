@@ -1,0 +1,230 @@
+﻿<link href="assets/global/plugins/bootstrap-fileinput/bootstrap-fileinput.css" rel="stylesheet" type="text/css" />
+<style>
+    td {
+        vertical-align: middle !important;
+    }
+
+    .row {
+        margin-top: 10px !important;
+    }
+</style>
+<div class="page-head">
+    <!-- BEGIN PAGE TITLE -->
+    <div class="page-title col-md-12">
+        <h1>
+            Frekans Öğrenci Gelişim <span onclick="YardimGoster(ID_MENU);" class="pull-right" style="cursor:pointer;"><img src="assets/global/img/info.gif" class="info-image-icon" /> </span>
+        </h1>
+    </div>
+    <!-- END PAGE TITLE -->
+</div>
+
+<div class="row" id="app">
+    <div class="col-md-12" v-if="ListKullaniciTipi.indexOf(4) == -1 && ListKullaniciTipi.indexOf(5) == -1">
+        <div class="custom-alerts alert alert-warning fade in">
+            <i class="fa-lg fa fa-warning"></i>
+            Bu sayfa yalnızca veli ve öğrenci için yapılmıştır.
+        </div>
+    </div>
+    <div v-else>
+        <div class="col-md-12">
+            <div class="tab-pane fade active in" id="tab_1_1">
+                <div class="portlet box blue-hoki dd-item" style="border:none">
+                    <!-- BEGIN PORTLET-->
+                    <div class="portlet-body form">
+                        <form role="form" style="padding:12px 20px">
+                            <div v-show="ListKullaniciTipi.indexOf(5)>-1">
+                                <div class="row" style="margin-top:0PX!important;">
+                                    <c-ogrenci-veli :controller="controller"
+                                                    @OnChange="OgrenciVeliSelected">
+                                    </c-ogrenci-veli>
+                                </div>
+
+                                <div class="row">
+                                    <c-donem :controller="controller"
+                                             @OnChange="DonemSelected">
+                                    </c-donem>
+                                </div>
+                            </div>
+
+                            <div v-show="ListKullaniciTipi.indexOf(4)>-1">
+                                <div class="row">
+                                    <c-donem :controller="controller"
+                                             @OnChange="DonemSelected">
+                                    </c-donem>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="form-group" style="margin-top:10px;">
+                                    <div class="col-md-12 text-right">
+                                        <button type="button" class="btn green" @click="Listele">Listele</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="portlet light" v-if="LISTE.length>0">
+                    <div class="portlet-title">
+                        <div class="caption">
+                            <i class="icon-list font-green"></i>
+                            <span class="caption-subject bold font-green uppercase"> Frekans Listesi </span>
+                            <span class="caption-helper"></span>
+                        </div>
+                    </div>
+                    <!-- BEGIN PORTLET-->
+                    <div class="portlet-body form">
+                        <form role="form">
+                            <div class="portlet light bordered">
+                                <div class="portlet-body">
+                                    <div style="overflow-x:auto;">
+                                        <table class="table table-striped table-bordered table-hover table-checkable" style="width:100%">
+                                            <thead>
+                                                <tr>
+                                                    <th>Tür</th>
+                                                    <th>Tarih</th>
+                                                    <th>Ad</th>
+                                                    <th>Frekans</th>
+                                                    <th>İşlem</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr class="odd gradeX" v-for="(u, index) in LISTE">
+                                                    <td>
+                                                        {{u.TUR}}
+                                                    </td>
+                                                    <td>
+                                                        {{u.TARIH}}
+                                                    </td>
+                                                    <td>
+                                                        {{u.AD}}
+                                                    </td>
+                                                    <td>
+                                                        {{u.FREKANS}}
+                                                    </td>
+                                                    <td>
+                                                        <button type="button" class="btn green" @click="DetayGor(u.TCKIMLIKNO, u.ID_SINAV)">DETAY</button>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <!-- END PORTLET-->
+                </div>
+            </div>
+        </div>
+
+        <div id="MODAL_DETAY" class="modal fade in" tabindex="-1" data-replace="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-body" style="padding-bottom:0px;" id="modal-body">
+                        <div style="overflow-x:auto;">
+                            <table class="table table-striped table-bordered table-hover table-checkable" style="width:100%">
+                                <thead>
+                                    <tr>
+                                        <th>Ders</th>
+                                        <th>Frekans</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="odd gradeX" v-for="(u, index) in DERSLIST">
+                                        <td>
+                                            {{u.TAKMAAD}}
+                                        </td>
+                                        <td>
+                                            {{u.FREKANS}}
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn default" data-dismiss="modal">Kapat</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="VueComponents/Filtre.js"></script>
+<script src="VueComponents/FiltreEk.js"></script>
+
+<script>
+    var vue = new Vue({
+        el: "#app",
+        name: "FrekansOgrenciGelisim",
+
+        data: {
+            controller: 'FrekansOgrenciGelisim',
+            TC_OGRENCI: '',
+            LISTE: [],
+            DERSLIST: [],
+            DONEM: '',
+            ListKullaniciTipi: []
+        },
+
+        mounted() {
+            var p = {
+                TCKIMLIKNO: session.TCKIMLIKNO,
+                OTURUM: session.OTURUM
+            };
+            var list = [];
+            WebPost(this, this.controller, "KullaniciTipiGetir", p, "#app", "Yükleniyor...", function (data, parent) {
+                if (data != null) {
+                    $.each(data, function (j, el) {
+                        list.push(this.ID_KULLANICITIPI)
+                    });
+                    parent.ListKullaniciTipi = list;
+                    if (list.indexOf(4) > -1) {
+                        parent.TC_OGRENCI = session.TCKIMLIKNO;
+                    }
+                } else {
+                    Alert_Warning("Kullanıcı Bulunamadı..!");
+                }
+            });
+        },
+
+        methods: {
+            OgrenciVeliSelected(val) {
+                this.TC_OGRENCI = val;
+            },
+
+            DonemSelected(val) {
+                this.DONEM = val;
+            },
+
+            DetayGor(TC_OGRENCI, ID_SINAV) {
+                var p = { TCKIMLIKNO: session.TCKIMLIKNO, OTURUM: session.OTURUM, TC_OGRENCI: TC_OGRENCI, ID_SINAV: ID_SINAV };
+                WebPost(vue, vue.controller, "OgrenciSinavDersFrekansListe", p, '', '', function (data, parent) {
+                    if (data != null) {
+                        parent.DERSLIST = JSON.parse(data);
+                        $('#MODAL_DETAY').modal();
+                    }
+                    else {
+                        Alert_Warning("Bir Hata Oluştu!");
+                    }
+                })
+            },
+
+            Listele() {
+                this.LISTE = [];
+                if (this.DONEM != '' && this.TC_OGRENCI != '') {
+                    var p = { TCKIMLIKNO: session.TCKIMLIKNO, OTURUM: session.OTURUM, TC_OGRENCI: this.TC_OGRENCI, DONEM: this.DONEM };
+                    WebPost(vue, vue.controller, "OgrenciSinavFrekansListe", p, '', '', function (data, parent) {
+                        parent.LISTE = JSON.parse(data);
+                    })
+                }
+            }
+        },
+    });
+</script>
+<script src="Scripts/PublicMethods.js"></script>
+
+
+

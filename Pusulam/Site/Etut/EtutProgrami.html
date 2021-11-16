@@ -1,0 +1,885 @@
+﻿<head>
+    <script src="../../../Scripts/Rapor/amcharts.js"></script>
+    <script src="../../../Scripts/Rapor/jquery.easypiechart.js"></script>
+    <script src="../../../Scripts/Rapor/light.js"></script>
+    <script src="../../../Scripts/Rapor/serial.js"></script>
+</head>
+
+<style>
+    #chartdiv {
+        width: 100%;
+        height: 500px;
+        font-size: 11px;
+    }
+
+    .table > tbody > tr > td, .table > tbody > tr > th, .table > tfoot > tr > td, .table > tfoot > tr > th, .table > thead > tr > td, .table > thead > tr > th {
+        font-size: 11px;
+    }
+
+    .turuncu {
+        background-color: #EA5702;
+        color: white;
+        font-size: 12px !important;
+    }
+
+    .fontsize12 {
+        font-size: 12px !important;
+    }
+
+    .koyumavi {
+        background-color: #0E3170;
+        color: white;
+    }
+
+    .acikmavi {
+        background-color: #2786C3;
+        color: white;
+    }
+
+    .bordermavi {
+        border: #2786C3 1px solid;
+        text-align: center;
+        color: black;
+    }
+
+    .bordersag {
+        border-right: #b4d2e6 1px solid;
+        text-align: center;
+    }
+
+    .analizbaslik {
+        background-color: #FFA500 !important;
+    }
+
+    .fixed-table-body {
+        overflow-x: hidden !important;
+    }
+
+    .red {
+        color: red;
+    }
+</style>
+
+<div class="page-head">
+    <div class="page-title col-md-12">
+        <h1>
+            Etüt
+             <span onclick="YardimGoster(ID_MENU);" class="pull-right" style="cursor:pointer;"><img src="assets/global/img/info.gif" class="info-image-icon" /> </span>
+        </h1>
+    </div>
+</div>
+
+<div class="row" id="app">
+    <div class="col-md-12">
+        <div class="form-body form-horizontal" id="tabs">
+            <ul class="nav nav-tabs">
+                <li @click="tabid=3">                           <a data-id="3" href="#tab_1_3" data-toggle="tab">Sınav/Yazılı Etüt Lisesi</a></li>
+                <li @click="tabid=1" class="active">            <a data-id="1" href="#tab_1_1" data-toggle="tab">Sabit Etüt Programı</a></li>
+                <li @click="tabid=2" v-if="tabDanisman==true">  <a data-id="2" href="#tab_1_2" data-toggle="tab">Sabit Etüt Oluştur</a></li>
+            </ul>
+            <div class="tab-content">
+                <!--Sabit Etüt-->
+                <div class="tab-pane fade active in" id="tab_1_1">
+                    <div class="col-md-12 portlet box green-haze dd-item" style="border:none">
+                        <div class="portlet-title dd-handle" data-toggle='collapse' data-target='#filters' style="cursor:pointer;">
+                            <div class="caption">
+                                <i class="icon-magnifier"></i>
+                                <span class="caption-subject bold uppercase"> Filtreler </span>
+                                <span class="caption-helper"></span>
+                            </div>
+                            <div class='actions'>
+                                <a href='javascript:;' class='btn btn-default btn-sm' style='border:none;'>
+                                    <i class='fa fa-chevron-down'></i>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="portlet-body form collapse in" id="filters">
+                            <form role="form" style="padding:12px 20px">
+                                <div class="form-body form-group-lg form-horizontal row" style="padding: 0px;margin-top: 0px !important;">
+                                    <div class="portlet-body">
+                                        <div class="form-inline">
+                                            <c-sube controller="EtutProgrami"
+                                                    @OnChange="SubeSelected">
+                                            </c-sube>
+                                            <c-kademe3 controller="EtutProgrami"
+                                                       :idsube="idsube"
+                                                       @OnChange="Kademe3Selected">
+                                            </c-kademe3>
+                                            <c-sinif controller="EtutProgrami"
+                                                     :idsube="idsube"
+                                                     :idkademe3="idkademe3"
+                                                     @OnChange="SinifSelected">
+                                            </c-sinif>
+                                            <input style="float:right;" type="button" class="btn btn-success" v-on:click="Kaydet" v-if="DersOgretmenListe.length>0 && degistir" value="Kaydet">
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="portlet light col-md-12" id="Tablodiv" style="min-height:100px;padding:0px;">
+                        <div class="col-md-12 form-group" v-if="DersProgramiList.length>0">
+                            <table data-height="700" class="table table-striped table-bordered  table-checkable" data-width="100%" style="margin-bottom:0px; color:#111; width:100%;">
+                                <thead>
+                                    <tr>
+                                        <td>SAAT</td>
+                                        <td>Pazartesi</td>
+                                        <td>Salı</td>
+                                        <td>Çarşamba</td>
+                                        <td>Perşembe</td>
+                                        <td>Cuma</td>
+                                        <td>Cumartesi</td>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="derssaat in 5" :key="derssaat">
+                                        <td style="width:10% !important">{{derssaat}}. Ders</td>
+                                        <td style="width:15% !important" v-for="gun in 6 ">
+                                            <div class="form-md-line-input">
+                                                <div class="col-md-12" v-for="a in getObjects(DersProgramiList,'ID',gun+'-'+derssaat)">
+                                                    <div v-show="degistir==true">
+                                                        <select class="selectpicker form-control" title="" v-model='a.NESNE'>
+                                                            <option v-bind:value="{TCKIMLIKNO:'',ID_DERS:0,GUN:gun,DERSSAAT:derssaat,ADSOYAD:'',DERSAD:''}"></option>
+                                                            <option v-for="u in DersOgretmenListe" v-bind:value="{TCKIMLIKNO:u.TCKIMLIKNO,ID_DERS:u.ID_DERS,GUN:gun,DERSSAAT:derssaat,ADSOYAD:u.ADSOYAD,DERSAD:u.DERSAD}">
+
+                                                                {{u.DERSAD}} <!--{{u.ADSOYAD}}-->
+                                                            </option>
+                                                        </select>
+                                                    </div>
+                                                    <!--v-bind:class="{'acikmavi': a.NESNE.ID_DERS>0 }"-->
+                                                    <div v-show="degistir==false">
+                                                        <div v-if="a.NESNE.ADSOYAD!=''">
+
+                                                            {{a.NESNE.DERSAD}} <!--{{a.NESNE.ADSOYAD}}-->
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+
+                                </tbody>
+                            </table>
+
+                        </div>
+                    </div>
+
+                </div>
+
+                <!--Sabit Etüt Oluştur Danışman-->
+                <div class="tab-pane fade" id="tab_1_2">
+                    <div class="col-md-12">
+                        <div class="portlet box green-haze dd-item" style="border:none">
+                            <div class="portlet-title dd-handle" data-toggle='collapse' data-target='#filters' style="cursor:pointer;">
+                                <div class="caption">
+                                    <i class="icon-magnifier"></i>
+                                    <span class="caption-subject bold uppercase"> Filtreler </span>
+                                    <span class="caption-helper"></span>
+                                </div>
+                                <div class='actions'>
+                                    <a href='javascript:;' class='btn btn-default btn-sm' style='border:none;'>
+                                        <i class='fa fa-chevron-down'></i>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="portlet-body form collapse in" id="filters">
+                                <form role="form" style="padding:12px 20px">
+                                    <div class="form-body form-group-lg form-horizontal row" style="padding: 0px;margin-top: 0px !important;">
+                                        <div class="portlet-body">
+                                            <div class="form-inline">
+                                                <c-danisman-ogretmen-sinif controller="ProjeDonem"
+                                                                           :idsinif="idsinif"
+                                                                           @OnChange="SinifSelected">
+                                                </c-danisman-ogretmen-sinif>
+
+                                                <input style="float:right;" type="button" class="btn btn-success" v-on:click="Kaydet" v-if="DersOgretmenListe.length>0" value="Kaydet">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="portlet light col-md-12" id="Tablodiv" style="min-height:100px;padding:0px;" v-show="DersOgretmenListe.length>0">
+                        <div class="col-md-12 form-group" v-if="DersProgramiList.length>0">
+                            <table data-height="700" class="table table-striped table-bordered  table-checkable" data-width="100%" style="margin-bottom:0px; color:#111; width:100%;">
+                                <thead>
+                                    <tr>
+                                        <td>SAAT</td>
+                                        <td>Pazartesi</td>
+                                        <td>Salı</td>
+                                        <td>Çarşamba</td>
+                                        <td>Perşembe</td>
+                                        <td>Cuma</td>
+                                        <td>Cumartesi</td>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="derssaat in 5" :key="derssaat">
+                                        <td style="width:10% !important">{{derssaat}}. Ders</td>
+                                        <td style="width:15% !important" v-for="gun in 6 ">
+                                            <div class="form-md-line-input">
+                                                <div class="col-md-12" v-for="a in getObjects(DersProgramiList,'ID',gun+'-'+derssaat)">
+                                                    <select class="selectpicker form-control" title="" v-model='a.NESNE'>
+                                                        <option v-bind:value="{TCKIMLIKNO:'',ID_DERS:0,GUN:gun,DERSSAAT:derssaat,ADSOYAD:'',DERSAD:''}"></option>
+                                                        <option v-for="u in DersOgretmenListe" v-bind:value="{TCKIMLIKNO:u.TCKIMLIKNO,ID_DERS:u.ID_DERS,GUN:gun,DERSSAAT:derssaat,ADSOYAD:u.ADSOYAD,DERSAD:u.DERSAD}">
+
+                                                            {{u.DERSAD}} <!--{{u.ADSOYAD}}-->
+                                                        </option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+
+                                </tbody>
+                            </table>
+
+                        </div>
+                    </div>
+
+
+                </div>
+
+                <!--Sınav Etüt Liste-->
+                <div class="tab-pane fade" id="tab_1_3">
+                    <div class="portlet light col-md-12" id="Tablodiv" style="min-height:100px;padding:0px;">
+                        <div class="col-md-12 form-group">
+                            <table data-height="700" class="table table-striped table-bordered  table-checkable" data-width="100%" style="margin-bottom:0px; color:#111; width:100%;">
+                                <thead>
+                                    <tr>
+                                        <th>DERS</th>
+                                        <th>KONU</th>
+                                        <th>ETÜT</th>
+                                        <th>YER</th>
+                                        <th>TARIH</th>
+                                        <th>SAAT</th>
+                                        <th>SÜRE</th>
+                                        <th>ÖĞRETMEN</th>
+                                        <th>İŞLEM</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="u in SinavEtutListesi">
+                                        <td>{{u.DERSAD}}</td>
+                                        <td>
+                                            <div v-for="j in u.UNITELIST">
+                                                {{j.UNITEAD}}
+                                            </div>
+                                        </td>
+                                        <td>{{u.ETUT}}</td>
+                                        <td>{{u.YER}}</td>
+
+                                        <td>{{u.TARIH}}</td>
+                                        <td>{{u.ETUTSAAT}}</td>
+                                        <td>{{u.SURE}}</td>
+                                        <td>{{u.ADSOYAD}}</td>
+                                        <td>
+                                            <!--müdür yardımcısı değiştirir-->
+                                            <input style="float:right;" type="button" class="btn btn-success" v-on:click="idSeciliEtut=u.ID_ETUT; tabid=4" value="Katılım">
+                                            <input style="float:right;" type="button" class="btn btn-success yellow" v-on:click="idSeciliEtut=u.ID_ETUT; tabid=6" v-if="ListKullaniciTipi.indexOf(53)>-1 || ListKullaniciTipi.indexOf(54)>-1" value="Düzenle">
+                                            <input style="float:right;" type="button" class="btn btn-success green" v-on:click="AktifPasifYap(u.ID_ETUT); u.AKTIF=1" v-if="u.AKTIF==0 && (ListKullaniciTipi.indexOf(53)>-1 || ListKullaniciTipi.indexOf(54)>-1)" value="Aktif Yap">
+                                            <input style="float:right;" type="button" class="btn btn-success red" v-on:click="AktifPasifYap(u.ID_ETUT); u.AKTIF=0" v-if="u.AKTIF==1 && (ListKullaniciTipi.indexOf(53)>-1 || ListKullaniciTipi.indexOf(54)>-1)" value="Pasif Yap">
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!--Sınav Etüt Katılım-->
+                <div class="tab-pane fade" id="tab_1_4">
+                    <div class="portlet light col-md-12" id="Tablodiv" style="min-height:100px;padding:0px;">
+                        <div style="margin-top: 10px;margin-bottom: 20px !important;margin: 10px;">
+                            <input style="float:right;" type="button" class="btn btn-success" v-on:click="tabid=3" value="GERİ">
+                            <input style="float: right;margin-right: 10px;" type="button" class="btn btn-success yellow" v-on:click="tabid=5" value="Öğrenci Ekle">
+                        </div>
+
+
+                        <div class="col-md-12 form-group" style="margin-top: 20px;">
+                            <table data-height="700" class="table table-striped table-bordered  table-checkable" data-width="100%" style="margin-bottom:0px; color:#111; width:100%;">
+                                <thead>
+                                    <tr>
+                                        <th>OKUL</th>
+                                        <th>SINIF</th>
+                                        <th>ÖĞRENCİ</th>
+                                        <th>KATILIM</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="u in seciliSinavEtut.OGRENCILIST">
+                                        <td>{{u.SUBEAD}}</td>
+                                        <td>{{u.SINIFAD}}</td>
+                                        <td>{{u.ADSOYAD}}</td>
+                                        <td>
+
+                                            <div class="row col-md-3">
+                                                <div class="form-md-line-input">
+                                                    <label class="control-label col-md-10" style="vertical-align:middle;"></label>
+                                                    <div class="col-md-2" style="height:34px; vertical-align:middle;">
+                                                        <div class="md-checkbox" style="margin:auto!important; width:20px!important; height:20px; margin:0px; margin-top:6px; display:block;">
+                                                            <input type="checkbox" @change="SinavEtutKatilimDuzenle(u,seciliSinavEtut.ID_ETUT)" v-model="u.KATILDI" :id="'chb-'+u.TCKIMLIKNO" class="md-check" v-bind:true-value="true" v-bind:false-value="false" />
+                                                            <label :for="'chb-'+u.TCKIMLIKNO">
+                                                                <span></span>
+                                                                <span class="check"></span>
+                                                                <span class="box"></span>
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!--Sınav Etüt Öğrenci Ekle-->
+                <div class="tab-pane fade" id="tab_1_5">
+                    <input style="float:right;    margin: 15px;" type="button" class="btn btn-success" v-on:click="tabid=4" value="GERİ">
+
+
+                    <div class="col-md-12">
+                        <div class="portlet box green-haze dd-item" style="border:none">
+                            <div class="portlet-title dd-handle" data-toggle='collapse' data-target='#filters' style="cursor:pointer;">
+                                <div class="caption">
+                                    <i class="icon-magnifier"></i>
+                                    <span class="caption-subject bold uppercase"> Filtreler </span>
+                                    <span class="caption-helper"></span>
+                                </div>
+                                <div class='actions'>
+                                    <a href='javascript:;' class='btn btn-default btn-sm' style='border:none;'>
+                                        <i class='fa fa-chevron-down'></i>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="portlet-body form collapse in" id="filters">
+                                <form role="form" style="padding:12px 20px">
+                                    <div class="form-body form-group-lg form-horizontal row" style="padding: 0px;margin-top: 0px !important;">
+                                        <div class="portlet-body">
+                                            <div class="form-inline">
+                                                <c-sube controller="EtutProgrami"
+                                                        @OnChange="SubeSelected">
+                                                </c-sube>
+                                                <c-kademe3 controller="EtutProgrami"
+                                                           :idsube="idsube"
+                                                           @OnChange="Kademe3Selected">
+                                                </c-kademe3>
+                                                <c-sinif controller="EtutProgrami"
+                                                         :idsube="idsube"
+                                                         :idkademe3="idkademe3"
+                                                         @OnChange="SinifSelected">
+                                                </c-sinif>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+
+                        <table data-height="700" class="table table-striped table-bordered  table-checkable" data-width="100%" style="margin-bottom:0px; color:#111; width:100%;">
+                            <thead>
+                                <tr>
+                                    <th>TC KIMLIK NO</th>
+                                    <th>AD SOYAD</th>
+                                    <th>TANIMLA</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="u in OgrenciList">
+                                    <td>{{u.TCKIMLIKNO}}</td>
+                                    <td>{{u.ADSOYAD}}</td>
+                                    <td>
+
+                                        <div class="row col-md-3">
+                                            <div class="form-md-line-input">
+                                                <label class="control-label col-md-10" style="vertical-align:middle;"></label>
+                                                <div class="col-md-2" style="height:34px; vertical-align:middle;">
+                                                    <div class="md-checkbox" style="margin:auto!important; width:20px!important; height:20px; margin:0px; margin-top:6px; display:block;">
+                                                        <input type="checkbox" @change="SinavEtutOgrenciDuzenle(u)" v-model="u.KATILACAK" :id="'chb-katilim-'+u.TCKIMLIKNO" class="md-check" v-bind:true-value="true" v-bind:false-value="false" />
+                                                        <label :for="'chb-katilim-'+u.TCKIMLIKNO">
+                                                            <span></span>
+                                                            <span class="check"></span>
+                                                            <span class="box"></span>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+
+                <!--Sınav Etüt Düzenle-->
+                <div class="tab-pane fade" id="tab_1_6">
+
+                    <div class="col-md-12">
+                        <div class="portlet box green-haze dd-item" style="border:none">
+                            <div class="portlet-title dd-handle" data-toggle='collapse' data-target='#filters' style="background: slategray">
+                                <div class="caption">
+                                    <span class="caption-subject bold uppercase"> Düzenle </span>
+                                    <span class="caption-helper"></span>
+                                </div>
+                            </div>
+                            <div class="portlet-body form collapse in" id="filters">
+                                <form role="form" style="padding:12px 20px">
+                                    <div class="form-body form-group-lg form-horizontal row" style="padding: 0px;margin-top: 0px !important;">
+                                        <div class="portlet-body">
+                                            <div class="col-md-12 form-group">
+                                                <input style="float:right;" type="button" class="btn btn-success yellow" v-on:click="tabid=3" value="GERİ">
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label class="control-label col-md-3">Öğretmen</label>
+                                                <c-sube controller="EtutProgrami"
+                                                        @OnChange="SubeSelected">
+                                                </c-sube>
+                                                <c-kademe3 controller="EtutProgrami"
+                                                           :idsube="idsube"
+                                                           @OnChange="Kademe3Selected">
+                                                </c-kademe3>
+                                                <c-sube-kademe-ders controller="EtutProgrami"
+                                                                    :idsube="idsube"
+                                                                    :idkademe3="idkademe3"
+                                                                    @OnChange="DersSelected">
+                                                </c-sube-kademe-ders>
+                                                <c-sube-kademe-ders-ogretmen controller="EtutProgrami"
+                                                                             :idsube="idsube"
+                                                                             :idkademe3="idkademe3"
+                                                                             :dersad="dersad"
+                                                                             @OnChange="OgretmenSelected">
+                                                </c-sube-kademe-ders-ogretmen>
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="control-label col-md-3">Yer</label>
+                                                <div class="col-md-9"><input v-model="seciliSinavEtut.YER" type="text" class="form-control" /></div>
+                                            </div>
+                                            <div class="form-group">
+                                                <div class="row">
+                                                    <c-tarih controller="Etut"
+                                                             :tarih="TARIH.replace('.','/').replace('.','/')"
+                                                             @change-date="TarihSelected">
+                                                    </c-tarih>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <div class="col-md-3  pull-right">
+                                                    <select v-model="seciliSinavEtut.DAKIKA" class="form-control" title="Dakika">
+                                                        <option saat="00">00</option>
+                                                        <option saat="05">05</option>
+                                                        <option saat="10">10</option>
+                                                        <option saat="15">15</option>
+                                                        <option saat="20">20</option>
+                                                        <option saat="25">25</option>
+                                                        <option saat="30">30</option>
+                                                        <option saat="35">35</option>
+                                                        <option saat="40">40</option>
+                                                        <option saat="45">45</option>
+                                                        <option saat="50">50</option>
+                                                        <option saat="55">55</option>
+                                                    </select>
+                                                </div>
+                                                <div class="col-md-3 pull-right">
+                                                    <select v-model="seciliSinavEtut.SAAT" class="form-control" title="Saat">
+                                                        <option saat="07">07</option>
+                                                        <option saat="08">08</option>
+                                                        <option saat="09">09</option>
+                                                        <option saat="10">10</option>
+                                                        <option saat="11">11</option>
+                                                        <option saat="12">12</option>
+                                                        <option saat="13">13</option>
+                                                        <option saat="14">14</option>
+                                                        <option saat="15">15</option>
+                                                        <option saat="16">16</option>
+                                                        <option saat="17">17</option>
+                                                        <option saat="18">18</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="control-label col-md-3">Süre</label>
+                                                <div class="col-md-4">
+                                                    <select v-model="seciliSinavEtut.SURE" class="form-control">
+                                                        <option sure="0">0</option>
+                                                        <option sure="10">10</option>
+                                                        <option sure="20">20</option>
+                                                        <option sure="30">30</option>
+                                                        <option sure="40">40</option>
+                                                        <option sure="50">50</option>
+                                                        <option sure="60">60</option>
+                                                        <option sure="70">70</option>
+                                                        <option sure="80">80</option>
+                                                        <option sure="90">90</option>
+                                                        <option sure="100">100</option>
+                                                        <option sure="110">110</option>
+                                                        <option sure="120">120</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="control-label col-md-3">Etüd Açıklama</label>
+                                                <div class="col-md-9"><input v-model="seciliSinavEtut.ETUT" type="text" class="form-control" /></div>
+                                            </div>
+
+                                            <div class="col-md-12 form-group">
+                                                <input style="float:right;" type="button" class="btn btn-success" v-on:click="SinavEtutDuzelt" value="Kaydet">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../../VueComponents/Genel.js?v=3"></script>
+<script src="../../VueComponents/SinavFiltreleri.js"></script>
+<script src="../../VueComponents/SubeGrupSinif.js"></script>
+<script src="../../VueComponents/KonuAnaliziFiltreleri.js"></script>
+<script>
+    var vue = new Vue({
+        el: "#app",
+        name: "EtutProgrami.html",
+
+        data: {
+            idkademe3: 0,
+            idsube: 0,
+            idsinif: 0,
+            DersOgretmenListe: [],
+
+            TCKIMLIKNO: '',
+            DersProgramiList: [],
+            SinavEtutListesi: [],
+            ListKullaniciTipi: [],
+            OgrenciList: [],
+            SinavEtutDuzenle: false,
+            seciliSinavEtut: [],
+            idSeciliEtut: 0,
+
+            degistir: false, // kaydet butonu ve öğretmen seçimi için
+            danismanMi: false, // id sinif a göre değişiyor
+            tabid: 1,
+            tabDanisman: false, // v-child de değişiyor
+            danismanSinifList: [],
+            dersad: '',
+            tcOgretmen: '',
+            TARIH: '',
+        },
+
+        mounted() {
+
+            for (var i = 1; i <= 6; i++) { //gün
+                for (var j = 1; j <= 5; j++) { //saat
+                    this.DersProgramiList.push({ ID: i + "-" + j, NESNE: { TCKIMLIKNO: "", ID_DERS: 0, GUN: i, DERSSAAT: j, ADSOYAD: "", DERSAD: "" } });
+                }
+            }
+            this.TCKIMLIKNO = session.TCKIMLIKNO;
+            var p = {
+                TCKIMLIKNO: session.TCKIMLIKNO,
+                OTURUM: session.OTURUM
+            };
+            var list = [];
+            WebPost(this, "EtutProgrami", "KullaniciTipiGetir", p, "#app", "Yükleniyor...", function (data, parent) {
+                if (data != null) {
+                    $.each(data, function (j, el) {
+                        list.push(this.ID_KULLANICITIPI)
+                    });
+                    parent.ListKullaniciTipi = list;
+                    if (list.indexOf(4) > -1)
+                        parent.tcogrenci = session.TCKIMLIKNO;
+
+                    vue.degistir = false;
+                    //if (list.indexOf(26) > -1 || list.indexOf(91) > -1) {
+                    if (list.indexOf(54) > -1) { // müdür Yardımcısı
+                        vue.degistir = true;
+                    }
+
+                } else {
+                    Alert_Warning("Kullanıcı Bulunamadı..!");
+                }
+            });
+
+        },
+
+        methods: {
+            getObjects(obj, key, val) {
+                var objects = [];
+                for (var i in obj) {
+                    if (!obj.hasOwnProperty(i)) continue;
+                    if (typeof obj[i] == 'object') {
+                        objects = objects.concat(this.getObjects(obj[i], key, val));
+                    } else if (i == key && obj[key] == val) {
+                        objects.push(obj);
+                    }
+                }
+                return objects;
+            },
+            SubeSelected(item) {
+                this.idsube = item;
+            },
+            Kademe3Selected(item) {
+                this.idkademe3 = item;
+            },
+            SinifSelected(item) {
+                this.idsinif = item;
+                if (this.tabid == 5) {
+                    this.SinavEtutOgrenciListe();
+                }
+            },
+            DersSelected(item) {
+                this.dersad = item;
+                this.tcOgretmen = "";
+            },
+            OgretmenSelected(item) {
+                this.tcOgretmen = item;
+                if (this.tabid == 6) {
+                    vue.seciliSinavEtut.TC_OGRETMEN = item;
+                }
+            },
+            TarihSelected(item) {
+                vue.seciliSinavEtut.TARIH = item.replace('/', '.').replace('/', '.');
+                vue.TARIH = item;
+            },
+
+            Kaydet() {
+
+                vue.$forceUpdate();
+
+
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    ID_SINIF: this.idsinif,
+                    ETUTLIST: JSON.stringify(this.DersProgramiList)
+                };
+                WebPost(this, "EtutProgrami", "EtutSabitKaydet", p, "#app", "Yükleniyor...", function (data, parent) {
+
+                    if (data) {
+                        Alert_Info("Kayıt Yapıldı");
+                    } else {
+                        Alert_Error("Kayıt Yapılırken Hata Oluştu.");
+                    }
+                });
+            },
+
+            Listele() {
+
+
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    ID_SINIF: this.idsinif
+                };
+                WebPost(this, "EtutProgrami", "EtutSabitListe", p, "#app", "Yükleniyor...", function (data, parent) {
+                    var veri = JSON.parse(data)[0].LISTE;
+                    for (var i in vue.DersProgramiList) {
+                        vue.DersProgramiList[i].NESNE.TCKIMLIKNO = "";
+                        vue.DersProgramiList[i].NESNE.ADSOYAD = "";
+                        vue.DersProgramiList[i].NESNE.DERSAD = "";
+                        vue.DersProgramiList[i].NESNE.ID_DERS = 0;
+                    }
+
+                    $.each(veri, function (j, u) {
+                        var kt = getObjects(vue.DersProgramiList, "ID", u.ID_GUN + "-" + u.DERSSAAT);
+                        kt[0].NESNE.TCKIMLIKNO = u.TC_OGRETMEN;
+                        kt[0].NESNE.ADSOYAD = u.ADSOYAD;
+                        kt[0].NESNE.ID_DERS = u.ID_DERS;
+                        kt[0].NESNE.DERSAD = u.DERSAD;
+                    });
+
+                    vue.$forceUpdate();
+                    vue.$nextTick(() => {
+                        $('.selectpicker').selectpicker('refresh');
+                    });
+
+
+                });
+
+            },
+
+            DersOgretmenListele() {
+                var p = { TCKIMLIKNO: session.TCKIMLIKNO, OTURUM: session.OTURUM, ID_SINIF: this.idsinif };
+                WebPost(this, "EtutProgrami", "DersOgretmenListesi", p, '', '', function (data, parent) {
+                    parent.DersOgretmenListe = JSON.parse(data)[0].LISTE;
+                    vue.$nextTick(() => {
+                        $('.selectpicker').selectpicker('refresh');
+                    });
+
+                });
+            },
+
+            SinavEtutListe(idEtut) {
+                //SinavEtutListesi
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    ID_ETUT: idEtut == undefined || idEtut == null ? 0 : idEtut,
+                };
+                vue.SinavEtutListesi = ListeTemizle(vue.SinavEtutListesi);
+                WebPost(this, "EtutProgrami", "SinavEtutListe", p, "#app", "Yükleniyor...", function (data, parent) {
+                    if (vue.ListKullaniciTipi.indexOf(53) > -1 || vue.ListKullaniciTipi.indexOf(54) > -1) { // MÜDÜR-MÜDÜR YRD
+                        vue.SinavEtutListesi = JSON.parse(data)[0].LISTE;
+                    } else {
+                        vue.SinavEtutListesi = $.grep(JSON.parse(data)[0].LISTE, function (el, i) { return el.TC_OGRETMEN == vue.TCKIMLIKNO });
+                    }
+                    vue.seciliSinavEtut = idEtut > 0 ? vue.SinavEtutListesi[0] : vue.seciliSinavEtut;
+
+
+                });
+
+            },
+
+            SinavEtutKatilimDuzenle(item, idEtut) {
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    ID_ETUT: idEtut,
+                    TC_OGRENCI: item.TCKIMLIKNO,
+                    KATILDI: item.KATILDI
+                };
+                WebPost(this, "EtutProgrami", "SinavEtutKatilimDuzenle", p, "#app", "Yükleniyor...", function (data, parent) {
+                    if (!data) {
+                        Alert_Error("Hata");
+                    }
+
+                });
+
+            },
+
+            SinavEtutOgrenciListe() {
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    ID_ETUT: vue.seciliSinavEtut.ID_ETUT,
+                    ID_SINIF: this.idsinif,
+                };
+                WebPost(this, "EtutProgrami", "SinavEtutOgrenciListe", p, "#app", "Yükleniyor...", function (data, parent) {
+                    vue.OgrenciList = JSON.parse(data)[0].LISTE;
+                });
+            },
+
+            SinavEtutOgrenciDuzenle(item) {
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    ID_ETUT: item.ID_ETUT,
+                    TC_OGRENCI: item.TCKIMLIKNO,
+                    KATILACAK: item.KATILACAK
+                };
+                WebPost(this, "EtutProgrami", "SinavEtutOgrenciDuzenle", p, "#app", "Yükleniyor...", function (data, parent) {
+                    if (!data) {
+                        Alert_Error("Hata");
+                    }
+
+                });
+
+            },
+
+            SinavEtutDuzelt() {
+                if (vue.seciliSinavEtut.TC_OGRETMEN == "" || vue.seciliSinavEtut.TC_OGRETMEN == undefined || vue.seciliSinavEtut.TC_OGRETMEN == null) {
+                    Alert_Error("Öğretmen Seçimini Yapınız..");
+                    return;
+                }
+
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    ETUTJSON: JSON.stringify(vue.seciliSinavEtut),
+                };
+                WebPost(this, "EtutProgrami", "SinavEtutDuzelt", p, "#app", "Yükleniyor...", function (data, parent) {
+                    if (data) {
+                        Alert_Info("Düzenlendi");
+                        this.tabid = 3;
+                    }
+                    else {
+                        Alert_Error("Hata");
+                    }
+
+                });
+
+            },
+
+            AktifPasifYap(item) {
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    ID_ETUT: item,
+                };
+                WebPost(this, "EtutProgrami", "AktifPasifYap", p, "#app", "Yükleniyor...", function (data, parent) {
+                    if (!data) {
+                        Alert_Error("Hata");
+                    }
+
+                });
+
+            },
+
+            tabAc(id) {
+                $(".tab-pane").each(function () {
+                    $("#" + this.id).attr("class", "tab-pane fade");
+                });
+                $("#tab_1_" + id).attr("class", "tab-pane fade active in");
+
+            },
+
+        },
+
+        watch: {
+            idsinif() {
+                this.Listele();
+                this.degistir = $.grep(vue.danismanSinifList, function (el, i) { return el.ID_SINIF == vue.idsinif; }).length > 0
+                    //|| (vue.ListKullaniciTipi.indexOf(26) > -1 || vue.ListKullaniciTipi.indexOf(91) > -1)
+                    || (vue.ListKullaniciTipi.indexOf(53) > -1) // Müdür
+                    || (vue.ListKullaniciTipi.indexOf(54) > -1) // Müdür Yardımcısı
+                    ? true
+                    : false;
+
+                if (this.degistir) {
+                    this.DersOgretmenListele();
+                }
+            },
+            tabid() {
+                this.idsinif = 0;
+                this.tabid == 3 ? this.SinavEtutListe(0) : console.log(this.tabid);
+                if (this.tabid == 6 && this.idSeciliEtut > 0) {
+                    this.SinavEtutListe(this.idSeciliEtut);
+                    this.TARIH = vue.seciliSinavEtut.TARIH;
+                    this.saat = (vue.seciliSinavEtut.SAAT)
+                }
+                if (this.tabid == 4 && this.idSeciliEtut > 0) {
+                    this.SinavEtutListe(this.idSeciliEtut);
+                }
+                this.tabAc(this.tabid)
+
+
+
+            }
+        },
+
+    });
+
+
+</script>
+
+<script src="../../../Scripts/PublicMethods.js"></script>

@@ -1,0 +1,622 @@
+﻿<link href="assets/global/plugins/bootstrap-fileinput/bootstrap-fileinput.css" rel="stylesheet" type="text/css" />
+
+<style>
+    td {
+        vertical-align: middle !important;
+    }
+
+    .row {
+        margin-top: 10px !important;
+    }
+</style>
+<div class="page-head">
+    <!-- BEGIN PAGE TITLE -->
+    <div class="page-title col-md-12">
+        <h1>
+            Öğrenci İşlemleri  <span onclick="YardimGoster(ID_MENU);" class="pull-right" style="cursor:pointer;"><img src="assets/global/img/info.gif" class="info-image-icon" /> </span>
+        </h1>
+    </div>
+    <!-- END PAGE TITLE -->
+</div>
+
+<div class="row" id="app">
+
+    <div class="col-md-12" style="margin-top: 10px !important;">
+        <div class="portlet box blue-hoki dd-item" style="border:none">
+            <div class="portlet-title dd-handle" data-toggle='collapse' data-target='#filters' style="cursor:pointer;">
+                <div class="caption">
+                    <i class="icon-magnifier"></i>
+                    <span class="caption-subject bold uppercase"> Filtreler </span>
+                    <span class="caption-helper"></span>
+                </div>
+                <div class='actions'>
+                    <a href='javascript:;' class='btn btn-default btn-sm' style='border:none;'>
+                        <i class='fa fa-chevron-down'></i>
+                    </a>
+                </div>
+            </div>
+            <!-- BEGIN PORTLET-->
+            <div class="portlet-body form collapse in" id="filters">
+
+                <form role="form" style="padding:12px 20px">
+
+                    <div class="form-body form-horizontal form-group-lg">
+                        <c-donem controller="BurslulukOgrenciIslemleri"
+                                 @OnChange="DonemSelected">
+                        </c-donem>
+
+                        <c-bursluluk-dosya controller="BurslulukOgrenciIslemleri"
+                                           :idset="ID_BURSLULUKDOSYA"
+                                           :donem="DONEM"
+                                           @OnChange="BurslulukDosyaSelected">
+                        </c-bursluluk-dosya>
+
+                        <div class="form-group">
+                            <div class="col-md-12 text-right" style="margin-top: 10px !important;margin-bottom: 10px !important;">
+                                <button type="button" class="btn blue" @click="BurslulukDosyaIndir" v-bind:disabled="ID_BURSLULUKDOSYA==0">Öğrenci Listesi İndir</button>
+                                <button type="button" class="btn green" @click="ListeleDataTable">Öğrenci Listele</button>
+                            </div>
+
+
+                            <div class="col-md-12 text-right" style="margin-top: 10px !important;margin-bottom: 10px !important;" v-if="ID_BURSLULUKDOSYA>0">
+                                <button type="button" style="margin-left: 10px !important" class="btn blue pull-right" @click="KatilimRaporu(1)">Genel Katılım Raporu</button>
+                                <button type="button" class="btn blue pull-right" @click="KatilimRaporu(0)">Seans Bazlı Katılım Raporu</button>
+                            </div>
+
+                            <div class="col-md-12 text-right" style="margin-top: 10px !important;margin-bottom: 10px !important;">
+                                <button type="button" style="margin-left: 10px !important" class="btn red pull-right" @click="BurslulukDosyaSil" v-if="ID_BURSLULUKDOSYA>0">Dosyayı Sil</button>
+                                <button type="button" class="btn yellow pull-right" @click="DosyaEkleModalAc">Yeni Ekle</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+    <!--<div class="col-md-12" style="margin-top: 20px;">
+        <div id="divDataIcerikListe" class="row">
+            <div class="table" style="margin:5px;">
+                <div>
+                    <table class="table table-striped table-bordered"
+                           data-height="700"
+                           data-width="100%"
+                           style="margin-bottom:0px; color:#111; width:100%;"
+                           id="table"
+                           v-if="ListOgrenci.length>0">
+                        <thead id="thOgr">
+                            <tr>
+                                <th> TC Kimlik No </th>
+                                <th> Öğrenci </th>
+                                <th> Sınıf <br />Düzeyi </th>
+                                <th> Şube </th>
+                                <th> Seans </th>
+                                <th> İşlemler </th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                        <tbody id="tbody">
+                            <tr :id="u.TCKIMLIKNO" v-for="u in ListOgrenci">
+                                <td v-bind:style="[u.TCVAR == 1 ? {'color':'red'}: {'color':'black'} ]">{{u.TCKIMLIKNO}}</td>
+                                <td>{{u.OGRENCI_ADSOYAD}}</td>
+                                <td>{{u.SINIFDUZEYI}}</td>
+                                <td>{{u.SUBEAD}}</td>
+                                <td>{{u.SEANS}}</td>
+                                <td>
+                                    <button type="button" class="btn yellow" @click="OgrenciDuzenleModalAc(u)">Düzenle</button>
+                                    <button type="button" class="btn red   " @click="BurslulukOgrenciSil(u)">Sil</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>-->
+    <div class="portlet-body form" v-show="divAc">
+        <form role="form">
+            <div class="portlet light bordered">
+                <div class="portlet-body">
+                    <table class="table table-striped table-bordered table-checkable" id="table">
+                        <thead>
+                            <tr>
+                                <!--<th> TC Kimlik No </th>
+                                <th> Öğrenci </th>
+                                <th> Sınıf <br />Düzeyi </th>
+                                <th> Şube </th>
+                                <th> Seans </th>-->
+                                <th>RowNumber</th>
+                                <th>TCKIMLIKNO</th>
+                                <th>OGRENCI_ADSOYAD</th>
+                                <th>SINIFDUZEYI</th>
+                                <th>SUBEAD</th>
+                                <th>SEANS</th>
+                                <th> İşlemler </th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </form>
+    </div>
+
+
+
+    <div id="DosyaEkle_Modal" class="modal fade" tabindex="-1" data-replace="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                    <h4 class="modal-title">Bursluluk Sınav Öğrenci Excel Yükleme</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-body form-horizontal">
+                        <div class="portlet-body form col-md-12">
+                            <div class="row">
+                                <c-sinav-bursluluk-multi controller="BurslulukOgrenciIslemleri"
+                                                         :donem="DONEM"
+                                                         @OnChange="SinavSelected">
+                                </c-sinav-bursluluk-multi>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <label class="control-label" style="vertical-align:middle; float:right;">Dosya Adı </label>
+                                </div>
+                                <div class="col-md-9">
+                                    <input type="text" v-model="DosyaAdi" maxlength="50" class="form-control" placeholder="Dosya Adını Giriniz.." />
+                                </div>
+                            </div>
+                            <div class="fileinput fileinput-new" style="margin-top:10px;" data-provides="fileinput" v-bind:disabled="DosyaAdi==''">
+                                <span class="fileinput-preview thumbnail" style="max-width: 1000px; max-height: 1000px;"> </span>
+                                <span>
+                                    <span class="btn default btn-file">
+                                        <span class="fileinput-new yellow"> Bursluluk Sınav Öğrenci Excel'den Yükle </span>
+                                        <span class="fileinput-exists"> Değiştir </span>
+                                        <input type="file" name="..." accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" id="CADosya" data-preview-file-type="text">
+                                    </span>
+                                    <a href="javascript:;" class="btn red fileinput-exists" data-dismiss="fileinput"> Sil </a>
+                                    <a href="javascript:;" @click="BurslulukOgrenciExcelYukle()" class="btn green fileinput-exists" data-dismiss="modal"> Tamam </a>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn default" data-dismiss="modal">Kapat</button>
+                    <!--<button type="button" class="btn green" data-dismiss="modal" @click="SoruDuzenle()">Kaydet</button>-->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="OgrenciDuzenle_Modal" class="modal fade" tabindex="-1" data-replace="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                    <h4 class="modal-title">Öğrenci Düzenle</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-body form-horizontal">
+                        <div class="portlet-body form col-md-12" v-if="OGRENCI != undefiend">
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <label class="control-label" style="vertical-align:middle; float:right;">T.C. Kimlik No </label>
+                                </div>
+                                <div class="col-md-9">
+                                    <input type="text" v-model="OGRENCI.TCKIMLIKNO" maxlength="50" class="form-control" placeholder="T.C. Kimlik No Giriniz.." />
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <label class="control-label" style="vertical-align:middle; float:right;">Öğrenci Adı Soyadı</label>
+                                </div>
+                                <div class="col-md-9">
+                                    <input type="text" v-model="OGRENCI.OGRENCI_ADSOYAD" maxlength="50" class="form-control" placeholder="Öğrenci Adı Soyadı Giriniz.." />
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <label class="control-label" style="vertical-align:middle; float:right;">Okulu </label>
+                                </div>
+                                <div class="col-md-9">
+                                    <input type="text" v-model="OGRENCI.OKULADI" maxlength="50" class="form-control" placeholder="Okulu Giriniz.." />
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <label class="control-label" style="vertical-align:middle; float:right;">Sınıf Düzeyi </label>
+                                </div>
+                                <div class="col-md-9">
+                                    <input type="text" v-model="OGRENCI.SINIFDUZEYI" maxlength="50" class="form-control" placeholder="Sınıf Düzeyi Giriniz.." />
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <label class="control-label" style="vertical-align:middle; float:right;">Başvurduğu Kampüs </label>
+                                </div>
+                                <div class="col-md-9">
+                                    <input type="text" v-model="OGRENCI.SUBEAD" maxlength="50" class="form-control" placeholder="Başvurduğu Kampüs Giriniz.." />
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <label class="control-label" style="vertical-align:middle; float:right;">Veli Adı Soyadı </label>
+                                </div>
+                                <div class="col-md-9">
+                                    <input type="text" v-model="OGRENCI.VELI_ADSOYAD" maxlength="50" class="form-control" placeholder="Veli Adı Soyadı Giriniz.." />
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <label class="control-label" style="vertical-align:middle; float:right;">Mail </label>
+                                </div>
+                                <div class="col-md-9">
+                                    <input type="text" v-model="OGRENCI.MAIL" maxlength="50" class="form-control" placeholder="Mail Giriniz.." />
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <label class="control-label" style="vertical-align:middle; float:right;">Telefon (Ev) </label>
+                                </div>
+                                <div class="col-md-9">
+                                    <input type="text" v-model="OGRENCI.TELEFON_EV" maxlength="50" class="form-control" placeholder="Telefon (Ev) Giriniz.." />
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <label class="control-label" style="vertical-align:middle; float:right;">Telefon (Cep) </label>
+                                </div>
+                                <div class="col-md-9">
+                                    <input type="text" v-model="OGRENCI.TELEFON_CEP" maxlength="50" class="form-control" placeholder="Telefon (Cep) Giriniz.." />
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <label class="control-label" style="vertical-align:middle; float:right;">Başvuru Tarihi </label>
+                                </div>
+                                <div class="col-md-9">
+                                    <input type="date" v-model="OGRENCI.BASVURUTARIH" maxlength="50" class="form-control" placeholder="Başvuru Tarihi Giriniz.." />
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <label class="control-label" style="vertical-align:middle; float:right;">Sınav Tarihi </label>
+                                </div>
+                                <div class="col-md-9">
+                                    <input type="date" v-model="OGRENCI.SINAVTARIH" maxlength="50" class="form-control" placeholder="Sınav Tarihi Giriniz.." />
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <label class="control-label" style="vertical-align:middle; float:right;">Seans </label>
+                                </div>
+                                <div class="col-md-9">
+                                    <input class="form-control" v-model="OGRENCI.SEANS" id="mask_Seans" type="text" placeholder="Seans Giriniz..(10:00 Seansı)">
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" style="margin:10px;" class="btn default" data-dismiss="modal">Kapat</button>
+                    <button type="button" style="margin:10px;" class="btn green" data-dismiss="modal" @click="BurslulukOgrenciDuzenle()">Kaydet</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+<script src="VueComponents/GenelSinavRaporuFiltreleri.js?v=5"></script>
+<script src="VueComponents/SinavFiltreleri.js?v=8"></script>
+
+<style>
+    .clsRed {
+        color: red
+    }
+</style>
+
+<script>
+
+    function funcOgrenciDuzenleModalAc(item) {
+        vue.OgrenciDuzenleModalAc(item);
+    }
+    function funcBurslulukOgrenciSil(item) {
+        vue.BurslulukOgrenciSil(item)
+    }
+
+    var vue = new Vue({
+
+        el: "#app",
+        name: "BurslulukOgrenciIslemleri.html",
+
+        data: {
+            DONEM: '',
+            ID_BURSLULUKDOSYA: 0,
+            DosyaAdi: '',
+            ListOgrenci: [],
+            OGRENCI: undefined,
+            ID_SINAVs: [],
+            table: null,
+            divAc: false,
+            TUMSINAVLIST: [],
+        },
+
+
+        methods: {
+
+            DonemSelected(item) {
+                this.DONEM = item;
+                this.divAc = false;
+            },
+            BurslulukDosyaSelected(item) {
+                this.ID_BURSLULUKDOSYA = item;
+                this.divAc = false;
+            },
+            SinavSelected(item) {
+                this.ID_SINAVs = item;
+            },
+
+            DosyaEkleModalAc() {
+                //this.ID_SINAVs = ListeTemizle(this.ID_SINAVs);
+                $("#DosyaEkle_Modal").modal();
+            },
+            OgrenciDuzenleModalAc(item) {
+                this.OGRENCI = $.grep(this.ListOgrenci, function (el, j) { return el.ID_BURSOGRENCI == item; })[0];
+                $("#OgrenciDuzenle_Modal").modal();
+            },
+
+            OgrenciListesi() {
+                var _this = this;
+
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    ID_BURSLULUKDOSYA: this.ID_BURSLULUKDOSYA
+                };
+
+
+                this.ListOgrenci = ListeTemizle(this.ListOgrenci);
+
+
+                this.ListeleDataTable();
+                return;
+
+
+                //$("#TblOgr").DataTable().destroy();
+                WebPost(this, "BurslulukOgrenciIslemleri", "OgrenciListelebyBurslulukDosya", p, '', 'Yükleniyor..', function (data, parent) {
+                    if (data != null || data != undefined) {
+                        _this.ListOgrenci = JSON.parse(data);
+                        $('#filters').collapse();
+                    }
+                    else {
+                        Alert_Warning("Liste Bulunamadı!");
+                    }
+                });
+            },
+
+            BurslulukOgrenciDuzenle() {
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    SQLJSON: JSON.stringify(this.OGRENCI)
+                };
+
+                WebPost(this, "BurslulukOgrenciIslemleri", "BurslulukOgrenciDuzenle", p, '#OgrenciListesi_modal', 'Yükleniyor..', function (data, parent) {
+                    if (data != null || data != undefined) {
+                        Alert_Info("Öğrenci Bilgileri Düzenlendi");
+                        vue.ListeleDataTable();
+                    }
+                    else {
+                        Alert_Warning("Düzelenemedi..!");
+                        vue.ListeleDataTable();
+                    }
+                });
+            },
+
+            BurslulukOgrenciSil(item) {
+                var _this = this;
+                Alert_OkCancelConfirm("Bursluluk Öğrenci Silme", "Bursluluk Öğrencisini Silmek İstediğinize Emin Misiniz ?", function myfunction() {
+                    var p = {
+                        TCKIMLIKNO: session.TCKIMLIKNO,
+                        OTURUM: session.OTURUM,
+                        ID_BURSOGRENCI: item//.ID_BURSOGRENCI,
+                    };
+
+                    WebPost(_this, "BurslulukOgrenciIslemleri", "BurslulukOgrenciSil", p, '', 'Yükleniyor..', function (data, parent) {
+                        if (data != null || data != undefined) {
+                            Alert_Info("Öğrenci Silindi");
+                            _this.ListeleDataTable();
+                        }
+                        else {
+                            Alert_Warning("Öğrenci Silinemedi..!");
+                        }
+                    });
+                }, function myfunction() {
+
+                });
+
+            },
+
+            BurslulukDosyaIndir() {
+                window.open('../Rapor.aspx?rapor=Sinav.Bursluluk.OgrenciListesi&raporTur=XLS&p=' + session.TCKIMLIKNO + ';' + session.OTURUM + ';' + this.ID_BURSLULUKDOSYA, '_blank');
+                return;
+            },
+
+            BurslulukOgrenciExcelYukle() {
+
+                var idKademe3SinavList = [];
+
+                var _this = this;
+                ListeTemizle(idKademe3SinavList);
+
+                var kontrol = false;
+
+                $.each(this.TUMSINAVLIST, function (j, el) {
+                    console.log(el);
+                    //alert(el.ID_KADEME3)
+
+                    if (_this.ID_SINAVs.indexOf(el.ID_SINAV) > -1) {
+                        if (idKademe3SinavList.indexOf(el.ID_KADEME3) > -1) {
+                            kontrol = true;
+                            return;
+                        }
+                        else {
+                            idKademe3SinavList.push(el.ID_KADEME3);
+                        }
+                    }
+                });
+
+                if (kontrol) {
+
+                    Alert_Error("Aynı Sınav Grubundan Birden Fazla Sınav Eklenemez..!");
+                    return;
+                }
+                else {
+
+
+                    var dosya = document.getElementById('CADosya').files;
+                    dosyaadi = $("#CADosya").val().replace(/^.*[\\\/]/, '');
+                    if (dosya.length == 0) {
+                        Alert_Info('Lütfen Dosya Seçiniz.');
+                        return;
+                    }
+                    else if (vue.DosyaAdi == '') {
+                        Alert_Info('Lütfen Dosya Adını Giriniz.');
+                        return;
+                    }
+                    else if (vue.ID_SINAVs.length == 0) {
+                        Alert_Info('Lütfen Sınav Seçiniz.');
+                        return;
+                    }
+
+                    ExcelVeriYukle("BurslulukOgrenci", dosya, function (response) {
+
+                        $('.fileinput').fileinput("clear");
+                        var json = JSON.parse(response);
+
+                        var p = {
+                            TCKIMLIKNO: session.TCKIMLIKNO,
+                            OTURUM: session.OTURUM,
+                            DOSYAADI: vue.DosyaAdi,
+                            ID_SINAVs: JSON.stringify(_this.ID_SINAVs),
+                            SQLJSON: JSON.stringify(json)
+                        };
+
+                        WebPost(vue, "BurslulukOgrenciIslemleri", "BurslulukDosyaYukle", p, '', '', function (data, parent) {
+                            if (data > 0) {
+                                vue.ID_BURSLULUKDOSYA = data;
+                                var dnm = vue.DONEM;
+                                vue.DONEM = '1999'
+                                vue.DONEM = dnm;
+                                Alert_Info("Öğrenci Aktarımı Tamamlanmıştır.");
+                            } else {
+                                Alert_Warning("Öğrenci Aktarımı Tamamlanamamıştır..!");
+                            }
+                        }, 'RAISERROR');
+                    });
+                }
+            },
+
+            BurslulukDosyaSil() {
+                var _this = this;
+                Alert_OkCancelConfirm("Bursluluk Dosya Silme", "Bursluluk Dosyası ve Öğrencilerini Silmek İstediğinize Emin Misiniz ?", function myfunction() {
+                    var p = {
+                        TCKIMLIKNO: session.TCKIMLIKNO,
+                        OTURUM: session.OTURUM,
+                        ID_BURSLULUKDOSYA: _this.ID_BURSLULUKDOSYA,
+                    };
+
+                    WebPost(_this, "BurslulukOgrenciIslemleri", "BurslulukDosyaSil", p, '', '', function (data, parent) {
+                        if (data != null || data != undefined) {
+                            Alert_Info("Dosya Silindi");
+                            _this.ID_BURSLULUKDOSYA = 0;
+                        }
+                        else {
+                            Alert_Warning("Dosya Silinemedi..!");
+                        }
+                    });
+                }, function myfunction() {
+
+                });
+            },
+
+            KatilimRaporu(raporGenelMi) {
+                window.open('../Rapor.aspx?rapor=Sinav.Bursluluk.KatilimRaporu&raporTur=xls&p=' + session.TCKIMLIKNO + ';' + session.OTURUM + ';' + this.ID_BURSLULUKDOSYA + ';' + raporGenelMi, '_blank');
+                return;
+            },
+
+            ListeleDataTable() {
+
+                this.divAc = true;
+                var _this = this;
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    ID_BURSLULUKDOSYA: this.ID_BURSLULUKDOSYA
+                };
+                if (this.table != null) {
+                    this.table.destroy();
+                }
+                this.table = $('#table').DataTable(
+                    {
+                        "processing": true,
+                        "serverSide": true,
+                        "order": [[1, 'asc']],
+                        "columnDefs": [
+                            {
+                                "targets": 0,
+                                "visible": false,
+                                "searchable": false,
+                                "orderable": false
+                            }
+                        ],
+                        "ajax": {
+                            "url": "/BurslulukOgrenciIslemleri/OgrenciListelebyBurslulukDosya?TCKIMLIKNO=" + session.TCKIMLIKNO + "&OTURUM=" + session.OTURUM + "&ID_BURSLULUKDOSYA=" + this.ID_BURSLULUKDOSYA,
+                            "type": 'POST',
+                            "data": function (d) {
+                                p.SQLJSON = JSON.stringify(d);
+                                return p;
+                            },
+                            "dataFilter": function (data) {
+
+                                var json = JSON.parse(JSON.parse(data))[0];
+                                ListeTemizle(vue.ListOgrenci)
+                                vue.ListOgrenci = JSON.parse(json.data);
+
+                                if (json.recordsTotal != null && json.recordsTotal != undefined && json.recordsTotal == 0) {
+                                    $('#table_wrapper').css('display', 'none');
+                                } else {
+                                    json.data = JSON.parse(json.data) == null ? [] : JSON.parse(json.data);
+                                    $('#table_wrapper').css('display', 'block');
+                                }
+
+                                return JSON.stringify(json);
+                            },
+                        },
+                        "columns": [
+                            { "data": "RowNumber" },
+                            { "data": "TCKIMLIKNOHTML" },
+                            { "data": "OGRENCI_ADSOYAD" },
+                            { "data": "SINIFDUZEYI" },
+                            { "data": "SUBEAD" },
+                            { "data": "SEANS" },
+                            { "data": 'ISLEM' },
+                        ],
+                        language: {
+                            "url": "./Utility/dil.json"
+                        }
+                    });
+            },
+
+        }
+    });
+</script>
+<script src="Scripts/PublicMethods.js"></script>
+<script src="assets/global/plugins/bootstrap-fileinput/bootstrap-fileinput.js" type="text/javascript"></script>
+
+
+

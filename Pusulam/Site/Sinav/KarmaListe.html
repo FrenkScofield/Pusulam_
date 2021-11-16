@@ -1,0 +1,657 @@
+﻿<link href="assets/global/plugins/bootstrap-fileinput/bootstrap-fileinput.css" rel="stylesheet" type="text/css" />
+<style>
+    td {
+        vertical-align: middle !important;
+    }
+
+    .row {
+        margin-top: 10px !important;
+    }
+
+    .bootstrap-select {
+        max-width: 300px;
+    }
+</style>
+<div class="page-head">
+    <div class="page-title col-md-12">
+        <h1>
+            Karma Listesi <span onclick="YardimGoster(ID_MENU);" class="pull-right" style="cursor:pointer;"><img src="assets/global/img/info.gif" class="info-image-icon" /> </span>
+        </h1>
+    </div>
+</div>
+
+<div class="row" id="app">
+    <div class="col-md-12">
+        <div class="portlet box blue-hoki dd-item" style="border:none">
+            <div class="portlet-title dd-handle" data-toggle='collapse' data-target='#filters' style="cursor:pointer;">
+                <div class="caption">
+                    <i class="icon-magnifier"></i>
+                    <span class="caption-subject bold uppercase"> Filtreler </span>
+                    <span class="caption-helper"></span>
+                </div>
+                <div class='actions'>
+                    <a href='javascript:;' class='btn btn-default btn-sm' style='border:none;'>
+                        <i class='fa fa-chevron-down'></i>
+                    </a>
+                </div>
+            </div>
+            <div class="portlet-body form collapse in" id="filters">
+                <div class="portlet light col-md-12" id="FiltreDiv" style="margin:0px; border-bottom-style: solid;border-bottom-width: 3px;border-bottom-color: rgb(0, 173, 239);">
+                    <div class="portlet-body">
+                        <c-donem controller="SinavListele"
+                                 @OnChange="DonemSelected">
+                        </c-donem>
+                        <div class="col-md-2">
+                            <select class="selectpicker form-control" v-model="bursluluk" @change="dagitildi = false; ID_SINIFLIST.splice(0, ID_SINIFLIST.length); SINAVLISTESI.splice(0, SINAVLISTESI.length);" title="Bursluluk ">
+                                <option v-bind:value="false">OKUL SINAVI</option>
+                                <option v-bind:value="true">BURSLULUK SINAVI</option>
+                            </select>
+                        </div>
+                        <c-tarih :tarih="TARIH"
+                                 v-if="!bursluluk"
+                                 @change-date="SinavTarihSelected">
+                        </c-tarih>
+
+                        <c-bursluluk-dosya-yan :controller="controller"
+                                               :idset="ID_BURSLULUKDOSYA"
+                                               :donem="DONEM"
+                                               v-if="bursluluk"
+                                               @OnChange="BurslulukDosyaSelected">
+                        </c-bursluluk-dosya-yan>
+                        <c-bursluluk-tarih-seans :controller="controller"
+                                                 :idburslulukdosya="ID_BURSLULUKDOSYA"
+                                                 v-if="bursluluk"
+                                                 @OnChange="BurslulukTarihSeansSelected">
+                        </c-bursluluk-tarih-seans>
+
+                        <div class="row col-md-2" style="margin-top: 0px !important;">
+                            <div  style="height:34px; vertical-align:middle;">
+                                <div class="md-checkbox" style="margin:auto!important; height:20px; margin:0px; margin-top:6px; display:block;">
+                                    <input type="checkbox" v-model="tcGorunsun" id="tcGorunsun" class="md-check" v-bind:true-value="true" v-bind:false-value="false" />
+                                    <label for="tcGorunsun">
+                                        <span></span>
+                                        <span class="check"></span>
+                                        <span class="box"></span>
+                                        Kimlik Numarası Görünsün
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row col-md-2" style="margin-top: 0px !important;">
+                            <div style="height:34px; vertical-align:middle;">
+                                <div class="md-checkbox" style="margin:auto!important;height:20px; margin:0px; margin-top:6px; display:block;">
+                                    <input type="checkbox" v-model="kurSinif" id="kurSinif" class="md-check" v-bind:true-value="true" v-bind:false-value="false" />
+                                    <label for="kurSinif">
+                                        <span></span>
+                                        <span class="check"></span>
+                                        <span class="box"></span>
+                                        Kur Sınıfları
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="text-right" style="padding-right: 10px;">
+                            <button type="button" class="btn green" @click="SinavListele">Sınav Listele</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="portlet light col-md-12" id="FiltreDiv" style="margin:0px; border-bottom-style: solid;border-bottom-width: 3px;border-bottom-color: rgb(0, 173, 239);"
+                     v-show="SINAVLISTESI.length>0">
+                    <div class="portlet-body">
+                        <c-sube-multi :controller="controller"
+                                      @OnChange="SubeSelected"
+                                      v-if="!bursluluk">
+                        </c-sube-multi>
+                        <div class="col-md-2">
+                            <select class="selectpicker form-control" v-model="sinifKapasitesi" title="Sınıf Mevcudu Seçiniz..">
+                                <option v-bind:value="true">Sınıf Öğrenci Sayısı</option>
+                                <option v-bind:value="false">xBase Sınav Kapasitesi</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="portlet light col-md-12" id="FiltreDiv" style="margin:0px; border-bottom-style: solid;border-bottom-width: 3px;border-bottom-color: rgb(0, 173, 239);">
+                    <div class="portlet-body">
+                        <div class="form-md-line-input">
+                            <div class="col-md-2">
+                                <select class="selectpicker form-control" v-model="secenek" title="Rapor Türü Seçiniz..">
+                                    <option v-bind:value="1">OKUL</option>
+                                    <option v-bind:value="2">YOKLAMA LİSTESİ</option>
+                                    <option v-bind:value="3">SINIF KAPI LİSTESİ</option>
+                                </select>
+                            </div>
+                            <c-rapor-tur-buton-yazi :butonyazi="'En Son Karma Listeyi Yazdır'" @Yazdir="Yazdir"> </c-rapor-tur-buton-yazi>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-12" v-if="SINAVLISTESI.length>0 && !bursluluk">
+        <div class="portlet light">
+            <div class="portlet-title">
+                <div class="caption">
+                    <i class="icon-list font-green"></i>
+                    <span class="caption-subject bold font-green uppercase"> Sınav Listesi </span>
+                    <span class="caption-helper"></span>
+                </div>
+            </div>
+            <div class="portlet-body form">
+                <div class="portlet light bordered">
+                    <div class="portlet-body">
+                        <table class="table table-striped table-bordered table-hover table-checkable" id="sinavtable">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>SINAV ADI</th>
+                                    <th>GRUP</th>
+                                    <th>SINAV TÜRÜ</th>
+                                    <th style="width: 30% !important;">Sınıf Türü</th>
+                                    <th style="width: 30% !important;">Sınıflar</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="odd gradeX" v-for="u in SINAVLISTESI">
+                                    <td>{{u.ID_SINAV}}</td>
+                                    <td>{{u.AD}}</td>
+                                    <td>{{u.KADEME3}}</td>
+                                    <td>{{u.SINAVTURU}}</td>
+                                    <td>
+                                        <div class="col-md-12">
+                                            <select class="selectpicker form-control sinifTuru" multiple="multiple" v-model="u.SINIFTUR" title="Sınıf Türü"
+                                                    @change="SinifTuruSelected(u.ID_SINAV)" :id='"sinifTuru-"+u.ID_SINAV'>
+                                                <option v-for="u in idSinifAlan" v-bind:value="u.ALAN">{{u.ALAN}}</option>
+                                            </select>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <c-sinif-multi-karma-liste :controller="controller"
+                                                                   :idsubelist="ID_SUBELIST"
+                                                                   :idkademe3="u.ID_KADEME3"
+                                                                   :divid="'select-'+u.ID_SINAV"
+                                                                   :sinifturu="u.SINIFTUR"
+                                                                   :kursinif="kurSinif"
+                                                                   :ist="i"
+                                                                   @OnChange="SinifSelected">
+                                        </c-sinif-multi-karma-liste>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="portlet-body">
+                <div class="row">
+                    <div class="form-group">
+                        <div class="col-md-12 text-right">
+                            <button type="button" class="btn green" @click="Dagit(false,true)">Öğrencileri Sınıflara Yeniden Dağıt</button>
+                            <button type="button" class="btn green" @click="Dagit(true,true)">Öğrencileri Kendi Sınıflarına Yeniden Dağıt</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-12" v-if="SINAVLISTESI.length>0 && bursluluk">
+        <div class="portlet light">
+            <div class="portlet-title">
+                <div class="caption">
+                    <i class="icon-list font-green"></i>
+                    <span class="caption-subject bold font-green uppercase"> Sınav Listesi </span>
+                    <span class="caption-helper"></span>
+                </div>
+            </div>
+            <div class="portlet-body form">
+                <div class="portlet light bordered">
+                    <div class="portlet-body">
+
+                        <table class="table table-striped table-bordered table-hover table-checkable" id="sinavtable">
+                            <thead>
+                                <tr>
+                                    <th>ŞUBE</th>
+                                    <th>SINAV LİSTESİ</th>
+                                    <th style="width: 30% !important;">İŞLEM</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="odd gradeX" v-for="u in SINAVLISTESI">
+                                    <td>{{u.SUBEAD}}</td>
+                                    <td>
+                                        <div v-for="SN in u.SN">
+                                            ({{SN.ID_SINAV}}) ({{SN.KADEME3}}) - {{SN.SINAVAD}} (B.S : {{SN.BSV_SAY}})
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <c-sinif-multi-karma-liste :controller="controller"
+                                                                   :idsubelist="'['+u.ID_SUBE+']'"
+                                                                   :idkademe3=0
+                                                                   :divid="'select-'+u.ID_SUBE"
+                                                                   @OnChange="SinifBurslulukSelected">
+                                        </c-sinif-multi-karma-liste>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="portlet-body">
+            <div class="row">
+                <div class="form-group">
+                    <div class="col-md-12 text-right">
+                        <button type="button" class="btn green" @click="Dagit(true,true)">Öğrencileri Sınıflara Yeniden Dağıt</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</div>
+<script src="../../assets/global/plugins/bootstrap-select/js/i18n/defaults-tr_TR.js"></script>
+<script src="VueComponents/SinavFiltreleri.js?v=7"></script>
+<script src="VueComponents/GenelSinavRaporuFiltreleri.js?v=19"></script>
+<script src="vueComponents/Genel.js?v=8"></script>
+
+<script>
+
+    var vue = new Vue({
+
+        el: "#app",
+        name: "KarmaListe",
+
+        data: {
+            controller:"KarmaListe",
+            DONEM: '',
+            TARIH: '',
+            ID_SINAV: 0,
+            ID_BURSLULUKDOSYA: 0,
+            BURS_SINAVTARIH: '',
+            BURS_SEANS: '',
+            ID_KADEME3: 0,
+            SINAVLISTESI: [],
+            ID_SUBELIST: [],
+            ID_SINIFLIST: [],
+            idSinifAlan: [],
+            tcGorunsun: false,
+            kurSinif: false,
+            secenek: 0,
+            siniflar: [],
+            dagitildi: false,
+            kendiSinif: false,
+            ciktiTuru: "PDF",
+            divAc: false,
+            bursluluk: false,
+            i: 0,
+            sinifKapasitesi: true,
+        },
+
+        mounted() {
+            //this.SinavListele();
+            var d = new Date();
+            this.TARIH = d.getDate() + "/" + (d.getMonth() + 1) + "/" + d.getFullYear();
+            this.bursluluk = false;
+            this.sinifKapasitesi = true;
+            $('.selectpicker').selectpicker('refresh');
+        },
+
+        methods: {
+            BurslulukDosyaSelected(item) {
+                this.ID_BURSLULUKDOSYA = item;
+            },
+            BurslulukTarihSeansSelected(item) {
+                this.BURS_SINAVTARIH = item.SINAVTARIH;
+                this.BURS_SEANS = item.SEANS;
+            },
+            SubeBurslulukSelected(item) {
+                this.ID_SUBELIST.splice(0, this.ID_SUBELIST.length);
+                this.ID_SUBELIST.push(item);
+            },
+            DonemSelected(item) {
+                this.DONEM = item;
+            },
+            SinavTarihSelected(item) {
+                this.TARIH = item;
+            },
+            SubeSelected(item) {
+                this.ID_SUBELIST = item;
+                this.ID_SINIFLIST.splice(0, this.ID_SINIFLIST.length);
+                $('.selsinif').selectpicker('deselectAll');
+                $('.sinifTuru').selectpicker('deselectAll');
+            },
+            Kademe3Selected(item) {
+                $('.selsinif').selectpicker('deselectAll');
+                this.ID_KADEME3 = item;
+                this.SinavListele();
+                this.$nextTick(() => {
+                    vue.$forceUpdate();
+                });
+            },
+            SinifSelected(item, u) {
+                this.i = 0;
+
+                var idSinav = u.split("-")[1];
+
+                this.dagitildi = false;
+                var sinav = $.grep(this.SINAVLISTESI, function (el, i) { return el.ID_SINAV == idSinav; })[0];
+                var idSinavTuru = sinav.ID_SINAVTURU;
+                var idKademe3 = sinav.ID_KADEME3;
+                this.ID_SINIFLIST = $.grep(this.ID_SINIFLIST, function (el, i) { return el.ID_SINAV != idSinav; });
+                if (item.length > 0) {
+                    this.ID_SINIFLIST.push({ "ID_SINAV": idSinav, "ID_SINAVTURU": idSinavTuru, "ID_KADEME3": idKademe3, "SINIF_LIST": item });
+                }
+            },
+            SinifBurslulukSelected(item, u) {
+                this.i = 0;
+
+                var idSube = u.split("-")[1];
+
+                this.dagitildi = false;
+                var sube = $.grep(this.SINAVLISTESI, function (el, i) { return el.ID_SUBE == idSube; })[0];
+                var idSinavTuru = sube.ID_SINAVTURU;
+                var idKademe3 = sube.ID_KADEME3;
+                this.ID_SINIFLIST = $.grep(this.ID_SINIFLIST, function (el, i) { return el.ID_SUBE != idSube; });
+                if (item.length > 0) {
+                    this.ID_SINIFLIST.push({ "ID_SUBE": idSube, "ID_SINAVTURU": idSinavTuru, "ID_KADEME3": idKademe3, "SINIF_LIST": item });
+                }
+
+            },
+            SinifTuruSelected(item) {
+                this.i = item;
+            },
+            SinavListele() {
+                var _this = this;
+                this.dagitildi = false;
+
+                if (this.bursluluk) {
+                    this.SinavListeleBursluluk();
+                    return;
+                }
+
+                if (!this.bursluluk && (this.TARIH == undefined || this.TARIH == null || this.TARIH == '')) {
+                    Alert_Warning("Sınav Tarihini Seçiniz.")
+                    return;
+                }
+
+                WebPost(this, this.controller, "SinifAlanListele", { TCKIMLIKNO: session.TCKIMLIKNO, OTURUM: session.OTURUM }, '', '', function (data, parent) {
+                    parent.idSinifAlan = JSON.parse(data);
+                    parent.idSinifAlan.unshift({ ID_SINIFALAN: 0, ALAN: 'Tümü' });
+                });
+
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    DONEM: this.DONEM,
+                    TARIH: this.TARIH,
+                    ID_KADEME3: this.ID_KADEME3,
+                };
+                WebPost(this, this.controller, "SinavListelebyTarih", p, '#sinavtable', 'Yükleniyor..', function (data, parent) {
+                    if (data != "") {
+                        _this.SINAVLISTESI.splice(0, _this.SINAVLISTESI.length);
+
+                        _this.SINAVLISTESI = JSON.parse(data);
+                        $.each(_this.SINAVLISTESI, function (i, el) {
+                            el.SINIFTUR = [];
+                        });
+
+
+
+                        _this.divAc = true;
+
+                        _this.$nextTick(() => {
+                            $('.selectpicker').selectpicker('refresh');
+                            _this.$forceUpdate();
+                        });
+                        //$('#filters').collapse();
+                    }
+                    else {
+                        _this.divAc = false;
+                        Alert_Warning("Liste Bulunamadı!");
+                        //$('#sel-kademe3').selectpicker('val', 0);
+                    }
+                });
+            },
+            SinavListeleBursluluk() {
+                var _this = this;
+                this.dagitildi = false;
+                if (this.bursluluk && (this.BURS_SINAVTARIH == undefined || this.BURS_SINAVTARIH == null || this.BURS_SINAVTARIH == '')) {
+                    Alert_Warning("Sınav Tarihini ve Seansını Seçiniz.")
+                    return;
+                }
+
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    ID_BURSLULUKDOSYA: this.ID_BURSLULUKDOSYA,
+                    SINAVTARIH: this.BURS_SINAVTARIH,
+                    SEANS: this.BURS_SEANS,
+                };
+                _this.SINAVLISTESI = ListeTemizle(_this.SINAVLISTESI);
+                _this.divAc = false;
+                WebPost(this, this.controller, "BurslulukSinavListelebyTarihSeans", p, '#sinavtable', 'Yükleniyor..', function (data, parent) {
+                    if (data != "") {
+
+                        _this.SINAVLISTESI = JSON.parse(data);
+                        $.each(_this.SINAVLISTESI, function (i, el) {
+                            el.SINIFTUR = [];
+                        });
+
+                        _this.divAc = true;
+
+                        _this.$nextTick(() => {
+                            $('.selectpicker').selectpicker('refresh');
+                            _this.$forceUpdate();
+                        });
+                        //$('#filters').collapse();
+                    }
+                    else {
+                        _this.divAc = false;
+                        Alert_Warning("Liste Bulunamadı!");
+                        //$('#sel-kademe3').selectpicker('val', 0);
+                    }
+                });
+            },
+            Yazdir(ciktiTuru) {
+                this.ciktiTuru = ciktiTuru;
+                this.Dagit(this.kendiSinif, false);
+            },
+            Dagit(kendiSinif, yeniDagit) {
+                if (yeniDagit) {
+                    this.ciktiTuru = 'PDF';
+                }
+
+                var _this = this;
+                this.kendiSinif = kendiSinif;
+                var k = [];
+                var atananSiniflar = "";
+                var a = [];
+                var girdi = false;
+                $.each(this.ID_SINIFLIST, function (i, el) {
+                    $.each(el.SINIF_LIST, function (j, sel) {
+                        if (k.indexOf(sel) > -1 && sel != 0) {
+                            var snf = getObjects(_this.siniflar, "ID_SINIF", sel)[0]
+                            if (a.indexOf(sel) == -1) {
+                                atananSiniflar += snf.SUBEAD + ' - ' + snf.AD + '<br>'
+                            }
+                            a.push(sel);
+                            girdi = true;
+                        }
+                        k.push(sel);
+                    })
+                })
+
+                if ((!girdi && this.ID_SINIFLIST.length > 0) || (this.ID_SINIFLIST.length == 0 && !this.dagitildi)) {
+                    var secenek = this.secenek == 0 || yeniDagit ? 3 : this.secenek; // 1-okul  / 2-yoklama / 3-kapı
+
+                    if (!yeniDagit) {
+                        window.open('../Rapor.aspx?rapor=Sinav.KarmaListe&raporTur=' + this.ciktiTuru
+                            + '&p=' + session.TCKIMLIKNO
+                            + ';' + session.OTURUM
+                            + ';[];' + secenek
+                            + ";" + kendiSinif
+                            + ";" + this.tcGorunsun
+                            + ";" + this.bursluluk
+                            + ";" + this.TARIH
+                            + ";" + yeniDagit
+                            + ";" + this.sinifKapasitesi
+
+                            + ";" + this.ID_BURSLULUKDOSYA
+                            + ";" + this.BURS_SINAVTARIH
+                            + ";" + this.BURS_SEANS
+
+                            , '_blank');
+                    }
+                    else {
+                        var params = 'Sinav.KarmaListe' +
+                            '@' + this.ciktiTuru +
+                            '@' + session.TCKIMLIKNO +
+                            '@' + session.OTURUM +
+                            '@' + JSON.stringify(this.ID_SINIFLIST) +
+                            '@' + secenek +
+                            '@' + kendiSinif +
+                            '@' + this.tcGorunsun +
+                            '@' + this.bursluluk +
+                            '@' + this.TARIH +
+                            '@' + yeniDagit +
+                            '@' + this.sinifKapasitesi +
+
+                            '@' + this.ID_BURSLULUKDOSYA +
+                            '@' + this.BURS_SINAVTARIH +
+                            '@' + this.BURS_SEANS;
+
+                        var xForm = document.createElement("form");
+                        xForm.target = "rapor";
+                        xForm.method = "POST";
+                        xForm.action = "../RaporPost.aspx";
+
+                        var xInput = document.createElement("input");
+                        xInput.type = "text";
+                        xInput.name = "p";
+                        xInput.value = params;
+                        xForm.appendChild(xInput);
+                        xForm.hidden = "hidden";
+                        document.body.appendChild(xForm);
+
+                        map = window.open("", "rapor", "");
+
+                        if (map) {
+                            xForm.submit();
+                        } else {
+                            alert('Açılır sekmelere izin veriniz.');
+                        }
+                    }
+                    this.dagitildi = yeniDagit;
+                }
+                else {
+                    Alert_Warning(atananSiniflar + "<br>Yukarıda belirtilen sınıf/sınıflar birden fazla sınavda atanmış. Düzeltip tekrar deneyiniz.");
+                }
+            },
+            KarmaListeExcelTaslakIndir() {
+                window.open("Dosyalar/KarmaListe/KARMALISTE.xlsx", "_blank");
+            },
+            KarmaListeExcelYukle() {
+                var _this = this;
+                var k = [];
+                var atananSiniflar = "";
+                var a = [];
+                var girdi = false;
+                $.each(_this.ID_SINIFLIST, function (i, el) {
+                    $.each(el.SINIF_LIST, function (j, sel) {
+                        if (k.indexOf(sel) > -1 && sel != 0) {
+                            var snf = getObjects(_this.siniflar, "ID_SINIF", sel)[0]
+                            if (a.indexOf(sel) == -1) {
+                                atananSiniflar += snf.SUBEAD + ' - ' + snf.AD + '<br>'
+                            }
+                            a.push(sel);
+                            girdi = true;
+                        }
+                        k.push(sel);
+                    })
+                });
+
+                if (getDistinct(vue.ID_SINIFLIST, "ID_SINAV").length > 1) {
+                    Alert_Error("Tek sınav seçmeniz gerekmektedir")
+                    return;
+                }
+                else if (getDistinct(vue.ID_SINIFLIST, "ID_SINAV").length == 0) {
+                    Alert_Error("Sınav ve sınıf seçmeniz gerekmektedir")
+                    return;
+                }
+                else if (!girdi && _this.ID_SINIFLIST.length > 0) {
+                    var guid = '';
+                    var dosyaadi = '';
+                    var dosya = document.getElementById('CADosya').files;
+                    dosyaadi = $("#CADosya").val().replace(/^.*[\\\/]/, '');
+                    if (dosya.length == 0) {
+                        Alert_Info('Lütfen Dosya Seçiniz.');
+                        return;
+                    }
+
+
+                    var secenek = 3; // 1-okul  / 2-yoklama / 3-kapı
+                    kendiSinif = false;
+
+                    KarmaListeYukle(dosya, _this.TARIH, function (response) {
+
+                        //window.open('../Rapor.aspx?rapor=Sinav.KarmaListe&raporTur=pdf&p=' + session.TCKIMLIKNO + ';' + session.OTURUM + ';' + JSON.stringify(_this.ID_SINIFLIST) + ";" + secenek + ";" + kendiSinif + ";" + _this.tcGorunsun + ';' + true + ";" + _this.TARIH + ';' + true + ";" + this.sinifKapasitesi, '_blank');
+
+                        var params = 'Sinav.KarmaListe' +
+                            '@' + this.ciktiTuru +
+                            '@' + session.TCKIMLIKNO +
+                            '@' + session.OTURUM +
+                            '@' + JSON.stringify(this.ID_SINIFLIST) +
+                            '@' + secenek +
+                            '@' + kendiSinif +
+                            '@' + this.tcGorunsun +
+                            '@' + true +
+                            '@' + this.TARIH +
+                            '@' + true +
+                            '@' + this.sinifKapasitesi +
+
+                            '@' + this.ID_BURSLULUKDOSYA +
+                            '@' + this.BURS_SINAVTARIH +
+                            '@' + this.BURS_SEANS;
+
+                        var xForm = document.createElement("form");
+                        xForm.target = "rapor";
+                        xForm.method = "POST"; // or "post" if appropriate
+                        xForm.action = "../RaporPost.aspx";
+
+                        var xInput = document.createElement("input");
+                        xInput.type = "text";
+                        xInput.name = "p";
+                        xInput.value = params;
+                        xForm.appendChild(xInput);
+
+                        document.body.appendChild(xForm);
+
+                        map = window.open("", "rapor", "");
+
+                        if (map) {
+                            xForm.submit();
+                        } else {
+                            alert('Açılır sekmelere izin veriniz.');
+                        }
+
+
+                        _this.dagitildi = true;
+
+                        $('.fileinput').fileinput("clear");
+                    });
+
+
+                }
+                else {
+                    Alert_Warning(atananSiniflar + "<br>Yukarıda belirtilen sınıf/sınıflar birden fazla sınavda atanmış. Düzeltip tekrar deneyiniz.");
+                }
+            },
+        }
+    });
+</script>
+<script src="Scripts/PublicMethods.js"></script>
+<script src="assets/global/plugins/bootstrap-fileinput/bootstrap-fileinput.js" type="text/javascript"></script>

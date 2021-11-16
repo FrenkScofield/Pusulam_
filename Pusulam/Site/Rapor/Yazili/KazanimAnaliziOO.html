@@ -1,0 +1,231 @@
+﻿<style>
+    table {
+        font-family: 'Open Sans', sans-serif;
+        width: 100%;
+        border-collapse: collapse;
+        border: 3px solid #44475C;
+        margin: 10px 10px 0 10px;
+    }
+
+        table th {
+            text-transform: uppercase;
+            text-align: left;
+            background: #44475C;
+            color: #FFF;
+            padding: 8px;
+            min-width: 30px;
+            text-align: center;
+        }
+
+        table td {
+            text-align: left;
+            padding: 8px;
+            border-right: 2px solid #7D82A8;
+            font-size: 10px !important;
+            cursor: default !important;
+            color: #000;
+            font-weight: 700;
+            text-align: center;
+        }
+
+    #PuanTablo {
+        border: 3px solid #f58320;
+    }
+
+        #PuanTablo th {
+            text-transform: uppercase;
+            text-align: left;
+            background: #f58320;
+            color: #FFF;
+            padding: 8px;
+            min-width: 30px;
+        }
+
+        #PuanTablo td {
+            text-align: left;
+            padding: 8px;
+            border-right: 2px solid #f58320;
+            font-size: 10px !important;
+            cursor: default !important;
+        }
+
+        #PuanTablo tbody tr:nth-child(2n) td {
+            background: #e9c6a8;
+        }
+
+
+    table td:last-child {
+        border-right: none;
+    }
+
+    table tbody tr:nth-child(2n) td {
+        background: #D4D8F9;
+    }
+
+    .badge-danger {
+        background-color: #F34C59;
+        font-size: 9px !important;
+    }
+</style>
+
+<div class="page-head">
+    <!-- BEGIN PAGE TITLE -->
+    <div class="page-title col-md-12">
+        <h1>
+            Orta Okul Kazanım Analizi <span onclick="YardimGoster(ID_MENU);" class="pull-right" style="cursor:pointer;"><img src="assets/global/img/info.gif" class="info-image-icon" /> </span>
+        </h1>
+    </div>
+    <!-- END PAGE TITLE -->
+</div>
+
+<div class="row" id="app">
+    <div class="col-md-12">
+        <div class="portlet box green-haze dd-item" style="border:none; margin-bottom:0px!important;">
+            <div class="portlet-title dd-handle" data-toggle='collapse' data-target='#filters' style="cursor:pointer;">
+                <div class="caption">
+                    <i class="icon-list"></i>
+                    <span class="caption-subject bold uppercase"> Filtreler </span>
+                    <span class="caption-helper"></span>
+                </div>
+                <div class='actions'>
+                    <a href='javascript:;' class='btn btn-default btn-sm' style='border:none;'>
+                        <i class='fa fa-chevron-down'></i>
+                    </a>
+                </div>
+            </div>
+            <div class="portlet-body form collapse in" id="filters">
+
+                <div class="portlet light col-md-12" style="margin:0px; border-bottom-style: solid;border-bottom-width: 3px;border-bottom-color: rgb(0, 173, 239);">
+                    <div class="portlet-body">
+                        <div class="form-inline">
+                            <div class="row">
+                                <c-sube controller="KazanimAnaliziOO"
+                                        @OnChange="SubeSelected">
+                                </c-sube>
+                                <c-kademe3 controller="KazanimAnaliziOO"
+                                           :idsube="ID_SUBE"
+                                           @OnChange="Kademe3Selected">
+                                </c-kademe3>
+                                <c-sinif controller="KazanimAnaliziOO"
+                                               :idsube="ID_SUBE"
+                                               :idkademe3="ID_KADEME3"
+                                               @OnChange="SinifSelected">
+                                </c-sinif>
+                            </div>
+                            <div class="row">
+                                <c-donem controller="KazanimAnaliziOO"
+                                         @OnChange="DonemSelected">
+                                </c-donem>
+                                <c-genel-ders :idkademe3="ID_KADEME3"
+                                              :donem="DONEM"
+                                              @OnChange="GenelDersSelected">
+                                </c-genel-ders>
+                                <c-yariyil @OnChange="YariyilSelected">
+                                </c-yariyil>
+                                <c-yazili-genel-yeni-sinifs controller="KazanimAnaliziOO"
+                                                     :donem="DONEM"
+                                                     :yariyil="YARIYIL"
+                                                     :idders="ID_DERS"                                         
+                                                     :siniflar="SINIFLAR"
+                                                     @OnChange="YaziliSelected">
+                                </c-yazili-genel-yeni-sinifs>
+                                <c-rapor-tur @OnChange="RaporTurSelected">
+                                </c-rapor-tur>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="portlet light" style="padding:0px;">
+                <div class="col-md-12" style="display:inherit">
+                    <input style="float:right;margin: 10px;" type="button" class="btn btn-success" @click="Raporla()" value="Raporla">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="/VueComponents/YaziliYoklamaFiltreleri.js?v=3"></script>
+<script src="/VueComponents/Genel.js?v=3"></script>
+<script src="assets/global/plugins/bootstrap-table/bootstrap-table.min.js"></script>
+<link href="assets/global/plugins/bootstrap-table/bootstrap-table.min.css" rel="stylesheet" />
+<script>
+    var vue = new Vue({
+        el: "#app",
+        name: "KazanimAnaliziOO.html",
+
+        data: {
+            TCKIMLIKNO: '',
+            DONEM: '',
+            ID_SINAV: 0,
+            ID_KADEME3: 0,
+            ID_DERS: 0,
+            YARIYIL: '',
+            ID_SINIF: 0,
+            ID_SUBE: 0,
+            T1: [],
+            T2: [],
+            RAPOR_TUR: "",
+            SINIFLAR:[],
+        },
+
+        mounted() {
+
+        },
+
+        methods: {
+            SubeSelected(ID_SUBE) {
+                this.ID_SUBE = ID_SUBE;
+            },
+
+            Kademe3Selected(ID_KADEME3) {
+                this.ID_KADEME3 = ID_KADEME3;
+            },
+
+            DonemSelected(DONEM) {
+                this.DONEM = DONEM;
+            },
+
+            YaziliSelected(ID_SINAV) {
+                this.ID_SINAV = ID_SINAV;
+            },
+
+            YariyilSelected(YARIYIL) {
+                this.YARIYIL = YARIYIL;
+            },
+
+            SinifSelected(ID_SINIF) {
+                this.ID_SINIF = ID_SINIF;
+                this.SINIFLAR = [];
+                this.SINIFLAR.push(ID_SINIF);
+            },
+
+            GenelDersSelected(ID_DERS) {
+                this.ID_DERS = ID_DERS;
+            },
+
+            RaporTurSelected(item) {
+                this.RAPOR_TUR = item;
+            },
+
+            Raporla() {
+                if (this.RAPOR_TUR == "") {
+                    Alert_Warning("Rapor Türünü Seçiniz.");
+                }
+                else if (this.DONEM == ''
+                    || this.ID_SINAV == 0
+                    || this.ID_KADEME3 == 0
+                    || this.ID_DERS == 0
+                    || this.YARIYIL == ''
+                    || this.ID_SINIF == 0
+                    || this.ID_SUBE == 0) {
+                    Alert_Warning("Seçimleri yapmanız gerekmektedir.");
+                } else {
+                    window.open('../Rapor.aspx?rapor=Yazili.KazanimAnaliziOO&raporTur=' + this.RAPOR_TUR + '&p=' + session.TCKIMLIKNO + ';' + session.OTURUM + ';' + this.ID_SINAV + ';' + this.ID_SINIF, '_blank');
+                }
+            }
+        },
+    });
+</script>
+
+<script src="Scripts/PublicMethods.js"></script>

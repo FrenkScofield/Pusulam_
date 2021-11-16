@@ -1,0 +1,476 @@
+﻿<head>
+    <script src="../../../Scripts/Rapor/amcharts.js"></script>
+    <script src="../../../Scripts/Rapor/jquery.easypiechart.js"></script>
+    <script src="../../../Scripts/Rapor/light.js"></script>
+    <script src="../../../Scripts/Rapor/serial.js"></script>
+</head>
+<style>
+    /*.table-bordered, .table-bordered > tbody > tr > td, .table-bordered > tbody > tr > th, .table-bordered > tfoot > tr > td, .table-bordered > tfoot > tr > th, .table-bordered > thead > tr > td, .table-bordered > thead > tr > th {
+        border: 1px solid #8A9198;
+    }*/
+    table {
+        font-family: 'Open Sans', sans-serif;
+        width: 100%;
+        border-collapse: collapse;
+        border: 3px solid #44475C;
+        margin: 10px 10px 0 10px;
+    }
+
+        table th {
+            text-transform: uppercase;
+            text-align: left;
+            background: #44475C;
+            color: #FFF;
+            padding: 8px;
+            min-width: 30px;
+            text-align: center;
+        }
+
+        table td {
+            text-align: left;
+            padding: 8px;
+            border-right: 2px solid #7D82A8;
+            font-size: 10px !important;
+            cursor: default !important;
+            color: #000;
+            font-weight: 700;
+            text-align: center;
+        }
+
+    #PuanTablo {
+        border: 3px solid #f58320;
+    }
+
+        #PuanTablo th {
+            text-transform: uppercase;
+            text-align: left;
+            background: #f58320;
+            color: #FFF;
+            padding: 8px;
+            min-width: 30px;
+        }
+
+        #PuanTablo td {
+            text-align: left;
+            padding: 8px;
+            border-right: 2px solid #f58320;
+            font-size: 10px !important;
+            cursor: default !important;
+        }
+
+        #PuanTablo tbody tr:nth-child(2n) td {
+            background: #e9c6a8;
+        }
+
+
+    table td:last-child {
+        border-right: none;
+    }
+
+    table tbody tr:nth-child(2n) td {
+        background: #D4D8F9;
+    }
+
+    .badge-danger {
+        background-color: #F34C59;
+        font-size: 9px !important;
+    }
+</style>
+
+
+<div class="page-head">
+    <!-- BEGIN PAGE TITLE -->
+    <div class="page-title col-md-12">
+        <h1>
+            Gelişim Raporu <small>Öğrenci Gelişim Raporu</small> <span onclick="YardimGoster(ID_MENU);" class="pull-right" style="cursor:pointer;"><img src="assets/global/img/info.gif" class="info-image-icon" /> </span>
+        </h1>
+    </div>
+    <!-- END PAGE TITLE -->
+</div>
+
+<div class="row" id="app">
+
+    <div class="col-md-12">
+        <div class="portlet box green-haze dd-item" style="border:none">
+            <div class="portlet-title dd-handle" data-toggle='collapse' data-target='#filters' style="cursor:pointer;">
+                <div class="caption">
+                    <i class="icon-magnifier"></i>
+                    <span class="caption-subject bold uppercase"> Filtreler </span>
+                    <span class="caption-helper"></span>
+                </div>
+                <div class='actions'>
+                    <a href='javascript:;' class='btn btn-default btn-sm' style='border:none;'>
+                        <i class='fa fa-chevron-down'></i>
+                    </a>
+                </div>
+            </div>
+            <div class="portlet-body form collapse in" id="filters">
+                <div class="portlet light col-md-12" id="FiltreDivVeli" style="margin:0px; border-bottom-style: solid;border-bottom-width: 3px;border-bottom-color: rgb(0, 173, 239);"
+                     v-if="ListKullaniciTipi.indexOf(5)>-1">
+
+                    <div class="portlet-body">
+                        <div class="row">
+                            <c-ogrenci-veli controller="VeliGelisimRaporu"
+                                            :tc="TCKIMLIKNO"
+                                            @OnChange="OgrenciVeliSelected">
+                            </c-ogrenci-veli>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="portlet light col-md-12" id="FiltreDivOgrenci" style="margin:0px; border-bottom-style: solid;border-bottom-width: 3px;border-bottom-color: rgb(0, 173, 239);"
+                     v-if="ListKullaniciTipi.indexOf(4)>-1 || divOgrenci==1">
+                    <div class="portlet-body">
+
+                        <div class="row">
+                            <c-donem controller="VeliGelisimRaporu"
+                                     @OnChange="DonemSelected">
+                            </c-donem>
+                            <c-gelisim-multi controller="VeliGelisimRaporu"
+                                             :tc="tcogrenci"
+                                             :donem="DONEM"
+                                             @OnChange="GelisimSelected">
+                            </c-gelisim-multi>
+                        </div>
+                    </div>
+                    <input style="float:right;margin: 10px;" type="button" class="btn btn-success" v-on:click="Yazdir" value="Yazdır">
+                    <input style="float:right;margin: 10px;" type="button" class="btn btn-success" v-on:click="Raporla" value="Raporla">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="portlet light col-md-12" v-for="item in LISTE">
+        <div class="col-md-6">
+            <div class="col-md-6" style="background: #005189; color: #FFF; margin-left:10px;">{{item.STKISAAD}} {{item.DERSAD}}  </div>
+            <div class="col-md-6" style="background: #005189; color: #FFF; margin-right:-17px;">Soru Sayısı : {{item.SORUSAYISI}}  </div>
+            <c-tablo tabloadi="DersTablo"
+                     :gelendata="item.SINAVLIST"
+                     :istisna="istisna">
+            </c-tablo>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
+
+                <div class="col-md-12" style="background: #005189; color: #FFF; margin-left:10px;">{{item.STKISAAD}} {{item.DERSAD}} DERS BAŞARI GRAFİĞİ </div>
+                <div class="col-md-12" :id='"chartdiv-"+item.DERSAD+"-"+item.ID_SINAVTURU' style="height:260px;">
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <div class="portlet light col-md-12" v-if="TN==true  && TSS>0">
+        <div class="col-md-6">
+            <div class="col-md-6" style="background: #f58320; color: #FFF; margin-left:10px;"> TOPLAM </div>
+            <div class="col-md-6" style="background: #f58320; color: #FFF; margin-right:-17px;">Soru Sayısı : {{TSS}} </div>
+            <!--Soru Sayısı : {{TSS}}-->
+            <c-tablo tabloadi="PuanTablo"
+                     :gelendata="SINAVLISTE"
+                     :istisna="SINAVISTISNA">
+            </c-tablo>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
+
+                <!-- <div class="col-md-12" style="background: #005189; color: #FFF; margin-left:10px;">{{item.DERSAD}} DERS BAŞARI GRAFİĞİ </div>-->
+                <div class="col-md-12" id="chartdivSinav" style="height:260px;"> </div>
+            </div>
+        </div>
+
+    </div>
+    <div class="portlet light col-md-12" v-for="item in PUANLISTE">
+        <div class="col-md-6">
+            <div class="col-md-6" style="background: #f58320; color: #FFF; margin-left:10px;">{{item.PUANTURU}} </div>
+            <c-tablo tabloadi="PuanTablo"
+                     :gelendata="item.P"
+                     :istisna="PUANISTISNA">
+            </c-tablo>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                <div class="col-md-12" :id='"chartdivPuan"+item.ID_SINAVPUANTURU' style="height:260px;"> </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="portlet light col-md-12" v-if="ETUTLISTE!=undefined && ETUTLISTE.length>0">
+        <table class="table table-striped table-bordered table-hover">
+            <thead>
+                <tr>
+                    <th>TARİH</th>
+                    <th>BRANŞ</th>
+                    <th>İÇERİK</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="ETUT in ETUTLISTE">
+                    <td>{{ETUT.TARIH}}</td>
+                    <td>{{ETUT.BRANS}}</td>
+                    <td>{{ETUT.ICERIK}}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+<script src="../../../VueComponents/Genel.js?v=3"></script>
+<script src="../../../VueComponents/SinavFiltreleri.js?v=4"></script>
+<script src="../../../VueComponents/SinavIstatistikFiltreleri.js?v=3"></script>
+<script>
+    var vue = new Vue({
+        el: "#app",
+        name: "GelisimRaporu.html",
+
+        data: {
+            idsinavpuanturu: 0,
+            TCKIMLIKNO: '',
+            DONEM: '',
+            dersler: [],
+            t1: [],
+            t2: [],
+            t3: [],
+            ETUTLISTE: [],
+            LISTE: [],
+            istisna: ["TC_OGRENCI", "TCKIMLIKNO", "YUZDE"],
+            SINAVLISTE: [],
+            SINAVISTISNA: ["ID_SINAV", "TCKIMLIKNO", "SS"],
+            TSS: 0,
+            PUANLISTE: [],
+            PUANISTISNA: ["ID_SINAVPUANTURU", "PTKOD"],
+            divAc: 0,
+            idsinav: 0,
+            idsube: 0,
+            idders: 0,
+            idkademe3: 0,
+            idsinif: 0,
+            tcogrenci: '',
+            idsinavturu: 0,
+            idkullanicitur: 0,
+            ListKullaniciTipi: [],
+            divOgrenci: 0,
+            filtre: [],
+            dersList: [],
+            ptList: [],
+            tnList: [],
+            TN: false
+        },
+
+        mounted() {
+
+            var p = {
+                TCKIMLIKNO: session.TCKIMLIKNO,
+                OTURUM: session.OTURUM
+            };
+            var list = [];
+            WebPost(this, "VeliGelisimRaporu", "KullaniciTipiGetir", p, "#app", "Yükleniyor...", function (data, parent) {
+                if (data != null) {
+                    $.each(data, function (j, el) {
+                        list.push(this.ID_KULLANICITIPI)
+                    });
+                    parent.ListKullaniciTipi = list;
+                    if (list.indexOf(4) > -1)
+                        parent.tcogrenci = session.TCKIMLIKNO;
+                } else {
+                    Alert_Warning("Kullanıcı Bulunamadı..!");
+                }
+            });
+        },
+
+        methods: {
+
+            Raporla: function (event) {
+                $('#filters').collapse('hide');
+                this.Getir();
+            },
+            Yazdir () {
+                window.open('../Rapor.aspx?rapor=Sinav.GelisimRaporu&raporTur=pdf&p=' + session.TCKIMLIKNO + ';' + session.OTURUM + ';' + this.tcogrenci + ';' + JSON.stringify(this.dersList).replace(/D-/g, '') + ';' + JSON.stringify(this.ptList).replace(/P-/g, '') + ';' + this.TN + ';' + this.DONEM + ";" + 2, '_blank');
+            },
+
+            SubeSelected(item) {
+                this.idsube = item;
+                this.idkademe3 = 0;
+                this.idsinif = 0;
+                this.divOgrenci = 0;
+                this.divAc = 0;
+            },
+            Kademe3Selected(item) {
+                this.idkademe3 = item;
+                this.idsinif = 0;
+                this.divOgrenci = 0;
+                this.divAc = 0;
+            },
+            SinifSelected(item) {
+                this.idsinif = item;
+                this.divOgrenci = 0;
+                this.divAc = 0;
+            },
+            OgrenciSelected(item) {
+                this.tcogrenci = item;
+                this.divOgrenci = 1;
+                this.divAc = 0;
+                //this.Getir();
+            },
+            OgrenciVeliSelected(item) {
+                this.tcogrenci = item;
+                this.divOgrenci = 1;
+                this.divAc = 0;
+                //this.Getir();
+            },
+            DonemSelected(item) {
+                this.DONEM = item;
+                this.divAc = 0;
+            },
+            DersSelected(item) {
+                this.idsinavturu = item;
+                this.divAc = 0;
+            },
+            SinavSelected(item) {
+                this.idsinav = item;
+                this.divAc = 0;
+                //this.Getir();
+            },
+            DersSelected(item) {
+                this.idders = item;
+                // this.Listele();
+            },
+            GelisimSelected(item) {
+                this.filtre = item;
+                this.dersList = $.grep(this.filtre, function (n, i) { return n.includes('D-'); });
+                this.ptList = $.grep(this.filtre, function (n, i) { return n.includes('P-'); });
+                this.tnList = $.grep(this.filtre, function (n, i) { return n.includes('TOPLAM NET'); });
+                this.TN = this.tnList.length > 0 ? true : false;
+            },
+
+            Getir() {
+                if (this.DONEM != "" && this.tcogrenci != "") {
+                    this.divAc = 1;
+                    var p = {
+                        TCKIMLIKNO: session.TCKIMLIKNO,
+                        OTURUM: session.OTURUM,
+                        TC_OGRENCI: this.tcogrenci,
+                        DONEM: this.DONEM,
+                        ID_DERSs: JSON.stringify(this.dersList).replace(/D-/g, ''),
+                        ID_SINAVPUANTURUs: JSON.stringify(this.ptList).replace(/P-/g, ''),
+                        TN: this.TN,
+                    }
+
+                    var _this = this;
+                    _this.LISTE = [];
+                    _this.SINAVLISTE = [];
+                    _this.PUANLISTE = [];
+                    _this.TSS = 0;
+                    WebPost(this, "VeliGelisimRaporu", "GelisimRaporu", p, "#app", "Yükleniyor...", function (data, parent) {
+                        if (JSON.parse(data)[0].t1 != undefined) {
+                            console.log(JSON.parse(data)[0]);
+                            _this.t1 = JSON.parse(data)[0].t1;
+                            _this.t2 = JSON.parse(data)[0].t2;
+                            _this.t3 = JSON.parse(data)[0].t3;
+
+                            _this.LISTE = _this.t1;
+                            _this.SINAVLISTE = _this.t2;
+                            _this.PUANLISTE = _this.t3;
+                            _this.ETUTLISTE = JSON.parse(data)[0].t4;
+
+                            if (_this.SINAVLISTE != undefined) {
+                                _this.TSS = _this.SINAVLISTE[0].SS;
+                            }
+
+                            _this.Grafikler();
+
+                        } else {
+                            Alert_Warning("Sınav Bulunamadı..!");
+                        }
+                    });
+
+                }
+            },
+
+            getObjects(obj, key, val) {
+                var objects = [];
+                for (var i in obj) {
+                    if (!obj.hasOwnProperty(i)) continue;
+                    if (typeof obj[i] == 'object') {
+                        objects = objects.concat(this.getObjects(obj[i], key, val));
+                    } else if (i == key && obj[key] == val) {
+                        objects.push(obj);
+                    }
+                }
+                return objects;
+            },
+
+            distinct(data, key) {
+                var distList = [];
+                $.each(data, function (j, item) {
+                    if (distList.indexOf(item[key]) == -1) {
+                        distList.push(item[key]);
+                    }
+                });
+                return distList;
+            },
+
+            Grafikler() {
+                var _this = this;
+                var dist = this.distinct(_this.t1, "ID_SINAVTURU");
+                var distDers = this.distinct(_this.t1, "DERSAD");
+
+                $.each(distDers, function (j, ders) {
+                    $.each(dist, function (j, el) {
+                        var a = _this.getObjects(_this.getObjects(_this.t1, "DERSAD", ders), "ID_SINAVTURU", el);
+                        if (a[0] != undefined) {
+                            var datapro = [];
+                            $.each(a[0].SINAVLIST, function (i, sel) {
+                                var eleman = {
+                                    "yuzde": parseFloat(sel.YUZDE),
+                                    "sinav": sel["SINAV ADI"],
+                                    "balloonTextField": sel.YUZDE,
+                                };
+                                datapro.push(eleman);
+                            });
+                            _this.$nextTick(() => {
+                                AmchartOlustur("chartdiv-" + ders + "-" + el, datapro, 100, "yuzde", "sinav", undefined, "", true);
+                            });
+                        }
+                    });
+
+                });
+
+                // SINAV LISTE (TOPLAM)
+                var datapro = [];
+                $.each(_this.SINAVLISTE, function (i, sel) {
+                    var eleman = {
+                        "yuzde": parseFloat(sel["BAŞARI %"]),
+                        "sinav": sel["SINAV ADI"],
+                        "balloonTextField": sel["BAŞARI %"],
+                    };
+                    datapro.push(eleman);
+                });
+                _this.$nextTick(() => {
+                    AmchartOlustur("chartdivSinav", datapro, 100, "yuzde", "sinav", undefined, "", true);
+                });
+
+
+                var dist2 = this.distinct(_this.t3, "ID_SINAVPUANTURU");
+
+                $.each(dist2, function (j, el) {
+                    var a = _this.getObjects(_this.t3, "ID_SINAVPUANTURU", el);
+                    var datapro = [];
+                    $.each(a[0].P, function (i, sel) {
+                        var eleman = {
+                            "yuzde": parseFloat(sel["BAŞARI %"]),
+                            "sinav": sel["SINAV ADI"],
+                            "balloonTextField": sel["BAŞARI %"],
+                        };
+                        datapro.push(eleman);
+                    });
+
+                    _this.$nextTick(() => {
+                        AmchartOlustur("chartdivPuan" + el, datapro, 100, "yuzde", "sinav", undefined, "", true);
+                    });
+                })
+            },
+        }
+    });
+</script>
+<script src="../../../Scripts/PublicMethods.js"></script>
+
+<script src="../../../Scripts/Rapor/amcharts.js"></script>

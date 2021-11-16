@@ -1,0 +1,572 @@
+﻿<style>
+    #chartdiv {
+        width: 100%;
+        height: 500px;
+        font-size: 11px;
+    }
+
+    .table > tbody > tr > td, .table > tbody > tr > th, .table > tfoot > tr > td, .table > tfoot > tr > th, .table > thead > tr > td, .table > thead > tr > th {
+        font-size: 11px;
+    }
+
+
+    .table-hover > tbody > tr:hover, .table-hover > tbody > tr:hover > td {
+        color: black !important;
+    }
+
+    .turuncu {
+        background-color: #EA5702;
+        color: white;
+        font-size: 12px !important;
+    }
+
+    .fontsize12 {
+        font-size: 12px !important;
+    }
+
+    .koyumavi {
+        background-color: #0E3170;
+        color: white;
+    }
+
+    .acikmavi {
+        background-color: #2786C3;
+        color: white;
+    }
+
+    .bordermavi {
+        border: #2786C3 1px solid;
+        text-align: center;
+        color: black;
+    }
+
+    .bordersag {
+        border-right: #b4d2e6 1px solid;
+        text-align: center;
+    }
+
+    .analizbaslik {
+        background-color: #FFA500 !important;
+    }
+
+    .fixed-table-body {
+        overflow-x: hidden !important;
+    }
+
+    .red {
+        color: red;
+    }
+</style>
+
+
+<link href="../../../assets/fixed-table/css/component.css?v=4" rel="stylesheet" />
+<div class="page-head">
+    <div class="page-title col-md-12">
+        <h1>
+            Ünite Tarama Ölçeği <small> Sınıf Raporu</small> <span onclick="YardimGoster(ID_MENU);" class="pull-right" style="cursor:pointer;"><img src="assets/global/img/info.gif" class="info-image-icon" /> </span>
+        </h1>
+    </div>
+</div>
+
+<div class="row" id="app">
+    <div class="col-md-12">
+        <div class="portlet box green-haze dd-item" style="border:none">
+            <div class="portlet-title dd-handle" data-toggle='collapse' data-target='#filters' style="cursor:pointer;">
+                <div class="caption">
+                    <i class="icon-magnifier"></i>
+                    <span class="caption-subject bold uppercase"> Filtreler </span>
+                    <span class="caption-helper"></span>
+                </div>
+                <div class='actions'>
+                    <a href='javascript:;' class='btn btn-default btn-sm' style='border:none;'>
+                        <i class='fa fa-chevron-down'></i>
+                    </a>
+                </div>
+            </div>
+            <div class="portlet-body form collapse in" id="filters">
+                <form role="form" style="padding:12px 20px" class="row"> 
+
+                    <div class="portlet light col-md-12" id="FiltreDiv" style="margin:0px; border-bottom-style: solid;border-bottom-width: 3px;border-bottom-color: rgb(0, 173, 239);">
+                        <div class="portlet-body">
+                            <div class="form-inline">
+                                <div class="row" style="line-height:34px;">
+                                    <c-donem :controller="controller"
+                                             @OnChange="DonemSelected">
+                                    </c-donem>
+                                </div>
+                                <div class="row" style="line-height:34px;">
+                                    <c-sube-multi :controller="controller"
+                                                  @OnChange="SubeSelected">
+                                    </c-sube-multi>
+                                </div>
+                                <div class="row" style="line-height:34px;">
+                                    <c-kademe3 :controller="controller"
+                                               :idsubelist="ID_SUBELIST"
+                                               :idset="ID_KADEME3"
+                                               @OnChange="Kademe3Selected">
+                                    </c-kademe3>
+                                </div>
+                                <div class="row" style="line-height:34px;">
+                                    <c-sinav-multi :controller="controller"
+                                                   :donem="donem"
+                                                   :idkademe3="ID_KADEME3"
+                                                   :idset="ID_UNITETARAMASINAV"
+                                                   @OnChange="SinavSelected">
+                                    </c-sinav-multi>
+                                </div>
+
+                                <input style="float:right;margin: 10px;" type="button" class="btn btn-success" v-on:click="Raporla" value="Raporla">
+                            </div>
+                        </div>
+                    </div>
+                    <!--</div>-->
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="portlet light col-md-12" id="Tablodiv" style="min-height:100px;padding:0px;" v-if="divAc==1">
+        <div class="col-md-1" style="float:right; visibility:hidden" id="ExcelButon">
+            <input style="float:right;margin: 10px;" type="button" class="btn btn-success" onclick="tableToExcel('tablobaslik', 'W3C Example Table')" value="Excel">
+        </div>
+        <div class="comp-table" id="divFixedTable">
+            <table id="tablobaslik"
+                   class="overflow-y fixed-table">
+                <thead id="thead"></thead>
+                <tbody id="tbody"></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<script src="../../assets/global/plugins/bootstrap-select/js/i18n/defaults-tr_TR.js"></script>
+
+
+<script src="../../VueComponents/Filtre.js"></script>
+<script src="/VueComponents/UniteTarama/Filtreler.js?v=4"></script>
+<script>
+
+
+    var vue = new Vue({
+        el: "#app",
+        name: "UniteTaramaSinifRaporu.html",
+
+        data: {
+
+            controller: 'UniteTaramaSinifRapor',
+
+            donem: '',
+            ID_KADEME3: 0,
+            ID_UNITETARAMASINAV: 0,
+            idsinavlist: [],
+            t1: [],
+            t2: [],
+            t3: [],
+            t4: [],
+            dersGenel: [],
+            puanGenel: [],
+            dersler: [],
+            puanlar: [],
+            subeler: [],
+            subeler2: [],
+
+            ID_SUBELIST: [],
+
+            //tcGorunsun: false,
+            //toplamSoru: 0,
+            //dID_SINAVPUANTURU: 0,
+            TCKIMLIKNO: '',
+            //LISTE: [],
+
+            divAc: 0, // 0 olacak
+            tcogrenci: '',
+            //idkullanicitur: 0,
+            ListKullaniciTipi: [],
+            divOgrenci: 1,
+            //kurGorunsun: false,
+            asagiOkResim: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABpklEQVQ4jY2RvW7TUBTHfzZ2oFNdC7W1EyQGkJC6WErE0AEpGyxIgGBCPAEPw8wTMPSDhQ3hvUqlSijwAFFUkEttFKsJyfU9DHGuEsdFnO2ec/5f91hU6uPurjR8H6kOgGma8uz83FruOdUlAZ48fbMG/n3L5sv7d2v9NQKsucD3dIBojYiACO6D+zWe6gjKysYj0HpOUhRs6aI21rUEojWiFFIUhmTh7p8ECxU9mTBJEmZ5jrq64ub29n9GKFUuTk7QSpm3Go/rIxwHgRjlJYvLYAO0LA5aLfOU0kH28PFzL9y5U+tksX1vM2D/9VszztILPn/6kFnHQRBZrhvf3X/k3djYIOv3EaVIfg5XlG/vNLEdh829PSZJwo9vX7Pp9E/XAjgKw8h23Xir3fYALk9PKZQyYAFsx8HvdFB5TtrvZ0D31WBwZkIfhWFkuW7sdzoewK9eD10Uc44SPMtzsiUwwMphD8MwshuN2G+3PSmdCNQqm3TVsxw2mytOBK4FA9hVghfD4ZmezbqXvV4GoEajNdsrx6o2FnXQakUCcfmR3Zc1YIC/8jzRCbYNZzUAAAAASUVORK5CYII=',
+            yukariOkResim: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAB00lEQVQ4jZWSPWhTURiGn/N70yrNHURBFG2sJrSDii6CoEFxcxccBAc7qNS6OYmDiFKR4lA6qIvi4OaiYCFmcXCKXYpOggFxEINwm5zcP4d7Caa5Fnvg43A+vvfh5T2f4F9nmSNAI3/VmaVVNCY3E1+vzvv3ji74Y2q8kff+A5CLr1Vv+NXyDD/dby5NXfGNtA2WRiGySHy1NucfKk+z0n7P2q8vaDwuTl72bWIbPBqGiELxxDQr7Sb9uE9CAgIO+pN0w4AXq886fefq3MoyEUO2c/G7dpNe7IjTiIQUIVKklFT9KVy4zvOPTzuu5+rcoSUGgdXmM9vfmnTjHutxQBAFuMSBgJgIrTTHdhwmCUNefXjZcd1eXXGetbnaTf/EzpN87/5AScWB8n5ef31DEAeE9ElEzNk9p6lM7GPclNg2tp3Krkpp9XPrgmCZdGOy948v8uDTIp42eNpiteHc3jqP3z6EiKzC7NbM/hUkwBKplBKjNFYZrDaUTAYhAu4Oz4/uQQRSZACjNdYYPGMxSmeATfdgABAYpQYuPJ05IdwCQMkcoDVWm605EDlAKYXOQVqpQoAuBABndp/CM1mAJeOhpCwEiJHObdKNXzWoGHgyrPkDdGqej7PMgTEAAAAASUVORK5CYII=',
+
+
+        },
+
+        mounted() {
+            //this.Getir();
+
+            var p = {
+                TCKIMLIKNO: session.TCKIMLIKNO,
+                OTURUM: session.OTURUM
+            };
+            var list = [];
+            WebPost(this, this.controller, "KullaniciTipiGetir", p, "#app", "Yükleniyor...", function (data, parent) {
+                if (data != null) {
+                    $.each(data, function (j, el) {
+                        list.push(this.ID_KULLANICITIPI)
+                    });
+                    parent.ListKullaniciTipi = list;
+                    if (list.indexOf(4) > -1)
+                        parent.tcogrenci = session.TCKIMLIKNO;
+                } else {
+                    Alert_Warning("Kullanıcı Bulunamadı..!");
+                }
+            });
+        },
+
+        methods: {
+
+
+            DonemSelected(DONEM) {
+                this.donem = DONEM;
+                this.ID_UNITETARAMASINAV = 0;
+            },
+            Kademe3Selected(val) {
+                this.ID_KADEME3 = val;
+                this.ID_UNITETARAMASINAV = 0;
+                ListeTemizle(this.idsinavlist);
+            },
+            SubeSelected(item) {
+                this.ID_SUBELIST = item;
+                this.ID_KADEME3 = 0;
+                this.ID_UNITETARAMASINAV = 0;
+            },
+            SinavSelected(item) {
+                // this.ID_UNITETARAMASINAV = item;
+                this.idsinavlist = item;
+            },
+
+            Raporla: function (event) {
+                this.Getir();
+            },
+
+            distinct(data, key) {
+                var distList = [];
+                $.each(data, function (j, item) {
+                    if (distList.indexOf(item[key]) == -1) {
+                        distList.push(item[key]);
+                    }
+                });
+                return distList;
+            },
+            SinavBilgiGetir() {
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    ID_UNITETARAMASINAV: this.ID_UNITETARAMASINAV
+                };
+
+                WebPost(this, this.controller, 'SinavBilgiGetir', p, '', '', function (data, parent) {
+                    if (data != null && data != '{}') {
+                        vue.EXCELDATA = JSON.parse(data);
+                        $('#BTN_TASLAK').text("DOSYA İNDİR");
+                    } else {
+                        vue.EXCELDATA = null;
+                        $('#BTN_TASLAK').text("TASLAK İNDİR");
+                    }
+                });
+            },
+
+            Getir() {
+                var _this = this;
+                if (this.ID_KADEME3 != 0) {
+                    this.divAc = 1;
+
+                    var idsinavlist = JSON.stringify(this.idsinavlist);
+                    $('#ExcelButon').css('visibility', 'visible');
+
+                    $('#filters').collapse('hide');
+                    var p = {
+                        TCKIMLIKNO: session.TCKIMLIKNO,
+                        OTURUM: session.OTURUM,
+                        DONEM: this.donem,
+                        ID_KADEME3: this.ID_KADEME3,//18,//()
+                        ID_SINAVTURU: this.idsinavturu,//3,//
+                        ID_SUBEs: JSON.stringify(this.ID_SUBELIST),
+                        // ID_UNITETARAMASINAV: this.ID_UNITETARAMASINAV,
+                        ID_SINAVs: idsinavlist,
+                    };
+                    WebPost(this, this.controller, "SinifNetPuanOrtalamalari", p, "#app", "Yükleniyor...", function (data, parent) {
+                        
+                        if (data != null) {
+                            _this.t1 = JSON.parse(data)[0].t1;
+                            _this.t2 = JSON.parse(data)[0].t2;
+
+                            _this.t3 = JSON.parse(data)[0].t3;
+                            _this.t4 = JSON.parse(data)[0].t4;
+
+                            _this.dersGenel = JSON.parse(data)[0].t5;
+
+                            _this.puanGenel = JSON.parse(data)[0].t6;
+
+                            _this.dersler = _this.distinct(_this.t1, "DERSAD");
+                            //_this.subeler = _this.distinct(_this.t1, "SUBEAD");
+                            _this.subeler = _.groupBy(JSON.parse(data)[0].t1, function (d) { return d.SUBEAD });
+
+                            _this.puanlar = _this.distinct(_this.t3, "PUANTURU");
+                            //_this.subeler2 = _this.distinct(_this.t3, "SUBEAD");
+                            _this.subeler2 = _.groupBy(JSON.parse(data)[0].t3, function (d) { return d.SUBEAD });
+
+                            parent.Listele();
+
+                        } else {
+                            Alert_Warning("Sınav Bulunamadı..!");
+                        }
+                    });
+                }
+                else {
+                    Alert_Warning("Lütfen Gerekli Seçimleri Yapınız")
+                    this.divAc = 0;
+                }
+            },
+
+
+            Listele() {
+
+                if (this.t1 == undefined) {
+                    return;
+                }
+
+
+                divFixedTableClear();
+                this.$nextTick(() => {
+                    this.Baslik();
+                    this.Icerik();
+                    fixedTableCreate()
+                });
+            },
+
+            Baslik() {
+                var tt1 = this.t1;
+                var tt2 = this.t2; // sınav listesi (ID_UNITETARAMASINAV,SINAVAD)
+
+                var tt3 = this.t3;
+                var tt4 = this.t4; // sınav listesi (ID_UNITETARAMASINAV,SINAVAD)
+                var _this = this;
+
+                var html = '<tr>                        ';
+                html += '    <th rowspan="2"> KAMPÜS </th>    ';//sabit
+                html += '    <th rowspan="2"> SINIF </th>    ';//sabit
+                $.each(_this.dersler, function (i, ders) {
+                    html += '    <th colspan="' + (tt2.length + 2) + '" >' + ders + ' </th>    ';//sınav sayısı +1
+                });
+
+
+
+                html += '  </tr>                    ';
+                html += '<tr>';
+                //sınavlar
+                $.each(_this.dersler, function (i, ders) {
+                    html += '<th > ÖĞRETMEN AD SOYAD </th>';
+                    $.each(tt2, function (j, el) {
+                        html += '<th >' + el.SINAVAD + '</th>';
+                    });
+                    html += '<th > </th>';
+                });
+
+
+
+                html += '</tr>';
+                $("#thead").html(html);
+
+            },
+
+
+
+            Icerik() {
+
+                var html = '';
+                var tt1 = this.t1;
+                var tt3 = this.t3;
+
+                var dersG = this.dersGenel;
+                var puanG = this.puanGenel;
+
+                var sinavlar = this.t2;
+                var dersler = this.dersler;
+                var subeler = this.subeler;
+                var subeler2 = this.subeler2;
+
+                var puanturleri = this.puanlar;
+                var sinavlar2 = this.t4;
+                var _this = this;
+
+                $.each(subeler, function (k, sube) {
+                    var sinif = _.groupBy(sube, function (d) { return d.ID_SINIF });
+
+                    html += '<tr>';
+                    $.each(sinif, function (k, snf) {
+                        html += '<th>' + snf[0].SUBEAD + '</th>';
+                        html += '<th>' + snf[0].SINIFAD + '</th>';
+
+
+
+                        $.each(dersler, function (j, ders) {
+                            var girdi = false;
+                            var kar = '';
+                            var sonNet = undefined;
+
+                            $.each(sinavlar, function (k, sinav) {
+                               
+                                $.each(snf, function (k, veri) {
+
+                                    var renk = 'black';
+                                    var array = $.grep(dersG, function (el, j) {
+
+                                        if (el[sinav.SINAVAD] > veri[sinav.SINAVAD] && el[sinav.SINAVAD] <= 100 && veri.DERSAD == el.DERSAD && veri.ID_SINIF == snf[0].ID_SINIF) {
+
+                                            return renk = 'red';
+                                        }
+                                        else if (el[sinav.SINAVAD] < veri[sinav.SINAVAD] && el[sinav.SINAVAD] <= 100 && veri.DERSAD == el.DERSAD && veri.ID_SINIF == snf[0].ID_SINIF) {
+
+                                            return renk = 'black';
+                                        }
+
+                                        return (el[sinav.SINAVAD] < veri[sinav.SINAVAD]);
+
+                                    });
+
+
+                                    if (veri.DERSAD == ders && veri.ID_SINIF == snf[0].ID_SINIF && renk == 'red' ) {
+
+                                        if (girdi == false && sinavlar.length==1) {
+                                            html += '<td style=color:red> ' + veri.ADSOYAD + ' </td>';
+
+                                            girdi = true;
+                                        }
+                                        else if (girdi == false && sinavlar.length > 1) {
+                                            html += '<td> ' + veri.ADSOYAD + ' </td>';
+
+                                            girdi = true;
+                                        }
+                                        if (veri[sinav.SINAVAD] == '-') {
+                                            html += '<td> ' + ' ' + ' </td>';
+                                        }
+                                        else {
+                                            html += '<td style=color:red> ' + '%' + veri[sinav.SINAVAD] + ' </td>';
+                                            }
+                                       
+
+                                        if (veri[sinav.SINAVAD] == '-') {
+                                            kar = '';
+                                            sonNet = undefined;
+                                        }
+                                        else if (sonNet > veri[sinav.SINAVAD]) {
+                                            kar = '<img src="../../../img/asagiok.png" />';
+                                            sonNet = veri[sinav.SINAVAD];
+                                        }
+                                        else if (sonNet < veri[sinav.SINAVAD]) {
+                                            kar = '<img src="../../../img/yukariok.png" />';
+                                            sonNet = veri[sinav.SINAVAD];
+                                        }
+                                        else
+                                            sonNet = veri[sinav.SINAVAD];
+                                    }
+
+                                    if (veri.DERSAD == ders && veri.ID_SINIF == snf[0].ID_SINIF && renk == 'black') {
+                                        if (girdi == false) {
+                                            html += '<td> ' + veri.ADSOYAD + ' </td>';
+                                            girdi = true;
+                                        }
+                                       
+                                        if (veri[sinav.SINAVAD] == '-') {
+                                            html += '<td> '+' '+' </td>';
+                                        }
+                                        else
+                                        {
+                                            html += '<td> ' + '%' + veri[sinav.SINAVAD] + ' </td>';
+                                        }
+
+
+
+
+                                        if (veri[sinav.SINAVAD] == '-') {
+                                            kar = '';
+                                            sonNet = undefined;
+                                        }
+                                        else if (sonNet > veri[sinav.SINAVAD]) {
+                                            kar = '<img src="../../../img/asagiok.png" />';
+                                            sonNet = veri[sinav.SINAVAD];
+                                        }
+                                        else if (sonNet < veri[sinav.SINAVAD]) {
+                                            kar = '<img src="../../../img/yukariok.png" />';
+                                            sonNet = veri[sinav.SINAVAD];
+                                        }
+                                        else
+                                            sonNet = veri[sinav.SINAVAD];
+                                    }
+
+                                });
+
+                            });
+
+                            if (girdi == false) {
+                                html += '<td></td>';
+                                $.each(sinavlar, function (k, sinav) {
+                                    html += '<td></td>';
+                                });
+                            }
+
+                            html += '<td class="acikmavi"> ' + kar + ' </td>';
+
+
+                        });
+
+
+                        html += '</tr>';
+
+                    });
+
+
+                });
+
+                html += '<tr><th colspan="2"></th></tr>';
+
+                html += '<tr>';
+                html += '<th colspan="2" class="turuncu">Genel Ort.</th>';
+
+
+                $.each(dersler, function (j, ders) {
+                    var kar = '';
+                    var sonNet = undefined;
+                    html += '<td></td>';
+                    $.each(sinavlar, function (k, sinav) {
+                        $.each(dersG, function (i, veri) {
+
+                            if (veri.DERSAD == ders) {
+                                if (veri[sinav.SINAVAD] == undefined)
+                                    html += '<td></td>';
+                                else
+                                    html += '<td> ' + '%' + veri[sinav.SINAVAD] + ' </td>';
+
+                                if (veri[sinav.SINAVAD] == undefined) {
+                                    kar = '';
+                                    sonNet = undefined;
+                                }
+                                else if (sonNet > veri[sinav.SINAVAD]) {
+                                    kar = '<img src="' + _this.asagiOkResim + '" />';
+                                    sonNet = veri[sinav.SINAVAD];
+                                }
+                                else if (sonNet < veri[sinav.SINAVAD]) {
+                                    kar = '<img src="' + _this.yukariOkResim + '" />';
+                                    sonNet = veri[sinav.SINAVAD];
+                                }
+                                else
+                                    sonNet = veri[sinav.SINAVAD];
+                            }
+                        });
+                    });
+
+
+                    html += '<td class="acikmavi"> ' + kar + ' </td>';
+
+                });
+
+
+                $("#tbody").html(html);
+                return;
+            },
+
+        },
+    });
+</script>
+<script src="../../../Scripts/PublicMethods.js"></script>
+<script src="../../../assets/fixed-table/js/jquery.stickyheader.js?v=4"></script>

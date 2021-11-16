@@ -1,0 +1,531 @@
+﻿<head>
+    <script src="../../../Scripts/Rapor/amcharts.js"></script>
+    <script src="../../../Scripts/Rapor/light.js"></script>
+    <script src="../../../Scripts/Rapor/pie.js"></script>
+    <script src="../../../assets/global/plugins/nouislider/jquery.nouislider.js"></script>
+</head>
+<style>
+    td {
+        vertical-align: middle !important;
+    }
+
+    .table-scrollable {
+        overflow: visible;
+    }
+
+    tr {
+        height: 50px !important;
+    }
+
+        tr td:first-child {
+            text-align: left !important;
+        }
+
+        tr th:first-child {
+            text-align: left !important;
+        }
+
+    .portlet-body tr td:last-child {
+        width: 50px !important;
+        text-align: center;
+    }
+
+    .portlet-body tr th:last-child {
+        width: 50px !important;
+        text-align: center;
+    }
+
+    .margintop0 {
+        margin-top: 0px !important;
+        margin-bottom: 10px !important;
+    }
+
+    .nav-tabs .active {
+        border-bottom: 5px solid #32c5d2 !important;
+    }
+
+    .dondur {
+        transform: rotate(180deg);
+        bottom: 2px !important;
+        left: 0px !important;
+    }
+
+    .pmargin0 p {
+        margin-top: 5px;
+        margin-bottom: 5px;
+    }
+
+    .cevap {
+        cursor: pointer;
+    }
+
+        .cevap:hover {
+            border-color: #896d2c !important;
+        }
+
+    #chart {
+        width: 100%;
+        height: 100%;
+    }
+</style>
+
+<div class="page-head">
+    <div class="page-title col-md-12">
+        <h1>
+            Online <small>Sınav Sınav</small>
+            <span onclick="YardimGoster(ID_MENU);" class="pull-right" style="cursor:pointer;"><img src="assets/global/img/info.gif" class="info-image-icon" /> </span>
+        </h1>
+    </div>
+</div>
+<div class="row" id="app" style="margin-top:0px!important;">
+    <div class="col-md-12" v-if="SINAV != null">
+        <div class="portlet light">
+            <div class="portlet-header">
+                <button type="button" class="blue btn pull-right" @click="GeriDon">Sınavı Bitir</button>
+            </div>
+            <div class="portlet-body form row">
+
+                <div id="div_soru" class="col-md-8 col-lg-9">
+                    <div class="col-md-12" style="border:2px solid #32c5d2; padding:15px; margin-top:20px; margin-bottom:10px; overflow-x:auto;" v-html="SINAV.SD[SECILIDERS].SA[SECILISORU].SORUHTML">
+
+                    </div>
+                    <div v-for="c in SINAV.SD[SECILIDERS].SA[SECILISORU].SBC">
+                        <div v-if="SINAV.DEVAM">
+                            <div v-if="!c.OGRENCICEVAP"
+                                 class="col-md-12 pmargin0 cevap"
+                                 @click="SoruSec(SINAV.SD[SECILIDERS].SA[SECILISORU],c)"
+                                 style="border:2px solid #32c5d2; padding:15px; margin-bottom:5px; overflow-x:auto;">
+                                <div style="display:inline-block; width:30px;">{{String.fromCharCode(64 + c.CEVAPNO) + ' - )'}}</div>
+                                <div style="display:inline-block; width:calc(100% - 40px); margin-left:5px;" v-html="c.CEVAPHTML"></div>
+                            </div>
+                            <div v-else
+                                 class="col-md-12 pmargin0 cevap"
+                                 style="border:2px solid #896d2c; padding:15px; margin-bottom:5px; background:lavender;overflow-x:auto;"
+                                 @click="SoruSec(SINAV.SD[SECILIDERS].SA[SECILISORU],c)">
+                                <div style="display:inline-block; width:30px;">{{String.fromCharCode(64 + c.CEVAPNO) + ' - )'}}</div>
+                                <div style="display:inline-block; width:calc(100% - 40px); margin-left:5px;" v-html="c.CEVAPHTML"></div>
+                            </div>
+                        </div>
+                        <div v-else-if="!SINAV.ACIKLANDI">
+                            <div v-if="c.DEGER">
+                                <div class="col-md-12 pmargin0 cevap" style="border:2px solid green; padding:15px; margin-bottom:5px; overflow-x:auto;">
+                                    <div style="display:inline-block; width:30px;">{{String.fromCharCode(64 + c.CEVAPNO) + ' - )'}}</div>
+                                    <div style="display:inline-block; width:calc(100% - 40px); margin-left:5px;" v-html="c.CEVAPHTML"></div>
+                                </div>
+                            </div>
+                            <div v-else-if="c.OGRENCICEVAP">
+                                <div class="col-md-12 pmargin0 cevap" v-if="c.OGRENCICEVAP" style="border:2px solid black; padding:15px; margin-bottom:5px; overflow-x:auto;">
+                                    <div style="display:inline-block; width:30px;">{{String.fromCharCode(64 + c.CEVAPNO) + ' - )'}}</div>
+                                    <div style="display:inline-block; width:calc(100% - 40px); margin-left:5px;" v-html="c.CEVAPHTML"></div>
+                                </div>
+                            </div>
+                            <div v-else>
+                                <div class="col-md-12 pmargin0 cevap" style="border:2px solid #32c5d2; padding:15px; margin-bottom:5px; overflow-x:auto;">
+                                    <div style="display:inline-block; width:30px;">{{String.fromCharCode(64 + c.CEVAPNO) + ' - )'}}</div>
+                                    <div style="display:inline-block; width:calc(100% - 40px); margin-left:5px;" v-html="c.CEVAPHTML"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div v-else>
+                            <div v-if="c.DEGER">
+                                <div class="col-md-12 pmargin0 cevap" style="border:2px solid green; padding:15px; margin-bottom:5px; overflow-x:auto;">
+                                    <div style="display:inline-block; width:30px;">{{String.fromCharCode(64 + c.CEVAPNO) + ' - )'}}</div>
+                                    <div style="display:inline-block; width:calc(100% - 40px); margin-left:5px;" v-html="c.CEVAPHTML"></div>
+                                </div>
+                            </div>
+                            <div v-else-if="c.OGRENCICEVAP && !c.DEGER">
+                                <div class="col-md-12 pmargin0 cevap" v-if="c.OGRENCICEVAP" style="border:2px solid red; padding:15px; margin-bottom:5px; overflow-x:auto;">
+                                    <div style="display:inline-block; width:30px;">{{String.fromCharCode(64 + c.CEVAPNO) + ' - )'}}</div>
+                                    <div style="display:inline-block; width:calc(100% - 40px); margin-left:5px;" v-html="c.CEVAPHTML"></div>
+                                </div>
+                            </div>
+                            <div v-else>
+                                <div class="col-md-12 pmargin0 cevap" style="border:2px solid #32c5d2; padding:15px; margin-bottom:5px; overflow-x:auto;">
+                                    <div style="display:inline-block; width:30px;">{{String.fromCharCode(64 + c.CEVAPNO) + ' - )'}}</div>
+                                    <div style="display:inline-block; width:calc(100% - 40px); margin-left:5px;" v-html="c.CEVAPHTML"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12" style="text-align:center;line-height:42px; margin-top:35px; overflow-x:auto;" v-for="u in SINAV.SD[SECILIDERS].SA[SECILISORU].COZUMLIST" v-html="u.COZUMHTML">
+
+                    </div>
+                    <div class="col-md-12" style="text-align:center;line-height:42px; margin-top:35px; ">
+                        <div style="vertical-align:middle; cursor:pointer; float:left;" v-if="SECILISORU > 0" @click="SECILISORU = (SECILISORU == 0 ? 0 : (SECILISORU - 1))">
+                            <i class="fa fa-3x fa-angle-left"></i>
+                            <span style="vertical-align: super;">
+                                Önceki Soru
+                            </span>
+                        </div>
+
+
+
+                        <div v-if="SINAV.SD.length == SECILIDERS + 1 && SECILISORU == (SINAV.SD[SECILIDERS].SA.length - 1)"></div>
+                        <div style="vertical-align:middle; cursor:pointer; float:right;" @click="SonrakiSoru" v-else>
+                            <span style="vertical-align: super;">
+                                Sonraki
+                                {{SECILISORU == (SINAV.SD[SECILIDERS].SA.length - 1) ? 'Test' : 'Soru' }}
+                            </span>
+                            <i class="fa fa-3x fa-angle-right" style="vertical-align: sub;"></i>
+                        </div>
+
+                    </div>
+
+                    <div v-if="SECILISORU == (SINAV.SD[SECILIDERS].SA.length - 1)"
+                         class="col-md-12"
+                         style="text-align:center;line-height:42px; margin-top:35px; ">
+
+                        <span class="badge badge-info"
+                              v-if="SINAV.SD.length == SECILIDERS + 1 ">
+                            Testi Tamamladınız..
+                        </span>
+                        <span class="badge badge-warning"
+                              v-else>
+                            {{ '\"'+SINAV.SD[SECILIDERS].TAKMAAD+'\" testinin son sorusundasınız. \"'+SINAV.SD[SECILIDERS+1].TAKMAAD+'\" testine geçebilirsiniz '}}
+                        </span>
+                    </div>
+                </div>
+
+
+
+
+                <div id="div_sorugecis" class="col-md-4 col-lg-3" style="min-width:99.906px; border:2px solid #32c5d2; border-radius:0px 0px 0px 5px; padding-top:15px; padding-bottom:15px; margin-top:20px;">
+
+                    <div>
+                        <select class="selectpicker form-control" v-model="selSECILIDERS" title="Seçiniz...">
+                            <option v-for="u in SINAV.SD" v-bind:value="u.BOLUMNO" v-bind:data-subtext="u.BOLUMNO">{{u.TAKMAAD}}</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-12" id="table_soru" style="padding-top: 25px;padding-left:0px!important;padding-right:0px!important;">
+                        <label>SORU LİSTESİ</label>
+                        <div style="width:100%; overflow-y:auto;">
+                            <table class="table" style="width:100%; margin:0px;">
+                                <tr v-for="(soru,index) in SINAV.SD[SECILIDERS].SA" @click="SECILISORU = index" style="cursor:pointer;">
+                                    <td style="width:30px !important;" v-if="SINAV.SD[SECILIDERS].SA[SECILISORU].SORUNO == soru.SORUNO">
+                                        <i class="fa fa-lg fa-pencil"></i>
+                                    </td>
+                                    <td style="width:20px !important;" v-else>
+                                        <div v-if="SINAV.DEVAM">
+                                            <i v-if="soru.OGRENCICEVAP == undefined" class="fa fa-lg fa-circle-o"></i>
+                                            <i v-else class="fa fa-lg fa-circle"></i>
+                                        </div>
+                                        <div v-if="SINAV.DEGERLENDIRME==1">
+                                            <i v-if="soru.OGRENCICEVAP == soru.DOGRUCEVAP" class="fa fa-lg fa-check"></i>
+                                            <i v-else-if="soru.OGRENCICEVAP == null" class="fa fa-lg fa-circle-o"></i>
+                                            <i v-else class="fa fa-lg fa-close"></i>
+                                        </div>
+                                    </td>
+                                    <td style="width:8px !important;">{{soru.SORUNO}}</td>
+                                    <td style="width:111px !important" v-if="SINAV.DEVAM">
+                                        <label v-for="c in soru.SBC"
+                                               style="border: solid; border-radius: 50%; margin-right:2px; border-width: 1px;"
+                                               :style="(soru.OGRENCICEVAP == c.ID_CEVAP ? 'background-color:green; color:white' : '')"
+                                               @click="SoruSec(soru,c)">
+                                            &nbsp; {{String.fromCharCode(64 + c.CEVAPNO)}} &nbsp;
+                                        </label>
+                                    </td>
+                                    <td style="width:100px !important" v-else-if="!SINAV.ACIKLANDI">
+                                        <label style="border: solid; border-radius: 50%; margin-right:2px; border-width: 1px; "
+                                               v-for="c in soru.SBC"
+                                               :style=" soru.DOGRUCEVAP != c.ID_CEVAP && soru.OGRENCICEVAP == c.ID_CEVAP
+                                                            ? 'background-color:black !important ; color:white' : '' ">
+                                            &nbsp; {{String.fromCharCode(64 + c.CEVAPNO)}} &nbsp;
+                                        </label>
+                                    </td>
+                                    <td style="width:100px !important" v-else>
+                                        <label style="border: solid; border-radius: 50%; margin-right:2px; border-width: 1px;"
+                                               v-for="c in soru.SBC"
+                                               :style=" (soru.DOGRUCEVAP == c.ID_CEVAP &&  soru.OGRENCICEVAP != null
+                                                        ? 'background-color:green; color:white'
+                                                        : ((soru.DOGRUCEVAP != c.ID_CEVAP && soru.OGRENCICEVAP == c.ID_CEVAP)
+                                                            ? 'background-color:red !important ; color:white'
+                                                            : ( soru.DOGRUCEVAP == c.ID_CEVAP && soru.OGRENCICEVAP == null
+                                                                ? 'background-color:blue ; color:white'
+                                                                : ''
+                                                            )
+                                                        ))">
+                                            &nbsp; {{String.fromCharCode(64 + c.CEVAPNO)}} &nbsp;
+                                        </label>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="yonerge_modal" class="modal fade" tabindex="-1" data-replace="true" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content" v-if="yonerge_mi">
+                <div class="modal-header" style="background-color: #67809F; color: #fff;">
+                    <!--<button type="button" class="close" data-dismiss="modal" aria-hidden="true" style="margin-top:8px!important;"></button>-->
+                    <h4 class="modal-title bold">Yönerge</h4>
+                </div>
+                <div class="modal-body" style="padding:0px;">
+                    <div class="form-body form-horizontal">
+                        <div class="row" style="margin:0px!important; display:flex;">
+                            <object type="application/pdf"
+                                    :data="yonerge_Guid"
+                                    width="1920"
+                                    height="720">
+                            </object>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer" style="background-color: #67809F; color: #fff;">
+                    <button class="btn btn-default" style="float:right" @click="YonergeOnay"> Okudum ve anladım </button>
+                    <!--<label class="control-label col-md-3" style="vertical-align:middle;">Okudum ve kabul ediyorum.</label>
+                    <div class="col-md-9" style="height:34px; vertical-align:middle;">
+                        <div class="md-checkbox" style="margin:auto!important; width:20px!important; height:20px; margin:0px; margin-top:6px; display:block;">
+                            <input type="checkbox" v-model="yonerge" id="yonerge" class="md-check" v-bind:true-value="true" v-bind:false-value="false" v-on:click="YonergeOnay()" />
+                            <label for="yonerge">
+                                <span></span>
+                                <span class="check"></span>
+                                <span class="box"></span>
+                            </label>
+                        </div>
+                    </div>-->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    var vue = new Vue({
+        el: "#app",
+        name: "TestSinav",
+
+        data: {
+            TCKIMLIKNO: '',
+            OTURUM: '',
+            controller: 'TestSinav',
+            SINAV: null,
+            SINAVOTURUM: 0,
+            SECILIDERS: 0,
+            selSECILIDERS: 1,
+            SECILISORU: 0,
+            SORUNO: 1,
+            yonerge_Guid: '',
+            yonerge: 0,
+            hataSayisi: 0,
+            yonerge_mi: false,
+            DEVAM: 0
+        },
+
+        mounted() {
+
+            try {
+                ID_SINAV = parseInt(getParameterByName("ID_SINAV"));
+            } catch (e) {
+                ID_SINAV = 0;
+            }
+            if (ID_SINAV > 0) {
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    ID_SINAV: ID_SINAV
+                };
+                WebPost(this, this.controller, "YonergeKontrol", p, '', '', function (data, parent) {
+                    if (JSON.parse(data).length > 0) {
+                        if (JSON.parse(data)[0].YONERGE_GUID != undefined) {
+                            parent.yonerge_Guid = "https://okyanusdata.s3-eu-west-1.amazonaws.com/pusulam/onlinesinav/yonerge/" + JSON.parse(data)[0].YONERGE_GUID;
+                            parent.yonerge = JSON.parse(data)[0].OSO[0].YONERGE;
+                            if (parent.yonerge_Guid != "") {
+                                if (parent.yonerge == 0 || parent.yonerge == null) {
+                                    parent.yonerge_mi = true;
+                                    $("#yonerge_modal").modal();
+                                }
+                            }
+                        }
+                        else if (JSON.parse(data)[0].YONERGE_GUID == undefined) {
+                            vue.SinavBasla();
+                        }
+                    } else {
+                        vue.SinavBasla();
+                    }
+                });
+
+            }
+        },
+
+        methods: {
+            SinavBasla() {
+                this.TCKIMLIKNO = session.TCKIMLIKNO;
+                this.OTURUM = session.OTURUM;
+                var vue = this;
+                var ID_SINAV = 0;
+
+                vue.SINAVOTURUM = 0;
+                try {
+                    vue.SINAVOTURUM = parseInt(getParameterByName("OTURUM"));
+                } catch (e) {
+                    vue.SINAVOTURUM = 0;
+                }
+
+                
+                try { ID_SINAV = parseInt(getParameterByName("ID_SINAV")); } catch (e) { ID_SINAV = 0; }
+                if (ID_SINAV > 0) {
+                    var p = {
+                        TCKIMLIKNO: session.TCKIMLIKNO,
+                        OTURUM: session.OTURUM,
+                        ID_SINAV: ID_SINAV
+                    };
+                    this.$nextTick(() => {
+                        if (ID_SINAV > 0) {
+                            var p = { TCKIMLIKNO: session.TCKIMLIKNO, OTURUM: session.OTURUM, ID_SINAV: ID_SINAV, SINAVOTURUM: vue.SINAVOTURUM };
+                            WebPost(this, vue.controller, "OnlineTestSinavSoruListele", p, '', '', function (data, parent) {
+                                parent.SINAV = JSON.parse(data)[0];
+                                try {
+                                    vue.DEVAM=JSON.parse(data)[0].DEVAM
+                                } catch (e) {
+                                 
+                                }
+
+                              
+
+                                var soru = vue.SINAV.SD[0].SA[0];
+                                vue.HtmlOku(soru, soru.SORUHTML, 1);
+                                for (var i = 0; i < soru.SBC.length; i++) {
+                                    var cevap = soru.SBC[i];
+                                    vue.HtmlOku(cevap, cevap.CEVAPHTML, 2);
+                                }
+
+                                if (vue.SINAV.ACIKLANDI) {
+                                    $.each(soru.COZUMLIST,
+                                        (j, el) => {
+                                            vue.HtmlOku(el, el.COZUMHTML, 3);
+                                        })
+                                }
+
+                                vue.$nextTick(() => {
+                                    vue.$forceUpdate();
+                                });
+                            });
+                        }
+                    });
+                }
+            },
+            YonergeOnay() {
+
+                let ID_SINAV = 0;
+
+                try {
+                    ID_SINAV = parseInt(getParameterByName("ID_SINAV"));
+                }
+                catch (e) {
+                    ID_SINAV = 0;
+                }
+                if (ID_SINAV > 0) {
+
+
+                    var p = {
+                        TCKIMLIKNO: session.TCKIMLIKNO,
+                        OTURUM: session.OTURUM,
+                        ID_SINAV: ID_SINAV
+                    };
+                    WebPost(this, this.controller, "YonergeOnay", p, '', '', function (data, parent) {
+                        if (data != null) {
+                            $("#yonerge_modal").modal('hide');
+                            vue.SinavBasla();
+                        }
+                    });
+                }
+                else {
+                    Alert_Error("Sınav bulunamadı. Lütfen Sınav Yöneticinize başvurun");
+                }
+            },
+            SoruSec(soru, cevap) {
+
+                var soruCevap = (soru.OGRENCICEVAP == cevap.ID_CEVAP) ? undefined : cevap.ID_CEVAP;
+
+                var p = { TCKIMLIKNO: session.TCKIMLIKNO, OTURUM: session.OTURUM, ID_SINAV: this.SINAV.ID_SINAV, ID_SINAVANAHTAR: soru.ID_SINAVANAHTAR, ID_CEVAP: soruCevap, SINAVOTURUM: vue.SINAVOTURUM };
+                WebPost(this, vue.controller, "OnlineSinavSoruIsaretle", p, '', '', function (data, parent) {
+                    if (data) {
+                        soru.OGRENCICEVAP = (soruCevap == undefined) ? null : soruCevap;
+                        $.each(soru.SBC, (j, el) => {
+                            el.OGRENCICEVAP = false;
+                        });
+                        if (soruCevap != undefined) {
+                            cevap.OGRENCICEVAP = true;
+                        }
+                    }
+                    else {
+                        Alert_Warning("Cevap İşaretlenemedi. Süreyi Kontrol ediniz.");
+                        vue.hataSayisi++;
+                        if (vue.hataSayisi == 3) {
+                            vue.SINAV.DEVAM = false;
+                        }
+                    }
+                });
+            },
+            HtmlOku(item, url, which) {
+                $.get(/*'https://pusulam.okyanuskoleji.k12.tr/'*/ location.origin + '/' + url/*.replace('Dosyalar', 'OnlineSinav')*/, function (html) {
+                    html = html.replace(/"\/assets\/ckeditor\/plugins\/ckeditor_wiris/g, "\"https://sorubankasi.okyanuskoleji.k12.tr/assets/ckeditor/plugins/ckeditor_wiris");
+                    if (which == 1) {
+                        item.SORUHTML = '<h3 style="margin:0px;">Soru ' + item.SORUNO + '</h3> </br>' + html;
+                    }
+                    else if (which == 2) {
+                        item.CEVAPHTML = html;
+                    }
+                    else if (which == 3) {
+                        item.COZUMHTML = html;
+                    }
+                }, false);
+            },
+          
+            GeriDon() {
+                if (this.DEVAM == true) {
+                    Alert_Confirm("Online Sınav", "Testi bitirmek istediğinizden emin misiniz? Testi bitirdiğiniz anda sonuçlar açıklanır ve teste tekrar giriş yapamazsınız.", () => {
+                        var p = { TCKIMLIKNO: session.TCKIMLIKNO, OTURUM: session.OTURUM, ID_SINAV: this.SINAV.ID_SINAV };
+                        WebPost(this, vue.controller, "OnlineTestSinavBitir", p, '', '', function (data, parent) {
+
+                            window.location.replace('/AnaSayfa.html#OnlineSinav/Ogrenci/OnlineTest');
+
+                        });
+                    });
+                }
+                else {
+                    window.location.replace('/AnaSayfa.html#OnlineSinav/Ogrenci/OnlineTest');
+                }
+                
+            },
+            SeciliSoruGetir(val) {
+                var soru = vue.SINAV.SD[vue.SECILIDERS].SA[val];
+                vue.HtmlOku(soru, soru.SORUHTML, 1);
+                for (var i = 0; i < soru.SBC.length; i++) {
+                    var cevap = soru.SBC[i];
+                    vue.HtmlOku(cevap, cevap.CEVAPHTML, 2);
+                }
+            },
+
+            SonrakiSoru() {
+                this.SECILISORU = (this.SECILISORU == (this.SINAV.SD[this.SECILIDERS].SA.length - 1) ? this.selSECILIDERS++ : (this.SECILISORU + 1));
+            },
+            YonergeModal() {
+
+            }
+
+        },
+
+        watch: {
+            SECILIDERS() {
+                vue.SECILISORU = 0;
+                vue.SORUNO = 1;
+            },
+            selSECILIDERS() {
+                vue.SECILIDERS = vue.selSECILIDERS - 1;
+                vue.SeciliSoruGetir(0);
+            },
+            SECILISORU(val) {
+                vue.SeciliSoruGetir(val);
+            },
+        },
+
+        updated() {
+            $('.selectpicker').selectpicker('refresh');
+        },
+    });
+</script>
+<script src="Scripts/PublicMethods.js"></script>

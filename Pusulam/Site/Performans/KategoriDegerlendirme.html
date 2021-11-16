@@ -1,0 +1,600 @@
+﻿<head>
+    <script src="/Scripts/Tools.js"></script>
+    <script src="../../../assets/global/plugins/nouislider/jquery.nouislider.js"></script>
+
+</head>
+
+<div class="page-head">
+    <div class="page-title col-md-12">
+        <h1>
+            Performans <small>Periyot Tanimlama</small>
+            <span onclick="YardimGoster(ID_MENU);" class="pull-right" style="cursor:pointer;"><img src="assets/global/img/info.gif" class="info-image-icon" /> </span>
+        </h1>
+    </div>
+</div>
+<div class="row" id="app" style="margin-top:0px!important;">
+    <div class="col-md-12">
+
+        <div class="portlet box blue-hoki dd-item" style="border:none">
+            <div class="portlet-title dd-handle" data-target='#filters' data-toggle='collapse'>
+                <div class="caption">
+                    <i class="icon-magnifier"></i>
+                    <span class="caption-subject bold uppercase"> Filtrele </span>
+                    <span class="caption-helper"></span>
+                </div>
+                <div class='actions'>
+                    <a href='javascript:;' class='btn btn-default btn-sm' style='border:none;'>
+                        <i class='fa fa-chevron-down'></i>
+                    </a>
+                </div>
+            </div>
+            <!-- BEGIN PORTLET-->
+            <div class="portlet-body form collapse in" id="filters">
+                <form role="form" style="padding:12px 20px">
+                    <!--<div class="row">
+                        <c-donem controller="PeriyotTanimlama"
+                                 @OnChange="DonemSelected">
+                        </c-donem>
+                    </div>-->
+                    <div class="col-md-3">
+                        <c-degerlendirmelistesi controller="KategoriDegerlendirme"
+                                                @OnChange="degerlendirmeSelected"
+                                                :disabled="true">
+                        </c-degerlendirmelistesi>
+                    </div>
+                    <div class="col-md-3" v-if="OGRETMEN==true">
+                        <c-ogretmenListesi controller="KategoriDegerlendirme"
+                                           @OnChange="OgretmenSelected"
+                                           :ID_PERIYOT="ID_PERIYOTTARIH">
+                        </c-ogretmenListesi>
+                    </div>
+                    <div class="col-md-3" v-if="KATEGORI==true">
+                        <c-kategorilistesi controller="KategoriDegerlendirme"
+                                           @OnChange="KategoriSelected"
+                                           :id_ogretmen="ID_OGRETMEN">
+                        </c-kategorilistesi>
+                    </div>
+
+                    <div class="row">
+                        <div class="form-group" style="margin-top:10px;">
+                            <div class="col-md-12 text-right">
+                                <button type="button" class="btn green" @click="Kaydet()" v-if="ID_KATEGORI==4">KAYDET</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div v-if="ID_KATEGORI > 0 && ID_KATEGORI != 4">
+            <div>
+                <div class="portlet box green dd-item" style="border:none">
+                    <div class="portlet-title dd-handle" data-target='#iletisimBecerileri' data-toggle='collapse'>
+                        <div class="caption">
+                            <i class="icon-magnifier"></i>
+                            <span class="caption-subject bold uppercase"> İLETİŞİM BECERİLERİ </span>
+                            <span class="caption-helper"></span>
+                        </div>
+                        <div class='actions'>
+                            <a href='javascript:;' class='btn btn-default btn-sm' style='border:none;'>
+                                <i class='fa fa-chevron-down'></i>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="portlet-body row collapse in" id="iletisimBecerileri" style=" margin: 0px;">
+                        <table data-height="700" class="table table-striped table-bordered table-checkable" data-width="100%" style="margin-bottom:0px; color:#111; width:100%;">
+                            <thead>
+                                <tr>
+                                    <th></th>
+                                    <th>Güçlü Yönleri</th>
+                                    <th>Geliştirilmesi Gereken</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for=" u in getObjects(PERFORMANSSORU,'GRUPADI','İLETİŞİM BECERİLERİ')" style="height:20px;">
+                                    <td style="text-align:left;">{{u.SORU}}</td>
+                                    <td>
+                                        <div class="row">
+                                            <div class="form-md-line-input">
+                                                <label class="control-label col-md-3" style="vertical-align:middle;"> </label>
+                                                <div class="col-md-9" style="height:20px; vertical-align:middle;">
+                                                    <input class="IletisimGuclu" type="checkbox" :id="u.ID_SORU" :value="u.GUCLUCEVAP" v-model='u.GUCLUCEVAP' @click="Kaydet()" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="row">
+                                            <div class="form-md-line-input">
+                                                <label class="control-label col-md-3" style="vertical-align:middle;"> </label>
+                                                <div class="col-md-9" style="height:20px; vertical-align:middle;">
+                                                    <input class="IletisimGelisim" type="checkbox" :id="u.ID_SORU+'gelisim'" v-model='u.GELISTIRMECEVAP' @click="Kaydet()" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <div class="portlet box blue-hoki dd-item" style="border:none">
+                    <div class="portlet-title dd-handle" data-target='#meslekiBeceriler' data-toggle='collapse'>
+                        <div class="caption">
+                            <i class="icon-magnifier"></i>
+                            <span class="caption-subject bold uppercase"> AKADEMİK VE MESLEKİ BECERİLER </span>
+                            <span class="caption-helper"></span>
+                        </div>
+                        <div class='actions'>
+                            <a href='javascript:;' class='btn btn-default btn-sm' style='border:none;'>
+                                <i class='fa fa-chevron-down'></i>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="portlet-body row collapse in" id="meslekiBeceriler" style=" margin: 0px;">
+
+                        <table data-height="700" class="table table-striped table-bordered table-checkable" data-width="100%" style="margin-bottom:0px; color:#111; width:100%;">
+                            <thead>
+                                <tr>
+                                    <th></th>
+                                    <th>Güçlü Yönleri</th>
+                                    <th>Geliştirilmesi Gereken</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for=" u in getObjects(PERFORMANSSORU,'GRUPADI','AKADEMİK VE MESLEKİ BECERİLER')" style="height:20px;">
+                                    <td style="text-align:left;">{{u.SORU}}</td>
+                                    <td>
+                                        <div class="row">
+                                            <div class="form-md-line-input">
+                                                <label class="control-label col-md-3" style="vertical-align:middle;"> </label>
+                                                <div class="col-md-9" style="height:20px; vertical-align:middle;">
+
+                                                    <input class="IletisimGuclu" type="checkbox" :id="u.ID_SORU" v-model='u.GUCLUCEVAP' @click="Kaydet()" />
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="row">
+                                            <div class="form-md-line-input">
+                                                <label class="control-label col-md-3" style="vertical-align:middle;"> </label>
+                                                <div class="col-md-9" style="height:20px; vertical-align:middle;">
+                                                    <input class="IletisimGelisim" type="checkbox" :id="u.ID_SORU+'gelisim'" v-model='u.GELISTIRMECEVAP' @click="Kaydet()" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+
+                <div class="portlet box red dd-item" style="border:none">
+                    <div class="portlet-title dd-handle" data-target='#sorumluluk' data-toggle='collapse'>
+                        <div class="caption">
+                            <i class="icon-magnifier"></i>
+                            <span class="caption-subject bold uppercase"> SORUMLULUK </span>
+                            <span class="caption-helper"></span>
+                        </div>
+                        <div class='actions'>
+                            <a href='javascript:;' class='btn btn-default btn-sm' style='border:none;'>
+                                <i class='fa fa-chevron-down'></i>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="portlet-body row collapse in" id="sorumluluk" style=" margin: 0px;">
+
+                        <table data-height="700" class="table table-striped table-bordered table-checkable" data-width="100%" style="margin-bottom:0px; color:#111; width:100%;">
+                            <thead>
+                                <tr>
+                                    <th></th>
+                                    <th>Güçlü Yönleri</th>
+                                    <th>Geliştirilmesi Gereken</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for=" u in getObjects(PERFORMANSSORU,'GRUPADI','SORUMLULUK')" style="height:20px;">
+                                    <td style="text-align:left;">{{u.SORU}}</td>
+                                    <td>
+                                        <div class="row">
+                                            <div class="form-md-line-input">
+                                                <label class="control-label col-md-3" style="vertical-align:middle;"> </label>
+                                                <div class="col-md-9" style="height:20px; vertical-align:middle;">
+
+                                                    <input class="IletisimGuclu" type="checkbox" :id="u.ID_SORU" v-model='u.GUCLUCEVAP' @click="Kaydet()" />
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="row">
+                                            <div class="form-md-line-input">
+                                                <label class="control-label col-md-3" style="vertical-align:middle;"> </label>
+                                                <div class="col-md-9" style="height:20px; vertical-align:middle;">
+                                                    <input class="IletisimGelisim" type="checkbox" :id="u.ID_SORU+'gelisim'" v-model='u.GELISTIRMECEVAP' @click="Kaydet()" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <div class="portlet box yellow dd-item" style="border:none">
+                    <div class="portlet-title dd-handle" data-target='#kurumsalOgeler' data-toggle='collapse'>
+                        <div class="caption">
+                            <i class="icon-magnifier"></i>
+                            <span class="caption-subject bold uppercase"> KURUMSAL ÖĞELER </span>
+                            <span class="caption-helper"></span>
+                        </div>
+                        <div class='actions'>
+                            <a href='javascript:;' class='btn btn-default btn-sm' style='border:none;'>
+                                <i class='fa fa-chevron-down'></i>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="portlet-body row collapse in" id="kurumsalOgeler" style=" margin: 0px;">
+
+                        <table data-height="700" class="table table-striped table-bordered table-checkable" data-width="100%" style="margin-bottom:0px; color:#111; width:100%;">
+                            <thead>
+                                <tr>
+                                    <th></th>
+                                    <th>Güçlü Yönleri</th>
+                                    <th>Geliştirilmesi Gereken</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for=" u in getObjects(PERFORMANSSORU,'GRUPADI','KURUMSAL ÖĞELER')" style="height:20px;">
+                                    <td style="text-align:left;">{{u.SORU}}</td>
+                                    <td>
+                                        <div class="row">
+                                            <div class="form-md-line-input">
+                                                <label class="control-label col-md-3" style="vertical-align:middle;"> </label>
+                                                <div class="col-md-9" style="height:20px; vertical-align:middle;">
+
+                                                    <input class="IletisimGuclu" type="checkbox" :id="u.ID_SORU" v-model='u.GUCLUCEVAP' @click="Kaydet()" />
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="row">
+                                            <div class="form-md-line-input">
+                                                <label class="control-label col-md-3" style="vertical-align:middle;"> </label>
+                                                <div class="col-md-9" style="height:20px; vertical-align:middle;">
+                                                    <input class="IletisimGelisim" type="checkbox" :id="u.ID_SORU+'gelisim'" :value="u.GELISTIRMECEVAP" v-model='u.GELISTIRMECEVAP' @click="Kaydet()" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div v-if="C_KATEGORI">
+                <div class="portlet box green dd-item" style="border:none">
+                    <div class="portlet-title dd-handle" data-target='#ozel' data-toggle='collapse'>
+                        <div class="caption">
+                            <i class="icon-magnifier"></i>
+                            <span class="caption-subject bold uppercase"> Sizce uygun geribildirim ve yönlendirme için gerekli şartlar ve destek sağlandığında işaretlediğiniz gelişim alanları hangi düzeyde gelişim gösterir? </span>
+                            <span class="caption-helper"></span>
+                        </div>
+                        <div class='actions'>
+                            <a href='javascript:;' class='btn btn-default btn-sm' style='border:none;'>
+                                <i class='fa fa-chevron-down'></i>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="portlet-body row collapse in" id="ozel" style=" margin: 0px;">
+
+                        <table data-height="700" class="table table-striped table-bordered table-checkable" data-width="100%" style="margin-bottom:0px; color:#111; width:100%;">
+                            <thead>
+                                <tr>
+                                    <th></th>
+                                    <th> </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for=" u in KATEGORISORU" style="height:20px;">
+                                    <td style="text-align:left;">{{u.SORU}}</td>
+                                    <td>
+                                        <div class="row">
+                                            <div class="row">
+                                                <div class="form-md-line-input">
+                                                    <label class="control-label col-md-3" style="vertical-align:middle;"> </label>
+                                                    <div class="col-md-9" style="height:20px; vertical-align:middle;">
+                                                        <input type="radio" name="cevap" :value="u.ID_OGRETMENDEGERLENDIRMEKATEGORISORU" v-model="SECILI_KATEGORI_CEVAP" @click="Kaydet()" />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <!--<div class="row ">
+                <div class="form-group" style="margin-top:10px;">
+                    <div class="col-md-12 text-right">
+                        <button type="button" class="btn green" @click="Kaydet()">Kaydet</button>
+                    </div>
+                </div>
+            </div>-->
+        </div>
+
+
+    </div>
+
+</div>
+<!--<script src="VueComponents/SinavFiltreleri.js?v=4"></script>-->
+<script src="VueComponents/Filtre.js"></script>
+
+<script>
+    var vue = new Vue({
+        el: "#app",
+        name: "KategoriDegerlendirme",
+
+        data: {
+            TCKIMLIKNO: '',
+            OTURUM: '',
+            controller: 'KategoriDegerlendirme',
+            DONEM: '',
+            OGRETMENLISTE: [],
+            PERIYOTTARIH: [],
+            KATEGORILISTE: [],
+            ID_OGRETMEN: 0,
+            PERFORMANSSORU: [],
+            OLCEKSINAVI: false,
+            OGRETMENCEVAPLIST: [{ ID_SORU: 0, GUCLU: 0, GELISIM: 0 }],
+            ID_KATEGORI: 0,
+            KATEGORISORU: [],
+            ID_PERIYOTTARIH: 0,
+            PERIYOT: false,
+            C_KATEGORI: false,
+            SECILI_KATEGORI_CEVAP: 0,
+            OGRETMEN: false,
+            KATEGORI: false,
+            DEGERLENDIRME_DISI: false
+        },
+
+        mounted() {
+            var p = {
+                TCKIMLIKNO: session.TCKIMLIKNO,
+                OTURUM: session.OTURUM
+
+            };
+            WebPost(this, this.controller, "PeriyotTarihListele", p, '', '', function (data, parent) {
+                vue.OGRETMENLISTE = JSON.parse(data);
+            })
+        },
+
+        methods: {
+            getObjects(obj, key, val) {
+                var objects = [];
+                for (var i in obj) {
+                    if (!obj.hasOwnProperty(i)) continue;
+                    if (typeof obj[i] == 'object') {
+                        objects = objects.concat(this.getObjects(obj[i], key, val));
+                    } else if (i == key && obj[key] == val) {
+                        objects.push(obj);
+                    }
+                }
+                return objects;
+            },
+            degerlendirmeSelected(ID_PERIYOTTARH) {
+                this.ID_PERIYOTTARIH = ID_PERIYOTTARH;
+                this.OGRETMEN = true;
+            },
+            OgretmenSelected(ID_OGRETMEN) {
+                this.ID_OGRETMEN = ID_OGRETMEN;
+                this.ID_KATEGORI = 0;
+                this.KATEGORI = false;
+                if (this.ID_OGRETMEN > 0) {
+                    this.KATEGORI = true;
+                }
+                               
+            },
+            KategoriSelected(ID_DEGERLENDIRMEKATEGORITANIM) {
+                this.ID_KATEGORI = ID_DEGERLENDIRMEKATEGORITANIM;
+                this.Listele();
+            },
+
+            Kaydet() {
+                let guclu = 0
+                for (var i = 0; i < this.PERFORMANSSORU.length; i++) {
+                    if (this.PERFORMANSSORU[i].GUCLUCEVAP == 1) {
+                        guclu = guclu + 1
+                    }
+                }
+                if (guclu >= 5) {
+                    for (var i = 0; i < this.PERFORMANSSORU.length; i++) {
+                        if (this.PERFORMANSSORU[i].GUCLUCEVAP != 1) {
+                            document.getElementById(this.PERFORMANSSORU[i].ID_SORU).disabled = true;
+                        }
+                    }
+                }
+                else {
+                    for (var i = 0; i < this.PERFORMANSSORU.length; i++) {
+                        if (this.PERFORMANSSORU[i].GUCLUCEVAP != 1) {
+                            document.getElementById(this.PERFORMANSSORU[i].ID_SORU).disabled = false;
+
+                        }
+
+                    }
+                }                          
+                if(guclu <= 5) {
+
+
+                    if (this.ID_KATEGORI == 3) {
+
+                        var p = {
+                            TCKIMLIKNO: session.TCKIMLIKNO,
+                            OTURUM: session.OTURUM,
+                            PERFORMANSCEVAP: JSON.stringify(this.PERFORMANSSORU),
+                            ID_KATEGORI: this.ID_KATEGORI,
+                            ID_OGRETMEN: this.ID_OGRETMEN,
+                            ID_PERIYOT: this.ID_PERIYOTTARIH,
+                            KATEGORISORU: this.SECILI_KATEGORI_CEVAP
+                        };
+                    }
+                    else {
+                        var p = {
+                            TCKIMLIKNO: session.TCKIMLIKNO,
+                            OTURUM: session.OTURUM,
+                            PERFORMANSCEVAP: JSON.stringify(this.PERFORMANSSORU),
+                            ID_KATEGORI: this.ID_KATEGORI,
+                            ID_OGRETMEN: this.ID_OGRETMEN,
+                            ID_PERIYOT: this.ID_PERIYOTTARIH
+                        };
+                    }
+                    console.log(p)
+                    WebPost(this, this.controller, "DegerlendirmeKaydet", p, '', '', function (data, parent) {
+                        if (data) {
+                            //Alert_Info("Değerlendirme Kaydedildi.")
+                        }
+                        //else {
+                        //    Alert_Warning("Bir sorun oluştu. Daha sonra tekrar deneyiniz...");
+                        //}
+                    });
+                }
+            },
+            Listele() {
+                if (this.ID_KATEGORI == 3) {
+                    this.KategoriSoru();
+                    this.C_KATEGORI = true;
+                }
+                else {
+                    this.C_KATEGORI = false;
+                }
+                if (this.ID_PERIYOTTARIH > 0) {
+                    this.PERIYOT = true;
+                }
+                else {
+                    this.PERIYOT = false;
+                    Alert_Warning("Değerlendirme tarihleri arasında olmadığınızdan değerlendirme yapazamsınız!")
+                }
+                this.SECILI_KATEGORI_CEVAP = 0
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    ID_OGRETMEN: this.ID_OGRETMEN,
+                    ID_PERIYOT: this.ID_PERIYOTTARIH
+                };
+                WebPost(this, this.controller, "PerformansSoru", p, '', '', function (data, parent) {
+                    vue.PERFORMANSSORU = JSON.parse(data);
+                })
+                let guclu = 0
+                for (var i = 0; i < this.PERFORMANSSORU.length; i++) {
+                    if (this.PERFORMANSSORU[i].GUCLUCEVAP == 1) {
+                        guclu = guclu + 1
+                    }
+                }
+                if (guclu > 5) {
+                    Alert_Error("Güçlü Yön en fazla 5 adet seçilebilir.")
+                    for (var i = 0; i < this.PERFORMANSSORU.length; i++) {
+                        if (this.PERFORMANSSORU[i].GUCLUCEVAP != 1) {
+                            document.getElementById(this.PERFORMANSSORU[i].ID_SORU).disabled = true;
+
+                        }
+
+                    }
+                }
+            },
+            PeriyotEkle() {
+                vue = this;
+
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    BASLANGICTARIH: basTarih,
+                    BITISTARIH: bitTarih,
+                    DONEM: this.DONEM
+                };
+                WebPost(this, this.controller, "PeriyotTanimla", p, '', '', function (data, parent) {
+                    if (data) {
+                        parent.Listele();
+                    } else {
+                        Alert_Warning("Bir sorun oluştu. Daha sonra tekrar deneyiniz...");
+                    }
+                });
+            },
+            OgretmenListele() {
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                };
+                WebPost(this, this.controller, "OgretmenListele", p, '', '', function (data, parent) {
+                    vue.OGRETMENLISTE = JSON.parse(data);
+
+                })
+
+            },
+            PeriyotTarihListele() {
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                };
+                WebPost(this, this.controller, "PerformansSoru", p, '', '', function (data, parent) {
+                    vue.PERFORMANSSORU = JSON.parse(data);
+
+                })
+            },
+            KategoriListele() {
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                };
+                WebPost(this, this.controller, "KategoriListele", p, '', '', function (data, parent) {
+                    vue.KATEGORILISTE = JSON.parse(data);
+                })
+            },
+
+            KategoriSoru() {
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    ID_OGRETMEN: this.ID_OGRETMEN,
+                    ID_PERIYOT: this.ID_PERIYOTTARIH
+                };
+                WebPost(this, this.controller, "KategoriSoru", p, '', '', function (data, parent) {
+                    vue.KATEGORISORU = JSON.parse(data);
+                    for (var i = 0; i < vue.KATEGORISORU.length; i++) {
+                        if (parent.KATEGORISORU[i].SECILI_KATEGORI_CEVAP > 0) {
+                            vue.SECILI_KATEGORI_CEVAP = vue.KATEGORISORU[i].SECILI_KATEGORI_CEVAP
+                            console.log(vue.SECILI_KATEGORI_CEVAP)
+
+                        }
+                    }
+                });
+            },
+
+        },
+
+        watch: {
+
+        },
+
+
+    });
+</script>
+<script src="Scripts/PublicMethods.js"></script>

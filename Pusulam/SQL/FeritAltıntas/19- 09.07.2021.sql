@@ -1,0 +1,169 @@
+﻿USE [Pusulam]
+GO
+/****** Object:  StoredProcedure [dbo].[sp_SinifListeRaporu]    Script Date: 9.07.2021 09:24:29 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+ALTER procedure [dbo].[sp_SinifListeRaporu]
+	@ISLEM				INT				= NULL,
+	@TCKIMLIKNO			VARCHAR(11)		= NULL,
+	@OTURUM				VARCHAR(36)		= NULL,
+	@ID_MENU			INT				= NULL,
+	@DONEM				VARCHAR(4)		= NULL,
+	@SQLJSON			VARCHAR(MAX)	= NULL,
+	@VELI				BIT				= NULL,
+	@ID_SUBELER		    VARCHAR(MAX)	= NULL,
+	@ID_SINIFLAR        VARCHAR(MAX)	= NULL,
+	@DANISMAN_OGRETMEN  BIT				= NULL
+
+AS
+BEGIN
+	
+	
+	DECLARE @PROCNAME VARCHAR(MAX) = (SELECT OBJECT_NAME(@@PROCID))
+	DECLARE @LOGJSON VARCHAR(MAX)
+	SET @LOGJSON = (
+		SELECT	 ISLEM					= @ISLEM	
+				,TCKIMLIKNO				= @TCKIMLIKNO
+				,OTURUM					= @OTURUM
+				,ID_MENU				= @ID_MENU
+
+				,DONEM					= @DONEM		
+				,SQLJSON				= @SQLJSON	
+				,VELI					= @VELI	
+				,ID_SUBELER				= @ID_SUBELER	
+				,ID_SINIFLAR			= @ID_SINIFLAR
+		FOR JSON PATH, WITHOUT_ARRAY_WRAPPER	   
+	)	
+
+	DECLARE @_ID_LOG INT = 0
+
+	BEGIN TRY    
+		DECLARE @_DESTEK_KONTROL INT
+		EXEC @_ID_LOG = dbo.sp_OturumKontrolMenuYetkiLog @OTURUM = @OTURUM, @TCKIMLIKNO = @TCKIMLIKNO, @ID_MENU = @ID_MENU, @LOGJSON = @LOGJSON, @ISLEM = @ISLEM, @PROSEDURADI = @PROCNAME
+		
+
+		IF @_ID_LOG > 0
+		BEGIN
+			
+			
+			IF  @ISLEM= 1 -- SINIF Listesi
+			BEGIN  
+				
+				DROP TABLE IF EXISTS #OGRENCILIST
+
+				SELECT DISTINCT 
+					 ID_SINIF		= D.ID_SINIF
+					,[ŞUBE]			= D.SUBEAD
+					,[KUR SEVİYESİ]	= DS.SEVIYE
+					,SIRA			= D.SIRA
+					,GRUP			= D.KADEME3
+					,SINIF			= D.SINIF
+					,TCKIMLIKNO		= S.TCKIMLIKNO
+					,[ÖĞR. AD SOYAD]= K.AD + ' '+ K.SOYAD  
+					,[KAYIT TARIH]	= ISNULL(S.KAYITTARIH,'')
+				INTO #OGRENCILIST
+				FROM  OkyanusDB.dbo.vw_SinifOgrenci				S 
+				INNER JOIN  OkyanusDB.dbo.vw_v4SinifDetay		D	ON  S.ID_SINIF		= D.ID_SINIF
+				INNER JOIN  v3AktifDonem						AD	ON  AD.DONEM		= D.DONEM 
+				INNER JOIN	OkyanusDB.dbo.v3Kullanici			K	ON  K.TCKIMLIKNO	= S.TCKIMLIKNO
+				LEFT JOIN   OkyanusDB.dbo.v4SinifOgretmenDers	SD	ON  SD.ID_SINIF		= D.ID_SINIF 
+				LEFT JOIN   OkyanusDB.dbo.v4DersSeviye			DS	ON  SD.ID_DERS		= DS.ID_DERS 
+																	AND	SD.ID_DERSSEVIYE= DS.ID_DERSSEVIYE
+				WHERE	AD.AKTIF=1        
+					AND D.ID_SUBE		IN (SELECT VALUE FROM OPENJSON (@ID_SUBELER ))
+					AND D.ID_SINIF		IN (SELECT VALUE FROM OPENJSON (@ID_SINIFLAR))
+
+
+				IF @VELI = 1
+				BEGIN
+
+					SELECT 
+						 OL.[ŞUBE]			
+						,OL.[KUR SEVİYESİ]	
+						,OL.SIRA			
+						,OL.GRUP			
+						,OL.SINIF			
+						,OL.TCKIMLIKNO		
+						,OL.[ÖĞR. AD SOYAD]
+						,OL.[KAYIT TARIH]	
+						,TC_VELI			= K.TCKIMLIKNO
+						,[VELi AD SOYAD]	= CONCAT_WS(' ',K.AD, K.SOYAD)
+					FROM #OGRENCILIST	OL
+					JOIN OkyanusDB.dbo.v3OgrenciVeli	V	ON	V.TCKIMLIKNO_OGR	= OL.TCKIMLIKNO
+					JOIN OkyanusDB.dbo.v3Kullanici		K	ON	K.TCKIMLIKNO		= V.TCKIMLIKNO
+					ORDER BY [ŞUBE], SIRA, SINIF, [ÖĞR. AD SOYAD], [KUR SEVİYESİ]
+
+				END				
+				IF @DANISMAN_OGRETMEN = 1
+				BEGIN	
+					SELECT
+						 OL.[ŞUBE]			
+						,OL.[KUR SEVİYESİ]	
+						,OL.SIRA			
+						,OL.GRUP			
+						,OL.SINIF			
+						,OL.TCKIMLIKNO		
+						,OL.[ÖĞR. AD SOYAD]
+						,OL.[KAYIT TARIH]	
+						,[TC DANISMAN]				= K.TCKIMLIKNO
+						,[DANIŞMAN ÖĞRETMEN]		= CONCAT_WS(' ',K.AD, K.SOYAD)
+					FROM #OGRENCILIST	OL
+					JOIN OkyanusDB.dbo.v3SinifPersonel  P   ON	P.ID_SINIF			= OL.ID_SINIF
+					JOIN OkyanusDB.dbo.v3Kullanici		K	ON	K.TCKIMLIKNO		= P.TCKIMLIKNO
+					WHERE P.ID_SINIF IN (SELECT VALUE FROM OPENJSON (@ID_SINIFLAR)) AND P.ID_KULLANICITIPI = 100
+					ORDER BY [ŞUBE], SIRA, SINIF, [ÖĞR. AD SOYAD], [KUR SEVİYESİ]
+				END
+				IF @DANISMAN_OGRETMEN = 0 AND @VELI = 0
+				BEGIN
+					SELECT *
+					FROM #OGRENCILIST
+					ORDER BY [ŞUBE], SIRA, SINIF, [ÖĞR. AD SOYAD], [KUR SEVİYESİ]
+				END
+
+			END
+
+			IF  @ISLEM= 2 -- SINIF Listesi Fotograflı
+			BEGIN
+				SELECT ISNULL(( 
+					SELECT	 SUBEAD			= D.SUBEAD
+							,[KUR SEVİYESİ]	= DS.SEVIYE
+							,SINIF			= D.SINIF
+							,TCKIMLIKNO		= S.TCKIMLIKNO
+							,ADSOYAD		= K.AD + ' '+ K.SOYAD
+							,FOTOGRAF		= ISNULL(R.FOTOGRAF,'') 
+							,KAYIT_TARIH	= ISNULL(S.KAYITTARIH,'')
+					FROM  OkyanusDB.dbo.vw_SinifOgrenci				S 
+					INNER JOIN	OkyanusDB.dbo.vw_v4SinifDetay		D	ON	S.ID_SINIF		= D.ID_SINIF
+					INNER JOIN	v3AktifDonem						AD	ON	AD.DONEM		= D.DONEM 
+					INNER JOIN	OkyanusDB.dbo.v3Kullanici			K	ON	K.TCKIMLIKNO	= S.TCKIMLIKNO
+					LEFT JOIN	OkyanusDB.dbo.v4SinifOgretmenDers	SD	ON	SD.ID_SINIF		= D.ID_SINIF 
+					LEFT JOIN	OkyanusDB.dbo.v4DersSeviye			DS	ON	SD.ID_DERS		= DS.ID_DERS 
+																		AND SD.ID_DERSSEVIYE= DS.ID_DERSSEVIYE
+					LEFT JOIN	OkyanusDB.dbo.v3Resim				R	ON	R.TCKIMLIKNO	= S.TCKIMLIKNO
+					WHERE	AD.AKTIF=1        
+						AND D.ID_SUBE		IN (SELECT VALUE FROM OPENJSON (@ID_SUBELER ))
+						AND D.ID_SINIF		IN (SELECT VALUE FROM OPENJSON (@ID_SINIFLAR))
+					ORDER BY D.SUBEAD ASC,DS.SEVIYE DESC
+				FOR JSON PATH),'[]')			
+			   END
+
+		END
+
+
+	END TRY
+	BEGIN CATCH
+		DECLARE @_ErrorSeverity INT;
+		DECLARE @_ErrorState INT;
+
+		SELECT 
+			@_ErrorSeverity	= ERROR_SEVERITY(),
+			@_ErrorState		= ERROR_STATE()
+				
+		DECLARE @_MSG VARCHAR(4000)
+		SELECT @_MSG = ERROR_MESSAGE()
+
+		EXEC [dbo].[sp_CustomRaiseError] @MESSAGE = @_MSG, @SEVERITY = @_ErrorSeverity, @STATE = @_ErrorState, @ID_LOG = @_ID_LOG, @ID_LOGTUR = 2
+	END CATCH;
+END

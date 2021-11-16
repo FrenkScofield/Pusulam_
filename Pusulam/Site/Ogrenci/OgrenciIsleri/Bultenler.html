@@ -1,0 +1,269 @@
+﻿
+<div class="page-head">
+    <!-- BEGIN PAGE TITLE -->
+    <div class="page-title col-md-12">
+        <h1>
+            Bülten Listesi  <span onclick="YardimGoster(ID_MENU);" class="pull-right" style="cursor:pointer;"><img src="assets/global/img/info.gif" class="info-image-icon" /> </span>
+        </h1>
+    </div>
+    <!-- END PAGE TITLE -->
+</div>
+
+<div class="row" id="app">
+    <div class="col-md-12" v-show="ListKullaniciTipi.indexOf(4)==-1">
+        <div class="portlet box green-haze dd-item" style="border:none">
+            <div class="portlet-title dd-handle" data-toggle='collapse' data-target='#filters' style="cursor:pointer;">
+                <div class="caption">
+                    <i class="icon-magnifier"></i>
+                    <span class="caption-subject bold uppercase"> Filtreler </span>
+                    <span class="caption-helper"></span>
+                </div>
+                <div class='actions'>
+                    <a href='javascript:;' class='btn btn-default btn-sm' style='border:none;'>
+                        <i class='fa fa-chevron-down'></i>
+                    </a>
+                </div>
+            </div>
+            <div class="portlet-body form collapse in" id="filters">
+                <form role="form" style="padding:12px 20px">
+                    <div class="form-body form-group-lg form-horizontal row" style="padding: 0px;margin-top: 0px !important;">
+
+                        <div class="portlet light col-md-12" id="FiltreDivVeli" style="margin:0px; border-bottom-style: solid;border-bottom-width: 3px;border-bottom-color: rgb(0, 173, 239);"
+                             v-if="ListKullaniciTipi.indexOf(5)>-1">
+
+                            <div class="portlet-body">
+                                <div class="form-inline">
+                                    <c-ogrenci-veli :controller="controller"
+                                                    :tc="TCKIMLIKNO"
+                                                    @OnChange="OgrenciVeliSelected">
+                                    </c-ogrenci-veli>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-12" v-if="LISTE.length>0">
+        <div class="portlet light">
+            <div class="portlet-title">
+                <div class="caption">
+                    <i class="icon-list font-green"></i>
+                    <span class="caption-subject bold font-green uppercase"> Bülten Listesi </span>
+                    <span class="caption-helper"></span>
+                </div>
+            </div>
+            <!-- BEGIN PORTLET-->
+            <div class="portlet-body form">
+                <form role="form">
+                    <div class="portlet light bordered">
+                        <div class="portlet-body">
+                            <table id="tblBultenListesi" class="table table-striped table-bordered table-hover table-checkable">
+                                <thead>
+                                    <tr>
+                                        <th> TARİH </th>
+                                        <th> BÜLTEN </th>
+                                        <th> AÇIKLAMA </th>
+                                        <th> EKLEYEN </th>
+                                        <th> İNDİR </th>
+                                        <th> LİNK </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="u in LISTE">
+                                        <td>{{u.TARIH}}</td>
+                                        <td>{{u.DERS}}</td>
+                                        <td @click="Detay(u.ACIKLAMA)" style='vertical-align:middle; text-align:center; cursor:pointer;'>{{u.BASLIK}}</td>
+                                        <td>{{u.EKLEYEN}}</td>
+                                        <td class="text-center">
+                                            <a :href="'https://okyanusdata.s3-eu-west-1.amazonaws.com/pusulam/Bulten/Bultenler/' + u.DOSYA_GUID " target="_blank" v-if="u.DOSYA_GUID" download>
+                                                <i class="fa fa-file-o fa-lg"></i>
+                                            </a>
+                                        </td>
+                                        <td style='vertical-align:middle; text-align:center; cursor:pointer;'>
+                                            <a v-if="u.LINK!=''" :href="u.LINK" target='_blank'><i class='fa fa-play'></i></a>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <!-- END PORTLET-->
+        </div>
+    </div>
+
+    <div class="modal fade" id="full" tabindex="-1" role="dialog" aria-hidden="true"
+         style="display: none;">
+        <div class="modal-dialog modal-full">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                    <h4 class="modal-title">
+                        Tanıtım Vidyosu
+                    </h4>
+                </div>
+                <div class="modal-body" id="mbody">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn default" data-dismiss="modal">
+                        Kapat
+                    </button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+    <div class="modal fade" id="DetayAcik" tabindex="-1" role="dialog" aria-hidden="true"
+         style="display: none;">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                    <h4 class="modal-title">
+                        Detay
+                    </h4>
+                </div>
+                <div class="modal-body" id="Div2">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn default" data-dismiss="modal">
+                        Kapat
+                    </button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+
+</div>
+<script src="../../../VueComponents/SinavIstatistikFiltreleri.js?v=3"></script>
+<script>
+    // datatable date sort 
+    $(document).ready(function () {
+        jQuery.extend(jQuery.fn.dataTableExt.oSort, {
+            "extract-date-pre": function (value) {
+                var date = value;
+                date = date.split('.');
+                return Date.parse(date[1] + '.' + date[0] + '.' + date[2])
+            },
+            "extract-date-asc": function (a, b) {
+                return ((a < b) ? -1 : ((a > b) ? 1 : 0));
+            },
+            "extract-date-desc": function (a, b) {
+                return ((a < b) ? 1 : ((a > b) ? -1 : 0));
+            }
+        });
+    });
+
+    var vue = new Vue({
+        el: "#app",
+        name: "OI_BultenListesi",
+
+        data: {
+            TCKIMLIKNO: undefined,
+            OTURUM: undefined,
+            controller: 'OI_BultenListesi',
+            TC_OGRENCI: undefined,
+            LISTE: [],
+            ListKullaniciTipi: [],
+            divOgrenci: 0,
+        },
+
+        mounted() {
+
+            this.TCKIMLIKNO = session.TCKIMLIKNO;
+            this.OTURUM = session.OTURUM;
+
+            var p = {
+                TCKIMLIKNO: this.TCKIMLIKNO,
+                OTURUM: this.OTURUM
+            };
+            var list = [];
+            WebPost(this, this.controller, "KullaniciTipiGetir", p, "#app", "Yükleniyor...", function (data, parent) {
+                if (data != null) {
+                    $.each(data, function (j, el) {
+                        list.push(this.ID_KULLANICITIPI)
+                    });
+                    parent.ListKullaniciTipi = list;
+                    if (list.indexOf(4) > -1)
+                        parent.TC_OGRENCI = session.TCKIMLIKNO;
+                } else {
+                    Alert_Warning("Kullanıcı Bulunamadı..!");
+                }
+            });
+        },
+
+        methods: {
+            OgrenciVeliSelected(item) {
+                this.TC_OGRENCI = item;
+                this.divOgrenci = 1;
+            },
+            ListeOlustur(tabloAdi) {
+
+                $('#' + tabloAdi).DataTable().destroy();
+                vue.$nextTick(() => {
+                    var tbl = $('#' + tabloAdi).DataTable({
+                        "aaSorting": [[0, 'desc']],
+                        language: {
+                            "url": "./Utility/dil.json"
+                            ,
+                            "select": {
+                                "rows": "%d satır seçildi."
+                            }
+                        },
+                        columnDefs: [
+                            {
+                                type: 'extract-date',
+                                targets: [0]
+                            }
+                        ],
+                    });
+                });
+            },
+            Listele() {
+                if (this.TC_OGRENCI != undefined && this.TC_OGRENCI != "") {
+                    var p = {
+                        TCKIMLIKNO: this.TCKIMLIKNO,
+                        OTURUM: this.OTURUM,
+                        TC_OGRENCI: this.TC_OGRENCI,
+                    };
+                    ListeTemizle(this.LISTE);
+                    WebPost(this, this.controller, "BultenListesiGetir", p, "", "", function (data, parent) {
+                        if (data != null) {
+                            parent.LISTE = JSON.parse(data)
+                            vue.ListeOlustur("tblBultenListesi");
+
+                        } else {
+                            Alert_Warning("Bülten Bulunamadı..!");
+                        }
+                    });
+                }
+            },
+
+            Tanitim(item) {
+                $("#full").modal("show");
+                var link = $("#Tanitim" + index).attr("link");
+                link = link.split('=')[1];
+                link = "http://www.youtube.com/embed/" + link;
+                $("#mbody").html('<iframe width="560" height="315" src="' + link + '?rel=0" frameborder="0" allowfullscreen></iframe>');
+            },
+
+            Detay(item) {
+                $("#DetayAcik").modal("show");
+                $("#Div2").html(item);
+            }
+        },
+        watch: {
+            TC_OGRENCI() {
+                this.Listele();
+            },
+        }
+    });
+</script>
+<script src="../../../Scripts/PublicMethods.js"></script>

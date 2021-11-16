@@ -1,0 +1,438 @@
+﻿<link href="assets/global/plugins/bootstrap-fileinput/bootstrap-fileinput.css" rel="stylesheet" type="text/css" />
+<style>
+    td {
+        vertical-align: middle !important;
+    }
+
+    .row {
+        margin-top: 10px !important;
+    }
+
+    #OdevAciklama p {
+        margin: 0px !important;
+    }
+</style>
+<div class="page-head">
+    <!-- BEGIN PAGE TITLE -->
+    <div class="page-title col-md-12">
+        <h1>
+            Öğretmen Ödev Raporu <span onclick="YardimGoster(ID_MENU);" class="pull-right" style="cursor:pointer;"><img src="assets/global/img/info.gif" class="info-image-icon" /> </span>
+        </h1>
+    </div>
+    <!-- END PAGE TITLE -->
+</div>
+
+<div class="row" id="app">
+    <div class="col-md-12">
+        <div class="portlet box blue-hoki dd-item" style="border:none">
+            <!-- BEGIN PORTLET-->
+            <div class="portlet-body form">
+                <form role="form" style="padding:12px 20px">
+                    <div class="row">
+                        <c-donem :controller="controller"
+                                 @OnChange="DonemSelected">
+                        </c-donem>
+                    </div>
+
+                    <div class="row">
+                        <c-sube-multi :controller="controller"
+                                      @OnChange="SubeSelected">
+                        </c-sube-multi>
+                    </div>
+
+                    <div class="row">
+                        <c-kademe :controller="controller"
+                                  :idsubelist="ID_SUBELIST"
+                                  @OnChange="KademeSelected">
+                        </c-kademe>
+                    </div>
+
+                    <div class="row">
+                        <c-kademe3-multi :controller="controller"
+                                         :idsubelist="ID_SUBELIST"
+                                         :idkademe="ID_KADEME"
+                                         @OnChange="Kademe3Selected">
+                        </c-kademe3-multi>
+                    </div>
+
+                    <div class="row">
+                        <c-odev-tur :controller="controller"
+                                    :idkademe="ID_KADEME"
+                                    @OnChange="OdevTurSelected">
+                        </c-odev-tur>
+                    </div>
+
+                    <div class="row" v-show="ID_ODEVTUR != 3 && ID_ODEVTUR != 5">
+                        <c-ders-multi :controller="controller"
+                                      :idkademe3list="ID_KADEME3LIST"
+                                      :idsubelist="ID_SUBELIST"
+                                      @OnChange="DersSelected">
+                        </c-ders-multi>
+                    </div>
+
+                    <div class="row">
+                        <c-ogretmen-multi :controller="controller"
+                                          :idkademe3list="ID_KADEME3LIST"
+                                          :idsubelist="ID_SUBELIST"
+                                          :idderslist="ID_DERSLIST"
+                                          :donem="DONEM"
+                                          @OnChange="OgretmenSelected">
+                        </c-ogretmen-multi>
+                    </div>
+
+                    <div class="row">
+                        <c-tarih tarihid="t_baslangic"
+                                 label="Başlangıç Tarihi"
+                                 gun="-30"
+                                 @change-date="BaslangicTarihiSelected">
+                        </c-tarih>
+                    </div>
+
+                    <div class="row">
+                        <c-tarih tarihid="t_bitis"
+                                 label="Bitiş Tarihi"
+                                 gun="0"
+                                 @change-date="BitisTarihiSelected">
+                        </c-tarih>
+                    </div>
+
+                    <div class="row">
+                        <div class="form-group" style="margin-top:10px;">
+                            <div class="col-md-12 text-right">
+                                <button type="button" class="btn green" @click="Rapor(1)">Liste</button>
+                                <button type="button" class="btn red" @click="Rapor(2)">Pdf</button>
+                                <button type="button" class="btn yellow" @click="Rapor(3)">Excel</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="portlet light" v-if="LIST.length>0">
+            <div class="portlet-title">
+                <div class="caption">
+                    <i class="icon-list font-green"></i>
+                    <span class="caption-subject bold font-green uppercase"> Öğretmen Sınıf Listesi </span>
+                    <span class="caption-helper"></span>
+                </div>
+            </div>
+            <!-- BEGIN PORTLET-->
+            <div class="portlet-body form">
+                <form role="form">
+                    <div class="portlet light bordered">
+                        <div class="portlet-body">
+                            <table class="table table-striped table-bordered table-hover table-checkable">
+                                <thead>
+                                    <tr>
+                                        <th>Öğretmen</th>
+                                        <th>Şube</th>
+                                        <th>Sınıf</th>
+                                        <th>Ders</th>
+                                        <th>Verilen</th>
+                                        <th>Kontrol Edilen</th>
+                                        <th>Kontrol Edilmeyen</th>
+                                        <th>Kontrole Açık</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="odd gradeX" v-for="(u, index) in LIST">
+                                        <td>
+                                            {{u.ADSOYAD}}
+                                        </td>
+                                        <td>
+                                            {{u.SUBEAD}}
+                                        </td>
+                                        <td>
+                                            {{u.SINIFAD}}
+                                        </td>
+                                        <td>
+                                            {{u.DERSAD}}
+                                        </td>
+                                        <td>
+                                            <button type="button" class="btn btn-info" @click="OdevListele(u, 1)">{{u.VERILEN}}</button>
+                                        </td>
+                                        <td>
+                                            <button type="button" class="btn btn-success" @click="OdevListele(u, 2)">{{u.KONTROLEDILEN}}</button>
+                                        </td>
+                                        <td>
+                                            <button type="button" class="btn btn-danger" @click="OdevListele(u, 3)">{{u.KONTROLEDILMEYEN}}</button>
+                                        </td>
+                                        <td>
+                                            <button type="button" class="btn btn-warning" @click="OdevListele(u, 4)">{{u.KONTROLSURESIDOLMAYAN}}</button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <!-- END PORTLET-->
+        </div>
+    </div>
+
+    <div id="MODAL_ODEV" class="modal fade in" tabindex="-1" data-replace="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Ödev Liste</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <table data-height="700" class="table table-striped table-condensed" style="margin-bottom:0px; color:#111">
+                        <thead>
+                            <tr>
+                                <th>Başlık</th>
+                                <th>Veriliş Tarihi</th>
+                                <th>Teslim Tarihi</th>
+                                <th>Kontrol</th>
+                                <th>İşlem</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbody">
+                            <tr v-for="ODEV in ODEVLIST">
+                                <td>{{ODEV.BASLIK}}</td>
+                                <td>{{ODEV.VERILIS_TARIHI}}</td>
+                                <td>{{ODEV.TESLIM_TARIHI}}</td>
+                                <td>
+                                    <button type="button" :class="'btn btn-' + (ODEV.DURUM == 1?'success':ODEV.DURUM == 2?'info':'danger')" disabled>{{ODEV.DURUM == 1?'KONTROL EDİLDİ':ODEV.DURUM == 2?'KONTROLE AÇIK':'KONTROL EDİLMEDİ' }}</button>
+                                </td>
+                                <td>
+                                    <button type="button" class="btn green" @click="DetayGor(ODEV.ID_ODEV)">DETAY</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Kapat</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="MODAL_DETAY" class="modal fade in" tabindex="-1" data-replace="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body" style="padding-bottom:0px;" id="modal-body">
+                    <div class="row">
+                        <div class="col-md-12"><h4><strong>Açıklama</strong></h4></div>
+                        <div class="col-md-12" v-html="ODEVDETAY.ACIKLAMA" id="OdevAciklama">
+                        </div>
+                    </div>
+                    <div class="row" v-if="ODEVDETAY.LINKLIST!=undefined && ODEVDETAY.LINKLIST.length>0">
+                        <div class="col-md-12"><h4><strong>Linkler</strong></h4></div>
+                        <div class="col-md-12" v-for="(ITEM, index) in ODEVDETAY.LINKLIST">
+                            <span>{{(index + 1) + '. '}}</span><a :href="ITEM.LINK" target="_blank">{{ITEM.AD}}</a>
+                        </div>
+                    </div>
+                    <div class="row" v-if="ODEVDETAY.DOSYALIST!=undefined && ODEVDETAY.DOSYALIST.length>0">
+                        <div class="col-md-12"><h4><strong>Dosyalar</strong></h4></div>
+                        <div class="col-md-12" v-for="(ITEM, index) in ODEVDETAY.DOSYALIST">
+                            <span>{{(index + 1) + '. '}}</span><a :href="'../../Dosyalar/Odev/' + ITEM.GUID + '.' + ITEM.UZANTI" target="_blank">{{ITEM.AD}}</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn default" data-dismiss="modal">Kapat</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="VueComponents/Filtre.js"></script>
+<script src="VueComponents/FiltreEk.js"></script>
+
+<script>
+    var vue = new Vue({
+
+        el: "#app",
+        name: "OgretmenOdevRaporu",
+
+        data: {
+            controller: 'OgretmenOdevRaporu',
+            DONEM: '',
+            ID_SUBELIST: [],
+            ID_KADEME: 0,
+            ID_KADEME3LIST: [],
+            ID_ODEVTUR: 0,
+            ID_DERSLIST: [],
+            TC_OGRETMENLIST: [],
+            BASLANGIC_TARIHI: '',
+            BITIS_TARIHI: '',
+            LIST: [],
+            ODEVLIST: [],
+            ODEVDETAY: {}
+        },
+
+        mounted() {
+        },
+
+        methods: {
+            Sifirla() {
+                this.LIST = [];
+                this.ODEVLIST = [];
+                this.ODEVDETAY = {};
+            },
+
+            DonemSelected(val) {
+                this.DONEM = val;
+                this.Sifirla();
+            },
+
+            SubeSelected(val) {
+                this.ID_SUBELIST = val;
+                this.Sifirla();
+            },
+
+            KademeSelected(val) {
+                this.ID_KADEME = val;
+                this.Sifirla();
+            },
+
+            Kademe3Selected(val) {
+                this.ID_KADEME3LIST = val;
+                this.Sifirla();
+            },
+
+            OdevTurSelected(val) {
+                this.ID_ODEVTUR = val;
+                if (this.ID_ODEVTUR == 3 || this.ID_ODEVTUR == 5) {
+                    this.ID_DERSLIST = undefined;
+                }
+                this.Sifirla();
+            },
+
+            DersSelected(val) {
+                this.ID_DERSLIST = val;
+                this.Sifirla();
+            },
+
+            OgretmenSelected(val) {
+                this.TC_OGRETMENLIST = val;
+                this.Sifirla();
+            },
+
+            BaslangicTarihiSelected(val) {
+                this.BASLANGIC_TARIHI = val;
+                this.Sifirla();
+            },
+
+            BitisTarihiSelected(val) {
+                this.BITIS_TARIHI = val;
+                this.Sifirla();
+            },
+
+            Rapor(TUR) {
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO, OTURUM: session.OTURUM,
+                    ID_SUBELIST: JSON.stringify(this.ID_SUBELIST),
+                    ID_KADEME3LIST: JSON.stringify(this.ID_KADEME3LIST),
+                    ID_DERSLIST: JSON.stringify(this.ID_DERSLIST),
+                    TC_OGRETMENLIST: JSON.stringify(this.TC_OGRETMENLIST),
+                    DONEM: this.DONEM,
+                    ID_ODEVTUR: this.ID_ODEVTUR,
+                    BASLANGIC_TARIHI: this.BASLANGIC_TARIHI,
+                    BITIS_TARIHI: this.BITIS_TARIHI
+                }
+
+                if (TUR == 1) {
+                    WebPost(vue, vue.controller, "OgretmenOdevRaporu", p, '', '', function (data, parent) {
+                        if (data != null) {
+                            parent.LIST = JSON.parse(data);
+                        }
+                        else {
+                            Alert_Warning("Bir Hata Oluştu!");
+                        }
+                    })
+                } else {
+                    var params = 'Odev.OdevOzetRapor@' + (TUR == 2 ? 'pdf' : 'xls') +
+                    '@' + session.TCKIMLIKNO +
+                    '@' + session.OTURUM +
+                    '@' + p.ID_SUBELIST +
+                    '@' + p.ID_KADEME3LIST +
+                    '@' + p.ID_DERSLIST +
+                    '@' + p.TC_OGRETMENLIST +
+                    '@' + p.DONEM +
+                    '@' + p.ID_ODEVTUR +
+                    '@' + p.BASLANGIC_TARIHI +
+                    '@' + p.BITIS_TARIHI
+                    console.log(params);
+
+                    var xForm = document.createElement("form");
+                    xForm.target = "rapor";
+                    xForm.method = "POST"; // or "post" if appropriate
+                    xForm.action = "../RaporPost.aspx";
+
+                    var xInput = document.createElement("input");
+                    xInput.type = "text";
+                    xInput.name = "p";
+                    xInput.value = params;
+                    xForm.appendChild(xInput);
+
+                    document.body.appendChild(xForm);
+
+                    map = window.open("", "rapor", "");
+
+                    if (map) {
+                        xForm.submit();
+                    } else {
+                        Alert_Warning('Açılır sekmelere izin veriniz.');
+                    }
+                }
+            },
+
+            OdevListele(ODEV, TUR) {
+                this.ODEVLIST = [];
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO, OTURUM: session.OTURUM,
+                    TC_OGRETMEN: ODEV.TCKIMLIKNO,
+                    ID_SINIF: ODEV.ID_SINIF,
+                    ID_DERS: ODEV.ID_DERS,
+                    ID_ODEVTUR: this.ID_ODEVTUR,
+                    TUR: TUR,
+                    BASLANGIC_TARIHI: this.BASLANGIC_TARIHI,
+                    BITIS_TARIHI: this.BITIS_TARIHI
+                }
+
+                WebPost(vue, vue.controller, "OgretmenSinifOdevListesi", p, '', '', function (data, parent) {
+                    if (data != null) {
+                        parent.ODEVLIST = JSON.parse(data);
+                        $('#MODAL_ODEV').modal();
+                    }
+                    else {
+                        Alert_Warning("Bir Hata Oluştu!");
+                    }
+                })
+            },
+
+            LinkControl(ITEM) {
+                var NEWS = [];
+                for (var i = 0; i < this.ODEVDETAY.LINKLIST.length; i++) {
+                    if (this.ODEVDETAY.LINKLIST[i].LINK.length > 0 || this.ODEVDETAY.LINKLIST[i].AD.length > 0) {
+                        NEWS.push(this.ODEVDETAY.LINKLIST[i])
+                    }
+                }
+                NEWS.push({ AD: '', LINK: '' });
+                this.ODEVDETAY.LINKLIST = NEWS;
+            },
+
+            DetayGor(ID_ODEV) {
+                var p = { TCKIMLIKNO: session.TCKIMLIKNO, OTURUM: session.OTURUM, ID_ODEV: ID_ODEV };
+                WebPost(vue, vue.controller, "OdevDetayGetir", p, '', '', function (data, parent) {
+                    if (data != null) {
+                        parent.ODEVDETAY = JSON.parse(data);
+                        $('#MODAL_DETAY').modal();
+                    }
+                    else {
+                        Alert_Warning("Bir Hata Oluştu!");
+                    }
+                })
+            },
+        },
+    });
+</script>
+<script src="Scripts/PublicMethods.js"></script>

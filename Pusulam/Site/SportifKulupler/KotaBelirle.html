@@ -1,0 +1,284 @@
+﻿<head>
+    <script src="/Scripts/Tools.js"></script>
+    <script src="../../../assets/global/plugins/nouislider/jquery.nouislider.js"></script>
+</head>
+
+<div class="page-head">
+    <div class="page-title col-md-12">
+        <h1>
+            Sportif Kulüpler <small>Kota Belirleme</small>
+            <span onclick="YardimGoster(ID_MENU);" class="pull-right" style="cursor:pointer;"><img src="assets/global/img/info.gif" class="info-image-icon" /> </span>
+        </h1>
+    </div>
+</div>
+
+<div class="row" id="app" style="margin-top:0px!important;">
+    <div class="col-md-6">
+
+        <div class="portlet box blue-hoki dd-item" style="border:none">
+            <div class="portlet-title dd-handle" data-toggle='collapse'>
+                <div class="caption">
+                    <i class="icon-magnifier"></i>
+                    <span class="caption-subject bold uppercase"> Kota Ekle </span>
+                    <span class="caption-helper"></span>
+                </div>
+                <div class='actions'>
+                    <a href='javascript:;' class='btn btn-default btn-sm' style='border:none;'>
+                        <i class='fa fa-chevron-down'></i>
+                    </a>
+                </div>
+            </div>
+            <div class="portlet-body form collapse in" id="filters">
+                <form role="form" style="padding:12px 20px">
+                    <div class="row">
+
+                        <c-sube :controller="controller"
+                                @OnChange="SubeSelected" />
+                    </div>
+                    <div class="row">
+                        <c-kademe3 :controller="controller"
+                                   :idsube="ID_SUBE"
+                                   @OnChange="Kademe3Selected">
+                        </c-kademe3>
+                    </div>
+                    <div class="row">
+                        <label class="control-label col-md-3">
+                            Kulüp
+                        </label>
+                        <c-kulup :controller="controller"
+                                 @OnChange="KulupSelected" />
+                    </div>
+                    <div class="row">
+                        <label class="control-label col-md-3">
+                            Kota
+                        </label>
+                        <div class="col-md-9">
+                            <input type="number" v-model="KOTA" placeholder="Kota" class="form-control form-control-inline">
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="form-group" style="margin-top:10px;">
+                            <div class="col-md-12 text-right">
+                                <button type="button" class="btn green" @click="KontrolKotaEkle()">Kota Ekle</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="portlet box blue-hoki dd-item" style="border:none">
+            <div class="portlet-title " data-toggle='collapse'>
+                <div class="caption">
+                    <i class="icon-magnifier"></i>
+                    <span class="caption-subject bold uppercase"> Kota Listesi </span>
+                    <span class="caption-helper"></span>
+                </div>
+                <div class='actions'>
+                    <a href='javascript:;' class='btn btn-default btn-sm' style='border:none;'>
+                        <i class='fa fa-chevron-down'></i>
+                    </a>
+                </div>
+            </div>
+            <div class="portlet-body form">
+                <form role="form">
+                    <div class="portlet light bordered">
+                        <div class="portlet-body">
+                            <table class="table table-striped table-bordered table-hover table-checkable order-column" id="tblListe">
+                                <thead>
+                                    <tr>
+                                        <th>Şube</th>
+                                        <th>Grup</th>
+                                        <th>Kulüp</th>
+                                        <th>Kota</th>
+                                        <th>Düzenle</th>
+                                        <th>Sil</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="odd gradeX" v-for="u in LISTE">
+                                        <td>{{u.SUBEAD}}</td>
+                                        <td>{{u.GRUPAD}}</td>
+                                        <td>{{u.KULUPADI}}</td>
+                                        <td>{{u.KOTA}}</td>
+                                        <td class="text-center col-sm-1"><a title="Düzenle" @click="Duzenle(u.ID_KULUPKOTA, u.KOTA)" class="text-success"><i class="fa fa-pencil"></i></a></td>
+                                        <td class="text-center"><a @click="Sil(u.ID_KULUPKOTA)" class="text-danger"><i class="fa fa-trash"></i></a></a></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div id="modalDuzenle" class="modal fade in" tabindex="-1" data-replace="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body" style="padding-bottom:0px;" id="modal-body">
+                    <div class="row">
+                        <label class="control-label col-md-3">
+                            Kota
+                        </label>
+                        <div class="col-md-9">
+                            <input type="number" id="dpDKota" v-model="DUZENLEKOTA" placeholder="Kota" class="form-control form-control-inline">
+                        </div>
+                    </div>
+
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn green" @click="KotaDuzenle()">Kota Düzenle</button>
+                    <button type="button" class="btn default" data-dismiss="modal">Kapat</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--<script src="../../../VueComponents/SubeGrupSinif.js?v=18"></script>-->
+<script src="VueComponents/KulupFiltreleri.js?v=3"></script>
+<script src="../../VueComponents/Degerlendirme/Filtreler.js"></script>
+<script>
+    var vue = new Vue({
+        el: "#app",
+        name: "PeriyotBelirle",
+
+        data: {
+            controller: 'KotaBelirle',
+            TCKIMLIKNO: '',
+            OTURUM: '',
+            LISTE: [],
+            ID_KULUPKOTA: 0,
+            ID_KULUP: 0,
+            ID_SUBE: 0,
+            ID_KADEME3: 0,
+            KOTA: 0,
+            DUZENLEKOTA: 0
+
+        },
+
+        mounted() {
+            this.Listele();
+        },
+        methods: {
+            SubeSelected(item) {
+                this.ID_SUBE = item;
+            },
+            Kademe3Selected(item) {
+                if (this.ID_SUBE > 0) {
+                    this.ID_KADEME3 = item;
+                }
+            },
+            KulupSelected(item) {
+                this.ID_KULUP = item;
+            },
+            KulupDuzenleSelected(item) {
+                this.ID_KULUP = item;
+            },
+            Listele() {
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM
+                };
+                WebPost(this, this.controller, "KotaListele", p, '', '', function (data, parent) {
+                    parent.LISTE = JSON.parse(data);
+                    ListeOlustur('tblListe');
+                })
+
+            },
+            KontrolKotaEkle() {
+                if (this.KOTA == 0 || this.ID_SUBE == 0 || this.ID_KULUP == 0 || this.ID_KADEME3 == 0) {
+                    Alert_Error("Lütfen tüm alanları doldurunuz!")
+                    return;
+                }
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    ID_KULUP: this.ID_KULUP,
+                    KOTA: this.KOTA,
+                    ID_KADEME3: this.ID_KADEME3,
+                    ID_SUBE: this.ID_SUBE,
+
+                }
+
+                WebPost(this, this.controller, "KontrolKotaEkle", p, '', '', function (data, parent) {
+                    if (data == "[]") {
+                        vue.KotaEkle();
+                    } else {
+                        Alert_Warning("Aynı şubenin aynı kulübüne birden fazla kota atanamaz.");
+                    }
+                });
+            },
+
+            KotaEkle() {
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    ID_KADEME3: this.ID_KADEME3,
+                    ID_SUBE: this.ID_SUBE,
+                    ID_KULUP: this.ID_KULUP,
+                    KOTA: this.KOTA
+                }
+
+                WebPost(this, this.controller, "KotaEkle", p, '', '', function (data, parent) {
+                    if (data) {
+                        vue.Listele();
+                        Alert_Info("Kota Başarılı bir şekilde kaydedildi.")
+                    } else {
+                        Alert_Warning("Kota eklenirken bir hata oluştu.");
+                    }
+                });
+            },
+            KotaDuzenle() {
+
+                if (this.DUZENLEKOTA == 0) {
+                    Alert_Error("Kota alanı sıfırdan büyük olmalıdır.")
+                    return;
+                }
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    KOTA: this.DUZENLEKOTA,
+                    ID_KULUPKOTA: this.ID_KULUPKOTA
+                };
+
+                WebPost(this, this.controller, "KotaDuzenle", p, '', '', function (data, parent) {
+                    vue.Listele();
+                    Alert_Info("Kota Başarılı bir şekilde Güncellendi.")
+                    $('#modalDuzenle').modal("hide")
+                });
+            },
+            Duzenle(Id, kota) {
+                vue = this;
+                this.ID_KULUPKOTA = Id;
+                this.DUZENLEKOTA = kota;
+                $('#modalDuzenle').modal();
+            },
+            Sil(Id) {
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    ID_KULUPKOTA: Id
+                }
+                Alert_Confirm("Kota Silme", "Kotayı silmek istediğinize emin misiniz ?", function () {
+                    WebPost(vue, vue.controller, "KotaSil", p, '', '', function (data, parent) {
+                        if (data) {
+                            parent.Listele();
+                        } else {
+                            Alert_Warning("Kota tarihi Kullanılmakta olduğundan silinmemektedir.");
+                        }
+                    });
+                })
+            }
+        },
+
+        watch: {
+
+        },
+
+
+    });
+</script>
+<script src="Scripts/PublicMethods.js"></script>

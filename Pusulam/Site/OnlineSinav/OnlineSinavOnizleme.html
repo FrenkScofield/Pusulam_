@@ -1,0 +1,256 @@
+﻿<head>
+   <script src="https://unpkg.com/jspdf@latest/dist/jspdf.umd.min.js"></script>
+    <script src="../../../Scripts/Rapor/amcharts.js"></script>
+    <script src="../../../Scripts/Rapor/light.js"></script>
+    <script src="../../../Scripts/Rapor/pie.js"></script>
+    <script src="../../../assets/global/plugins/nouislider/jquery.nouislider.js"></script>
+</head>
+<style>
+    td {
+        vertical-align: middle !important;
+    }
+
+    .table-scrollable {
+        overflow: visible;
+    }
+
+    tr {
+        height: 50px !important;
+    }
+
+        tr td:first-child {
+            text-align: left !important;
+        }
+
+        tr th:first-child {
+            text-align: left !important;
+        }
+
+    .portlet-body tr td:last-child {
+        width: 50px !important;
+        text-align: center;
+    }
+
+    .portlet-body tr th:last-child {
+        width: 50px !important;
+        text-align: center;
+    }
+
+    .margintop0 {
+        margin-top: 0px !important;
+        margin-bottom: 10px !important;
+    }
+
+    .nav-tabs .active {
+        border-bottom: 5px solid #32c5d2 !important;
+    }
+
+    .dondur {
+        transform: rotate(180deg);
+        bottom: 2px !important;
+        left: 0px !important;
+    }
+
+    .pmargin0 p {
+        margin-top: 5px;
+        margin-bottom: 5px;
+    }
+
+    .cevap {
+        cursor: pointer;
+    }
+
+        .cevap:hover {
+            border-color: #896d2c !important;
+        }
+
+    #chart {
+        width: 100%;
+        height: 100%;
+    }
+</style>
+
+<div class="page-head">
+    <div class="page-title col-md-12">
+        <h1>
+            Online <small>Sınav</small>
+             <span onclick="YardimGoster(ID_MENU);" class="pull-right" style="cursor:pointer;"><img src="assets/global/img/info.gif" class="info-image-icon" /> </span>
+        </h1>
+    </div>
+</div>
+<div class="row" id="app" style="margin-top:0px!important;">
+    <div class="col-md-12" v-if="SINAV != null">
+        <div class="portlet light">
+            <!--<div class="portlet-header">
+                <button type="button" class="blue btn pull-right" @click="GeriDon">Sınavı Bitir</button>
+            </div>-->
+            <div class="portlet-body form row">
+
+                <div id="div_soru" class="col-md-8 col-lg-9">
+                    <div class="col-md-12" style="border:2px solid #32c5d2; padding:15px; margin-top:20px; margin-bottom:10px; overflow-x:auto;" v-html="SINAV.SD[SECILIDERS].SA[SECILISORU].SORUHTML">
+
+                    </div>
+                    <div v-for="c in SINAV.SD[SECILIDERS].SA[SECILISORU].SBC">
+                        <div>
+                            <div class="col-md-12 pmargin0 cevap"                                 
+                                 style="border:2px solid #32c5d2; padding:15px; margin-bottom:5px; overflow-x:auto;">
+                                <div style="display:inline-block; width:30px;">{{String.fromCharCode(64 + c.CEVAPNO) + ' - )'}}</div>
+                                <div style="display:inline-block; width:calc(100% - 40px); margin-left:5px;" v-html="c.CEVAPHTML"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12"
+                         style="text-align:center;line-height:42px; margin-top:35px; overflow-x:auto;"
+                         v-for="u in SINAV.SD[SECILIDERS].SA[SECILISORU].COZUMLIST"
+                         v-html="u.COZUMHTML">
+                    </div>
+                    <div class="col-md-12" style="text-align:center;line-height:42px; margin-top:35px; ">
+                        <i style="vertical-align:middle; cursor:pointer; float:left;" class="fa fa-3x fa-angle-left"
+                           @click="SECILISORU = (SECILISORU == 0 ? 0 : (SECILISORU - 1))"></i>
+                        <i style="vertical-align:middle; cursor:pointer; float:right" class="fa fa-3x fa-angle-right"
+                           @click="SECILISORU = (SECILISORU == (SINAV.SD[SECILIDERS].SA.length - 1) ? (SINAV.SD[SECILIDERS].SA.length - 1) : (SECILISORU + 1)) "></i>
+                    </div>
+                </div>
+
+
+                <div id="div_sorugecis" class="col-md-4 col-lg-3" style="min-width:99.906px; border:2px solid #32c5d2; border-radius:0px 0px 0px 5px; padding-top:15px; padding-bottom:15px; margin-top:20px;">
+                    <div>
+                        <select class="selectpicker form-control" v-model="selSECILIDERS" title="Seçiniz...">
+                            <option v-for="u in SINAV.SD" v-bind:value="u.BOLUMNO" v-bind:data-subtext="u.BOLUMNO">{{u.TAKMAAD}}</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-12" id="table_soru" style="padding-top: 25px;padding-left:0px!important;padding-right:0px!important;">
+                        <label>SORU LİSTESİ</label>
+                        <div style="width:100%; overflow-y:auto;">
+                            <table class="table" style="width:100%; margin:0px;">
+                                <tr v-for="(soru,index) in SINAV.SD[SECILIDERS].SA" @click="SECILISORU = index" style="cursor:pointer;">
+                                    <td style="width:30px !important;" v-if="SINAV.SD[SECILIDERS].SA[SECILISORU].SORUNO == soru.SORUNO">
+                                        <i class="fa fa-lg fa-pencil"></i>
+                                    </td>
+                                    <td style="width:20px !important;" v-else>
+                                        <div>
+                                            <i class="fa fa-lg fa-circle-o"></i>
+                                        </div>
+                                    </td>
+                                    <td style="width:8px !important;">{{soru.SORUNO}}</td>
+                                    <td style="width:111px !important">
+                                        <label v-for="c in soru.SBC"
+                                               style="border: solid; border-radius: 50%; margin-right:2px; border-width: 1px;">
+                                            &nbsp; {{String.fromCharCode(64 + c.CEVAPNO)}} &nbsp;
+                                        </label>
+                                    </td>
+
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    var vue = new Vue({
+        el: "#app",
+        name: "OnlineSinavOnizleme",
+
+        data: {
+            TCKIMLIKNO: '',
+            OTURUM: '',
+            controller: 'OnlineSinavOnizleme',
+
+            SINAV: null,
+            SINAVOTURUM: 0,
+            SECILIDERS: 0,
+            selSECILIDERS: 1,
+            SECILISORU: 0,
+            SORUNO: 1,
+
+            hataSayisi: 0,
+        },
+
+        mounted() {
+            this.TCKIMLIKNO = session.TCKIMLIKNO;
+            this.OTURUM = session.OTURUM;
+            var vue = this;
+            var ID_SINAV = 0;
+            try { ID_SINAV = parseInt(getParameterByName("ID_SINAV")); } catch (e) { ID_SINAV = 0; }
+
+
+            this.$nextTick(() => {
+                if (ID_SINAV > 0) {
+                    var p = { TCKIMLIKNO: session.TCKIMLIKNO, OTURUM: session.OTURUM, ID_SINAV: ID_SINAV, SINAVOTURUM: vue.SINAVOTURUM };
+                    WebPost(this, vue.controller, "OnlineSinavOnizlemeSoruListele", p, '', '', function (data, parent) {
+                        parent.SINAV = JSON.parse(data)[0];
+
+                        var soru = vue.SINAV.SD[0].SA[0];
+                        vue.HtmlOku(soru, soru.SORUHTML, 1);
+                        for (var i = 0; i < soru.SBC.length; i++) {
+                            var cevap = soru.SBC[i];
+                            vue.HtmlOku(cevap, cevap.CEVAPHTML, 2);
+                        }
+
+                        if (vue.SINAV.ACIKLANDI) {
+                            $.each(soru.COZUMLIST, (j, el) => {
+                                vue.HtmlOku(el, el.COZUMHTML, 3);
+                            })
+                        }
+
+                        vue.$nextTick(() => {
+                            vue.$forceUpdate();
+                        });
+                    });
+                }
+            });
+
+        },
+
+        methods: {
+            HtmlOku(item, url, which) {
+                $.get('https://pusulam.okyanuskoleji.k12.tr/' + url/*.replace('Dosyalar', 'OnlineSinav')*/, function (html) {
+                    html = html.replace(/"\/assets\/ckeditor\/plugins\/ckeditor_wiris/g, "\"https://sorubankasi.okyanuskoleji.k12.tr/assets/ckeditor/plugins/ckeditor_wiris");
+                    if (which == 1) {
+                        item.SORUHTML = '<h3 style="margin:0px;">Soru ' + item.SORUNO + '</h3> </br>' + html;
+                    }
+                    else if (which == 2) {
+                        item.CEVAPHTML = html;
+                    }
+                    else if (which == 3) {
+                        item.COZUMHTML = html;
+                    }
+                }, false);
+            },
+            GeriDon() {
+                window.location.replace('/AnaSayfa.html#OnlineSinav/OnlineSinavOnizlemeListe');
+            },
+            SeciliSoruGetir(val) {
+                var soru = vue.SINAV.SD[vue.SECILIDERS].SA[val];
+                vue.HtmlOku(soru, soru.SORUHTML, 1);
+                for (var i = 0; i < soru.SBC.length; i++) {
+                    var cevap = soru.SBC[i];
+                    vue.HtmlOku(cevap, cevap.CEVAPHTML, 2);
+                }
+            },
+        },
+
+        watch: {
+            SECILIDERS() {
+                vue.SECILISORU = 0;
+                vue.SORUNO = 1;
+            },
+            selSECILIDERS() {
+                vue.SECILIDERS = vue.selSECILIDERS - 1;
+                vue.SeciliSoruGetir(0);
+            },
+            SECILISORU(val) {
+                vue.SeciliSoruGetir(val);
+            },
+        },
+
+        updated() {
+            $('.selectpicker').selectpicker('refresh');
+        },
+    });
+</script>
+<script src="Scripts/PublicMethods.js"></script>

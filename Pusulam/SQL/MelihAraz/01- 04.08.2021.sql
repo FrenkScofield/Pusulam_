@@ -1,0 +1,371 @@
+﻿USE [Pusulam]
+GO
+
+INSERT INTO MENU(AD,ACIKLAMA,KOD,URL,RESIM,GIZLI,YARDIMHTML,OZEL) VALUES ('Sportif Klüpler','Sportif Klüpler','094','','icon-user',0,'',0)
+INSERT INTO MENU(AD,ACIKLAMA,KOD,URL,RESIM,GIZLI,YARDIMHTML,OZEL) VALUES ('Periyot Belirle','Periyot Belirle','094001','#SportifKulupler/PeriyotBelirle','icon-user',0,'',0)
+INSERT INTO MENU(AD,ACIKLAMA,KOD,URL,RESIM,GIZLI,YARDIMHTML,OZEL) VALUES ('Kota Belirle','Kota Belirle','094002','#SportifKulupler/KotaBelirle','icon-user',0,'',0)
+INSERT INTO MENU(AD,ACIKLAMA,KOD,URL,RESIM,GIZLI,YARDIMHTML,OZEL) VALUES ('Klüp Belirle','Klüp Belirle','094003','#SportifKulupler/KulupBelirle','icon-user',0,'',0)
+INSERT INTO MENU(AD,ACIKLAMA,KOD,URL,RESIM,GIZLI,YARDIMHTML,OZEL) VALUES ('Öğrenci Klüpler','Raporlar','094004','#SportifKulupler/OgrenciKulupler','icon-user',0,'',0)
+GO
+
+CREATE TABLE DUAL
+(
+	DUMMY VARCHAR(1)
+)
+GO
+INSERT INTO DUAL (DUMMY)
+VALUES ('X')
+GO
+
+/****** Object:  Table [dbo].[Kulup]    Script Date: 4.08.2021 16:30:30 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[Kulup](
+	[ID_KULUP] [int] IDENTITY(1,1) NOT NULL,
+	[KULUPADI] [varchar](150) NULL,
+ CONSTRAINT [PK_Klup] PRIMARY KEY CLUSTERED 
+(
+	[ID_KULUP] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+
+USE [Pusulam]
+GO
+
+/****** Object:  Table [dbo].[KulupKota]    Script Date: 4.08.2021 16:30:49 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[KulupKota](
+	[ID_KULUPKOTA] [int] IDENTITY(1,1) NOT NULL,
+	[Kota] [int] NOT NULL,
+	[ID_SUBE] [int] NOT NULL,
+	[ID_KULUP] [int] NOT NULL,
+ CONSTRAINT [PK_KlupKota] PRIMARY KEY CLUSTERED 
+(
+	[ID_KULUPKOTA] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+USE [Pusulam]
+GO
+
+/****** Object:  Table [dbo].[KulupPeriyot]    Script Date: 4.08.2021 16:31:06 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[KulupPeriyot](
+	[ID_KULUPPERIYOT] [int] IDENTITY(1,1) NOT NULL,
+	[BAS_TARIH] [date] NOT NULL,
+	[BIT_TARIH] [date] NOT NULL,
+ CONSTRAINT [PK_KlupPeriyot] PRIMARY KEY CLUSTERED 
+(
+	[ID_KULUPPERIYOT] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+USE [Pusulam]
+GO
+
+/****** Object:  Table [dbo].[KulupOgrenci]    Script Date: 4.08.2021 16:31:18 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[KulupOgrenci](
+	[ID_KULUPOGRENCI] [int] IDENTITY(1,1) NOT NULL,
+	[TCKIMLIKNO] [varchar](11) NOT NULL,
+	[ID_KULUP] [int] NOT NULL,
+	[ID_KULUPPERIYOT] [int] NOT NULL,
+ CONSTRAINT [PK_KlupOgrenci] PRIMARY KEY CLUSTERED 
+(
+	[ID_KULUPOGRENCI] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+
+INSERT INTO Kulup(KULUPADI) VALUES ('TEKERLEKLİ PATEN')
+INSERT INTO Kulup(KULUPADI) VALUES ('BUZ PATENİ (ÜCRETLİ)')
+INSERT INTO Kulup(KULUPADI) VALUES ('VOLEYBOL')
+INSERT INTO Kulup(KULUPADI) VALUES ('TENİS')
+INSERT INTO Kulup(KULUPADI) VALUES ('OKÇULUK')
+INSERT INTO Kulup(KULUPADI) VALUES ('CİMNASTİK')
+INSERT INTO Kulup(KULUPADI) VALUES ('FUTBOL')
+INSERT INTO Kulup(KULUPADI) VALUES ('BASKETBOL')
+INSERT INTO Kulup(KULUPADI) VALUES ('AİKİDO (KIYAFET ÜCRETLİ)')
+INSERT INTO Kulup(KULUPADI) VALUES ('YÜZME')
+INSERT INTO Kulup(KULUPADI) VALUES ('DOĞA SPORLARI')
+INSERT INTO Kulup(KULUPADI) VALUES ('SPEED STACKS')
+INSERT INTO Kulup(KULUPADI) VALUES ('BADMİNTON')
+INSERT INTO Kulup(KULUPADI) VALUES ('MASA TENİSİ')
+INSERT INTO Kulup(KULUPADI) VALUES ('HENTBOL')
+INSERT INTO Kulup(KULUPADI) VALUES ('STEP AEROBİK')
+INSERT INTO Kulup(KULUPADI) VALUES ('KARATE')
+INSERT INTO Kulup(KULUPADI) VALUES ('TAEKWONDO')
+INSERT INTO Kulup(KULUPADI) VALUES ('PİLATES')
+INSERT INTO Kulup(KULUPADI) VALUES ('HAREKET EĞİTİMİ')
+GO
+
+
+USE [Pusulam]
+GO
+/****** Object:  StoredProcedure [dbo].[sp_SportifKulup]    Script Date: 3.08.2021 17:21:55 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROC [dbo].[sp_SportifKulup]
+	@ISLEM							INT				= NULL,
+	@TCKIMLIKNO						VARCHAR(11)		= NULL,
+	@OTURUM							VARCHAR(36)		= NULL,
+	@ID_MENU						INT				= NULL,
+	@SQLJSON						VARCHAR(MAX)	= NULL,
+	
+	@ID_KADEME3						INT				= NULL,
+	@ID_DERS						INT				= NULL,
+	@BAS_TARIH						VARCHAR(MAX)    = NULL,
+	@BIT_TARIH						VARCHAR(MAX)	= NULL,
+	@ID_SUBE						INT				= NULL,
+	@ID_KULUP						INT				= NULL,
+	@KOTA							INT				= NULL,
+	@ID_KULUPKOTA					INT				= NULL,
+	@KOTALI							BIT				= NULL,
+	@ID_KULUPPERIYOT				INT				= NULL,
+	@ID_SINIFs						NVARCHAR(MAX)   = NULL
+	
+AS
+BEGIN
+	BEGIN TRY    
+		DECLARE @MSG			VARCHAR(4000)
+		DECLARE @ErrorSeverity	INT
+		DECLARE @ErrorState		INT
+		DECLARE @_ID_LOG INT = 0
+		DECLARE @return_variable INT
+		EXEC @return_variable = [dbo].[sp_OturumKontrol] @OTURUM = @OTURUM, @TCKIMLIKNO = @TCKIMLIKNO, @ID_MENU = @ID_MENU
+
+		IF @return_variable = 1
+		BEGIN
+			IF @ISLEM = 1  --Periyot Listele
+			BEGIN
+			    SELECT ISNULL((
+					SELECT DISTINCT
+						ID_KULUPPERIYOT,
+						BAS_TARIH,
+						BIT_TARIH 
+					 FROM KulupPeriyot
+					FOR JSON AUTO
+				),'[]')
+			END	
+
+			IF @ISLEM = 2  -- Periyot Ekle
+			BEGIN
+				INSERT INTO KulupPeriyot (BAS_TARIH, BIT_TARIH) VALUES (@BAS_TARIH, @BIT_TARIH)
+
+				 SELECT ISNULL((
+					SELECT DISTINCT
+						ID_KULUPPERIYOT
+					   ,BAS_TARIH
+					   ,BIT_TARIH
+					 FROM KulupPeriyot
+					FOR JSON AUTO
+				),'[]')
+			END
+
+			IF @ISLEM = 3  --Kota Listele
+			BEGIN
+			    SELECT ISNULL((
+					SELECT 
+						kk.ID_KULUPKOTA, 
+						ID_SUBE,
+						SUBEADI		= (SELECT AD FROM OkyanusDB.dbo.v3Sube SS WHERE SS.ID_SUBE =  kk.ID_SUBE), 
+						ID_KULUP,
+						KULUPADI    = (SELECT K.KULUPADI FROM Kulup K WHERE K.ID_KULUP = KK.ID_KULUP),
+						kk.KOTA
+					FROM KulupKota kk					
+				FOR JSON AUTO
+				),'[]')
+			END	
+
+			IF @ISLEM = 4  -- Kota Ekle
+			BEGIN
+				INSERT INTO KulupKota (ID_SUBE, ID_KULUP, KOTA) VALUES (@ID_SUBE, @ID_KULUP, @KOTA)
+
+				 SELECT ISNULL((
+					SELECT DISTINCT
+						ID_KULUPKOTA,
+						ID_SUBE,
+						ID_KULUP,
+						KOTA
+					 FROM KulupKota
+					FOR JSON AUTO
+				),'[]')
+			END
+
+			IF @ISLEM = 5  --Kulüp Listele
+			BEGIN
+				IF @KOTALI=1
+				BEGIN
+					SELECT DISTINCT KK.ID_KULUP, KULUPADI
+					FROM Kulup K
+					JOIN (
+						SELECT KK.ID_KULUPKOTA, KK.KOTA, KK.ID_SUBE, KK.ID_KULUP
+						FROM KulupKota KK
+						JOIN KulupOgrenci KO ON KO.ID_KULUP = KK.ID_KULUP
+						JOIN KulupPeriyot KP ON KP.ID_KULUPPERIYOT = KO.ID_KULUPPERIYOT
+						JOIN OkyanusDB.dbo.v3Ogrenci O ON O.ID_SUBE = KK.ID_SUBE
+						WHERE KP.BAS_TARIH < GETDATE() AND KP.BIT_TARIH > GETDATE()
+							AND O.TCKIMLIKNO = '10002221716' --@TCKIMLIKNO  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+						GROUP BY KK.ID_KULUPKOTA, KK.KOTA, KK.ID_SUBE, KK.ID_KULUP, KO.ID_KULUPPERIYOT
+						HAVING COUNT(KO.TCKIMLIKNO) < KK.KOTA
+						) KK ON KK.ID_KULUP = K.ID_KULUP
+				END
+				BEGIN
+			    --SELECT ISNULL((
+					SELECT DISTINCT
+						ID_KULUP
+					   ,KULUPADI
+					 FROM Kulup
+					--FOR JSON AUTO
+				--),'[]')			
+				END
+			END	
+
+			IF @ISLEM = 6  -- Kota Sil
+			BEGIN
+				DELETE FROM KulupKota WHERE ID_KULUPKOTA = @ID_KULUPKOTA
+
+				 SELECT ISNULL((
+					SELECT DISTINCT
+						ID_KULUPKOTA,
+						ID_SUBE,
+						ID_KULUP,
+						KOTA
+					 FROM KulupKota
+					FOR JSON AUTO
+				),'[]')
+			END
+
+			IF @ISLEM = 7  -- Kota Düzenle
+			BEGIN				
+				UPDATE KulupKota SET ID_SUBE = @ID_SUBE, ID_KULUP = @ID_KULUP, KOTA = @KOTA WHERE ID_KULUPKOTA = @ID_KULUPKOTA
+
+				 SELECT ISNULL((
+					SELECT DISTINCT
+						ID_KULUPKOTA,
+						ID_SUBE,
+						ID_KULUP,
+						KOTA
+					 FROM KulupKota
+					FOR JSON AUTO
+				),'[]')
+			END
+
+			IF @ISLEM = 8  --Kulup Belirle/Listele
+			BEGIN			    
+
+				DECLARE @KulupPeriyotId INT;
+				DECLARE @KulupAdi VARCHAR(100);
+				SET @KulupPeriyotId = (
+					SELECT KP.ID_KULUPPERIYOT
+					FROM KulupPeriyot KP 
+					WHERE KP.BAS_TARIH <= CAST(GETDATE() AS DATE) AND KP.BIT_TARIH >= CAST(GETDATE() AS DATE)
+					);				
+				SET @KulupAdi = (
+					SELECT K.KULUPADI
+					FROM KulupOgrenci KO 	
+					JOIN Kulup K ON K.ID_KULUP = KO.ID_KULUP	
+					WHERE KO.ID_KULUPPERIYOT = @KulupPeriyotId
+						AND KO.TCKIMLIKNO = '10002221716'
+					);
+				SELECT ISNULL((
+					SELECT KULUPPERIYOT = ISNULL(@KulupPeriyotId, 0), KULUPADI = ISNULL(@KulupAdi,'YOK') FROM DUAL	
+				FOR JSON AUTO
+				),'[]')				
+			END	
+
+			IF @ISLEM = 9  --Periyotlar
+			BEGIN			    
+				SELECT DISTINCT
+					ID_KULUPPERIYOT
+					,PERIYOT = FORMAT (BAS_TARIH, 'dd/MM/yyyy') + ' - ' + FORMAT (BIT_TARIH, 'dd/MM/yyyy') 
+					FROM KulupPeriyot					
+			END	
+
+			IF @ISLEM = 10  -- Kulüp Düzenle
+			BEGIN				
+				UPDATE KulupOgrenci SET ID_KULUP = @ID_KULUP WHERE TCKIMLIKNO = '10002221716' AND ID_KULUPPERIYOT = @ID_KULUPPERIYOT
+
+				 SELECT ISNULL((
+					SELECT TOP 1
+						KULUPPERIYOT = @ID_KULUPPERIYOT,
+						KULUPADI = (SELECT KULUPADI FROM Kulup WHERE ID_KULUP = @ID_KULUP)
+					 FROM DUAL
+					FOR JSON AUTO
+				),'[]')
+			END
+
+			IF @ISLEM = 11  -- Kulüpten Ayrıl
+			BEGIN
+				DELETE FROM KulupOgrenci WHERE TCKIMLIKNO = '10002221716' AND ID_KULUPPERIYOT = @ID_KULUPPERIYOT
+
+				 SELECT ISNULL((
+					SELECT TOP 1
+						0 AS KULUPPERIYOT,
+						'YOK' AS KULUPADI
+					 FROM DUAL
+					FOR JSON AUTO
+				),'[]')
+			END
+
+			IF @ISLEM = 12  --Öğrenci Kulüp Listele
+			BEGIN
+			    SELECT ISNULL((
+					SELECT 
+						TC = KO.TCKIMLIKNO, 
+						ADSOYAD = KUL.AD + ' ' + KUL.SOYAD, 
+						PERIYOT = FORMAT (KP.BAS_TARIH, 'dd/MM/yyyy') + ' - ' + FORMAT (KP.BIT_TARIH, 'dd/MM/yyyy'),
+						KULUPADI = K.KULUPADI
+					FROM KulupOgrenci KO WITH (NOLOCK)
+					JOIN KulupPeriyot KP WITH (NOLOCK) ON KP.ID_KULUPPERIYOT = KO.ID_KULUPPERIYOT	
+					JOIN Kulup K WITH (NOLOCK) ON K.ID_KULUP = KO.ID_KULUP	
+					JOIN OkyanusDB.dbo.v3Ogrenci O WITH (NOLOCK) ON O.TCKIMLIKNO = KO.TCKIMLIKNO
+					JOIN v3Kullanici KUL WITH (NOLOCK) ON KUL.TCKIMLIKNO	= KO.TCKIMLIKNO
+					--WHERE	O.ID_SINIF IN (@ID_SINIFs)
+				FOR JSON AUTO
+				),'[]')
+			END	
+
+		END
+	END TRY
+	BEGIN CATCH
+		DECLARE @_ErrorSeverity INT;
+		DECLARE @_ErrorState INT;
+
+		SELECT 
+			@_ErrorSeverity	= ERROR_SEVERITY(),
+			@_ErrorState		= ERROR_STATE()
+				
+		DECLARE @_MSG VARCHAR(4000)
+		SELECT @_MSG = ERROR_MESSAGE()
+
+		EXEC [dbo].[sp_CustomRaiseError] @MESSAGE = @_MSG, @SEVERITY = @_ErrorSeverity, @STATE = @_ErrorState, @ID_LOG = @_ID_LOG, @ID_LOGTUR = 2
+	END CATCH;
+END
+

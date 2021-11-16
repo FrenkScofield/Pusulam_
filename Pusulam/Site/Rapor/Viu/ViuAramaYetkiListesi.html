@@ -1,0 +1,161 @@
+﻿<div class="page-head">
+    <div class="page-title col-md-12">
+        <h1>
+            Viu Arama Yetki Listesi
+             <span onclick="YardimGoster(ID_MENU);" class="pull-right" style="cursor:pointer;"><img src="assets/global/img/info.gif" class="info-image-icon" /> </span>
+        </h1>
+    </div>
+</div>
+
+<div class="row" id="app">
+    <div class="col-md-12">
+        <div class="portlet box green-haze dd-item" style="border:none">
+            <div class="portlet-title dd-handle" data-toggle='collapse' data-target='#filters' style="cursor:pointer;">
+                <div class="caption">
+                    <i class="icon-magnifier"></i>
+                    <span class="caption-subject bold uppercase"> Filtreler </span>
+                    <span class="caption-helper"></span>
+                </div>
+
+                <div class='actions'>
+                    <a href='javascript:;' class='btn btn-default btn-sm' style='border:none;'>
+                        <i class='fa fa-chevron-down'></i>
+                    </a>
+                </div>
+            </div>
+            <div class="portlet-body form collapse in" id="filters">
+                <form role="form" style="padding:12px 20px">
+                    <div class="row">
+                        <c-viu-kullanici :controller="controller"
+                                         @OnChange="KullaniciTipiSelected">
+                        </c-viu-kullanici>
+                    </div>
+                    
+                <div class="text-right" style="margin: 15px;">
+                    <button type="button" class="btn green" @click="KullaniciListele" style="margin-right:10px;" :disabled="TC_OGRETMEN.length != 11">Kullanıcı Yetkileri Listele</button>
+                </div>
+                </form>
+            </div>
+
+            
+        </div>
+    </div>
+
+
+    <div class="col-md-12" v-if="KULLANICILIST.length>0">
+        <div class="portlet light">
+            <div class="portlet-title">
+                <div class="caption">
+                    <i class="icon-list font-green"></i>
+                    <span class="caption-subject bold font-green uppercase"> Kullanıcı Yetki Listesi </span>
+                    <span class="caption-helper"></span>
+                </div>
+            </div>
+            <div class="portlet-title" v-if="KULLANICILIST!=null">
+                <button type="button" class="btn green pull-right" @click="Kaydet">Kaydet</button>
+            </div>
+            <div class="portlet-body">
+                <table class="table table-striped table-bordered table-hover table-checkable">
+                    <thead>
+                        <tr>
+                            <th>KAMPÜS</th>
+                            <th>GRUP</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr style="cursor:pointer;" v-for="u in KULLANICILIST">
+                            <td>
+                                <div v-for='item in u.SUBE'>
+                                    <div class="md-checkbox" style="text-align:left;">
+                                        <input type="checkbox" style="text-align:left;" v-bind:id="item.SUBEAD" v-bind:value='item.SUBEAD' v-model="item.SECILI" />
+                                        <label :for="item.SUBEAD">
+                                            {{item.SUBEAD}}
+                                            <span></span>
+                                            <span class="check"></span>
+                                            <span class="box"></span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div v-for='item in u.GRUP'>
+                                    <div class="md-checkbox" style="margin:auto!important; display:block;">
+                                        <input type="checkbox" v-bind:id="item.GRUP" v-bind:value='item.GRUP' v-model="item.SECILI" class="md-check" />
+                                        <label :for="item.GRUP">
+                                            {{item.GRUP}}
+                                            <span></span>
+                                            <span class="check"></span>
+                                            <span class="box"></span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="portlet-title" v-if="KULLANICILIST!=null">
+                <button type="button" class="btn green pull-right" @click="Kaydet">Kaydet</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../../../VueComponents/Viu/Filtreler.js?v=4"></script>
+<script>
+    var vue = new Vue({
+        el: "#app",
+        name: "ViuAramaYetkiListesi",
+
+        data: {
+            controller: 'ViuAramaYetkiListesi',
+            KULLANICILIST: [],
+            TC_OGRETMEN: "",
+        },
+
+        methods: {
+            KullaniciTipiSelected(TCKIMLIKNO) {
+                this.TC_OGRETMEN = TCKIMLIKNO;
+            },
+
+            Kaydet() {
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    SQLJSON: JSON.stringify(vue.KULLANICILIST),
+                    TC_OGRETMEN: vue.TC_OGRETMEN,
+                };
+                WebPost(this, this.controller, "ViuAramaKullaniciYetki", p, '', '', function (data, parent) {
+                    (data)
+                        ? Alert_Info("Kullanıcı Yetki Bilgileri Eklendi.")
+                        : Alert_Warning("Bir hata oluştu!");
+
+                });
+            },
+            KullaniciListele() {
+
+                if (vue.TC_OGRETMEN.length != 11) {
+                    Alert_Warning("Kullanıcı Seçimi Yapınız!...");
+                    return;
+                }
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    TC_OGRETMEN: vue.TC_OGRETMEN,
+                };
+                ListeTemizle(vue.KULLANICILIST);
+                WebPost(this, this.controller, "ViuAramaKullaniciListele", p, '', '', function (data, parent) {
+
+                    (data != null && data != '[]')
+                        ? vue.KULLANICILIST = JSON.parse(data)
+                        : Alert_Warning("Bir hata oluştu!");
+
+                });
+
+
+            },
+
+        },
+    });
+</script>
+<script src="../../../Scripts/PublicMethods.js"></script>

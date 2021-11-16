@@ -1,0 +1,202 @@
+﻿<div class="page-head">
+    <!-- BEGIN PAGE TITLE -->
+    <div class="page-title col-md-12">
+        <h1>
+            Gelişim Raporu <small>Öğrenci Gelişim Raporu</small> <span onclick="YardimGoster(ID_MENU);" class="pull-right" style="cursor:pointer;"><img src="assets/global/img/info.gif" class="info-image-icon" /> </span>
+        </h1>
+    </div>
+    <!-- END PAGE TITLE -->
+</div>
+
+<div class="row" id="app">
+    <div class="col-md-12">
+        <div class="portlet box green-haze dd-item" style="border:none">
+            <div class="portlet-title dd-handle" data-toggle='collapse' data-target='#filters' style="cursor:pointer;">
+                <div class="caption">
+                    <i class="icon-magnifier"></i>
+                    <span class="caption-subject bold uppercase"> Filtreler </span>
+                    <span class="caption-helper"></span>
+                </div>
+                <div class='actions'>
+                    <a href='javascript:;' class='btn btn-default btn-sm' style='border:none;'>
+                        <i class='fa fa-chevron-down'></i>
+                    </a>
+                </div>
+            </div>
+            <div class="portlet-body form collapse in" id="filters">
+                <div class="portlet light col-md-12" id="FiltreDivOgretmen" style="margin:0px; border-bottom-style: solid;border-bottom-width: 3px;border-bottom-color: rgb(0, 173, 239);">
+                    <div class="portlet-body">
+                        <div class="form-inline">
+                            <c-donem controller="OgrenciBelgeGelisimRaporuLS"
+                                     @OnChange="DonemSelected" />
+                            <c-sube controller="OgrenciBelgeGelisimRaporuLS"
+                                    @OnChange="SubeSelected" />
+                            <c-kademe3 controller="OgrenciBelgeGelisimRaporuLS"
+                                       :idsube="idsube"
+                                       idkademe="5"
+                                       @OnChange="Kademe3Selected">
+                            </c-kademe3>
+                            <c-sinif-donem controller="OgrenciBelgeGelisimRaporuLS"
+                                     :idsube="idsube"
+                                     :idkademe3="idkademe3"
+                                     :donem="DONEM"
+                                     @OnChange="SinifSelected">
+                            </c-sinif-donem>
+                            <c-ogrenci controller="OgrenciBelgeGelisimRaporuLS"
+                                       :idsinif="idsinif"
+                                       @OnChange="OgrenciSelected">
+                            </c-ogrenci>
+                        </div>
+                    </div>
+                </div>
+                <div class="portlet light col-md-12" id="FiltreDivOgrenci" style="margin:0px; border-bottom-style: solid;border-bottom-width: 3px;border-bottom-color: rgb(0, 173, 239);">
+                    <div class="portlet-body">
+                        <div class="form-inline">
+                            <c-donem controller="OgrenciBelgeGelisimRaporuLS"
+                                     @OnChange="SinavDonemSelected" />
+                            <c-gelisimraporu-tur-ls controller="OgrenciBelgeGelisimRaporuLS" @OnChange="GelisimTurSelected" />
+                            <input style="float:right;margin: 10px;" type="button" class="btn btn-success" v-on:click="Kaydet" value="Kaydet">
+                            <input style="float:right;margin: 10px;" type="button" class="btn btn-success" v-on:click="Yazdir" value="Raporla">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../../../VueComponents/Genel.js?v=3"></script>
+<script src="../../../VueComponents/SinavFiltreleri.js?v=10"></script>
+<script src="../../../VueComponents/GenelSinavRaporuFiltreleri.js?v=15"></script>
+<script src="../../../VueComponents/SinavIstatistikFiltreleri.js?v=10"></script>
+<script>
+    var vue = new Vue({
+        el: "#app",
+        name: "OgrenciBelgeGelisimRaporuLS.html",
+
+        data: {
+            TCKIMLIKNO: '',
+            DONEM: '',
+            DONEMSINAV: '',
+            divAc: 0,
+            idsube: 0,
+            idders: 0,
+            idkademe3: 0,
+            idsinif: 0,
+            tcogrenci: '',
+            ListKullaniciTipi: [],
+            divOgrenci: 0,
+            RAPORTURLIST: []
+        },
+
+        mounted() {
+            var p = {
+                TCKIMLIKNO: session.TCKIMLIKNO,
+                OTURUM: session.OTURUM
+            };
+            var list = [];
+            WebPost(this, "OgrenciBelgeGelisimRaporuLS", "KullaniciTipiGetir", p, "#app", "Yükleniyor...", function (data, parent) {
+                if (data != null) {
+                    $.each(data, function (j, el) {
+                        list.push(this.ID_KULLANICITIPI)
+                    });
+                    parent.ListKullaniciTipi = list;
+                    if (list.indexOf(4) > -1)
+                        parent.tcogrenci = session.TCKIMLIKNO;
+                    if (list.indexOf(4) == -1 && list.indexOf(5) == -1) {
+                        parent.divOgrenci = 1;
+                        parent.divAc = 0;
+                    }
+                } else {
+                    Alert_Warning("Kullanıcı Bulunamadı..!");
+                }
+            });
+        },
+
+        methods: {
+            Raporla: function (event) {
+                this.Getir();
+            },
+
+            Yazdir(event) {
+                if ((this.idsinif == undefined || this.idsinif == 0) || (this.DONEM == undefined || this.DONEM == "0")) {
+                    Alert_Warning("Sınıf ve dönem seçmeniz gerekmektedir.");
+                    return;
+                } else {
+                    window.open('../Rapor.aspx?rapor=Sinav.GelisimRaporuLSMain&raporTur=pdf&p=' + session.TCKIMLIKNO + ';' + session.OTURUM + ';' + this.tcogrenci + ';' + this.idsinif + ';' + JSON.stringify(this.RAPORTURLIST).replace('-1,','') + ';' + this.DONEMSINAV + ';' + 1 + ';' + 1141, '_blank');
+                }
+            },
+
+            Kaydet() {
+                if ((this.idsinif == undefined || this.idsinif == 0) || (this.DONEM == undefined || this.DONEM == "0")) {
+                    Alert_Warning("Sınıf ve dönem seçmeniz gerekmektedir.");
+                    return;
+                } else {
+                    window.open('../RaporGelisimRaporuLS.aspx?rapor=Sinav.GelisimRaporuLSMain&raporTur=pdf&p=' + session.TCKIMLIKNO + ';' + session.OTURUM + ';' + this.tcogrenci + ';' + this.idsinif + ';' + JSON.stringify(this.RAPORTURLIST).replace('-1,', '') + ';' + this.DONEMSINAV + ';' + 2 + ';' + 1141, '_blank');
+                }
+            },
+
+            SubeSelected(item) {
+                this.idsube = item;
+                this.idkademe3 = 0;
+                this.idsinif = 0;
+                this.divOgrenci = 0;
+                this.divAc = 0;
+                if (this.ListKullaniciTipi.indexOf(4) == -1 && this.ListKullaniciTipi.indexOf(5) == -1) {
+                    this.divOgrenci = 1;
+                    this.divAc = 0;
+                }
+            },
+            Kademe3Selected(item) {
+                this.idkademe3 = item;
+                this.idsinif = 0;
+                this.divOgrenci = 0;
+                this.divAc = 0;
+                if (this.ListKullaniciTipi.indexOf(4) == -1 && this.ListKullaniciTipi.indexOf(5) == -1) {
+                    this.divOgrenci = 1;
+                    this.divAc = 0;
+                }
+            },
+            SinifSelected(item) {
+                this.idsinif = item;
+                this.divOgrenci = 0;
+                this.divAc = 0;
+                if (this.ListKullaniciTipi.indexOf(4) == -1 && this.ListKullaniciTipi.indexOf(5) == -1) {
+                    this.divOgrenci = 1;
+                    this.divAc = 0;
+                }
+            },
+            OgrenciSelected(item) {
+                this.tcogrenci = item;
+                this.divOgrenci = 1;
+                this.divAc = 0;
+                //this.Getir();
+            },
+            OgrenciVeliSelected(item) {
+                this.tcogrenci = item;
+                this.divOgrenci = 1;
+                this.divAc = 0;
+                //this.Getir();
+            },
+            DonemSelected(item) {
+                this.DONEM = item;
+                this.divAc = 0;
+            },
+            SinavDonemSelected(item) {
+                this.DONEMSINAV = item;
+            },
+            GelisimTurSelected(item) {
+                this.RAPORTURLIST = item;
+            },
+
+            Getir() {
+                if (this.DONEM != "" && this.tcogrenci != "") {
+                    console.log(JSON.stringify(this.dersList));
+                    this.divAc = 1;
+                }
+            },
+        }
+    });
+</script>
+<script src="../../../Scripts/PublicMethods.js"></script>
+
+<script src="../../../Scripts/Rapor/amcharts.js"></script>

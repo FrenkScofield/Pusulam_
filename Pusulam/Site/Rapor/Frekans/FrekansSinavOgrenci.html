@@ -1,0 +1,271 @@
+﻿<style>
+    td {
+        vertical-align: middle !important;
+    }
+
+    .row {
+        margin-top: 10px !important;
+    }
+</style>
+
+<div class="page-head">
+    <div class="page-title col-md-12">
+        <h1>
+            Frekans Öğrenci Sinav Raporu <span onclick="YardimGoster(ID_MENU);" class="pull-right" style="cursor:pointer;"><img src="assets/global/img/info.gif" class="info-image-icon" /> </span>
+        </h1>
+    </div>
+</div>
+
+<link href="../../../assets/fixed-table/css/component.css?v=4" rel="stylesheet" />
+<div class="row" id="app">
+    <div class="col-md-12">
+        <div class="tab-pane fade active in">
+            <div class="portlet box blue-hoki dd-item" style="border:none">
+                <!-- BEGIN PORTLET-->
+                <div class="portlet-body form">
+                    <form role="form" style="padding:12px 20px">
+                        <div class="row" style="margin-top:0PX!important;">
+                            <c-donem :controller="controller"
+                                     @OnChange="DonemSelected">
+                            </c-donem>
+                        </div>
+                        <div class="row">
+                            <c-sube-multi :controller="controller"
+                                          @OnChange="SubeSelected">
+                            </c-sube-multi>
+                        </div>
+                        <div class="row">
+                            <c-kademe3 :controller="controller"
+                                       :idsubelist="ID_SUBELIST"
+                                       :idset="ID_KADEME3"
+                                       @OnChange="Kademe3Selected">
+                            </c-kademe3>
+                        </div>
+                        <div class="row">
+                            <c-sinav-turu :controller="controller"
+                                          :idkademe3="ID_KADEME3"
+                                          :donem="DONEM"
+                                          @OnChange="SinavTuruSelected">
+                            </c-sinav-turu>
+                        </div>
+                        <div class="row">
+                            <f-frekans-ders-multi-yan :controller="controller"
+                                                      :idkademe3="ID_KADEME3LIST"
+                                                      :idsinavturu="ID_SINAVTURULIST"
+                                                      @OnChange="DersSelected">
+                            </f-frekans-ders-multi-yan>
+                        </div>
+                        <div class="row">
+                            <div class="form-group" style="margin-top:10px;">
+                                <div class="col-md-12 text-right">
+                                    <span style="display:inline-block; width:200px; margin-right:4px;">
+                                        <select class="selectpicker form-control" v-model="RAPORTUR">
+                                            <option value="PDF">Pdf</option>
+                                            <option value="XLS">Xls</option>
+                                            <option value="XLSX">Xlsx</option>
+                                            <option value="HTML">Html</option>
+                                        </select>
+                                    </span>
+                                    <span class="btn green" @click="Yazdir" style="margin-right:10px;">Yazdır</span>
+                                    <span class="btn green" @click="Raporla">Listele</span>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="portlet light" v-if="OGRLIST.length>0">
+                <div class="portlet-title">
+                    <div class="caption">
+                        <i class="icon-list font-green"></i>
+                        <span class="caption-subject bold font-green uppercase"> Öğrenci Frekans Listesi </span>
+                        <span class="caption-helper"></span>
+                    </div>
+                </div>
+                <!-- BEGIN PORTLET-->
+                <div class="portlet-body form">
+                    <form role="form">
+                        <div class="portlet light bordered">
+                            <div class="portlet-body">
+                                <div class="comp-table" id="divFixedTable">
+                                    <table id="tablobaslik" class="overflow-y fixed-table">
+                                        <thead>
+                                            <tr>
+                                                <th rowspan="2">Kampüs</th>
+                                                <th rowspan="2">Sınıf</th>
+                                                <th rowspan="2">TC No</th>
+                                                <th rowspan="2">Adı</th>
+                                                <th rowspan="2">Soyadı</th>
+                                                <template v-for="d in DERSLIST">
+                                                    <th :colspan="SINAVLIST.length"> {{d.TAKMAAD}} <br /> Soru Sayısı:{{d.SS}} </th>
+                                                </template>
+                                            </tr>
+                                            <tr>
+                                                <template v-for="d in DERSLIST">
+                                                    <template v-for="s in SINAVLIST">
+                                                        <th> {{s.SINAVAD}} <br /> FREKANS </th>
+                                                    </template>
+                                                </template>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr class="odd gradeX" v-for="(o, i) in OGRLIST">
+                                                <th>{{o.SUBEAD}}</th>
+                                                <th>{{o.SINIF}}</th>
+                                                <th>{{o.TCKIMLIKNO}}</th>
+                                                <th>{{o.AD}}</th>
+                                                <th>{{o.SOYAD}}</th>
+                                                <template v-for="d in DERSLIST">
+                                                    <template v-for="s in SINAVLIST">
+                                                        <td> {{ o[d.TAKMAAD+'-'+s.ID_SINAV] }}  </td>
+                                                    </template>
+                                                </template>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <!-- END PORTLET-->
+            </div>
+        </div>
+    </div>
+</div>
+<script src="VueComponents/Genel.js?v=1.0.0"></script>
+<script src="VueComponents/Filtre.js?v=1.0.0"></script>
+<script src="VueComponents/FiltreEk.js?v=1.0.0"></script>
+<script src="VueComponents/Frekans/Frekans.js?v=5"></script>
+<!--<script src="../../../VueComponents/GenelSinavRaporuFiltreleri.js?v=17"></script>-->
+<script>
+    var vue = new Vue({
+        el: "#app",
+        name: "FrekansSinavOgrenci.html",
+
+        data: {
+            controller: 'FrekansSinavOgrenci',
+            ID_SUBELIST: [],
+            DONEM: 0,
+            ID_KADEME3: 0,
+            ID_SINAVTURU: 0,
+            ID_SINAV: 0,
+            LISTE: [],
+            RAPORTUR: 'PDF',
+            DERS: [],
+            ID_KADEME3LIST: [],
+            ID_SINAVTURULIST: [],
+
+            OGRLIST: [],
+            SINAVLIST: [],
+            DERSLIST: [],
+
+        },
+
+        methods: {
+            DonemSelected(item) {
+                this.DONEM = item;
+                ListeTemizle(this.OGRLIST);
+            },
+
+            SubeSelected(item) {
+                this.ID_SUBELIST = item;
+                this.ID_KADEME3 = 0;
+                ListeTemizle(this.OGRLIST);
+            },
+
+            Kademe3Selected(item) {
+                this.ID_KADEME3 = item;
+                ListeTemizle(this.ID_KADEME3LIST);
+                this.ID_KADEME3LIST.push(item);
+                ListeTemizle(this.OGRLIST);
+
+            },
+
+            SinavTuruSelected(item) {
+                this.ID_SINAVTURU = item;
+                ListeTemizle(this.ID_SINAVTURULIST);
+                this.ID_SINAVTURULIST.push(item);
+                ListeTemizle(this.OGRLIST);
+            },
+
+            DersSelected(item) {
+                this.DERS = item;
+                ListeTemizle(this.OGRLIST);
+            },
+
+            Yazdir() {
+
+                if (1 == 1) {
+
+                    window.open('../Rapor.aspx?rapor=Frekans.SinavOgrenciFrekansRapor&raporTur=' + this.RAPORTUR + '&p=' + session.TCKIMLIKNO + ';' + session.OTURUM + ';' + JSON.stringify(this.ID_SUBELIST) + ";" + this.DONEM + ";" + this.ID_KADEME3 + ";" + this.ID_SINAVTURU + ";" + JSON.stringify(this.DERS), '_blank');
+
+                }
+                else {
+                    Alert_Warning("Sınav seçmeniz gerekmektedir.");
+                    return;
+                }
+            },
+
+            Raporla() {
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    ID_SUBELIST: JSON.stringify(this.ID_SUBELIST),
+                    ID_SINAVTURU: this.ID_SINAVTURU,
+                    ID_KADEME3: this.ID_KADEME3,
+                    DONEM: this.DONEM,
+                    DERSLIST: JSON.stringify(this.DERS),
+                    ISJSON: true
+                };
+
+
+                //var veri = JSON.parse(data)[0];
+                //console.log(JSON.parse(data))
+                //this.OGRLIST = veri.OGRLIST;
+                //this.SINAVLIST = veri.SINAVLIST;
+                //this.DERSLIST = veri.DERSLIST;
+
+
+
+                //return;
+
+                WebPost(this, this.controller, "FrekansSinavOgrenciListele", p, "", "", function (data, parent) {
+                    if (JSON.parse(data) != []) {
+                        console.log(data)
+                        console.log(JSON.parse(data))
+                        var veri = JSON.parse(data)[0];
+                        parent.OGRLIST = veri.OGRLIST;
+                        parent.SINAVLIST = veri.SINAVLIST;
+                        parent.DERSLIST = veri.DERSLIST;
+                        $('#filters').collapse();
+
+                        divFixedTableClear();
+                        parent.$nextTick(() => {
+                            fixedTableCreate()
+                        });
+
+
+                    } else {
+                        Alert_Warning("Sınava Ait Öğrenci Listesi Bulunamadı..!");
+                    }
+                });
+            },
+
+        },
+        watch: {
+            OGRLIST(val) {
+                this.OGRLIST = $.inArray(val) ? val : [];
+            },
+            SINAVLIST(val) {
+                this.SINAVLIST = $.inArray(val) ? val : [];
+            },
+            DERSLIST(val) {
+                this.DERSLIST = $.inArray(val) ? val : [];
+            }
+        }
+    });
+</script>
+<script src="../../../Scripts/PublicMethods.js?v=1.0.0"></script>
+<script src="../../../assets/fixed-table/js/jquery.stickyheader.js"></script>

@@ -1,0 +1,175 @@
+﻿CREATE TABLE [dbo].[Ders](
+	[ID_DERS] [int] IDENTITY(1,1) NOT NULL,
+	[DERSAD] [varchar](max) NULL,
+	[DERSKOD] [varchar](max) NULL,
+	[GRUP] [varchar](max) NULL,
+	[ID_KADEME3] [int] NULL,
+	[SNVDERS] [bit] NULL,
+	[IPTAL] [bit] NULL,
+	[AKTIF] [bit] NULL,
+	[FREKANS] [bit] NOT NULL,
+	[NORMAL] [bit] NOT NULL,
+	[KUR] [bit] NOT NULL,
+	[VIU] [bit] NOT NULL,
+ CONSTRAINT [PK_Ders] PRIMARY KEY CLUSTERED 
+(
+	[ID_DERS] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[Ders] ADD  CONSTRAINT [DF_Ders_SNVDERS]  DEFAULT ((0)) FOR [SNVDERS]
+GO
+
+ALTER TABLE [dbo].[Ders] ADD  CONSTRAINT [DF_Ders_IPTAL]  DEFAULT ((0)) FOR [IPTAL]
+GO
+
+ALTER TABLE [dbo].[Ders] ADD  CONSTRAINT [DF_Ders_AKTIF]  DEFAULT ((1)) FOR [AKTIF]
+GO
+
+ALTER TABLE [dbo].[Ders] ADD  CONSTRAINT [DF_Ders_FREKANS]  DEFAULT ((0)) FOR [FREKANS]
+GO
+
+ALTER TABLE [dbo].[Ders] ADD  CONSTRAINT [DF_Ders_NORMAL]  DEFAULT ((1)) FOR [NORMAL]
+GO
+
+ALTER TABLE [dbo].[Ders] ADD  CONSTRAINT [DF_Ders_KUR]  DEFAULT ((0)) FOR [KUR]
+GO
+
+ALTER TABLE [dbo].[Ders] ADD  CONSTRAINT [DF_Ders_VIU]  DEFAULT ((0)) FOR [VIU]
+GO
+
+
+
+SET IDENTITY_INSERT Pusulam..Ders ON;
+insert into Pusulam..Ders ([ID_DERS],
+	[DERSAD],
+	[DERSKOD],
+	[GRUP],
+	[ID_KADEME3],
+	[SNVDERS],
+	[IPTAL],
+	[AKTIF],
+	[FREKANS],
+	[NORMAL],
+	[KUR],
+	[VIU])
+select * from eokul_v2..Ders
+SET IDENTITY_INSERT Pusulam..Ders OFF;
+
+
+
+CREATE TABLE [dbo].[DersEgitimTuru](
+	[ID_DERS] [int] NOT NULL,
+	[ID_EGITIMTURU] [int] NOT NULL,
+	[SILINDI] [bit] NOT NULL,
+	[ID_EKLEYEN] [int] NULL,
+	[EKLEME_TARIHI] [datetime] NULL,
+	[ID_SILEN] [int] NULL,
+	[SILME_TARIHI] [datetime] NULL,
+	[TC_EKLEYEN] [varchar](11) NULL,
+ CONSTRAINT [PK_DersEgitimTuru] PRIMARY KEY CLUSTERED 
+(
+	[ID_DERS] ASC,
+	[ID_EGITIMTURU] ASC,
+	[SILINDI] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[DersEgitimTuru] ADD  CONSTRAINT [DF_DersEgitimTuru_SILINDI]  DEFAULT ((0)) FOR [SILINDI]
+GO
+
+
+insert into Pusulam..DersEgitimTuru ([ID_DERS],
+	[ID_EGITIMTURU],
+	[SILINDI],
+	[ID_EKLEYEN],
+	[EKLEME_TARIHI],
+	[ID_SILEN],
+	[SILME_TARIHI],
+	[TC_EKLEYEN])
+select * from eokul_v2..DersEgitimTuru
+
+GO
+
+USE [Pusulam]
+GO
+/****** Object:  StoredProcedure [dbo].[sp___TASLAK_SP]    Script Date: 13.10.2021 10:44:24 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+ALTER PROCEDURE [dbo].[sp_DersEkleme]
+	@ISLEM					INT				= NULL,
+	@TCKIMLIKNO				VARCHAR(11)		= NULL,
+	@OTURUM					VARCHAR(36)		= NULL,
+	@ID_MENU				INT				= NULL,
+	@ID_KADEME3				INT				= NULL,
+	@SQLJSON				NVARCHAR(MAX)	= NULL
+
+AS
+BEGIN
+
+	
+	DECLARE @PROCNAME VARCHAR(MAX) = (SELECT OBJECT_NAME(@@PROCID))
+	DECLARE @LOGJSON VARCHAR(MAX)
+	SET @LOGJSON = (
+		SELECT	 ISLEM					= @ISLEM	
+				,TCKIMLIKNO				= @TCKIMLIKNO
+				,OTURUM					= @OTURUM
+				,ID_MENU				= @ID_MENU
+				,ID_KADEME3				= @ID_KADEME3
+				,SQLJSON				= @SQLJSON						
+		FOR JSON PATH, WITHOUT_ARRAY_WRAPPER	   
+	)	
+
+	DECLARE @ID_LOG INT = 0
+
+	BEGIN TRY
+		EXEC @ID_LOG = dbo.sp_OturumKontrolMenuYetkiLog @OTURUM = @OTURUM, @TCKIMLIKNO = @TCKIMLIKNO, @ID_MENU = @ID_MENU, @LOGJSON = @LOGJSON, @ISLEM = @ISLEM, @PROSEDURADI = @PROCNAME
+		
+
+		IF @ID_LOG > 0
+		BEGIN			
+			IF @ISLEM = 1	-- Ders Listele			
+			BEGIN					
+				SELECT 
+					ISNULL((
+						SELECT
+							ID_DERS
+						   ,DERSAD
+						   ,EGITIM_TURU = ISNULL((SELECT 
+													   EGITIM = CAST(ET.ID_EGITIMTURU AS VARCHAR(10)) + ' - ' +  ET.EGITIMTURU													   												   
+												  FROM DersEgitimTuru		   DE 
+												  JOIN OkyanusDB..v3EgitimTuru ET ON ET.ID_EGITIMTURU = DE.ID_EGITIMTURU 
+												  WHERE DE.ID_DERS = D.ID_DERS AND SILINDI=0 
+												  FOR JSON PATH
+												  ),'[]')
+						   ,AKTIF
+						   ,SNVDERS
+						   ,FREKANS
+						   ,NORMAL
+						   ,KUR
+						   ,VIU
+						FROM Ders D
+						WHERE ID_KADEME3 = 7
+						FOR JSON PATH
+					),'[]')
+			END
+		END
+	END TRY
+	BEGIN CATCH
+		DECLARE @_ErrorSeverity INT;
+		DECLARE @_ErrorState INT;
+
+		SELECT 
+			@_ErrorSeverity	= ERROR_SEVERITY(),
+			@_ErrorState		= ERROR_STATE()
+				
+		DECLARE @_MSG VARCHAR(4000)
+		SELECT @_MSG = ERROR_MESSAGE()
+
+		EXEC [dbo].[sp_CustomRaiseError] @MESSAGE = @_MSG, @SEVERITY = @_ErrorSeverity, @STATE = @_ErrorState, @ID_LOG = @ID_LOG, @ID_LOGTUR = 2
+	END CATCH;
+END

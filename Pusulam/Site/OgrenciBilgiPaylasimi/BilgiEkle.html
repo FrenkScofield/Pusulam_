@@ -1,0 +1,287 @@
+﻿<link href="assets/global/plugins/bootstrap-fileinput/bootstrap-fileinput.css" rel="stylesheet" type="text/css" />
+
+<div class="page-head">
+    <div class="page-title col-md-12">
+        <h1>
+            Öğrenci Bilgi Paylaşımı <small>Bilgi Ekle</small>
+            <span onclick="YardimGoster(ID_MENU);" class="pull-right" style="cursor:pointer;"><img src="assets/global/img/info.gif" class="info-image-icon" /> </span>
+        </h1>
+    </div>
+</div>
+<div class="row" id="app">
+    <div class="col-sm-12">
+        <div class="portlet light">
+            <div class="row">
+                <div class="col-sm-12 col-md-4">
+                    <div class="form-horizontal" v-show="KAYIT">
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">Kampüs:</label>
+                            <c-sube-multi-tumu controller="TopluSinavSonuclari" @OnChange="SubeSelected" :full="true"></c-sube-multi-tumu>
+                        </div>
+                    </div>
+
+                    <div class="form-horizontal">
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">Ders:</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" id="ders" v-model="OgrenciBilgi.Ders" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-horizontal">
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">Tarih:</label>
+                            <div class="col-sm-9">
+                                <input type="text" id="dpTarih" data-date-format="dd-mm-yyyy" placeholder="Tarih" class="form-control form-control-inline date-picker">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-12 col-md-4">
+                    <div class="form-horizontal">
+                        <div class="form-group" v-show="KAYIT">
+                            <label class="col-sm-3 control-label">Gruplar:</label>
+                            <c-kademe3-multisube controller="TopluSinavSonuclari"
+                                                 :idsube="idsube"
+                                                 :full="true"
+                                                 @OnChange="Kademe3Selected">
+                            </c-kademe3-multisube>
+                        </div>
+                    </div>
+                    <div class="form-horizontal">
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">Başlık:</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" id="baslik" v-model="OgrenciBilgi.Baslik" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-horizontal">
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">Dosya:</label>
+                            <div class="col-sm-9">
+                                <div class="fileinput fileinput-new" data-provides="fileinput">
+                                    <div class="input-group" style="width:100%!important;">
+                                        <div class="form-control uneditable-input input-fixed input-medium" data-trigger="fileinput" style="width:100%!important;">
+                                            <i class="fa fa-file fileinput-exists"></i>&nbsp;
+                                            <span class="fileinput-filename"> </span>
+                                        </div>
+                                        <span class="input-group-addon btn default btn-file">
+                                            <span class="fileinput-new"> Dosya Seç </span>
+                                            <span class="fileinput-exists"> Değiştir </span>
+                                            <input type="file" name="..." id="BILGI_DOSYA">
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="col-sm-12 col-md-4">
+                    <div class="form-horizontal">
+                        <div class="form-group" v-show="KAYIT">
+                            <label class="col-sm-3 control-label">Kampüs:</label>
+                            <c-sinif-multi-multisube controller="TopluSinavSonuclari"
+                                                     :idsube="idsube"
+                                                     :idkademe3="idkademe3"
+                                                     :full="true"
+                                                     @OnChange="SinifSelected">
+                            </c-sinif-multi-multisube>
+                        </div>
+                    </div>
+
+                    <div class="form-horizontal">
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">Link:</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" id="link" v-model="OgrenciBilgi.Link" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-12">
+                    
+
+                    <div class="form-horizontal">
+                        <div class="form-group">
+                            <label class="col-sm-1 control-label">Açıklama:</label>
+                            <div class="col-sm-11">
+                                <textarea id="aciklama" class="form-control" rows="6" v-model="OgrenciBilgi.Aciklama"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-sm-12 text-right">
+                    <button type="button" class="btn blue" @click="Kaydet">Kaydet</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../../../VueComponents/TopluSinavSonuclariFiltreleri.js?v=4"></script>
+<script>
+
+    var vue = new Vue({
+        el: "#app",
+        name: "BilgiEkle.html",
+
+        data: {
+            TCKIMLIKNO: '',
+            DONEM: 0,
+            controller: 'OgrenciBilgi',
+            idsube: [],
+            idkademe3: 0,
+            idsinif: [],
+            OgrenciBilgi: {
+                Ders: '',
+                Baslik: '',
+                Link: '',
+                Aciklama: '',
+                ID_OGRENCIBILGI: 0
+            },
+            ID_OGRENCIBILGI: 0,
+            OgrenciBilgiList: [],
+            KAYIT: true
+        },
+
+        mounted() {           
+
+            $('#dpTarih').datepicker({
+                format: 'dd.mm.yyyy',
+                language: 'tr'
+            });
+            this.ID_OGRENCIBILGI = getParameterByName("ID_OGRENCIBILGI")
+            if (this.ID_OGRENCIBILGI) {
+                this.BilgiGetir()
+            }
+        },
+
+        methods: {
+
+            SubeSelected(item) {
+                this.idsube = item;
+                this.idkademe3 = 0;
+                this.idsinif = 0;
+            },
+            Kademe3Selected(item) {
+                this.idkademe3 = item;
+                this.idsinif = 0;
+            },
+            SinifSelected(item) {
+                this.idsinif = item;
+            },
+            Kaydet() {
+                if (this.KAYIT == true) {
+                    if (this.idsinif.length == 0 || this.idsinif == 0) {
+                        Alert_Error("Lütfen sınıf seçin.")
+                        return;
+                    }
+                }
+
+                if (this.OgrenciBilgi.Ders == '') {
+                    Alert_Error("Lütfen ders ekleyin")
+                    return;
+                }
+                if (this.OgrenciBilgi.Baslik == '') {
+                    Alert_Error("Lütfen başlık ekleyin")
+                    return;
+                }
+                if (this.OgrenciBilgi.Ders == '') {
+                    Alert_Error("Lütfen ders ekleyin")
+                    return;
+                }
+
+                var dpTarih = $("#dpTarih").val();
+                if (dpTarih == '') {
+                    Alert_Error("Lütfen tarih ekleyin")
+                    return;
+                }
+               
+               
+                let metot = this.KAYIT ? 'BilgiEkle' : 'BilgiDuzenle';
+                if (this.KAYIT) {
+                    var p = {
+                        TCKIMLIKNO: session.TCKIMLIKNO,
+                        OTURUM: session.OTURUM,
+                        TARIH: dpTarih,
+                        SINIF_LIST: JSON.stringify(this.idsinif),
+                        SQLJSON: JSON.stringify(this.OgrenciBilgi),
+                    };
+                }
+                else {
+                    var p = {
+                        TCKIMLIKNO: session.TCKIMLIKNO,
+                        OTURUM: session.OTURUM,
+                        TARIH: dpYaTarih,
+                        SINIF_LIST: JSON.stringify(this.idsinif),
+                        SQLJSON: JSON.stringify(this.OgrenciBilgi),
+                        ID_OGRENCIBILGI: this.ID_OGRENCIBILGI
+                    };
+                }
+
+                WebPost(this, this.controller, metot, p, '', '', function (data, parent) {
+
+                    if (data) {
+                        parent.ID_OGRENCIBILGI = data;
+
+                        let x = document.getElementById("BILGI_DOSYA");
+                        if ('files' in x) {
+
+                            var formData = new FormData();
+                            formData.append("file", x.files[0]);
+                            formData.append("TCKIMLIKNO", session.TCKIMLIKNO);
+                            formData.append("OTURUM", session.OTURUM);
+                            formData.append("ID_OGRENCIBILGI", data);
+                            $.ajax({
+                                url: vue.controller + '/DosyaKaydet',
+                                processData: false,
+                                contentType: false,
+                                data: formData,
+                                type: 'POST'
+                            }).done(function (result) {
+                                App.unblockUI('#app');
+                                if (result != null) {
+                                    // vue.Kaydedildi();
+                                }
+                                else
+                                    Alert_Error("Dosya Yüklenirken Hata Oluştu")
+                            })
+                        }
+                        Alert_Info("Başarılı bir şekilde kaydeyildi.")
+                    }
+
+                });
+            },
+            BilgiGetir() {
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    ID_OGRENCIBILGI: this.ID_OGRENCIBILGI
+                };
+                WebPost(this, this.controller, "BilgiGetir", p, '', '', function (data, parent) {
+                    if (JSON.parse(data)) {
+                        let LIST = JSON.parse(data);
+
+                        for (var i = 0; i < LIST.length; i++) {
+                            parent.OgrenciBilgi.Ders = LIST[i].DERS;
+                            parent.OgrenciBilgi.Aciklama = LIST[i].ACIKLAMA;
+                            parent.OgrenciBilgi.Baslik = LIST[i].BASLIK;
+                            parent.OgrenciBilgi.Link = LIST[i].LINK;
+
+                            $("#dpTarih").datepicker("setDate", new Date(LIST[i].TARIH));
+                        }
+                        parent.OgrenciBilgi.ID_OGRENCIBILGI = parent.ID_OGRENCIBILGI;
+                        parent.KAYIT = false;
+
+                    }
+                });
+            }
+
+        },
+    });
+</script>
+<script src="assets/global/plugins/bootstrap-fileinput/bootstrap-fileinput.js" type="text/javascript"></script>

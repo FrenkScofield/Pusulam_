@@ -1,0 +1,237 @@
+﻿
+USE [Pusulam]
+GO
+
+/****** Object:  Table [dbo].[MobileMenu]    Script Date: 12.04.2021 14:24:25 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[Mobile_Menu](
+	[ID_MENU] [int] IDENTITY(1,1) NOT NULL,
+	[AD] [varchar](50) NOT NULL,
+	[ACIKLAMA] [varchar](250) NULL,
+	[KOD] [varchar](50) NULL,
+	[URL] [varchar](250) NOT NULL,
+	[RESIM] [varchar](50) NULL,
+	[GIZLI] [bit] NULL,
+	[YARDIMHTML] [varchar](max) NULL,
+	[OZEL] [bit] NOT NULL,
+ CONSTRAINT [PK_Mobile_Menu] PRIMARY KEY CLUSTERED 
+(
+	[ID_MENU] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[Mobile_Menu] ADD  CONSTRAINT [DF_Mobile_Menu_GIZLI]  DEFAULT ((0)) FOR [GIZLI]
+GO
+
+ALTER TABLE [dbo].[Mobile_Menu] ADD  CONSTRAINT [DF_Mobile_Menu_OZEL]  DEFAULT ((0)) FOR [OZEL]
+GO
+
+/****** Object:  Table [dbo].[MenuYetki]    Script Date: 12.04.2021 14:26:24 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[Mobile_MenuYetki](
+	[ID_KULLANICITIPI] [int] NOT NULL,
+	[ID_MENU] [int] NOT NULL,
+	[ID_KADEME] [int] NULL
+) ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[Mobile_MenuYetki]  WITH CHECK ADD  CONSTRAINT [FK_Mobile_MenuYetki_Menu] FOREIGN KEY([ID_MENU])
+REFERENCES [dbo].[Mobile_Menu] ([ID_MENU])
+GO
+
+ALTER TABLE [dbo].[Mobile_MenuYetki] CHECK CONSTRAINT [FK_Mobile_MenuYetki_Menu]
+GO
+
+
+INSERT INTO Mobile_Menu(AD, ACIKLAMA, KOD, URL, RESIM, GIZLI, OZEL) VALUES ('Bültenler', 'Bültenler', '010', '/Bultenler', 'icon-list',0, 0)
+INSERT INTO Mobile_Menu(AD, ACIKLAMA, KOD, URL, RESIM, GIZLI, OZEL) VALUES ('Proje - Dönem Ödevlerim', 'Proje - Dönem Ödevi', '009', '/ProjeDonemOdevi', 'icon-list',0, 0)
+INSERT INTO Mobile_Menu(AD, ACIKLAMA, KOD, URL, RESIM, GIZLI, OZEL) VALUES ('Öğrenci Ödev Listesi', 'Öğrenci Ödev Listesi', '008', '/OgrenciOdevListesi', 'icon-list',0, 0)
+INSERT INTO Mobile_Menu(AD, ACIKLAMA, KOD, URL, RESIM, GIZLI, OZEL) VALUES ('Öğrenci Bilgi Paylaşımı', 'OBS Listesi', '007', '/OBSListesi', 'icon-book-open',0, 0)
+INSERT INTO Mobile_Menu(AD, ACIKLAMA, KOD, URL, RESIM, GIZLI, OZEL) VALUES ('Deneme Sınav Sonuçları', 'Sınav Sonuçları', '006', '/SinavSonuclari', 'icon-list',0, 0)
+INSERT INTO Mobile_Menu(AD, ACIKLAMA, KOD, URL, RESIM, GIZLI, OZEL) VALUES ('Hedef Belirle', 'Öğrenci Hedef Belirleme', '005', '/HedefBelirle', 'icon-target',0, 0)
+INSERT INTO Mobile_Menu(AD, ACIKLAMA, KOD, URL, RESIM, GIZLI, OZEL) VALUES ('Online Ders Programı', 'Öğrenci Ders Programı', '004', '/OnlineDersProgrami', 'icon-graduation',0, 0)
+INSERT INTO Mobile_Menu(AD, ACIKLAMA, KOD, URL, RESIM, GIZLI, OZEL) VALUES ('Ders Programı', 'Öğrenci Ders Programı', '003', '/DersProgrami', 'icon-pencil',0, 0)
+INSERT INTO Mobile_Menu(AD, ACIKLAMA, KOD, URL, RESIM, GIZLI, OZEL) VALUES ('Takvim', 'Takvim', '002', '/Takvim', 'icon-calendar',0, 0)
+INSERT INTO Mobile_Menu(AD, ACIKLAMA, KOD, URL, RESIM, GIZLI, OZEL) VALUES ('Bildirimler', 'Bildirimler', '001', '/Bildirimler', 'icom-bell',0, 0)
+
+GO
+
+
+INSERT INTO Mobile_MenuYetki (ID_KULLANICITIPI, ID_MENU, ID_KADEME) VALUES (4, 1, 2)
+INSERT INTO Mobile_MenuYetki (ID_KULLANICITIPI, ID_MENU, ID_KADEME) VALUES (4, 1, 3)
+INSERT INTO Mobile_MenuYetki (ID_KULLANICITIPI, ID_MENU, ID_KADEME) VALUES (4, 1, 4)
+INSERT INTO Mobile_MenuYetki (ID_KULLANICITIPI, ID_MENU, ID_KADEME) VALUES (4, 1, 5)
+
+INSERT INTO Mobile_MenuYetki (ID_KULLANICITIPI, ID_MENU, ID_KADEME) VALUES (4, 2, 2)
+INSERT INTO Mobile_MenuYetki (ID_KULLANICITIPI, ID_MENU, ID_KADEME) VALUES (4, 2, 3)
+INSERT INTO Mobile_MenuYetki (ID_KULLANICITIPI, ID_MENU, ID_KADEME) VALUES (4, 2, 4)
+INSERT INTO Mobile_MenuYetki (ID_KULLANICITIPI, ID_MENU, ID_KADEME) VALUES (4, 2, 5)
+
+INSERT INTO Mobile_MenuYetki (ID_KULLANICITIPI, ID_MENU, ID_KADEME) VALUES (4, 3, 2)
+INSERT INTO Mobile_MenuYetki (ID_KULLANICITIPI, ID_MENU, ID_KADEME) VALUES (4, 3, 3)
+INSERT INTO Mobile_MenuYetki (ID_KULLANICITIPI, ID_MENU, ID_KADEME) VALUES (4, 3, 4)
+INSERT INTO Mobile_MenuYetki (ID_KULLANICITIPI, ID_MENU, ID_KADEME) VALUES (4, 3, 5)
+
+INSERT INTO Mobile_MenuYetki (ID_KULLANICITIPI, ID_MENU, ID_KADEME) VALUES (4, 4, 2)
+INSERT INTO Mobile_MenuYetki (ID_KULLANICITIPI, ID_MENU, ID_KADEME) VALUES (4, 4, 3)
+INSERT INTO Mobile_MenuYetki (ID_KULLANICITIPI, ID_MENU, ID_KADEME) VALUES (4, 4, 4)
+INSERT INTO Mobile_MenuYetki (ID_KULLANICITIPI, ID_MENU, ID_KADEME) VALUES (4, 4, 5)
+
+INSERT INTO Mobile_MenuYetki (ID_KULLANICITIPI, ID_MENU, ID_KADEME) VALUES (4, 5, 2)
+INSERT INTO Mobile_MenuYetki (ID_KULLANICITIPI, ID_MENU, ID_KADEME) VALUES (4, 5, 3)
+INSERT INTO Mobile_MenuYetki (ID_KULLANICITIPI, ID_MENU, ID_KADEME) VALUES (4, 5, 4)
+INSERT INTO Mobile_MenuYetki (ID_KULLANICITIPI, ID_MENU, ID_KADEME) VALUES (4, 5, 5)
+
+INSERT INTO Mobile_MenuYetki (ID_KULLANICITIPI, ID_MENU, ID_KADEME) VALUES (4, 6, 2)
+INSERT INTO Mobile_MenuYetki (ID_KULLANICITIPI, ID_MENU, ID_KADEME) VALUES (4, 6, 3)
+INSERT INTO Mobile_MenuYetki (ID_KULLANICITIPI, ID_MENU, ID_KADEME) VALUES (4, 6, 4)
+INSERT INTO Mobile_MenuYetki (ID_KULLANICITIPI, ID_MENU, ID_KADEME) VALUES (4, 6, 5)
+
+INSERT INTO Mobile_MenuYetki (ID_KULLANICITIPI, ID_MENU, ID_KADEME) VALUES (4, 7, 2)
+INSERT INTO Mobile_MenuYetki (ID_KULLANICITIPI, ID_MENU, ID_KADEME) VALUES (4, 7, 3)
+INSERT INTO Mobile_MenuYetki (ID_KULLANICITIPI, ID_MENU, ID_KADEME) VALUES (4, 7, 4)
+INSERT INTO Mobile_MenuYetki (ID_KULLANICITIPI, ID_MENU, ID_KADEME) VALUES (4, 7, 5)
+
+INSERT INTO Mobile_MenuYetki (ID_KULLANICITIPI, ID_MENU, ID_KADEME) VALUES (4, 8, 2)
+INSERT INTO Mobile_MenuYetki (ID_KULLANICITIPI, ID_MENU, ID_KADEME) VALUES (4, 8, 3)
+INSERT INTO Mobile_MenuYetki (ID_KULLANICITIPI, ID_MENU, ID_KADEME) VALUES (4, 8, 4)
+INSERT INTO Mobile_MenuYetki (ID_KULLANICITIPI, ID_MENU, ID_KADEME) VALUES (4, 8, 5)
+
+INSERT INTO Mobile_MenuYetki (ID_KULLANICITIPI, ID_MENU, ID_KADEME) VALUES (4, 9, 2)
+INSERT INTO Mobile_MenuYetki (ID_KULLANICITIPI, ID_MENU, ID_KADEME) VALUES (4, 9, 3)
+INSERT INTO Mobile_MenuYetki (ID_KULLANICITIPI, ID_MENU, ID_KADEME) VALUES (4, 9, 4)
+INSERT INTO Mobile_MenuYetki (ID_KULLANICITIPI, ID_MENU, ID_KADEME) VALUES (4, 9, 5)
+
+INSERT INTO Mobile_MenuYetki (ID_KULLANICITIPI, ID_MENU, ID_KADEME) VALUES (4, 10, 2)
+INSERT INTO Mobile_MenuYetki (ID_KULLANICITIPI, ID_MENU, ID_KADEME) VALUES (4, 10, 3)
+INSERT INTO Mobile_MenuYetki (ID_KULLANICITIPI, ID_MENU, ID_KADEME) VALUES (4, 10, 4)
+INSERT INTO Mobile_MenuYetki (ID_KULLANICITIPI, ID_MENU, ID_KADEME) VALUES (4, 10, 5)
+
+GO
+
+USE [Pusulam]
+GO
+/****** Object:  StoredProcedure [dbo].[sp_OturumKontrolMenuYetkiLog]    Script Date: 12.04.2021 17:04:33 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+ALTER procedure [dbo].[sp_OturumKontrolMenuYetkiLog]
+	@TCKIMLIKNO			VARCHAR(11)		= NULL,
+	@OTURUM				VARCHAR(200)	= NULL,
+	@ID_MENU			INT				= NULL,
+	@LOGJSON			VARCHAR(MAX)	= NULL,
+	@ISLEM				INT				= NULL,
+	@PROSEDURADI		VARCHAR(200)	= NULL	
+AS
+BEGIN
+	BEGIN TRY  
+		DECLARE @ID_LOGTABLE TABLE (ID_LOG INT) 
+		DECLARE @ID_LOG INT
+		
+		INSERT INTO [dbo].[Log]
+				   ([TCKIMLIKNO]
+				   ,[OTURUM]
+				   ,[ID_MENU]
+				   ,[PROSEDURADI]
+				   ,[ISLEM]
+				   ,[PARAMETRELER])
+		OUTPUT INSERTED.ID_LOG
+        INTO @ID_LOGTABLE
+		VALUES(@TCKIMLIKNO, @OTURUM, @ID_MENU, @PROSEDURADI, @ISLEM, @LOGJSON)
+
+		SELECT @ID_LOG = MAX(ID_LOG) FROM @ID_LOGTABLE
+
+		DECLARE @ErrorSeverity INT;
+		DECLARE @ErrorState INT;
+		DECLARE @MSG VARCHAR(4000)				
+			
+		SELECT 
+			@ErrorSeverity	= ERROR_SEVERITY(),
+			@ErrorState		= ERROR_STATE()
+
+		IF EXISTS (SELECT TOP 1 1 FROM DisIslem WHERE PROSEDURADI = @PROSEDURADI AND ISLEM = @ISLEM)
+		BEGIN
+			RETURN @ID_LOG
+		END
+		ELSE
+		BEGIN
+			IF	(	(SELECT COUNT(TCKIMLIKNO) FROM OkyanusDB.[dbo].[v3Kullanici] WHERE TCKIMLIKNO = @TCKIMLIKNO AND AKTIF = 1 and LOWER([OTURUM]) = LOWER(@OTURUM))   > 0
+				OR	(SELECT COUNT(1) FROM OkyanusIletisim.dbo.LoginLog WHERE KYE_TCKIMLIKNO = @TCKIMLIKNO AND OTURUM = @OTURUM AND LOGOUT = 0) > 0)
+			AND (EXISTS(	SELECT TOP 1 1
+							FROM Menu											M
+							INNER JOIN MenuYetki								Y	ON	Y.ID_MENU			= M.ID_MENU
+							INNER JOIN OkyanusDB.DBO.v4KullaniciSubeTurKademe	KT	ON	KT.ID_KULLANICITIPI	= Y.ID_KULLANICITIPI
+							INNER JOIN OkyanusDB.dbo.v3KademeBilgi				KB	ON	KB.ID_KADEME		= Y.ID_KADEME 
+																					AND KB.ID_KADEME3		= KT.ID_KADEME
+							INNER JOIN OkyanusDB.dbo.v3Kullanici				K	ON	K.TCKIMLIKNO		= KT.TCKIMLIKNO 
+																					AND K.AKTIF				= 1
+							WHERE	KT.TCKIMLIKNO	= @TCKIMLIKNO	
+								AND	M.GIZLI			= 0
+						UNION
+							SELECT TOP 1 1
+							FROM Menu								M
+							INNER  JOIN MenuKullaniciYetki			KY	ON	M.ID_MENU		= KY.ID_MENU	
+							INNER  JOIN v3SubeYetki					SY	ON	SY.TCKIMLIKNO	= @TCKIMLIKNO
+							INNER JOIN OkyanusDB.dbo.v3Kullanici	K	ON	K.TCKIMLIKNO	= SY.TCKIMLIKNO 
+																		AND K.AKTIF			= 1
+							WHERE KY.TCKIMLIKNO	= @TCKIMLIKNO	
+								AND M.GIZLI		= 0 /*AND M.ID_MENU = @ID_MENU*/
+						) 
+					OR  dbo.fn_GenelHak(@TCKIMLIKNO) = 1 
+					OR EXISTS(SELECT TCKIMLIKNO FROM DisOgrenci WHERE TCKIMLIKNO=@TCKIMLIKNO )		
+					OR EXISTS(SELECT TOP 1 K.TCKIMLIKNO
+							FROM Mobile_Menu											M
+							INNER JOIN Mobile_MenuYetki								Y	ON	Y.ID_MENU			= M.ID_MENU
+							INNER JOIN OkyanusDB.DBO.v4KullaniciSubeTurKademe	KT	ON	KT.ID_KULLANICITIPI	= Y.ID_KULLANICITIPI
+							INNER JOIN OkyanusDB.dbo.v3KademeBilgi				KB	ON	KB.ID_KADEME		= Y.ID_KADEME 
+																					AND KB.ID_KADEME3		= KT.ID_KADEME
+							INNER JOIN OkyanusDB.dbo.v3Kullanici				K	ON	K.TCKIMLIKNO		= KT.TCKIMLIKNO 
+																					AND K.AKTIF				= 1
+							WHERE	KT.TCKIMLIKNO	= @TCKIMLIKNO	
+								AND	M.GIZLI			= 0
+								AND M.ID_MENU		= @ID_MENU
+								)
+
+				)
+			BEGIN
+				RETURN @ID_LOG
+			END
+			ELSE
+			BEGIN				
+				EXEC [dbo].[sp_CustomRaiseError] @MESSAGE = 'Oturum Sonlandırıldı!', @SEVERITY = 16, @STATE = 1, @ID_LOG = @ID_LOG, @ID_LOGTUR = 3
+			END		
+		END				
+	END TRY
+	BEGIN CATCH
+		SELECT 
+			@ErrorSeverity	= ERROR_SEVERITY(),
+			@ErrorState		= ERROR_STATE()
+			
+		EXEC [dbo].[sp_CustomRaiseError] @MESSAGE = 'Oturum Sonlandırıldı!', @SEVERITY = @ErrorSeverity, @STATE = @ErrorState, @ID_LOG = @ID_LOG, @ID_LOGTUR = 2
+	END CATCH;
+END
+
+GO
+
+USE [OkyanusIletisim]
+GO
+
+INSERT INTO [dbo].[Uygulama]
+           ([AD])
+     VALUES
+         ('Pusulam Mobile')
+GO
+
+

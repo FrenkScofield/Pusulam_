@@ -1,0 +1,271 @@
+﻿<head>
+    <script src="https://unpkg.com/jspdf@latest/dist/jspdf.umd.min.js"></script>
+    <script src="../../../Scripts/Rapor/amcharts.js"></script>
+    <script src="../../../Scripts/Rapor/light.js"></script>
+    <script src="../../../Scripts/Rapor/pie.js"></script>
+    <script src="../../../assets/global/plugins/nouislider/jquery.nouislider.js"></script>
+</head>
+<style>
+    td {
+        vertical-align: middle !important;
+    }
+
+    .table-scrollable {
+        overflow: visible;
+    }
+
+    tr {
+        height: 50px !important;
+    }
+
+        tr td:first-child {
+            text-align: left !important;
+        }
+
+        tr th:first-child {
+            text-align: left !important;
+        }
+
+    .portlet-body tr td:last-child {
+        width: 50px !important;
+        text-align: center;
+    }
+
+    .portlet-body tr th:last-child {
+        width: 50px !important;
+        text-align: center;
+    }
+
+    .margintop0 {
+        margin-top: 0px !important;
+        margin-bottom: 10px !important;
+    }
+
+    .nav-tabs .active {
+        border-bottom: 5px solid #32c5d2 !important;
+    }
+
+
+    .pmargin0 p {
+        margin-top: 5px;
+        margin-bottom: 5px;
+    }
+
+    .cevap {
+        cursor: pointer;
+    }
+
+        .cevap:hover {
+            border-color: #896d2c !important;
+        }
+
+    #chart {
+        width: 100%;
+        height: 100%;
+    }
+</style>
+
+<div class="page-head">
+    <div class="page-title col-md-12">
+        <h1>
+            Online <small>Sınav</small>
+             <span onclick="YardimGoster(ID_MENU);" class="pull-right" style="cursor:pointer;"><img src="assets/global/img/info.gif" class="info-image-icon" /> </span>
+        </h1>
+    </div>
+</div>
+<div class="row" id="app" style="margin-top:0px!important;">
+    <div class="col-md-12" v-if="SINAV != null">
+        <div class="portlet light">
+            <div class="portlet-body form row">
+
+                <div style="float: right;padding: 15px;">
+                    <button class="btn btn-primary" @click="CiktiAl">
+                        Çıktı Al
+                    </button>
+                </div>
+
+                <div id="div_soruCevap">
+
+                    <div id="div_soru" class="col-md-12">
+                        <div v-for="ders in SINAV.SD">
+                            <div class="col-md-12" style="border: 2px solid rgb(50, 197, 210); padding: 15px; margin-top: 20px; margin-bottom: 10px; overflow-x: auto; text-align: center; font-size: 35px; font-weight: bold;">
+                                {{ders.TAKMAAD}}
+                            </div>
+                            <div v-for="soru in ders.SA">
+
+
+                                <div class="col-md-12" style="border:2px solid #32c5d2; padding:5px; margin-top:20px; margin-bottom:10px; overflow-x:auto;" v-html="soru.SORUHTML">
+                                </div>
+                                <div v-for="c in soru.SBC">
+                                    <div>
+                                        <div class="col-md-12 pmargin0 cevap" style="border:2px solid #32c5d2; padding:5px; margin-bottom:5px; overflow-x:auto;">
+                                            <div style="display:inline-block; width:30px;">{{String.fromCharCode(64 + c.CEVAPNO) + ' - )'}}</div>
+                                            <div style="display:inline-block; width:calc(100% - 40px); margin-left:5px;" v-html="c.CEVAPHTML"></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <div v-if="SINAV.SD[0].SA[0].CEVAP!=''">
+                        <div class="col-md-12">
+                            <div :class="'col-md-' + ((SINAV.SD.length > 4 ? 4 : SINAV.SD.length) * 3)"
+                                 style="border: 2px solid rgb(50, 197, 210);
+                                        padding: 15px; margin-top: 20px;
+                                        margin-bottom: 10px;
+                                        overflow-x: auto;
+                                        text-align: center;
+                                        font-size: 20px;
+                                        background:#4ca6d5;
+                                        color:white;
+                                        font-weight: bold;">
+                                CEVAP ANAHTARI
+                            </div>
+                        </div>
+                        <div v-for="(ders,index) in SINAV.SD">
+
+                            <div class="col-md-3">
+
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th colspan="2">
+                                                {{ders.TAKMAAD}}
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr v-for="soru in ders.SA">
+                                            <th width="50%">
+                                                {{soru.SORUNO}}
+                                            </th>
+                                            <th width="50%">
+                                                {{soru.CEVAP}}
+                                            </th>
+                                        </tr>
+                                    </tbody>
+                                </table>
+
+                                
+
+
+                                <!--
+                                    <div style="border: 2px solid rgb(50, 197, 210); padding: 15px; margin-top: 20px; margin-bottom: 10px; overflow-x: auto; text-align: center; font-size: 20px; font-weight: bold; background:#4ca6d5; color:white;">
+                                        {{ders.TAKMAAD}}
+                                    </div>
+
+                                    <template v-for="soru in ders.SA">
+                                        <div class="col-md-6" style="border:2px solid #32c5d2; padding:5px; margin-bottom:5px; overflow-x:auto; border-right: none; text-align: right; color:#4ca6d5; font-weight: bold;">
+                                            {{soru.SORUNO}}
+                                        </div>
+                                        <div class="col-md-6" style="border:2px solid #32c5d2; padding:5px; margin-bottom:5px; overflow-x:auto; color:saddlebrown; font-weight: bold;">
+                                            {{soru.CEVAP}}
+                                        </div>
+
+                                    </template>
+                                -->
+
+                            </div>
+
+                            <div v-if="(index+1) % 4 == 0" class="col-md-12">
+                                </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="padding: 15px;" class="col-md-12">
+                    <button class="btn btn-primary" style="float: right;" @click="CiktiAl">
+                        Çıktı Al
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    var vue = new Vue({
+        el: "#app",
+        name: "OnlineSinavCikti",
+
+        data: {
+            TCKIMLIKNO: '',
+            OTURUM: '',
+            controller: 'OnlineSinavCikti',
+
+            SINAV: null,
+            SINAVOTURUM: 0,
+            CEVAPANAHTARI: false,
+        },
+
+        mounted() {
+            this.TCKIMLIKNO = session.TCKIMLIKNO;
+            this.OTURUM = session.OTURUM;
+            var vue = this;
+            let ID_SINAV = 0;
+            let CEVAPANAHTARI = false;
+            try { ID_SINAV = parseInt(getParameterByName("ID_SINAV")); } catch (e) { ID_SINAV = 0; }
+            try { CEVAPANAHTARI = getParameterByName("CEVAPANAHTARI"); } catch (e) { CEVAPANAHTARI = false; }
+            this.CEVAPANAHTARI = CEVAPANAHTARI || false;
+
+            this.$nextTick(() => {
+                if (ID_SINAV > 0) {
+                    var p = { TCKIMLIKNO: session.TCKIMLIKNO, OTURUM: session.OTURUM, ID_SINAV: ID_SINAV, SINAVOTURUM: vue.SINAVOTURUM, CEVAPANAHTARI: CEVAPANAHTARI };
+                    WebPost(this, vue.controller, "OnlineSinavCikti", p, '', '', function (data, parent) {
+                        parent.SINAV = JSON.parse(data)[0];
+                        $.each(vue.SINAV.SD, (j, ders) => {
+                            $.each(ders.SA, (k, soru) => {
+                                vue.HtmlOku(soru, soru.SORUHTML, 1);
+                                for (var i = 0; i < soru.SBC.length; i++) {
+                                    let cevap = soru.SBC[i];
+                                    vue.HtmlOku(cevap, cevap.CEVAPHTML, 2);
+                                }
+                            });
+                        });
+
+                        vue.$nextTick(() => {
+                            vue.$forceUpdate();
+                        });
+                    });
+                }
+            });
+
+        },
+
+        methods: {
+            HtmlOku(item, url, which) {
+                $.get('https://pusulam.okyanuskoleji.k12.tr/' + url/*.replace('Dosyalar', 'OnlineSinav')*/, function (html) {
+                    html = html.replace(/"\/assets\/ckeditor\/plugins\/ckeditor_wiris/g, "\"https://sorubankasi.okyanuskoleji.k12.tr/assets/ckeditor/plugins/ckeditor_wiris");
+                    if (which == 1) {
+                        item.SORUHTML = '<h3 style="margin:0px;">Soru ' + item.SORUNO + '</h3> </br>' + html;
+                    }
+                    else if (which == 2) {
+                        item.CEVAPHTML = html;
+                    }
+                    else if (which == 3) {
+                        item.COZUMHTML = html;
+                    }
+                }, false);
+            },
+
+            CiktiAl() {
+                var divContents = this.CEVAPANAHTARI ? $("#div_soruCevap").html() : $("#div_soru").html();
+                var printWindow = window.open('', '', 'height=400,width=1024');
+                printWindow.document.write('<html><head><title>DIV Contents</title>');
+                printWindow.document.write(`<link href="assets/global/plugins/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css" /></head><body >`);
+                printWindow.document.write(divContents);
+                printWindow.document.write('</body></html>');
+                printWindow.document.close();
+                printWindow.print();
+            }
+        },
+
+
+        updated() {
+            $('.selectpicker').selectpicker('refresh');
+        },
+    });
+</script>
+<script src="Scripts/PublicMethods.js"></script>

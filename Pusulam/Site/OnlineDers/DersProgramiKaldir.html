@@ -1,0 +1,187 @@
+﻿<div class="page-head">
+    <div class="page-title col-md-12">
+        <h1>
+            Ders Programı Kaldır <span onclick="YardimGoster(ID_MENU);" class="pull-right" style="cursor:pointer;"><img src="assets/global/img/info.gif" class="info-image-icon" /> </span>
+        </h1>
+    </div>
+</div>
+
+<div class="row" id="app">
+    <div class="col-md-12">
+        <div class="portlet box blue-hoki dd-item" style="border:none">
+            <div class="portlet-title dd-handle" data-toggle='collapse' data-target='#filters' style="cursor:pointer;">
+                <div class="caption">
+                    <i class="icon-magnifier"></i>
+                    <span class="caption-subject bold uppercase"> Filtreler </span>
+                    <span class="caption-helper"></span>
+                </div>
+                <div class='actions'>
+                    <a href='javascript:;' class='btn btn-default btn-sm' style='border:none;'>
+                        <i class='fa fa-chevron-down'></i>
+                    </a>
+                </div>
+            </div>
+            <div class="portlet-body form collapse in" id="filters">
+                <form role="form" style="padding:12px 20px">
+                    <div class="row">
+                        <c-sube :controller="controller"
+                                @OnChange="SubeSelected">
+                        </c-sube>
+                    </div>
+                    <!--<div class="row">
+                        <c-ogretmen :controller="controller"
+                                    :idsube="ID_SUBE"
+                                    :idset="TC_OGRETMEN"
+                                    @OnChange="OgretmenSelected">
+                        </c-ogretmen>
+                    </div>-->
+                    <div class="row">
+                        <c-online-ogretmen-listesi :controller="controller" :idsube="ID_SUBE" @OnChange="OgretmenSelected"></c-online-ogretmen-listesi>
+                    </div>
+
+                    <div class="row">
+                        <div class="form-group" style="margin-top:10px;">
+                            <div class="col-md-12 text-right">
+                                <button type="button" class="btn green" @click="Listele" :disabled=" TC_OGRETMEN == '' ">Listele</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-12" v-if="LISTE.length > 0">
+        <div class="portlet light">
+            <div class="portlet-title">
+                <div class="caption">
+                    <i class="icon-list font-green"></i>
+                    <span class="caption-subject bold font-green uppercase">Öğretmen Online Ders Programı</span>
+                    <span class="caption-helper"></span>
+                </div>
+                <div class="actions">
+                    <button type="button" class="btn red" @click="Kaldir">Öğretmen Ders Programını Kaldır</button>
+                </div>
+            </div>
+            <div class="portlet-body" style="overflow:auto">
+                <table class="table table-striped table-bordered table-hover table-checkable" style="margin: 0px;">
+                    <thead>
+                        <tr style="background: #e1e5e8;">
+                            <th>Baş. Saati</th>
+                            <th>Bit. Saati</th>
+                            <th v-for="u in LISTE">
+                                {{u.GUN}}
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="u in LISTE[0].SA">
+                            <td> {{u.BASSAAT}} </td>
+                            <td> {{u.BITSAAT}} </td>
+                            <template v-for="tarih in LISTE">
+                                <td>
+                                    <!--v-if="d.LINK != null"-->
+                                    <div class="col-md-12" v-for="(d,index) in getObjects(tarih, 'DERSNO', u.DERSNO)[0].SN" v-if="d.DERSAD != null">
+                                        <small> {{d.DERSAD}} </small>
+                                        <br />
+                                        <small style="color:brown">Sınıf : {{d.SINIFAD}} </small>
+                                        <hr style="width:100%; border-top: 1px solid cadetblue;" />
+                                    </div>
+                                </td>
+                            </template>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>    
+</div>
+
+<script src="../../VueComponents/Filtre.js"></script>
+<script src="../../VueComponents/FiltreEk.js?v=1"></script>
+<script src="../../VueComponents/OnlineDers.js"></script>
+
+<script>
+    var vue = new Vue({
+
+        el: "#app",
+        name: "DersProgramiKaldir",
+
+        data: {
+            TCKIMLIKNO: '',
+            OTURUM: '',
+            controller: 'DersProgramiKaldir',
+
+            ID_SUBE: 0,
+            TC_OGRETMEN: '',
+
+            LISTE: [],
+        },
+
+        mounted() {
+            this.TCKIMLIKNO = session.TCKIMLIKNO;
+            this.OTURUM = session.OTURUM;
+        },
+
+        methods: {
+
+            SubeSelected(val) {
+                this.ID_SUBE = val;
+                this.TC_OGRETMEN = '';
+                ListeTemizle(this.LISTE);
+            },
+            OgretmenSelected(val) {
+                this.TC_OGRETMEN = val;
+                ListeTemizle(this.LISTE);
+            },
+
+            Listele() {
+                var p = {
+                    TCKIMLIKNO: this.TCKIMLIKNO,
+                    OTURUM: this.OTURUM,
+                    TC_OGRETMEN: this.TC_OGRETMEN
+                };
+                ListeTemizle(this.LISTE);
+                WebPost(this, this.controller, "OgretmenOnlineDersProgramiListele", p, '', '', function (data, parent) {
+                    if (data != '[]')
+                        vue.LISTE = JSON.parse(data);
+                });
+            },
+
+
+            Kaldir() {
+                Alert_Confirm("Öğretmen Online Ders Temizle", "Ders programından öğretmenin tüm dersleri kalıcı olarak kaldırılacaktır. Bu işlemi gerçekleştirmek istediğinizden emin misiz?", () => {
+                    var p = {
+                        TCKIMLIKNO: vue.TCKIMLIKNO,
+                        OTURUM: vue.OTURUM,
+                        TC_OGRETMEN: vue.TC_OGRETMEN
+                    };
+                    ListeTemizle(vue.LISTE);
+                    WebPost(vue, vue.controller, "OgretmenOnlineDersProgramiKaldir", p, '', '', function (data, parent) {
+                        if (data) {
+                            Alert_Info("Öğretmene ait tüm online dersler kaldırıldı.");
+                            vue.TC_OGRETMEN = '';
+                        }
+                    });
+                });
+            },
+
+            getObjects(obj, key, val) {
+                var objects = [];
+                for (var i in obj) {
+                    if (!obj.hasOwnProperty(i))
+                        continue;
+                    if (typeof obj[i] == 'object') {
+                        objects = objects.concat(this.getObjects(obj[i], key, val));
+                    }
+                    else if (i == key && obj[key] == val) {
+                        objects.push(obj);
+                    }
+                }
+                return objects;
+            },
+
+        },
+    });
+</script>
+<script src="Scripts/PublicMethods.js"></script>

@@ -1,0 +1,219 @@
+﻿<link href="assets/global/plugins/bootstrap-fileinput/bootstrap-fileinput.css" rel="stylesheet" type="text/css" />
+<style>
+    td {
+        vertical-align: middle !important;
+    }
+
+    .row {
+        margin-top: 10px !important;
+    }
+</style>
+<div class="page-head">
+    <!-- BEGIN PAGE TITLE -->
+    <div class="page-title col-md-12">
+        <h1>
+            Sorun Bildir <span onclick="YardimGoster(ID_MENU);" class="pull-right" style="cursor:pointer;"><img src="assets/global/img/info.gif" class="info-image-icon" /> </span>
+        </h1>
+    </div>
+    <!-- END PAGE TITLE -->
+</div>
+
+<div class="row" id="app">
+    <div class="col-md-12">
+        <div class="portlet box blue-hoki dd-item" style="border:none">
+            <!-- BEGIN PORTLET-->
+            <div class="portlet-body form">
+                <form role="form" style="padding:12px 20px">
+                    <div class="row">
+                        <div class="form-md-line-input">
+                            <label class="control-label col-md-3" style="vertical-align:middle;">SINAV ADI<span style="color: red">*</span> </label>
+                            <div class="col-md-9">
+                                <select class="selectpicker form-control" v-model="SelectedID" @change="OnChange" title="Seçiniz...">
+                                    <option v-for="u in Liste" v-bind:value="u.ID_SINAV">{{u.AD}}</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-md-line-input">
+                            <label class="control-label col-md-3">Sorun Konu<span style="color: red">*</span> </label>
+                            <div class="col-md-9">
+                                <input type="text" v-model="SORUN.KONU" class="form-control" placeholder="Sorun Konu" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="form-md-line-input">
+                            <label class="control-label col-md-3">Sorun<span style="color: red">*</span></label>
+                            <div class="col-md-9">
+                                <textarea id="editor">{{SORUN.SORUN}}</textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-md-line-input">
+                            <label class="control-label col-md-3">Sizinle İletişim Kuracağımız E-mail </label>
+                            <div class="col-md-9">
+                                <input type="email" v-model="SORUN.MAIL" class="form-control" placeholder="Mail Adresi" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="form-md-line-input">
+                            <label class="control-label col-md-3">Dosya</label>
+                            <div class="col-md-9">
+                                <div class="fileinput fileinput-new" data-provides="fileinput">
+                                    <div class="input-group" style="width:100%!important;">
+                                        <div class="form-control uneditable-input input-fixed input-medium" data-trigger="fileinput" style="width:100%!important;">
+                                            <i class="fa fa-file fileinput-exists"></i>&nbsp;
+                                            <span class="fileinput-filename"> </span>
+                                        </div>
+                                        <span class="input-group-addon btn default btn-file">
+                                            <span class="fileinput-new"> Dosya Seç </span>
+                                            <span class="fileinput-exists"> Değiştir </span>
+                                            <input  type="file" name="..." id="Dosya">
+                                        </span>
+                                        <a href="javascript:;" class="input-group-addon btn red fileinput-exists" data-dismiss="fileinput"> Sil </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group" style="margin-top:10px;">
+                            <div class="col-md-12 text-right">
+                                <button type="button" class="btn green" @click="Kaydet">Kaydet</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="assets/global/plugins/ckeditor/ckeditor.js"></script>
+<script>
+    var vue = new Vue({
+        el: "#app",
+        name: "SorunBildir",
+
+        data: {
+            controller: 'SorunBildir',
+            SORUN: {
+                SORUN: '',
+                KONU: '',
+                MAIL: '',
+                DOSYALIST: [{ AD: '', GUID: '', UZANTI: '' }]
+            },
+            SelectedID: 0,
+            Liste: []
+
+        },
+
+        mounted() {
+            this.$nextTick(function () {
+                CKEDITOR.replace('editor');
+                //Editor değiştiğinde model güncellensin
+                CKEDITOR.instances['editor'].on('change',
+                    function () {
+                        vue.SORUN.SORUN = CKEDITOR.instances['editor'].getData();
+                    });
+            });
+            var p = { TCKIMLIKNO: session.TCKIMLIKNO, OTURUM: session.OTURUM };
+            WebPost(this, this.controller, "SinavListele", p, '', '', function (data, parent) {
+                parent.Liste = JSON.parse(data);
+            });
+        },
+
+        methods: {
+
+            Kaydet() {
+                if (this.SORUN.SORUN == '' || this.SORUN.SORUN == null || this.SORUN.SORUN == undefined) {
+                    Alert_Error("Lütfen zorunlu alanlaları doldurun!");
+                    return;
+                }
+               
+                if (this.SORUN.KONU == '' || this.SORUN.KONU == null || this.SORUN.KONU == undefined) {
+                    Alert_Error("Lütfen zorunlu alanlaları doldurun!");
+                    return;
+                }
+                if (this.SelectedID == undefined || this.SelectedID == null || this.SelectedID == 0) {
+                    Alert_Error("Lütfen zorunlu alanlaları doldurun!");
+                    return;
+                }
+               
+
+                this.SORUN.DOSYALIST = [];
+                let x = document.getElementById("Dosya");
+                if ('files' in x) {
+
+                    let p = JSON.stringify(vue.SORUN);
+                    var formData = new FormData();
+                    for (var i = 0; i < x.files.length; i++) {
+                        formData.append("file", x.files[i]);
+                    }
+                    formData.append("TCKIMLIKNO", session.TCKIMLIKNO);
+                    formData.append("OTURUM", session.OTURUM);
+                    formData.append("ID_SINAV", vue.SelectedID);
+                    formData.append("SQLJSON", p);
+                    $.ajax({
+                        url: vue.controller + '/Kaydet',
+                        processData: false,
+                        contentType: false,
+                        data: formData,
+                        type: 'POST'
+                    }).done(function (result) {
+                        App.unblockUI('#app');
+                        if (result != null) {
+                            vue.Kaydedildi();
+                        } else
+                            Alert_Error("Dosya Yüklenirken Hata Oluştu");
+                    })
+
+
+                } else {
+                    var p = { TCKIMLIKNO: session.TCKIMLIKNO, OTURUM: session.OTURUM, SQLJSON: JSON.stringify(vue.ODEV) };
+
+                    WebPost(vue, vue.controller, "Kaydet", p, '', '', function (data, parent) {
+                        if (data > 0) {
+                            vue.Kaydedildi();
+                        } else {
+                            Alert_Warning("Kaydedilirken " + "Sorun" + " Oluştu!");
+                        }
+                    })
+
+                }
+
+
+            },
+
+            Kaydedildi() {
+                bootbox.dialog({
+                    message: "<font color='green'>Soun Gönderildi..</font>",
+                    title: "<font color='green'>İşlem Tamam</font>",
+                    buttons: {
+                        success: {
+                            label: "Tamam!",
+                            className: "btn-success",
+                            callback: function () {
+                                location.reload();
+                            }
+                        },
+                    }
+                });
+            },
+            OnChange: function () {
+                this.$emit('onchange', this.SelectedID);
+            }
+
+
+        },
+        updated() {
+            $('.selectpicker').selectpicker('refresh');
+        }
+    });
+</script>
+<script src="Scripts/PublicMethods.js"></script>
+<script src="assets/global/plugins/bootstrap-fileinput/bootstrap-fileinput.js" type="text/javascript"></script>

@@ -1,0 +1,138 @@
+﻿<style>
+    .table > tbody > tr > td, .table > tbody > tr > th, .table > tfoot > tr > td, .table > tfoot > tr > th, .table > thead > tr > td, .table > thead > tr > th {
+        font-size: 11px;
+    }
+
+    .table-hover > tbody > tr:hover, .table-hover > tbody > tr:hover > td {
+        color: black !important;
+    }
+
+    .custom-text {
+        font-weight: bold;
+        font-size: 1.9em;
+        border: 1px solid #cfcfcf;
+        padding-left: 10px;
+        padding-right: 10px;
+        border-radius: 5px;
+        color: #999;
+        background: #fff;
+    }
+</style>
+
+<div class="page-head">
+    <div class="page-title col-md-12">
+        <h1>
+            Yetenek Gelişim Yorum Ekle
+             <span onclick="YardimGoster(ID_MENU);" class="pull-right" style="cursor:pointer;"><img src="assets/global/img/info.gif" class="info-image-icon" /> </span>
+        </h1>
+    </div>
+</div>
+
+<div class="row" id="app">
+    <div class="portlet light col-md-12" id="Tablodiv" style="min-height:100px;padding:0px;">
+        <div style="overflow-x: auto">
+            <div v-for="u in LISTE">
+                <div class="col-md-12" style="margin:0px; border-bottom-style: solid;border-bottom-width: 3px;border-bottom-color: rgb(0, 173, 239);">
+                    <div class="col-md-2" style="text-align:center; margin-top:5px;">
+                        {{u.K[0].KATEGORIAD}}
+                    </div>
+                    <div class="col-md-10">
+                        <table id="tblDers" data-height="700" class="table table-striped table-bordered table-checkable" data-width="100%" style="margin-bottom:0px; color:#111; width:100%; ">
+                            <thead>
+                                <tr>
+                                    <th>MIN PUAN</th>
+                                    <th>MAX PUAN</th>
+                                    <th>YILDIZ (1 - 5)</th>
+                                    <th>YORUM</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="(s,index) in u.K[0].SY">
+                                    <td>
+                                        <input type="number" min="0" max="100" v-model="s.MIN_YORUM" disabled="disabled" />
+                                    </td>
+                                    <td>
+                                        <input type="number"
+                                               min="0"
+                                               max="100"
+                                               v-model="s.MAX_YORUM"
+                                               @change="maxdegistir( s
+                                                                    , ( u.K[0].SY[index+1].MAX_YORUM )-1
+                                                                    , index == 0 ? 0 : ( u.K[0].SY[index-1].MAX_YORUM )+1
+                                                                    , u.K[0].SY[index+1]
+                                                                    )"
+                                               v-bind:disabled="s.MAX_YORUM == 100" />
+                                    </td>
+                                    <td> <input type="number" min="1" max="5" v-model="s.DERECE" @change="s.DERECE = Math.max(Math.min(s.DERECE,5), 1)" /> </td>
+                                    <td>
+                                        <!--<input type="text" v-model="s.YORUM" />-->
+                                        <textarea rows="4" cols="90" v-model="s.YORUM"> </textarea>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <input style="float:right;margin: 10px;" type="button" class="btn btn-success" v-on:click="Kaydet" value="Kaydet">
+        </div>
+    </div>
+</div>
+
+<script src="../../../VueComponents/GenelSinavRaporuFiltreleri.js?v=17"></script>
+<script>
+    var vue = new Vue({
+        el: "#app",
+        name: "YG_YorumEkle.html",
+
+        data: {
+            TCKIMLIKNO: '',
+            LISTE: [],
+        },
+
+        mounted() {
+            this.Getir();
+        },
+
+        methods: {
+
+            maxdegistir(item, max, oncekimax, sonraki) {
+                item.MAX_YORUM = Math.max(Math.min(item.MAX_YORUM, max), item.MIN_YORUM);
+                item.MIN_YORUM = oncekimax;
+                sonraki.MIN_YORUM = item.MAX_YORUM + 1
+            },
+
+            Getir() {
+                var _this = this;
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                };
+                WebPost(this, "YG_YorumEkle", "YorumListesi", p, "", "Yükleniyor...", function (data, parent) {
+                    if (data != null) {
+                        _this.LISTE = JSON.parse(data);
+                    } else {
+                        Alert_Warning("Yorum Bulunamadı..!");
+                    }
+                });
+            },
+            Kaydet() {
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    SQLJSON: JSON.stringify(this.LISTE),
+                };
+
+                console.log(p);
+                WebPost(this, "YG_YorumEkle", "YorumDuzenle", p, "", "Yükleniyor...", function (data, parent) {
+                    if (data != null) {
+                        Alert_Info("Kayıt İşlemi Yapıldı");
+                    } else {
+                        Alert_Warning("Kayıt İşlemi Yapılamadı..!");
+                    }
+                });
+            },
+        },
+    });
+</script>
+<script src="../../../Scripts/PublicMethods.js"></script>

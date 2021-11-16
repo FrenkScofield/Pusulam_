@@ -1,0 +1,719 @@
+﻿<head>
+    <script src="/Scripts/Tools.js"></script>
+    <script src="/Scripts/Rapor/amcharts.js"></script>
+    <script src="/Scripts/Rapor/jquery.easypiechart.js"></script>
+    <script src="/Scripts/Rapor/light.js"></script>
+    <script src="/Scripts/Rapor/serial.js"></script>
+    <script src="/Scripts/Rapor/pie.js"></script>
+</head>
+<style>
+    .chartdiv {
+        width: 100%;
+        height: 500px;
+        font-size: 11px;
+    }
+</style>
+<div id="app">
+
+    <div class="page-head">
+        <div class="page-title col-md-12">
+            <h1>
+                {{OGRENCISINAVDETAY==undefined ? 'Upgrade Sınavı Rapor Oluştur' :  OGRENCISINAVDETAY.OGRENCI[0].SINAVAD + ' Sınavı Sonuç Raporu'}}
+
+                <span onclick="YardimGoster(ID_MENU);" class="pull-right" style="cursor:pointer;">
+                    <img src="assets/global/img/info.gif" class="info-image-icon" />
+                </span>
+            </h1>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12" v-if="ListKullaniciTipi.indexOf(5)>-1">
+            <div class="portlet box blue-hoki dd-item" style="border:none">
+                <div class="portlet-title dd-handle" data-toggle='collapse' data-target='#filters' style="cursor:pointer;">
+                    <div class="caption">
+                        <i class="icon-magnifier"></i>
+                        <span class="caption-subject bold uppercase"> Filtreler </span>
+                        <span class="caption-helper"></span>
+                    </div>
+                    <div class='actions'>
+                        <a href='javascript:;' class='btn btn-default btn-sm' style='border:none;'>
+                            <i class='fa fa-chevron-down'></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="portlet-body form collapse in" id="filters">
+                    <form role="form" style="padding:12px 20px">
+                        <div class="row">                            
+                            <c-ogrenci-veli controller="controller"
+                                            @OnChange="OgrenciSelected">
+                            </c-ogrenci-veli>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+
+        <!--<ul class="nav nav-tabs">
+            <li class="active" style="display: none;">
+                <a href="#tab_1_1" data-toggle="tab"></a>
+            </li>
+            <li style="display: none;"><a href="#tab_1_2" data-toggle="tab"></a></li>
+        </ul>
+
+        <div class="tab-content">
+
+            <div class="tab-pane fade active in" id="tab_1_1">
+                <div class="col-md-12">
+
+                    <div class="portlet box blue-hoki dd-item" style="border:none">
+                        <div class="portlet-title dd-handle" data-toggle='collapse' data-target='#filters' style="cursor:pointer;">
+                            <div class="caption">
+                                <i class="icon-magnifier"></i>
+                                <span class="caption-subject bold uppercase"> Filtreler </span>
+                                <span class="caption-helper"></span>
+                            </div>
+                            <div class='actions'>
+                                <a href='javascript:;' class='btn btn-default btn-sm' style='border:none;'>
+                                    <i class='fa fa-chevron-down'></i>
+                                </a>
+                            </div>
+                        </div>
+
+
+                        <div class="portlet-body form collapse in" id="filters">
+                            <form role="form" style="padding:12px 20px">
+                             
+                                <div class="row">
+                                    <div class="form-group" style="margin-top:10px;">
+                                        <div class="col-md-12 text-right">
+                                            <button type="button" class="btn green" @click="OgrenciListele">Öğrenci Listele</button>
+                                            <button type="button" class="btn green" @click="SinifRapor">Sınıf Bazında Rapor</button>
+                                            <button type="button" class="btn green" @click="SubeRapor">Şube Bazında Rapor</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>-->
+
+                <div class="col-md-12" v-if="OGRENCILIST.length>0">
+                    <div class="portlet light">
+                        <div class="portlet-title">
+                            <div class="caption">
+                                <i class="icon-list font-green"></i>
+                                <span class="caption-subject bold font-green uppercase"> Öğrenci Listesi </span>
+                                <span class="caption-helper"></span>
+                            </div>
+                        </div>
+                        <div class="portlet-body form">
+                            <form role="form">
+                                <div class="portlet light bordered">
+                                    <div class="portlet-body">
+                                        <table class="table table-striped table-bordered table-hover table-checkable">
+                                            <thead>
+                                                <tr>
+                                                    <th style="width:80px;">NO</th>
+                                                    <th style="width:100px; text-align:center;">TCKİMLİKNO</th>
+                                                    <th>AD SOYAD</th>
+                                                    <th style="width:400px;">İŞLEM</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr class="odd gradeX" v-for="u in OGRENCILIST">
+                                                    <td>{{u.OGRNO}}</td>
+                                                    <td style="text-align:center;">{{u.TCKIMLIKNO}}</td>
+                                                    <td>{{u.ADSOYAD}}</td>
+                                                    <td style="text-align: center;">
+                                                        <button type="button" class="btn green" @click="RaporOlustur(u.TCKIMLIKNO)">Rapor Oluştur</button>
+                                                        <button type="button" class="btn blue" @click="RaporOlusturHTML(u.TCKIMLIKNO)">Rapor Oluştur HTML</button>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-pane fade" id="tab_1_2" v-if="OGRENCISINAVDETAY!=undefined">
+                <div class="form-body form-horizontal form-bordered">
+                    <div class="form-group">
+                        <div class="col-md-9" style=" font-size 25px; padding-left 50px; ">
+                            {{OGRENCISINAVDETAY.OGRENCI[0].AD}} ( {{OGRENCISINAVDETAY.OGRENCI[0].SINIF}} )
+                            <small style=" font-size 10px; ">
+                                {{OGRENCISINAVDETAY.OGRENCI[0].YARIYIL}}
+                            </small>
+                        </div>
+                        <div class="col-md-3" style="text-align:right;">
+                            <button class="btn yellow" style="float:right" v-on:click="Geri">Geri</button>
+                        </div>
+                    </div>
+                    <div class="form-group" style=" overflow-y:auto;">
+                        <div class="col-md-12">
+                            <div class="portlet box blue dd-item" style="border:none" v-for="ders in OGRENCISINAVDETAY.DERS">
+                                <div class="portlet-title dd-handle collapsed" data-toggle='collapse' data-target="'#filters-Ders-'+ ders.BOLUMNO" style="cursor:pointer;">
+                                    <div class="caption">
+                                        <i class="icon-magnifier"></i>
+                                        <span class="caption-subject bold uppercase"> {{ders.DERS }} </span>
+                                        <span class="caption-helper"></span>
+                                    </div>
+                                    <div class='actions'>
+                                        <a href='javascript:;' class='btn btn-default btn-sm' style='border:none;'>
+                                            <i class='fa fa-chevron-down'></i>
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="portlet-body form collapse" id="'filters-Ders-'+ ders.BOLUMNO">
+                                    <form role="form" style="padding:12px 20px">
+                                        <div class="form-body" style="line-height:34px;">
+
+                                            <!--Beceri Başlangıç-->
+                                            <div class="portlet box blue-hoki dd-item"
+                                                 style="border:none"
+                                                 v-if="OGRENCISINAVDETAY.DERS[0].BECERI != undefined
+                                                && OGRENCISINAVDETAY.DERS[0].BECERI[0].BECERI != undefined">
+                                                <div class="portlet-title dd-handle" data-toggle='collapse' data-target="'#filters-Ders-Beceri-'+ ders.BOLUMNO" style="cursor:pointer;">
+                                                    <div class="caption">
+                                                        <i class="icon-magnifier"></i>
+                                                        <span class="caption-subject bold uppercase"> BECERİ </span>
+                                                        <span class="caption-helper"></span>
+                                                    </div>
+                                                    <div class='actions'>
+                                                        <a href='javascript:;' class='btn btn-default btn-sm' style='border:none;'>
+                                                            <i class='fa fa-chevron-down'></i>
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                                <div class="portlet-body form collapse in" id="'filters-Ders-Beceri-'+ ders.BOLUMNO">
+                                                    <form role="form" style="padding:12px 20px">
+                                                        <div class="form-body" style="line-height:34px; ">
+
+                                                            <table data-height="700" class="table table-striped table-bordered  table-checkable" data-width="100%" style="margin-bottom:0px; color:#111; width:100%;">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th>Beceri Adı</th>
+                                                                        <th>Beceri Açıklaması</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    <tr v-for="beceri in ders.BECERI[0].BECERI">
+                                                                        <td>{{beceri.BECERI}}</td>
+                                                                        <td>{{beceri.ACIKLAMA}}</td>
+                                                                    </tr>
+                                                                </tbody>
+                                                            </table>
+
+
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                            <!--Beceri Bitiş-->
+                                            <!--Kazanım Başlangıç-->
+                                            <div class="portlet box blue-hoki dd-item"
+                                                 style="border:none"
+                                                 v-if="OGRENCISINAVDETAY.DERS[0].KAZANIMALTBECERI != undefined">
+                                                <div class="portlet-title dd-handle" data-toggle='collapse' data-target="'#filters-Ders-Kazanim-'+ ders.BOLUMNO" style="cursor:pointer;">
+                                                    <div class="caption">
+                                                        <i class="icon-magnifier"></i>
+                                                        <span class="caption-subject bold uppercase"> {{ders.DERS}} Soruların Çözülme Performansı </span>
+                                                        <span class="caption-helper"></span>
+                                                    </div>
+                                                    <div class='actions'>
+                                                        <a href='javascript:;' class='btn btn-default btn-sm' style='border:none;'>
+                                                            <i class='fa fa-chevron-down'></i>
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                                <div class="portlet-body form collapse in" id="'filters-Ders-Kazanim-'+ ders.BOLUMNO">
+                                                    <form role="form" style="padding:12px 20px">
+                                                        <div class="form-body" style="line-height:34px; ">
+
+                                                            <table data-height="700" class="table table-striped table-bordered  table-checkable" data-width="100%" style="margin-bottom:0px; color:#111; width:100%;">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th>Soru No</th>
+                                                                        <th>Sorunun Kazanımı</th>
+                                                                        <th colspan="2">Sorulara Ait Beceriler</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    <tr v-for="kazanim in ders.KAZANIMALTBECERI">
+                                                                        <td>{{kazanim.SORUNO}}</td>
+                                                                        <td>{{kazanim.KAZANIM}}</td>
+                                                                        <td>{{kazanim.BECERI}}</td>
+                                                                        <td>
+                                                                            <img v-if="kazanim.DURUM == ':('"
+                                                                                 src="'../../img/Abide/Cozulemedi'+ (LISE_MI ? '_Lise' : '') +'.png'" />
+                                                                            <img v-if="kazanim.DURUM == ':|'"
+                                                                                 src="'../../img/Abide/KismiCozuldu'+ (LISE_MI ? '_Lise' : '') +'.png'" />
+                                                                            <img v-if="kazanim.DURUM == ':)'"
+                                                                                 src="'../../img/Abide/TamCozuldu'+ (LISE_MI ? '_Lise' : '') +'.png'" />
+                                                                        </td>
+                                                                    </tr>
+                                                                </tbody>
+                                                            </table>
+
+                                                            <table class="table table-striped table-bordered  table-checkable" data-width="100%" style="margin-bottom:0px; color:#111; width:100%; margin-top: 25px;">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th colspan="2"> Soruların Çözülme Durumu </th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    <tr>
+                                                                        <th><img src="'../../img/Abide/TamCozuldu'+ (LISE_MI ? '_Lise' : '') +'.png'" /></th>
+                                                                        <td>Tam Çözüldü</td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <th><img src="'../../img/Abide/KismiCozuldu'+ (LISE_MI ? '_Lise' : '') +'.png'" /></th>
+                                                                        <td>Kısmi Çözüldü</td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <th><img src="'../../img/Abide/Cozulemedi'+ (LISE_MI ? '_Lise' : '') +'.png'" /></th>
+                                                                        <td>Çözülemedi</td>
+                                                                    </tr>
+                                                                </tbody>
+                                                            </table>
+
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                            <!--Kazanım Bitiş-->
+                                            <!--Cozulme Oranlari Başlangıç-->
+                                            <div class="portlet box blue-hoki dd-item"
+                                                 style="border:none"
+                                                 v-if="OGRENCISINAVDETAY.DERS[0].SORUCOZULMEORANI != undefined">
+                                                <div class="portlet-title dd-handle" data-toggle='collapse' data-target="'#filters-Ders-Cozulme-Oranlari-'+ ders.BOLUMNO" style="cursor:pointer;">
+                                                    <div class="caption">
+                                                        <i class="icon-magnifier"></i>
+                                                        <span class="caption-subject bold uppercase"> BÖLÜMLERE GÖRE SORULARIN ÇÖZÜLME ORANLARI </span>
+                                                        <span class="caption-helper"></span>
+                                                    </div>
+                                                    <div class='actions'>
+                                                        <a href='javascript:;' class='btn btn-default btn-sm' style='border:none;'>
+                                                            <i class='fa fa-chevron-down'></i>
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                                <div class="portlet-body form collapse in" id="'filters-Ders-Cozulme-Oranlari-'+ ders.BOLUMNO">
+                                                    <form role="form" style="padding:12px 20px">
+                                                        <div class="form-body" style="line-height:34px; ">
+
+                                                            <table data-height="700" class="table table-striped table-bordered  table-checkable" data-width="100%" style="margin-bottom:0px; color:#111; width:100%;">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th colspan="ders.SORUCOZULMEORANI.length + 1">{{ders.DERS}} Sorulara Göre Yapılma Oranları Tablosu</th>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <th>Soruların % oranı</th>
+                                                                        <th v-for="soru in ders.SORUCOZULMEORANI" style="text-align:center">{{soru.SORUNO}}. Soru </th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    <tr>
+                                                                        <td>Öğrenci</td>
+                                                                        <td v-for="soru in ders.SORUCOZULMEORANI" style="text-align:center">{{soru.OGRENCI}}</td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td>Sınıf</td>
+                                                                        <td v-for="soru in ders.SORUCOZULMEORANI" style="text-align:center">{{soru.SINIF}}</td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td>Okul</td>
+                                                                        <td v-for="soru in ders.SORUCOZULMEORANI" style="text-align:center">{{soru.OKUL}}</td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td>Genel</td>
+                                                                        <td v-for="soru in ders.SORUCOZULMEORANI" style="text-align:center">{{soru.GENEL}}</td>
+                                                                    </tr>
+                                                                </tbody>
+                                                            </table>
+
+
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                            <!--Cozulme Oranlari Bitiş-->
+                                            <!--OGRENCIPERFORMANS Başlangıç-->
+                                            <div class="portlet box blue-hoki dd-item"
+                                                 style="border:none"
+                                                 v-if="OGRENCISINAVDETAY.DERS[0].OGRENCIPERFORMANS != undefined
+                                                && OGRENCISINAVDETAY.DERS[0].OGRENCIPERFORMANS[0].ONERI != undefined">
+                                                <div class="portlet-title dd-handle"
+                                                     data-toggle='collapse'
+                                                     data-target="'#filters-Ders-Ogrenci-Performans-'+ ders.BOLUMNO"
+                                                     style="cursor:pointer;">
+                                                    <div class="caption">
+                                                        <i class="icon-magnifier"></i>
+                                                        <span class="caption-subject bold uppercase"> OKURYAZARLIĞI ALANI SONUÇ RAPORU </span>
+                                                        <span class="caption-helper"></span>
+                                                    </div>
+                                                    <div class='actions'>
+                                                        <a href='javascript:;' class='btn btn-default btn-sm' style='border:none;'>
+                                                            <i class='fa fa-chevron-down'></i>
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                                <div class="portlet-body form collapse in" id="'filters-Ders-Ogrenci-Performans-'+ ders.BOLUMNO">
+                                                    <form role="form" style="padding:12px 20px">
+                                                        <div class="form-body" style="line-height:34px; ">
+
+                                                            <table class="table table-striped table-bordered table-checkable"
+                                                                   data-height="700"
+                                                                   data-width="100%"
+                                                                   style="margin-bottom:0px; color:#111; width:100%;">
+                                                                <tbody>
+                                                                    <tr>
+                                                                        <th>
+                                                                            Soruların Çözülme Performansı Sonuçlarına Göre Öğrenci Beceri Düzeyi
+                                                                        </th>
+                                                                        <td>{{ders.OGRENCIPERFORMANS[0].ONERI[0].DUZEY}}</td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <th>
+                                                                            Bu Düzeydeki Öğrencilerden Beklenen Beceriler
+                                                                        </th>
+                                                                        <td>
+                                                                            <div v-html="ders.OGRENCIPERFORMANS[0].ONERI[0].YORUM"></div>
+                                                                        </td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <th>
+                                                                            Öğrencinin Bir Üst Beceri Düzeyine Geçebilmesi İçin Öneriler
+                                                                        </th>
+                                                                        <td>
+                                                                            <div v-html="ders.OGRENCIPERFORMANS[0].ONERI[0].ONERI"></div>
+                                                                        </td>
+                                                                    </tr>
+                                                                </tbody>
+                                                            </table>
+
+
+                                                            <div v-if="OGRENCISINAVDETAY.DERS[0].OGRENCIPERFORMANS[0].PUAN != undefined">
+                                                                <h2 style="text-align: center;">Öğrenci Becerileri Performans Grafiği (% Başarı)</h2>
+                                                                <div class="form-group" style="overflow:auto">
+                                                                    <div id="'chartdiv'+ders.BOLUMNO" class="chartdiv"></div>
+                                                                </div>
+                                                            </div>
+
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                            <!--OGRENCIPERFORMANS Bitiş-->
+
+
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+
+
+                            <!--DERS GRAFIK Başlangıç-->
+                            <div class="portlet box blue-hoki dd-item" style="border:none" v-if="OGRENCISINAVDETAY.DERS[0].GRAFIK != undefined">
+                                <div class="portlet-title dd-handle" data-toggle='collapse' data-target="#filters-Ders-Grafik" style="cursor:pointer;">
+                                    <div class="caption">
+                                        <i class="icon-magnifier"></i>
+                                        <span class="caption-subject bold uppercase"> BRANŞLARA GÖRE ÖĞRENCİ YETERLİLİK DÜZEYİ GEŞİLİM GRAFİĞİ </span>
+                                        <span class="caption-helper"></span>
+                                    </div>
+                                    <div class='actions'>
+                                        <a href='javascript:;' class='btn btn-default btn-sm' style='border:none;'>
+                                            <i class='fa fa-chevron-down'></i>
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="portlet-body form collapse in" id="filters-Ders-Grafik">
+                                    <form role="form" style="padding:12px 20px">
+                                        <div class="form-body form-group" style="line-height:34px;">
+                                            <div class="col-lg-3 col-md-4 col-sm-12"
+                                                 v-for="ders in OGRENCISINAVDETAY.DERS">
+
+
+
+                                                <!--<h2 style="text-align: center;">{{ders.DERS}} GELİŞİM GRAFİĞİ </h2>-->
+                                                <div class="form-group" style="overflow:auto">
+                                                    <div id="'chartdiv-gelisim-'+ders.BOLUMNO" class="chartdiv"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        v>
+                                    </form>
+                                </div>
+                            </div>
+                            <!--DERS GRAFIK Bitiş-->
+                            <!--TEK GRAFIK Başlangıç-->
+                            <div class="portlet box blue-hoki dd-item" style="border:none" v-if="OGRENCISINAVDETAY.DERS[0].TEKGRAFIK != undefined">
+                                <div class="portlet-title dd-handle" data-toggle='collapse' data-target="#filters-Tek-Grafik" style="cursor:pointer;">
+                                    <div class="caption">
+                                        <i class="icon-magnifier"></i>
+                                        <span class="caption-subject bold uppercase"> DERSLERE GÖRE DÜZEYLER VE "NERDEYİM" GRAFİKSEL GÖSTERİM </span>
+                                        <span class="caption-helper"></span>
+                                    </div>
+                                    <div class='actions'>
+                                        <a href='javascript:;' class='btn btn-default btn-sm' style='border:none;'>
+                                            <i class='fa fa-chevron-down'></i>
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="portlet-body form collapse in" id="filters-Tek-Grafik">
+                                    <form role="form" style="padding:12px 20px">
+                                        <div class="form-body form-group" style="line-height:34px;">
+                                            <div class="col-sm-12">
+                                                <h2 style="text-align: center;">DERSLERİN DÜZEYLERİ </h2>
+                                                <div class="form-group" style="overflow:auto">
+                                                    <div id="chartdiv-tek-grafik" class="chartdiv"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <!--TEK GRAFIK Bitiş-->
+
+
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+   
+<script src="VueComponents/SinavFiltreleri.js"></script>
+<script src="VueComponents/Abide/Filtreler.js"></script>
+<script src="VueComponents/SubeGrupSinif.js?v=3"></script>
+
+<script>
+    var vue = new Vue({
+        el: "#app",
+        name: "AbideSinavRaporOlustur.html",
+
+        data: {
+            DONEM: '',
+            ID_ABIDESINAV: 0,
+            ID_SUBE: 0,
+            ID_KADEME3: 0,
+            ID_SINIF: 0,
+            OGRENCILIST: [],
+            TCKIMLIKNO: '',
+            OGRENCISINAVDETAY: undefined,
+            LISE_MI: false,
+            ListKullaniciTipi: [],
+            controller: 'OnlineDersProgramiOgrenci',
+            TC_OGRENCI: '',
+            LISTE: [],
+        },
+
+        mounted() {
+            this.TCKIMLIKNO = session.TCKIMLIKNO;
+            this.OTURUM = session.OTURUM;
+
+            var p = {
+                TCKIMLIKNO: this.TCKIMLIKNO,
+                OTURUM: this.OTURUM,
+            };
+            var list = [];
+            WebPost(this, this.controller, "KullaniciTipiGetir", p, "#app", "Yükleniyor...", function (data, parent) {
+                if (data != null) {
+                    $.each(data, function (j, el) {
+                        list.push(this.ID_KULLANICITIPI)
+                    });
+                    parent.ListKullaniciTipi = list;
+                    if (list.indexOf(4) > -1) {
+                        parent.TC_OGRENCI = session.TCKIMLIKNO;
+                        parent.Listele();                    
+                    }
+                } else {
+                    Alert_Warning("Kullanıcı Bulunamadı..!");
+                }
+            });
+
+        },
+
+        methods: {
+
+            OgrenciSelected(val) {
+                this.TC_OGRENCI = val;
+              
+            },
+
+            DonemSelected(DONEM) {
+                this.DONEM = DONEM;
+            },
+
+            SubeSelected(ID_SUBE) {
+                this.ID_SUBE = ID_SUBE;
+                this.ID_KADEME3 = 0;
+                this.ID_ABIDESINAV = 0;
+                this.ID_SINIF = 0;
+                ListeTemizle(this.OGRENCILIST);
+            },
+
+            Kademe3Selected(ID_KADEME3) {
+                this.ID_KADEME3 = ID_KADEME3;
+                this.ID_ABIDESINAV = 0;
+                this.ID_SINIF = 0;
+                ListeTemizle(this.OGRENCILIST);
+            },
+
+            SinavSelected(ID_ABIDESINAV) {
+                this.ID_ABIDESINAV = ID_ABIDESINAV;
+                this.ID_SINIF = 0;
+                ListeTemizle(this.OGRENCILIST);
+            },
+
+            SinifSelected(ID_SINIF) {
+                this.ID_SINIF = ID_SINIF;
+                ListeTemizle(this.OGRENCILIST);
+            },
+
+            OgrenciListele() {
+                if (this.ID_ABIDESINAV > 0 && this.ID_SINIF > 0) {
+                    var p = {
+                        TCKIMLIKNO: session.TCKIMLIKNO,
+                        OTURUM: session.OTURUM,
+                        ID_ABIDESINAV: this.ID_ABIDESINAV,
+                        ID_SINIF: this.ID_SINIF
+                    };
+
+                    WebPost(this, 'AbideSinavRaporOlustur', 'OgrenciListeleRapor', p, '', '', function (data, parent) {
+                        if (data != null && data != '[]') {
+                            vue.OGRENCILIST = JSON.parse(data);
+                        } else {
+                            vue.OGRENCILIST = [];
+                            Alert_Warning("Bir hata oluştu!");
+                        }
+                    });
+                } else {
+                    this.OGRENCILIST = [];
+                    Alert_Info("Sınav ve sınıf seçimi yaptığınızdan emin olunuz.");
+                }
+            },
+
+            RaporOlustur(TCKIMLIKNO) {
+                window.open("Rapor.aspx?raporTur=PDF&rapor=Abide.AbideRapor&p=" + session.TCKIMLIKNO + ";" + session.OTURUM + ";" + TCKIMLIKNO + ";" + this.ID_ABIDESINAV + ";" + this.DONEM + ";" + this.ID_SUBE + ';' + this.ID_SINIF + ";1");
+            },
+
+            RaporOlusturHTML(O_TCKIMLIKNO) {
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    DONEM: this.DONEM,
+                    ID_ABIDESINAV: this.ID_ABIDESINAV,
+                    O_TCKIMLIKNO: O_TCKIMLIKNO
+                };
+
+                WebPost(this, 'AbideSinavRaporOlustur', 'OgrenciRaporDetay', p, '', '', function (data, parent) {
+                    if (data != null && data != '[]') {
+                        vue.OGRENCISINAVDETAY = JSON.parse(data)[0];
+
+                        parent.LISE_MI = parent.OGRENCISINAVDETAY.OGRENCI[0].ID_KADEME == 5 ? true : false;
+                        vue.$nextTick(() => {
+                            $.each(parent.OGRENCISINAVDETAY.DERS, (j, ders) => {
+
+                                if (vue.OGRENCISINAVDETAY.DERS[0].OGRENCIPERFORMANS != undefined
+                                    && vue.OGRENCISINAVDETAY.DERS[0].OGRENCIPERFORMANS[0].PUAN != undefined) {
+                                    let dataList = [];
+                                    let list = ders.OGRENCIPERFORMANS[0].PUAN;//.filter(x => x.DERSAD == SinavDers);
+                                    for (var i = 0; i < list.length; i++) {
+                                        let data = {
+                                            "bolum": list[i].BECERI,
+                                            "deger": list[i].ORT,
+                                            "color": "#0D52D1"
+                                        };
+                                        dataList.push(data);
+                                    }
+                                    AmchartOlustur("chartdiv" + ders.BOLUMNO, dataList, (100 + 5), "deger", "bolum", "color", ders.DERS + " Ort", false, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, 0);
+                                }
+                                if (vue.OGRENCISINAVDETAY.DERS[0].GRAFIK != undefined) {
+                                    let dataList = [];
+                                    let list = ders.GRAFIK[0];//.filter(x => x.DERSAD == SinavDers);
+                                    let data = {
+                                        "bolum": list.SINAV
+                                        , "deger": list.DUZEY == "1A"
+                                            ? 1
+                                            : (list.DUZEY == "1B"
+                                                ? 1.5
+                                                : list.DUZEY
+                                            )
+                                        , "color": "#0D52D1"
+                                    };
+                                    dataList.push(data);
+                                    console.log(dataList);
+                                    AmchartOlustur("chartdiv-gelisim-" + ders.BOLUMNO, dataList, 6, "deger", "bolum", "color", ders.DERS, false, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, 0);
+                                }
+                            });
+
+                            if (vue.OGRENCISINAVDETAY.DERS[0].TEKGRAFIK != undefined) {
+
+                                var dataListTekGrafik = [];
+                                let maxDuzey = 6;
+                                $.each(parent.OGRENCISINAVDETAY.DERS, (j, ders) => {
+                                    var list = ders.TEKGRAFIK[0];//.filter(x => x.DERSAD == SinavDers);
+                                    let data = {
+                                        "bolum": list.DERS
+                                        , "deger": list.DUZEY == "1A"
+                                            ? 1
+                                            : (list.DUZEY == "1B"
+                                                ? 1.5
+                                                : list.DUZEY
+                                            )
+                                        , "color": "#0D52D1"
+                                    };
+                                    dataListTekGrafik.push(data);
+                                    maxDuzey = maxDuzey > list.MAXDUZEY ? maxDuzey : list.MAXDUZEY;
+                                });
+                                AmchartOlustur("chartdiv-tek-grafik", dataListTekGrafik, maxDuzey, "deger", "bolum", "color", "DÜZEYLER", false, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, 0);
+
+                            }
+
+                            $("#tab_1_1").attr("class", "tab-pane");
+                            $("#tab_1_2").attr("class", "tab-pane fade active in");
+
+                        });
+
+                    } else {
+                        vue.OGRENCISINAVDETAY = undefined;
+                        Alert_Warning("Bir hata oluştu!");
+                    }
+                });
+            },
+
+            Geri() {
+                $("#tab_1_1").attr("class", "tab-pane fade active in");
+                $("#tab_1_2").attr("class", "tab-pane");
+
+                this.OGRENCISINAVDETAY = undefined;
+            },
+
+            SinifRapor() {
+                if (this.ID_SINIF > 0) {
+                    window.open("RaporAbideGenel.aspx?raporTur=PDF&rapor=Abide.AbideRapor&p=" + session.TCKIMLIKNO + ";" + session.OTURUM + ";" + ";" + this.ID_ABIDESINAV + ";" + this.DONEM + ";" + this.ID_SUBE + ';' + this.ID_SINIF + ";2");
+                } else {
+                    Alert_Info("Sınıv ve sınıf seçimi yaptığınızdan emin olunuz.");
+                }
+            },
+
+            SubeRapor() {
+                if (this.ID_SUBE > 0) {
+                    window.open("RaporAbideGenel.aspx?raporTur=PDF&rapor=Abide.AbideRapor&p=" + session.TCKIMLIKNO + ";" + session.OTURUM + ";" + ";" + this.ID_ABIDESINAV + ";" + this.DONEM + ";" + this.ID_SUBE + ';' + ";2");
+                } else {
+                    Alert_Info("Sınıv ve şube seçimi yaptığınızdan emin olunuz.");
+                }
+            },
+        }
+    });
+</script>
+
+<script src="Scripts/PublicMethods.js"></script>

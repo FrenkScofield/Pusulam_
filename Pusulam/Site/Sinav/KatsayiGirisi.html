@@ -1,0 +1,565 @@
+﻿<style>
+    td {
+        vertical-align: middle !important;
+    }
+
+    .row {
+        margin-top: 10px !important;
+    }
+
+    .table-checkable tr > td:first-child, .table-checkable tr > th {
+        text-align: center !important;
+    }
+
+    .table-checkable tr > td:first-child, .table-checkable tr > td {
+        text-align: center !important;
+    }
+</style>
+
+<div class="page-head">
+    <!-- BEGIN PAGE TITLE -->
+    <div class="page-title col-md-12">
+        <h1>
+            Katsayı Giriş <span onclick="YardimGoster(ID_MENU);" class="pull-right" style="cursor:pointer;"><img src="assets/global/img/info.gif" class="info-image-icon" /> </span>
+        </h1>
+    </div>
+    <!-- END PAGE TITLE -->
+</div>
+
+<div class="row" id="app">
+    <div class="row" style="margin:0px!important;">
+        <div class="col-md-6">
+            <div class="portlet light">
+                <div class="portlet-title">
+                    <div class="caption">
+                        <i class="icon-magnifier font-green"></i>
+                        <span class="caption-subject bold font-green uppercase"> Filtre </span>
+                        <span class="caption-helper"></span>
+                    </div>
+                </div>
+                <!-- BEGIN PORTLET-->
+                <div class="portlet-body form">
+                    <form role="form">
+                        <div class="form-body form-horizontal">
+                            <div class="row">
+                                <c-donem controller="KatsayiGirisi"
+                                         @OnChange="DonemSelected">
+                                </c-donem>
+                            </div>
+                            <div class="row">
+                                <c-sinavturu controller="KatsayiGirisi"
+                                             :id_sinavturu="ID_SINAVTURU"
+                                             @OnChange="SinavTuruSelected">
+                                </c-sinavturu>
+                            </div>
+                            <div class="row">
+                                <c-sinavgrup controller="KatsayiGirisi"
+                                             :id_kademe3="ID_KADEME3"
+                                             @OnChange="SinavGrupSelected">
+                                </c-sinavgrup>
+                            </div>
+                            <div class="row">
+                                <c-sinav-donem controller="KatsayiGirisi"
+                                               :donem="DONEM"
+                                               :id_sinavturu="ID_SINAVTURU"
+                                               :id_kademe3="ID_KADEME3"
+                                               @OnChange="SinavSelected">
+                                </c-sinav-donem>
+                            </div>
+                            <div class="form-group" style="margin-top:10px;">
+                                <div class="col-md-12 text-right">
+                                    <button type="button" class="btn green" @click="KatsayiListele">Katsayı Listele</button>
+                                </div>
+                            </div>
+                            <div class="row" v-show="(ID_SINAVTURU==3||ID_SINAVTURU==4)&&ID_SINAV>0">
+                                <c-tyt-secim-tur controller="KatsayiGirisi"
+                                                 :id_sinav="ID_SINAV"
+                                                 @OnChange="SinavTytSecimTurSelected">
+                                </c-tyt-secim-tur>
+                            </div>
+                            <div class="row" v-show="(ID_SINAVTURU==3||ID_SINAVTURU==4)&&ID_SINAV>0">
+                                <div class="form-md-line-input">
+                                    <label class="control-label col-md-3" style="vertical-align:middle;">Minimum Puan </label>
+                                    <div class="col-md-9">
+                                        <input type="text" class='form-control' style="text-align:center; min-width:50px;" v-model="SINAVTYTBARAJ" onkeypress='return event.charCode >= 44 && event.charCode <= 57' />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group" style="margin-top:10px;" v-show="(ID_SINAVTURU==3||ID_SINAVTURU==4)&&ID_SINAV>0">
+                                <div class="col-md-12 text-right">
+                                    <button type="button" class="btn green" @click="TytKriterKaydet">Tyt Kriter Kaydet</button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+
+                </div>
+                <!-- END PORTLET-->
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="portlet light" style="min-height:360px!important;">
+                <div class="portlet-title">
+                    <div class="caption">
+                        <i class="icon-magnifier font-green"></i>
+                        <span class="caption-subject bold font-green uppercase"> Filtre </span>
+                        <span class="caption-helper"></span>
+                    </div>
+                </div>
+                <!-- BEGIN PORTLET-->
+                <div class="portlet-body form">
+                    <form role="form">
+                        <div class="form-body form-horizontal">
+                            <div class="row">
+                                <c-donem controller="KatsayiGirisi"
+                                         @OnChange="DonemSelected2">
+                                </c-donem>
+                            </div>
+                            <div class="row">
+                                <c-sinavgrup controller="KatsayiGirisi"
+                                             :id_kademe3="ID_KADEME32"
+                                             @OnChange="SinavGrupSelected2">
+                                </c-sinavgrup>
+                            </div>
+                            <div class="row">
+                                <c-sinav-donem controller="KatsayiGirisi"
+                                               :donem="DONEM2"
+                                               :id_sinavturu="ID_SINAVTURU"
+                                               :id_kademe3="ID_KADEME32"
+                                               @OnChange="SinavSelected2">
+                                </c-sinav-donem>
+                            </div>
+                            <div class="form-group" style="margin-top:10px;">
+                                <div class="col-md-12 text-right">
+                                    <button type="button" class="btn green" @click="KatsayiListele2">Katsayı Listele</button>
+                                </div>
+                            </div>
+
+                        </div>
+                    </form>
+
+                </div>
+                <!-- END PORTLET-->
+            </div>
+        </div>
+    </div>
+    <div class="row" style="margin:0px!important;">
+        <div class="col-md-6">
+            <div class="portlet light">
+                <div class="portlet-title">
+                    <div class="caption">
+                        <i class="icon-list font-green"></i>
+                        <span class="caption-subject bold font-green uppercase"> Katsayı Listesi </span>
+                        <span class="caption-helper"></span>
+                    </div>
+                    <div class="pull-right"> <button type="button" class="btn yellow" @click="Sifirla" id="SIFIRLABTN">Sıfırla</button> </div>
+                </div>
+                <!-- BEGIN PORTLET-->
+                <div class="portlet-body form" v-if="KATSAYILISTESI.length>0">
+                    <form role="form">
+                        <div class="portlet light bordered">
+                            <div class="portlet-body">
+                                <div style="overflow-x:auto;">
+                                    <table class="table table-striped table-bordered table-checkable" id="katsayitable" v-for="u in KATSAYILISTESI" style="width:100%;">
+                                        <thead>
+                                            <tr>
+                                                <th :colspan="2">{{u.PUANTURU}}</th>
+                                            </tr>
+                                            <tr>
+                                                <th style="width:50%!important; cursor:pointer;" @click="KriterEkle(u)">PUAN KRİTERİ <i class="fa fa-lg fa-plus-circle font-green"></i> </th>
+                                                <th style="width:50%!important;">KATSAYI HESABI</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td style="vertical-align:top!important;">
+                                                    <table class="table table-striped table-bordered table-checkable">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>DERSLER</th>
+                                                                <th>NET</th>
+                                                                <th></th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <tr v-for="KRITER in u.KRITERLIST">
+                                                                <td>
+                                                                    <select class="selectpicker form-control" v-model="KRITER.ID_SINAVDERSLIST" multiple data-selected-text-format="count" data-dropup-auto="false">
+                                                                        <option value="0">Seçiniz..</option>
+                                                                        <option v-for="DERS in u.SINAVDERSLIST" v-bind:value="DERS.ID_SINAVDERS">{{DERS.AD}}</option>
+                                                                    </select>
+                                                                </td>
+                                                                <td><input type="text" class='form-control' style="text-align:center; min-width:50px;" v-model="KRITER.NET" onkeypress='return event.charCode >= 44 && event.charCode <= 57' /></td>
+                                                                <td style="cursor:pointer;" @click="KriterSil(u.KRITERLIST, KRITER)"><i class="fa fa-lg fa-times-circle font-red"></i></td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </td>
+                                                <td style="vertical-align:top!important;">
+                                                    <table class="table table-striped table-bordered table-checkable">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>DERS</th>
+                                                                <th>KATSAYI</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <tr v-for="KATSAYI in u.KATSAYILIST">
+                                                                <td>{{KATSAYI.DERS}}</td>
+                                                                <td><input type="text" class='form-control' style="text-align:center; min-width:50px;" v-model="KATSAYI.KATSAYI" onkeypress='return event.charCode >= 44 && event.charCode <= 57' /></td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="background-color:#32c5d2; color:white;">
+                                                    Taban Puan
+                                                </td>
+                                                <td>
+                                                    <input type="text" class='form-control' style="text-align:center;" v-model="u.TABANPUAN" onkeypress='return event.charCode >= 44 && event.charCode <= 57' />
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div style="text-align:right;">
+                                    <button type="button" class="btn green" @click="KatsayiKaydet()" id="KAYDETBTN">Kaydet</button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <!-- END PORTLET-->
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="portlet light">
+                <div class="portlet-title">
+                    <div class="caption">
+                        <i class="icon-list font-green"></i>
+                        <span class="caption-subject bold font-green uppercase"> Katsayı Listesi </span>
+                        <span class="caption-helper"></span>
+                    </div>
+                </div>
+                <!-- BEGIN PORTLET-->
+                <div class="portlet-body form" v-if="KATSAYILISTESI2.length>0">
+                    <form role="form">
+                        <div class="portlet light bordered">
+                            <div class="portlet-body">
+                                <div style="overflow-x:auto;">
+                                    <table class="table table-striped table-bordered table-checkable" id="katsayitable" v-for="u in KATSAYILISTESI2" style="width:100%;">
+                                        <thead>
+                                            <tr>
+                                                <th :colspan="2">{{u.PUANTURU}}</th>
+                                            </tr>
+                                            <tr>
+                                                <th style="width:50%!important; cursor:pointer;">PUAN KRİTERİ</th>
+                                                <th style="width:50%!important;">KATSAYI HESABI</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td style="vertical-align:top!important;">
+                                                    <table class="table table-striped table-bordered table-checkable">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>DERSLER</th>
+                                                                <th>NET</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <tr v-for="KRITER in u.KRITERLIST">
+                                                                <td>
+                                                                    <span v-for="DERS in u.SINAVDERSLIST" v-if="KRITER.ID_SINAVDERSLIST.indexOf(DERS.ID_SINAVDERS)>-1">{{DERS.AD + ' + '}}</span>
+                                                                </td>
+                                                                <td><input type="text" class='form-control' style="text-align:center; min-width:50px;" v-model="KRITER.NET" onkeypress='return event.charCode >= 44 && event.charCode <= 57' disabled /></td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </td>
+                                                <td style="vertical-align:top!important;">
+                                                    <table class="table table-striped table-bordered table-checkable">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>DERS</th>
+                                                                <th>KATSAYI</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <tr v-for="KATSAYI in u.KATSAYILIST">
+                                                                <td>{{KATSAYI.DERS}}</td>
+                                                                <td><input type="text" class='form-control' style="text-align:center; min-width:50px;" v-model="KATSAYI.KATSAYI" onkeypress='return event.charCode >= 44 && event.charCode <= 57' disabled /></td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="background-color:#32c5d2; color:white;">
+                                                    Taban Puan
+                                                </td>
+                                                <td>
+                                                    <input type="text" class='form-control' style="text-align:center;" v-model="u.TABANPUAN" onkeypress='return event.charCode >= 44 && event.charCode <= 57' disabled />
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div style="text-align:left;">
+                                    <button type="button" class="btn green" @click="KatsayıKopyala()"><i class="fa fa-angle-double-left"></i>Kopyala</button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <!-- END PORTLET-->
+            </div>
+        </div>
+    </div>
+</div>
+<script src="VueComponents/SinavFiltreleri.js?v=2.0.0"></script>
+
+<script>
+    $(document).ready(function () {
+        $(".sidebar-toggler").trigger("click");
+    });
+
+    var vue = new Vue({
+        el: "#app",
+        name: "KatsayiGirisi.html",
+
+        data: {
+            DONEM: '',
+            DONEM2: '',
+            ID_SINAVTURU: 0,
+            ID_KADEME3: 0,
+            ID_KADEME32: 0,
+            ID_SINAV: 0,
+            ID_TYTSECIMTUR: 0,
+            SINAVTYTBARAJ: 0,
+            ID_SINAV2: 0,
+            KATSAYILISTESI: [],
+            KATSAYILISTESI2: []
+        },
+
+        mounted() {
+        },
+
+        methods: {
+            DonemSelected(DONEM) {
+                this.DONEM = DONEM;
+            },
+
+            DonemSelected2(DONEM2) {
+                this.DONEM2 = DONEM2;
+            },
+
+            SinavGrupSelected(ID_KADEME3) {
+                this.ID_KADEME3 = ID_KADEME3;
+            },
+
+            SinavGrupSelected2(ID_KADEME32) {
+                this.ID_KADEME32 = ID_KADEME32;
+            },
+
+            SinavTuruSelected(ID_SINAVTURU) {
+                this.ID_SINAVTURU = ID_SINAVTURU
+            },
+
+            SinavSelected(ID_SINAV) {
+                this.ID_SINAV = ID_SINAV;
+            },
+
+            SinavTytSecimTurSelected(OBJ) {
+                this.ID_TYTSECIMTUR = OBJ.ID_TYTSECIMTUR;
+                this.SINAVTYTBARAJ = OBJ.PUAN;
+            },
+
+            SinavSelected2(ID_SINAV2) {
+                this.ID_SINAV2 = ID_SINAV2;
+            },
+
+            Sifirla() {
+                var _this = this;
+                $.each(_this.KATSAYILISTESI, function (j, el) {
+                    $.each(el.KATSAYILIST, function (j, sel) {
+                        sel.KATSAYI = 0;
+                    });
+                    el.KRITERLIST = [];
+                });
+            },
+
+            KatsayiListele() {
+                if (this.ID_SINAV == 0) {
+                    Alert_Warning("Öncelikle Sınav Seçmelisiniz!");
+                    $('#KAYDETBTN').attr("disabled", false);
+                } else {
+                    var p = {
+                        TCKIMLIKNO: session.TCKIMLIKNO,
+                        OTURUM: session.OTURUM,
+                        ID_SINAV: this.ID_SINAV
+                    };
+
+                    WebPost(this, "KatsayiGirisi", "KatsayiListele", p, '#katsayitable', 'Yükleniyor..', function (data, parent) {
+                        if (data != null) {
+                            parent.KATSAYILISTESI = JSON.parse(data)
+
+                            for (var i = 0; i < parent.KATSAYILISTESI.length; i++) {
+                                for (var j = 0; j < parent.KATSAYILISTESI[i].KRITERLIST.length; j++) {
+                                    parent.KATSAYILISTESI[i].KRITERLIST[j].ID_SINAVDERSLIST = JSON.parse(parent.KATSAYILISTESI[i].KRITERLIST[j].ID_SINAVDERSLIST);
+                                    parent.KATSAYILISTESI[i].KRITERLIST[j].GUID = guid();
+                                }
+                            }
+                            $('#KAYDETBTN').attr("disabled", false);
+                        }
+                        else {
+                            Alert_Warning("Liste Bulunamadı!");
+                            $('#KAYDETBTN').attr("disabled", false);
+                        }
+                        vue.$nextTick(function () {
+                            $('.selectpicker').selectpicker('refresh');
+                        })
+                    })
+                }
+            },
+
+            KatsayiListele2() {
+                if (this.ID_SINAV2 == 0) {
+                    Alert_Warning("Öncelikle Sınav Seçmelisiniz!");
+                } else {
+                    var p = {
+                        TCKIMLIKNO: session.TCKIMLIKNO,
+                        OTURUM: session.OTURUM,
+                        ID_SINAV: this.ID_SINAV2
+                    };
+
+                    WebPost(this, "KatsayiGirisi", "KatsayiListele", p, '#katsayitable2', 'Yükleniyor..', function (data, parent) {
+                        if (data != null) {
+                            parent.KATSAYILISTESI2 = JSON.parse(data)
+                            for (var i = 0; i < parent.KATSAYILISTESI2.length; i++) {
+                                for (var j = 0; j < parent.KATSAYILISTESI2[i].KRITERLIST.length; j++) {
+                                    parent.KATSAYILISTESI2[i].KRITERLIST[j].ID_SINAVDERSLIST = JSON.parse(parent.KATSAYILISTESI2[i].KRITERLIST[j].ID_SINAVDERSLIST);
+                                    parent.KATSAYILISTESI2[i].KRITERLIST[j].GUID = guid();
+                                }
+                            }
+                        }
+                        else {
+                            Alert_Warning("Liste Bulunamadı!");
+                        }
+                    })
+                }
+            },
+
+            KatsayiKaydet() {
+                $('#KAYDETBTN').attr("disabled", true);
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    ID_SINAV: this.ID_SINAV,
+                    SQLJSON: JSON.stringify(this.KATSAYILISTESI)
+                };
+
+                WebPost(this, "KatsayiGirisi", "KatsayiKaydet", p, '#katsayitable', 'Yükleniyor..', function (data, parent) {
+                    if (data != null) {
+                        Alert_Info("Kaydedildi.");
+                        parent.KatsayiListele();
+                    }
+                    else {
+                        Alert_Warning("Liste Bulunamadı!");
+                        $('#KAYDETBTN').attr("disabled", false);
+                    }
+                })
+            },
+
+            KatsayıKopyala() {
+                for (var i = 0; i < this.KATSAYILISTESI.length; i++) {
+                    var KATSAYIITEM = this.KATSAYILISTESI[i];
+                    var TABANPUANITEM = this.getObjects(this.KATSAYILISTESI2, "ID_SINAVPUANTURU", KATSAYIITEM.ID_SINAVPUANTURU);
+                    if (TABANPUANITEM.length > 0 && TABANPUANITEM[0] != undefined) {
+                        KATSAYIITEM.TABANPUAN = TABANPUANITEM[0].TABANPUAN;
+                        var TEMP = JSON.parse(JSON.stringify(TABANPUANITEM[0].KRITERLIST));
+                        var HATA = false;
+                        for (var j = 0; j < TABANPUANITEM[0].KRITERLIST.length; j++) {
+                            for (var k = 0; k < TABANPUANITEM[0].KRITERLIST[j].ID_SINAVDERSLIST.length; k++) {
+                                var OBJ = this.getObjects(TABANPUANITEM[0].SINAVDERSLIST, 'ID_SINAVDERS', TABANPUANITEM[0].KRITERLIST[j].ID_SINAVDERSLIST[k])[0];
+                                var AD2 = OBJ.AD;
+                                var BULUNAN = this.getObjects(KATSAYIITEM.SINAVDERSLIST, "AD", AD2);
+                                if (BULUNAN == undefined || BULUNAN.length == -1) {
+                                    HATA = true;
+                                } else {
+                                    TEMP[j].ID_SINAVDERSLIST[k] = BULUNAN[0].ID_SINAVDERS;
+                                }
+                            }
+                        }
+                        if (!HATA) {
+                            KATSAYIITEM.KRITERLIST = TEMP;
+                        }
+                    }
+                    for (var j = 0; j < KATSAYIITEM.KATSAYILIST.length; j++) {
+                        var item = this.getObjects(this.getObjects(this.KATSAYILISTESI2, "DERS", KATSAYIITEM.KATSAYILIST[j].DERS), "ID_SINAVPUANTURU", KATSAYIITEM.KATSAYILIST[j].ID_SINAVPUANTURU);
+                        if (item.length > 0 && item[0] != undefined) {
+                            KATSAYIITEM.KATSAYILIST[j].KATSAYI = item[0].KATSAYI;
+                        }
+                    }
+
+                    vue.$nextTick(function () {
+                        $('.selectpicker').selectpicker('refresh');
+                    })
+                }
+            },
+
+            getObjects(obj, key, val) {
+                var objects = [];
+                for (var i in obj) {
+                    if (!obj.hasOwnProperty(i)) continue;
+                    if (typeof obj[i] == 'object') {
+                        objects = objects.concat(this.getObjects(obj[i], key, val));
+                    } else if (i == key && obj[key] == val) {
+                        objects.push(obj);
+                    }
+                }
+                return objects;
+            },
+
+            KriterEkle(u) {
+                var KRITER = {
+                    ID_SINAVPUANTURU: u.ID_SINAVPUANTURU,
+                    NET: 0,
+                    GUID: guid(),
+                    ID_SINAVDERSLIST: []
+                };
+                u.KRITERLIST.push(KRITER);
+
+                vue.$nextTick(function () {
+                    $('.selectpicker').selectpicker('refresh');
+                })
+            },
+
+            KriterSil(list, kriter) {
+                list.splice(list.indexOf(kriter), 1);
+            },
+
+            TytKriterKaydet() {
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    ID_SINAV: this.ID_SINAV,
+                    ID_TYTSECIMTUR: this.ID_TYTSECIMTUR,
+                    BARAJ: this.SINAVTYTBARAJ
+                };
+
+                WebPost(this, "KatsayiGirisi", "TytSecimKriterKaydet", p, '', '', function (data, parent) {
+                    if (data) {
+                        Alert_Info("Kaydedildi.");
+                    }
+                    else {
+                        Alert_Warning("Bir hata oluştu!");
+                    }
+                })
+            }
+        }
+    });
+
+</script>
+<script src="Scripts/PublicMethods.js"></script>

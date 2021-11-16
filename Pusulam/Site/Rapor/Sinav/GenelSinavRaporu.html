@@ -1,0 +1,610 @@
+﻿<style>
+    .stil {
+        text-align: center;
+        vertical-align: middle;
+    }
+
+    .stil2 {
+        vertical-align: middle;
+    }
+
+    table td, th {
+        font-size: 10px !important;
+    }
+</style>
+<link href="../../../assets/fixed-table/css/component.css?v=4" rel="stylesheet" />
+
+<div class="page-head">
+    <div class="page-title col-md-12">
+        <h1>
+            Sınav Raporu <small>Genel Sınav Raporu</small> <span onclick="YardimGoster(ID_MENU);" class="pull-right" style="cursor:pointer;"><img src="assets/global/img/info.gif" class="info-image-icon" /> </span>
+        </h1>
+    </div>
+</div>
+
+<div class="row" id="app">
+    <div class="col-md-12">
+        <div class="portlet box green-haze dd-item" style="border:none">
+            <div class="portlet-title dd-handle" data-toggle='collapse' data-target='#filters' style="cursor:pointer;">
+                <div class="caption">
+                    <i class="icon-magnifier"></i>
+                    <span class="caption-subject bold uppercase"> Filtreler </span>
+                    <span class="caption-helper"></span>
+                </div>
+                <div class='actions'>
+                    <a href='javascript:;' class='btn btn-default btn-sm' style='border:none;'>
+                        <i class='fa fa-chevron-down'></i>
+                    </a>
+                </div>
+            </div>
+            <div class="portlet-body form collapse in" id="filters">
+                <div class="form-body form-group-lg form-horizontal">
+                    <div class="form-inline list-group-item row">
+
+                        <div class="portlet light col-md-12" id="FiltreDiv" style="margin:0px; border-bottom-style: solid;border-bottom-width: 3px;border-bottom-color: rgb(0, 173, 239);">
+                            <div class="portlet-body">
+                                <div class="form-inline">
+                                    <c-donem controller="GenelSinavRaporu"
+                                             @OnChange="DonemSelected">
+                                    </c-donem>
+                                    <c-sube-multi controller="GenelSinavRaporu"
+                                                  @OnChange="SubeSelected">
+                                    </c-sube-multi>
+                                    <c-kademe3 controller="GenelSinavRaporu"
+                                               :idsubelist="idsubelist"
+                                               @OnChange="Kademe3Selected">
+                                    </c-kademe3>
+                                    <c-sinif-alan-multi controller="GenelSinavRaporu"
+                                                        @OnChange="SinifAlanSelected">
+                                    </c-sinif-alan-multi>
+                                    <c-sinif-donem-alan-multi controller="GenelSinavRaporu"
+                                                              :idsubelist="idsubelist"
+                                                              :idkademe3="idkademe3"
+                                                              :donem="donem"
+                                                              :sinifalan="sinifAlanList"
+                                                              @OnChange="SinifSelected">
+                                    </c-sinif-donem-alan-multi>
+                                    <!--<c-sinif-multi-donem
+                                                controller="GenelSinavRaporu"
+                                                :idsubelist="idsubelist"
+                                                :idkademe3="idkademe3"
+                                                :donem="donem"
+                                                @OnChange="SinifSelected">
+                                    </c-sinif-multi-donem>-->
+
+                                </div>
+                            </div>
+                        </div>
+                        <div class="portlet light col-md-12" id="FiltreDivOgrenci" style="margin:0px; border-bottom-style: solid;border-bottom-width: 3px;border-bottom-color: rgb(0, 173, 239);"
+                             v-show="divOgrenci==1">
+                            <div class="portlet-body">
+                                <div class="form-inline">
+
+                                    <c-donem controller="GenelSinavRaporu"
+                                             @OnChange="SinavDonemSelected">
+                                    </c-donem>
+                                    <c-sinav-turu-tc controller="GenelSinavRaporu"
+                                                     :donem="donemSinav"
+                                                     :ogrencidonem="donem"
+                                                     :idkademe3="idkademe3"
+                                                     @OnChange="SinavTuruSelected">
+                                    </c-sinav-turu-tc>
+                                    <c-sinav controller="GenelSinavRaporu"
+                                             :idsinavturu="idsinavturu"
+                                             :donem="donemSinav"
+                                             :ogrencidonem="donem"
+                                             :idkademe3="idkademe3"
+                                             @OnChange="SinavSelected">
+                                    </c-sinav>
+                                    <c-siralama controller="GenelSinavRaporu"
+                                                :idsinavturu="idsinavturu"
+                                                @OnChange="SiralamaSelected">
+                                    </c-siralama>
+
+                                    <div class="row col-md-3">
+                                        <div class="form-md-line-input" v-if="ListKullaniciTipi.indexOf(1)>-1">
+                                            <label class="control-label col-md-10" style="vertical-align:middle;">T.C. Kimlik No Gör</label>
+                                            <div class="col-md-2" style="height:34px; vertical-align:middle;">
+                                                <div class="md-checkbox" style="margin:auto!important; width:20px!important; height:20px; margin:0px; margin-top:6px; display:block;">
+                                                    <input type="checkbox" v-model="tcGorunsun" id="tcGorunsun" class="md-check" v-bind:true-value="true" v-bind:false-value="false" />
+                                                    <label for="tcGorunsun">
+                                                        <span></span>
+                                                        <span class="check"></span>
+                                                        <span class="box"></span>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row col-md-3">
+                                        <div class="form-md-line-input" v-if="idsinavturu==5">
+                                            <label class="control-label col-md-10" style="vertical-align:middle;">Kur Sınıf Bilgilerini Gör</label>
+                                            <div class="col-md-2" style="height:34px; vertical-align:middle;">
+                                                <div class="md-checkbox" style="margin:auto!important; width:20px!important; height:20px; margin:0px; margin-top:6px; display:block;">
+                                                    <input type="checkbox" v-model="kurGorunsun" id="kurGorunsun" class="md-check" v-bind:true-value="true" v-bind:false-value="false" />
+                                                    <label for="kurGorunsun">
+                                                        <span></span>
+                                                        <span class="check"></span>
+                                                        <span class="box"></span>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <input style="float:right;margin: 10px;" type="button" class="btn btn-success" v-on:click="Raporla" value="Raporla">
+                                    <!--<input style="float:right;margin: 10px;" type="button" class="btn btn-success" v-on:click="Yazdir" value="Excel">-->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-inline list-group-item row" v-if="idsinav>0">
+                        <c-rapor-tur-buton @Yazdir="Yazdir"> </c-rapor-tur-buton>
+                    </div>
+                </div>
+
+
+            </div>
+
+        </div>
+    </div>
+
+    <div class="portlet light col-md-12" id="Tablodiv" style="min-height:100px;padding:0px;" v-if="divAc==1">
+        <!--<div class="col-md-1" style="float:right;" id="ExcelButon">
+            <input style="float:right;margin: 10px;" type="button" class="btn btn-success" onclick="tableToExcel('tablobaslik', 'W3C Example Table')" value="Excel">
+        </div>-->
+        <!--<br /> <br /> <br /> <br /> <br /> <br />-->
+
+        <div class="comp-table" id="divFixedTable">
+            <table id="tablobaslik" class="overflow-y fixed-table">
+                <thead id="thead"></thead>
+                <tbody id="tbody"></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<script src="../../assets/global/plugins/bootstrap-select/js/i18n/defaults-tr_TR.js"></script>
+<script src="../../../VueComponents/Genel.js?v=4"></script>
+<script src="../../../VueComponents/GenelSinavRaporuFiltreleri.js?v=18"></script>
+<script>
+    var vue = new Vue({
+        el: "#app",
+        name: "GenelSinavRaporu.html",
+
+        data: {
+
+            donem: '',
+            donemSinav: '',
+            idkademe3: 0,
+            idsinavturu: 0,
+            idsinav: 0,
+            idsubelist: [],
+            idsiniflist: [],
+            sinifAlanList: [],
+            t1: [],
+            t2: [],
+            t3: [],
+            dersler: [],
+            puanlar: [],
+
+            tcGorunsun: false,
+            toplamSoru: 0,
+            dID_SINAVPUANTURU: 0,
+            TCKIMLIKNO: '',    
+            LISTE: [],
+
+            divAc: 0,
+            tcogrenci: '',
+            idkullanicitur: 0,
+            ListKullaniciTipi: [],
+            divOgrenci: 1,
+            kurGorunsun: false,
+            tcsizkolon: 0,
+            siralama: 0,
+        },
+
+        mounted() {
+            //this.Getir();
+
+            var p = {
+                TCKIMLIKNO: session.TCKIMLIKNO,
+                OTURUM: session.OTURUM
+            };
+            var list = [];
+            WebPost(this, "GenelSinavRaporu", "KullaniciTipiGetir", p, "#app", "Yükleniyor...", function (data, parent) {
+                if (data != null) {
+                    $.each(data, function (j, el) {
+                        list.push(this.ID_KULLANICITIPI)
+                    });
+                    parent.ListKullaniciTipi = list;
+                    if (list.indexOf(4) > -1)
+                        parent.tcogrenci = session.TCKIMLIKNO;
+                } else {
+                    Alert_Warning("Kullanıcı Bulunamadı..!");
+                }
+            });
+        },
+
+        methods: {
+
+            DonemSelected(item) {
+                this.donem = item;
+                this.divAc = 0;
+                this.divOgrenci = 0;
+            },
+            SinavDonemSelected(item) {
+                this.donemSinav = item;
+                this.divAc = 0;
+            },
+            SubeSelected(item) {
+                this.idsubelist = item;
+                this.idsinif = 0;
+                this.divAc = 0;
+                this.divOgrenci = 0;
+                ListeTemizle(this.sinifAlanList);
+            },
+            Kademe3Selected(item) {
+                this.idkademe3 = item;
+                this.divAc = 0;
+                this.divOgrenci = 0;
+                ListeTemizle(this.sinifAlanList);
+            },
+            SinifAlanSelected(item) {
+                //this.sinifAlanList = $.grep(item, function (el,i) { return el!='Tümü' });
+                this.sinifAlanList = item;
+                this.divAc = 0;
+            },
+            SinifSelected(item) {
+                this.idsiniflist = item;
+                this.divAc = 0;
+                if (item.length > 0)
+                    this.divOgrenci = 1;
+            },
+            SinavTuruSelected(item) {
+                this.idsinavturu = item;
+                this.idsinav = 0;
+                this.divAc = 0;
+                this.kurGorunsun = false;
+
+            },
+            SinavSelected(item) {
+                this.idsinav = item;
+                this.divAc = 0;
+            },
+            SiralamaSelected(item) {
+                this.siralama = item;
+            },
+
+            Yazdir(ciktiTuru) {
+                if (ciktiTuru == "") {
+                    Alert_Warning("Çıktı Türünü Seçiniz.");
+                    return;
+                }
+                if (this.idsinav != 0 && this.idkademe3 != 0) {
+                    //string tc,string oturum,string donem,string idKademe3,string idSinavturu,string idSinav,string idSubes,string idSinifs
+                    window.open('../Rapor.aspx?rapor=Sinav.DenemeSinavOSRaporu&raporTur=' + ciktiTuru + '&p=' + session.TCKIMLIKNO + ';' + session.OTURUM + ';' + this.donemSinav + ";" + this.idkademe3 + ";" + this.idsinavturu + ";" + this.idsinav + ";" + JSON.stringify(this.idsubelist) + ";" + JSON.stringify(this.idsiniflist) + ";" + this.tcGorunsun + ";" + this.siralama, '_blank');//+ this.idsinavturu + ';'
+                }
+                else {
+                    Alert_Warning("Gerekli alanları seçmeniz gerekmektedir.");
+                    return;
+                }
+            },
+
+            Raporla: function (event) {
+                this.Getir();
+            },
+            Getir() {
+                if (this.idsinav != 0 && this.idkademe3 != 0) {
+                    this.divAc = 1;
+                    var idsiniflist = JSON.stringify(this.idsiniflist);
+                    var idsubelist = JSON.stringify(this.idsubelist);
+
+                    var p = {
+                        TCKIMLIKNO: session.TCKIMLIKNO,
+                        OTURUM: session.OTURUM,
+                        DONEM: this.donemSinav,
+                        ID_KADEME3: this.idkademe3,
+                        ID_SINAVTURU: this.idsinavturu,
+                        ID_SINAV: this.idsinav,
+                        ID_SINIFS: idsiniflist,
+                        ID_SUBES: idsubelist,
+                        SIRALAMA: this.siralama
+                    };
+
+                    WebPost(this, "GenelSinavRaporu", "GenelSinavRaporu", p, "#app", "Yükleniyor...", function (data, parent) {
+                        if (data != null) {
+                            parent.t1 = JSON.parse(data)[0].t1;
+                            parent.t2 = JSON.parse(data)[0].t2;
+                            parent.t3 = JSON.parse(data)[0].t3;
+
+                            $('#filters').collapse();
+                            parent.Listele();
+
+                        } else {
+                            Alert_Warning("Sınav Bulunamadı..!");
+                        }
+                    });
+                }
+                else {
+                    Alert_Warning("Lütfen Gerekli Seçimleri Yapınız")
+                    this.divAc = 0;
+                }
+            },
+
+            Listele() {
+
+                if (this.t1 == undefined) {
+                    return;
+                }
+
+                var dersler = [];
+                var ts = 0;
+                $.each(this.t2, function (j, el) {
+                    var result = $.grep(dersler, function (n, i) {
+                        return n.DERSAD == el.DERSAD;
+                    });
+                    if (result.length == 0) {
+                        ts += this.DOGRU + this.YANLIS + this.BOS;
+                        dersler.push({ DERSAD: this.DERSAD, SORUSAYISI: (this.DOGRU + this.YANLIS + this.BOS) })//this.SORUSAYISI })
+                    }
+                });
+                this.dersler = dersler;
+                this.toplamSoru = ts;
+
+                var puanlar = [];
+                $.each(this.t3, function (j) {
+                    if (puanlar.indexOf(this.AD) == -1) {
+                        puanlar.push(this.AD)
+                    }
+                });
+                this.puanlar = puanlar;
+
+                divFixedTableClear();
+                this.$nextTick(() => {
+                    this.Baslik();
+                    this.Icerik();
+                    fixedTableCreate()
+                });
+            },
+
+            Baslik() {
+                var tt1 = this.t1;
+                var olcekSinavi = tt1[0].OLCEKSINAVI;
+                var puanGizle = tt1[0].PUANGIZLE;
+                var dersKolonSayisi = olcekSinavi == true ? 11 : 5;
+                var tcsizkolon = this.tcGorunsun == true ? 5 : 4;
+                tcsizkolon = this.kurGorunsun == true ? tcsizkolon + 2 : tcsizkolon;
+
+                this.tcsizkolon = tcsizkolon;
+
+                var html = '<tr> ';
+                html += '     <th rowspan="3">#</th>';
+                html += '     <th rowspan="3">Okul</th>';
+                html += '     <th rowspan="3">Sınıf</th>';
+                if (this.tcGorunsun == true) {
+                    html += '     <th rowspan="3">TC</th>';
+                }
+                html += '     <th rowspan="3">Ad Soyad</th>';
+
+                if (this.idsinavturu == 5 && this.kurGorunsun == true) { // ktt ise kur sınıf bilgileri çıkacak
+                    html += '     <th rowspan="3">Kur Seviye</th>';
+                    html += '     <th rowspan="3">Kur Sınıfı</th>';
+                }
+
+                $.each(this.dersler, function (j) {
+                    html += '     <th colspan="' + dersKolonSayisi + '">' + this.DERSAD + '</th>';
+                });
+                html += '     <th colspan="5" >Toplam </th>';
+                html += '     <th colspan="5" rowspan="2">Toplam Net Sıralama</th>';
+                if (puanGizle == false || this.idsinavturu == 12) {
+                    html += '     <th colspan="' + this.puanlar.length * 6 + '"> PUAN VE TÜRKİYE GENELİ SIRALAMALARI</th>';
+                }
+
+
+                if (this.idsinavturu == 12) {//bursluluk ise
+                    html += '     <th colspan="6" rowspan="2">Öğrenci Bilgileri </th>';
+                }
+
+
+                html += '   </tr>';
+                html += '   <tr>';
+                $.each(this.dersler, function (j) {
+                    html += '     <th colspan="' + dersKolonSayisi + '">Soru Sayısı : ' + this.SORUSAYISI + '</th>    ';   // ders
+                });
+                html += '     <th colspan="5"> Soru Sayısı:' + this.toplamSoru + ' </th>';
+                if (puanGizle == false || this.idsinavturu == 12) {
+                    $.each(this.puanlar, function (j) {
+                        html += '     <th colspan="6">' + this + '</th>';
+                    });
+                }
+
+                html += '   </tr>';
+                html += '   <tr>';
+
+                $.each(this.dersler, function (j) {
+                    html += '     <th>Doğ</th>';
+                    html += '     <th>Yan</th>';
+                    html += '     <th>Boş</th>';
+                    html += '     <th>Net</th>';
+                    html += '     <th>Bşr %</th>';
+                    if (olcekSinavi == true) {
+                        html += '     <th>Puan</th> ';
+                        html += '     <th>Sınıf</th>';
+                        html += '     <th>Okul</th> ';
+                        html += '     <th>İlçe</th> ';
+                        html += '     <th>İl</th>   ';
+                        html += '     <th>Genel</th>';
+                    }
+                });
+                html += '     <th>Doğ</th>';
+                html += '     <th>Yan</th>';
+                html += '     <th>Boş</th>';
+                html += '     <th>Net</th>';
+                html += '     <th>Bşr %</th>';
+                html += '     <th>Sınıf</th>';
+                html += '     <th>Okul</th> ';
+                html += '     <th>İlçe</th> ';
+                html += '     <th>İl</th>   ';
+                html += '     <th>Genel</th>';
+                if (puanGizle == false || this.idsinavturu == 12) {
+                    $.each(this.puanlar, function (j) {
+                        html += '     <th>Puan</th> ';
+                        html += '     <th>Sınıf</th>';
+                        html += '     <th>Okul</th> ';
+                        html += '     <th>İlçe</th> ';
+                        html += '     <th>İl</th>   ';
+                        html += '     <th>Genel</th>';
+                    });
+                }
+
+                if (this.idsinavturu == 12) {//bursluluk ise
+                    html += '     <th>Burs Oranı</th> ';
+                    html += '     <th>Okulu</th> ';
+                    html += '     <th>Veli Adı Soyadı</th> ';
+                    html += '     <th>Telefon (Ev)</th> ';
+                    html += '     <th>Telefon (Cep)</th> ';
+                    html += '     <th>Elekronik Posta</th> ';
+                }
+
+
+
+
+                html += '   </tr>';
+                $("#thead").html(html);
+
+            },
+
+            Icerik() {
+
+                var html = '';
+                var ogrenciBilgi = this.t1;
+                var dersBilgi = this.t2;
+                var puanTurBilgi = this.t3;
+                var _this = this;
+                var puanTurListe = this.puanlar;
+                var dersTurListe = this.dersler;
+
+
+
+                var sirali = [];
+                if (this.siralama != 0) {
+                    var result = $.grep(puanTurBilgi, function (el, i) { return el.ID_SINAVPUANTURU == _this.siralama; });
+                    sirali = _.sortBy(result, function (d) { return d.PUAN * -1 });
+                }
+                else {
+                    sirali = ogrenciBilgi;
+                }
+
+
+                $.each(sirali, function (jk, sira) {
+                    var result = $.grep(ogrenciBilgi, function (el, i) { return el.TCKIMLIKNO == sira.TCKIMLIKNO; });
+
+                    $.each(result, function (j, el) {
+                        html += '<tr class="odd gradeX">';
+                        html += '<th>' + (jk + 1) + '</th>';
+                        html += '<th>' + el.SUBEAD + '</th>';
+                        html += '<th>' + el.SINIFAD + '</th>';
+                        if (_this.tcGorunsun == true) {
+                            html += '<th>' + el.TCKIMLIKNO + '</th>';
+                        }
+                        html += '<th>' + el.AD + ' ' + el.SOYAD + '</th>';
+
+                        if (_this.kurGorunsun == true) { // ktt ise kur sınıf bilgileri çıkacak
+                            html += '     <td>' + this.KURSEVIYE + '</td>';
+                            html += '     <td>' + this.KURSINIF + '</td>';
+                        }
+
+                        $.each(dersTurListe, function (dj, dtel) {
+
+                            var result = $.grep(dersBilgi, function (n, i) {
+                                return el.TCKIMLIKNO == n.TCKIMLIKNO && n.DERSAD == dtel.DERSAD && el.AD == n.AD && el.SOYAD == n.SOYAD;
+                            });
+                            
+                            if (result.length > 0) {
+                                
+                                var renk = el.BURSTUR == 2 && el.BURS_IDSINAVDERS == result[0].ID_SINAVDERS ? "red" : "balck";
+
+                                html += '<td>' + result[0].DOGRU + '</td>';
+                                html += '<td>' + result[0].YANLIS + '</td>';
+                                html += '<td>' + result[0].BOS + '</td>';
+                                html += '<td>' + result[0].NET + '</td>';
+                                html += '<td style="color:'+  renk +';">' + result[0].YUZDENET + '</td>';
+                                if (el.OLCEKSINAVI == true) {
+                                    html += '<td>' + result[0].PUAN + '</td>';
+                                    html += '<td>' + result[0].SINIFSIRA + '</td>';
+                                    html += '<td>' + result[0].OKULSIRA + '</td>';
+                                    html += '<td>' + result[0].ILCESIRA + '</td>';
+                                    html += '<td>' + result[0].ILSIRA + '</td>';
+                                    html += '<td>' + result[0].GENELSIRA + '</td>';
+                                }
+                            }
+                            else {
+                                html += '<td></td>';
+                                html += '<td></td>';
+                                html += '<td></td>';
+                                html += '<td></td>';
+                                html += '<td></td>';
+                                if (el.OLCEKSINAVI == true) {
+                                    html += '<td></td>';
+                                    html += '<td></td>';
+                                    html += '<td></td>';
+                                    html += '<td></td>';
+                                    html += '<td></td>';
+                                    html += '<td></td>';
+                                }
+                            }
+                            //});
+                        });
+
+
+                        html += '<td>' + el.TD + '</td>';
+                        html += '<td>' + el.TY + '</td>';
+                        html += '<td>' + el.TB + '</td>';
+                        html += '<td>' + el.TN + '</td>';
+                        html += '<td>' + el.YUZDENET + '</td>';
+                        html += '<td>' + el.SINIFSIRA + '</td>';
+                        html += '<td>' + el.OKULSIRA + '</td>';
+                        html += '<td>' + el.ILCESIRA + '</td>';
+                        html += '<td>' + el.ILSIRA + '</td>';
+                        html += '<td>' + el.GENELSIRA + '</td>';
+
+                        var renk = el.BURSTUR == 1 ? "red" : "balck";
+
+                        $.each(puanTurBilgi, function (stj, ptel) {
+                            $.each(puanTurListe, function (spj, ptlel) {
+                                if (ptel.TCKIMLIKNO == el.TCKIMLIKNO && ptlel == ptel.AD && (el.PUANGIZLE == false || _this.idsinavturu == 12) && el.AD == ptel.OGRAD && el.SOYAD == ptel.SOYAD) {
+                                    html += '<td style="color:'+  renk +';">' + ptel.PUAN + '</td>';
+                                    html += '<td>' + ptel.SINIFSIRA + '</td>';
+                                    html += '<td>' + ptel.OKULSIRA + '</td>';
+                                    html += '<td>' + ptel.ILCESIRA + '</td>';
+                                    html += '<td>' + ptel.ILSIRA + '</td>';
+                                    html += '<td>' + ptel.GENELSIRA + '</td>';
+                                }
+                            });
+                        });
+
+
+                        if (_this.idsinavturu == 12) {//bursluluk ise
+                            html += '     <td>' + el.BURSORANI + '</td> ';
+                            html += '     <td>' + el.OKULADI + '</td> ';
+                            html += '     <td>' + el.VELI_ADSOYAD + '</td> ';
+                            html += '     <td>' + el.TELEFON_EV + '</td> ';
+                            html += '     <td>' + el.TELEFON_CEP + '</td> ';
+                            html += '     <td>' + el.MAIL + '</td> ';
+                        }
+
+                        html += '</tr>';
+                    });
+
+                });
+
+                $("#tbody").html(html);
+
+            },
+
+        },
+    });
+</script>
+<script src="../../../Scripts/PublicMethods.js?v=1.0.0"></script>
+<script src="../../../assets/fixed-table/js/jquery.stickyheader.js"></script>

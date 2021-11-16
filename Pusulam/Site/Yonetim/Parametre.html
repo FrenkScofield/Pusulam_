@@ -1,0 +1,127 @@
+﻿<link href="assets/global/plugins/bootstrap-fileinput/bootstrap-fileinput.css" rel="stylesheet" type="text/css" />
+<div class="page-head">
+    <div class="page-title col-md-12">
+        <h1>
+            Parametre  <span onclick="YardimGoster(ID_MENU);" class="pull-right" style="cursor:pointer;"><img src="assets/global/img/info.gif" class="info-image-icon" /> </span>
+        </h1>
+    </div>
+</div>
+
+<div class="row" id="app">
+    
+    <div class="col-md-12" v-for="pl in LISTE">
+        <div class="portlet box blue-hoki dd-item" style="border:none">
+            <div class="portlet-title dd-handle" data-toggle='collapse' :data-target="'#filters-'+pl.ID_PARAMETREGRUP" style="cursor:pointer;">
+                <div class="caption">
+                    <i class="icon-list"></i>
+                    <span class="caption-subject bold uppercase">{{pl.AD}}</span>
+                    <span class="caption-helper"></span>
+                </div>
+                <div class='actions'>
+                    <a href='javascript:;' class='btn btn-default btn-sm' style='border:none;'> <i class='fa fa-chevron-down'></i> </a>
+                </div>
+            </div>
+            <div class="portlet-body form collapse in" :id="'filters-'+pl.ID_PARAMETREGRUP">
+                <form role="form" style="padding:12px 20px">
+                    <div class="row" v-for="p in pl.PARAMETRELIST">
+                        <div class="row">
+                            <div class="form-md-line-input">
+                                <label class="control-label col-md-3" style="vertical-align: middle; padding-left: 3em;">{{p.AD}}</label>
+                                <div class="col-md-9">
+                                    <select class="selectpicker form-control" v-model="p.ID_PARAMETREDEGER"  v-if="p.ID_PARAMETREDEGER != 4" title="Seçiniz...">
+                                        <option v-for="pd in pl.PARAMETREDEGERLIST" v-bind:value="pd.ID_PARAMETREDEGER" >
+                                            {{pd.AD}}
+                                        </option>
+                                    </select>
+                                    <div v-if="p.ID_PARAMETREDEGER == 4">
+                                        <textarea class="textarea form-control" v-for="pd in pl.PARAMETREDEGERLIST" v-if="pd.ID_PARAMETREDEGER == 4" v-model="pd.DEGER">{{pd.DEGER}}</textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-12">
+        <div class="portlet box blue-hoki dd-item" style="border:none">
+            <div class="portlet-body form collapse in">
+                <form role="form" style="padding:12px 20px">
+                    <div class="row" style="margin:5px;">
+                        <button type="button" style="float:right" class="btn blue" @click="Kaydet">Kaydet</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var vue = new Vue({
+
+        el: "#app",
+        name: "Parametre",
+
+        data: {
+            TCKIMLIKNO: undefined,
+            OTURUM: undefined,
+            controller: 'Parametre',
+
+            LISTE: [],
+        },
+
+        mounted() {
+            this.TCKIMLIKNO = session.TCKIMLIKNO;
+            this.OTURUM = session.OTURUM;
+
+            this.Listele();
+        },
+
+        methods: {
+
+            Listele() {
+
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                };
+
+                WebPost(this, this.controller, "ParametreListele", p, '', '', function (data, parent) {
+                    parent.LISTE = JSON.parse(data).ParametreList;
+                    parent.$nextTick(() => {
+                        parent.$forceUpdate();
+                    });
+                });
+            },
+            Kaydet() {
+               
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    SQLJSON: JSON.stringify(this.LISTE),
+                };
+                WebPost(this, this.controller, "ParametreKaydet", p, '', '', function (data, parent) {
+                    (data)
+                        ? Alert_Info("Parametre Listesi Kaydedilmiştir.")
+                        : Alert_Warning("Parametre Listesi Kaydedilirken Hata Oluştu.");
+                });
+            },
+        },
+        watch: {
+            LISTE(val) {
+                this.LISTE = Array.isArray(val) ? val : [];
+            }
+        },
+
+        updated() {
+            $('.selectpicker').selectpicker('refresh');
+        },
+    });
+
+
+
+</script>
+<script src="Scripts/PublicMethods.js"></script>
+<script src="assets/global/plugins/bootstrap-fileinput/bootstrap-fileinput.js" type="text/javascript"></script>

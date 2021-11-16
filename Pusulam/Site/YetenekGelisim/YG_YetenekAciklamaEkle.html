@@ -1,0 +1,106 @@
+﻿<style>
+    .optionGroup {
+        font-weight: bold;
+        font-style: italic;        
+    }
+
+    .optionChild {
+        margin-left: 15px !important;
+    }
+    .divider{
+        background:#337ab7 !important;
+        margin:0px !important;
+    }
+    .dropdown-header{
+        padding:0px !important;
+    }
+</style>
+
+<div class="page-head">
+    <div class="page-title col-md-12">
+        <h1>
+            Yetenek Gelişim Açıklama Ekle
+             <span onclick="YardimGoster(ID_MENU);" class="pull-right" style="cursor:pointer;"><img src="assets/global/img/info.gif" class="info-image-icon" /> </span>
+        </h1>
+    </div>
+</div>
+
+<div class="row" id="app">
+    <div class="portlet light col-md-12" id="Tablodiv" style="min-height:100px;padding:0px;">
+
+        <div class="col-md-12">
+            <c-yetenek-ders-listesi-hepsi controller ="YG_YetenekAciklamaEkle"
+                                          :idset="ID_YETENEKDERS"
+                                          @OnChange="YetenekDersSelected">
+            </c-yetenek-ders-listesi-hepsi>
+        </div>
+        <div class="col-md-12" style="padding-top:10px">
+
+            <div class="col-md-3">
+                <label>Bilgi Notunu Giriniz</label>
+            </div>
+            <div class="col-md-9">
+                <textarea rows="4" cols="90" v-model="ACIKLAMA" placeholder="Yetenek Hakkında Bilgi Notunu Giriniz"> </textarea>
+            </div>
+        </div>
+
+
+        <div class="col-md-12" style="padding-top:20px">
+            <input style="float:right;margin: 10px;" type="button" class="btn btn-success" v-on:click="Kaydet" value="Kaydet">
+        </div>
+
+    </div>
+</div>
+
+<script src="../../VueComponents/YetenekGelisim/Filtreler.js"></script>
+<script>
+    var vue = new Vue({
+        el: "#app",
+        name: "YG_YetenekAciklamaEkle.html",
+
+        data: {
+            ID_YETENEKDERS: undefined,
+            ACIKLAMA: undefined,
+        },
+
+        methods: {
+
+            YetenekDersSelected(val) {
+                this.ID_YETENEKDERS = val;
+                this.YG_KategoriAciklamaGetir();
+            },
+
+            YG_KategoriAciklamaGetir() {
+                var _this = this;
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    ID_KATEGORI: this.ID_YETENEKDERS,
+                };
+                WebPost(this, "YG_YetenekAciklamaEkle", "YG_KategoriAciklamaGetir", p, "", "Yükleniyor...", function (data, parent) {
+                    _this.ACIKLAMA = JSON.parse(data)[0].ACIKLAMA;
+                });
+            },
+            Kaydet() {
+                var _this = this;
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    ID_KATEGORI: this.ID_YETENEKDERS,
+                    ACIKLAMA: this.ACIKLAMA,
+                };
+
+                WebPost(this, "YG_YetenekAciklamaEkle", "YG_YetenekAciklamaEkle", p, "", "Yükleniyor...", function (data, parent) {
+                    if (data != null) {
+                        Alert_Info("Kayıt İşlemi Yapıldı");
+                        _this.ID_YETENEKDERS = undefined;
+                        _this.ACIKLAMA = undefined;
+                    } else {
+                        Alert_Warning("Kayıt İşlemi Yapılamadı..!");
+                    }
+                });
+            },
+        },
+    });
+</script>
+<script src="../../../Scripts/PublicMethods.js"></script>

@@ -1,0 +1,335 @@
+﻿<head>
+    <script src="../../../Scripts/Rapor/amcharts.js"></script>
+    <script src="../../../Scripts/Rapor/jquery.easypiechart.js"></script>
+    <script src="../../../Scripts/Rapor/light.js"></script>
+    <script src="../../../Scripts/Rapor/serial.js"></script>
+</head>
+
+<style>
+    #chartdiv {
+        width: 100%;
+        height: 500px;
+        font-size: 11px;
+    }
+    
+    #chartdiv2 {
+        width: 100%;
+        height: 500px;
+        font-size: 11px;
+    }
+
+    .table > tbody > tr > td, .table > tbody > tr > th, .table > tfoot > tr > td, .table > tfoot > tr > th, .table > thead > tr > td, .table > thead > tr > th {
+        font-size: 11px;
+    }
+
+    
+    .table-hover>tbody>tr:hover, .table-hover>tbody>tr:hover>td {color: black !important; }
+
+    .turuncu {
+        background-color: #EA5702 !important;
+        color: white !important;
+        font-size: 12px !important;
+    }
+
+    .fontsize12 {
+        font-size: 12px !important;
+    }
+
+    .koyumavi {
+        background-color: #0E3170;
+        color: white;
+    }
+
+    .acikmavi {
+        background-color: #2786C3;
+        color: white;
+    }
+
+    .bordermavi {
+        border: #2786C3 1px solid;
+        text-align: center;
+        color: black;
+    }
+
+    .bordersag {
+        border-right: #b4d2e6 1px solid;
+        text-align: center;
+    }
+
+    .analizbaslik {
+        background-color: #FFA500 !important;
+    }
+
+    .fixed-table-body {
+        overflow-x: hidden !important;
+    }
+
+    .red {
+        color: red;
+    }
+</style>
+
+<link href="../../../assets/fixed-table/css/component.css?v=4" rel="stylesheet" />
+
+<div class="page-head">
+    <div class="page-title col-md-12">
+        <h1>
+            Rehberlik Envanter Tanımlama
+             <span onclick="YardimGoster(ID_MENU);" class="pull-right" style="cursor:pointer;"><img src="assets/global/img/info.gif" class="info-image-icon" /> </span>
+        </h1>
+    </div>
+</div>
+
+<div class="row" id="app">
+    <div class="col-md-12">
+	    <div class="portlet box green-haze dd-item" style="border:none">
+		    <div class="portlet-title dd-handle" data-toggle='collapse' data-target='#filters' style="cursor:pointer;">
+			    <div class="caption">
+				    <i class="icon-magnifier"></i>
+				    <span class="caption-subject bold uppercase"> Filtreler </span>
+				    <span class="caption-helper"></span>
+			    </div>
+			    <div class='actions'>
+				    <a href='javascript:;' class='btn btn-default btn-sm' style='border:none;'>
+					    <i class='fa fa-chevron-down'></i>
+				    </a>
+			    </div>
+		    </div>
+		    <div class="portlet-body form collapse in" id="filters">
+				<div class="form-body form-group-lg form-horizontal">				
+                    <div id="FiltreDiv">
+                        <div class="portlet-body">
+                            <div class="form-inline list-group-item row">
+                                <c-donem controller="RehberlikEnvanterTanimlama"
+                                            @OnChange="DonemSelected">
+                                </c-donem>                                       
+                                <c-kademe3 controller="RehberlikEnvanterTanimlama"
+                                            :idsube="idsube"
+                                            @OnChange="Kademe3Selected">
+                                </c-kademe3>    
+                                <!--<div class="col-md-12">
+                                    <div class="col-md-2"><p style="float:right"> Klasör Adı : </p> </div>  
+                                    <div class="col-md-2"> <div class="col-md-2"> <input type="text" disabled id="KlasorAdi" :value='"\\"+testAdi+"\\"+donem+"\\"+kademe3Text'  /> </div> </div>
+                                </div>-->
+                                
+                                <input type="button" style="float:right" class="btn btn-success" v-on:click="Raporla" value="Listele">    
+                                <button type="button" style="float:right; margin: 0px 10px;" class="btn yellow" @click='Duzenle(0,"")'>Yeni Ekle</button> 
+                                                                    
+                            </div>
+                        </div>
+                    </div>
+    	        </div>
+		    </div>
+	    </div>
+    </div>
+
+    <div class="portlet light col-md-12" id="Tablodiv" style="min-height:100px;padding:0px;" v-if="divAc==1">
+        <div class="comp-table" id="divFixedTable"  >
+	        <table id="tablobaslik" class="overflow-y fixed-table">
+		        <thead id="thead">
+                    <tr>
+                        <th>Dönem</th>
+                        <th>Sınıf Düzeyi</th>
+                        <th>Test Adı</th>
+                        <th>Klasör</th>
+                        <th>İşlemler</th>
+                    </tr>
+                </thead>
+		        <tbody id="tbody">
+                    <tr v-for="item in LISTE">
+                        <th>{{item.DONEM}}</th>
+                        <th>{{item.KADEME3}}</th>
+                        <th>{{item.TESTADI}}</th>
+                        <td>{{item.KLASOR}}</td>
+                        <td>
+                            <button type="button" style="float:right" class="btn blue" @click="AktifPasif(item.ID_REHBERLIKENVANTER)" v-if="item.AKTIF==false">AKTİF YAP</button>
+                            <button type="button" style="float:right" class="btn red" @click="AktifPasif(item.ID_REHBERLIKENVANTER)" v-if="item.AKTIF==true">PASİF YAP</button>
+                            <button type="button" style="float:right; margin: 0px 10px;" class="btn green" @click="Duzenle(item.ID_REHBERLIKENVANTER,item.TESTADI)">DÜZENLE</button>
+                        </td>
+                    </tr>
+                </tbody>
+	        </table>
+        </div>
+                
+            
+    </div>
+
+
+    <div id="Ekle_modal" class="modal fade" tabindex="-1" data-replace="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                    <h4 class="modal-title">Rehberlik Envanter</h4>
+                </div>
+
+                <div class="modal-body">
+
+                    <div class="form-body form-horizontal">
+
+                        <div class="portlet-body form col-md-12">
+                            <form role="form">
+                                <div class="portlet light bordered">
+                                    <div class="portlet-body">
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <div class="col-md-2"><p style="float:right"> Test Adı : </p> </div>
+                                                <div class="col-md-2"><div class="col-md-2"> <input type="text" v-model="testAdi" placeholder="Test Adı" /> </div> </div>
+                                            </div>                                          
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn default" data-dismiss="modal">Kapat</button>
+                    <button type="button" class="btn green" data-dismiss="modal" @click="TestEkle()">Kaydet</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="../../../VueComponents/KonuAnaliziFiltreleri.js?v=3"></script>
+<script>
+
+
+    var vue = new Vue({
+        el: "#app",
+        name: "RehberlikEnvanterTanimlama.html",
+
+        data: {
+
+            testAdi:'',
+            donem: '',
+            idRehberlikEnvanter: 0,
+            idkademe3: 0,
+            idsube: 0,
+            kademe3Text: '',
+            LISTE: [],
+
+            divAc: 1, // 0 olacak
+            idkullanicitur: 0,
+            ListKullaniciTipi: [],
+            divOgrenci: 1,
+            ilk: false,
+        },
+
+        methods: {
+
+            distinct(data, key) {
+                var distList = [];
+                $.each(data, function (j, item) {
+                    if (distList.indexOf(item[key]) == -1) {
+                        distList.push(item[key]);
+                    }
+                });
+                return distList;
+            },
+            DonemSelected(item) {
+                this.donem = item;
+            },
+            Kademe3Selected(item) {
+                this.idkademe3 = item;
+                this.kademe3Text = $("#ddlKademe3 :selected").text();
+            },
+
+            Raporla: function (event) {
+                this.Getir();
+            },
+            
+            Duzenle(idRehberlikEnvanter, testAdi) {
+
+                if (idRehberlikEnvanter == 0 && (this.idkademe3 == 0 || this.donem == 0)) {
+                    Alert_Warning("Lütfen Dönem ve Sınıf Düzeyini Seçiniz...");
+                    return;
+                }
+
+                this.testAdi = testAdi;
+                this.idRehberlikEnvanter = idRehberlikEnvanter;
+                $("#Ekle_modal").modal();
+            },
+
+            AktifPasif(item) {
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    ID_REHBERLIKENVANTER: item,
+                };
+                WebPost(this, "RehberlikEnvanterTanimlama", "RehberlikEnvanterAktifPasif", p, "#app", "Yükleniyor...", function (data, parent) {
+                    if (data != false) {
+                        parent.Getir();
+
+                    } else {
+                        Alert_Warning("Durum değişikliği tamamlanamadı..!");
+                    }
+                });
+            },
+
+            Getir() {
+                var _this = this;
+                this.divAc = 1;
+
+                $('#filters').collapse('hide');
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    DONEM: this.donem,
+                    ID_KADEME3: this.idkademe3,
+                            
+                };
+                WebPost(this, "RehberlikEnvanterTanimlama", "RehberlikEnvanterListele", p, "#app", "Yükleniyor...", function (data, parent) {
+                    if (data != null) {
+                        _this.LISTE = JSON.parse(data)[0].LISTE;
+
+                        //divFixedTableClear();
+                        if (_this.ilk == false) {
+                            _this.ilk = true;
+
+                            _this.$nextTick(() => {
+                                fixedTableCreate()
+                            });
+                        }
+
+                    } else {
+                        Alert_Warning("Sınav Bulunamadı..!");
+                    }
+                });
+                   
+            },
+            
+
+            TestEkle() {
+                if (this.idRehberlikEnvanter==0 &&( this.idkademe3 == 0 || this.donem == 0 || this.testAdi=="")) {
+                    Alert_Error("Lütfen Gerekli Bilgileri Giriniz.");
+                    return;
+                }
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    DONEM: this.donem,
+                    ID_KADEME3: this.idkademe3,
+                    TESTADI: this.testAdi,
+                    ID_REHBERLIKENVANTER: this.idRehberlikEnvanter
+                };
+                WebPost(this, "RehberlikEnvanterTanimlama", "RehberlikEnvanterEkle", p, "#app", "Yükleniyor...", function (data, parent) {
+                    if (data != false) {
+                        
+                        parent.Getir();
+
+                    } else {
+                        Alert_Warning("Kaydetme işlemi tamamlanamadı..!");
+                    }
+                });
+            },
+
+  
+
+
+        },
+    });
+</script>
+<script src="../../../Scripts/PublicMethods.js"></script>
+<script src="../../../assets/fixed-table/js/jquery.stickyheader.js?v=4"></script>

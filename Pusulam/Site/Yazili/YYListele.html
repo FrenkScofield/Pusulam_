@@ -1,0 +1,759 @@
+﻿<style>
+    td {
+        vertical-align: middle !important;
+    }
+
+    .row {
+        margin-top: 10px !important;
+    }
+    .loader,
+    .loader:after {
+        border-radius: 50%;
+        width: 10em;
+        height: 10em;
+    }
+    .loader {
+        margin: 10px auto;
+        font-size: 3px;
+        position: relative;
+        text-indent: -9999em;
+        border-top: 1.1em solid rgb(4 4 4 / 20%);
+        border-right: 1.1em solid rgb(0 0 0 / 20%);
+        border-bottom: 1.1em solid rgb(0 0 0 / 20%);
+        border-left: 1.1em solid #ffffff;
+        -webkit-transform: translateZ(0);
+        -ms-transform: translateZ(0);
+        transform: translateZ(0);
+        -webkit-animation: load8 1.1s infinite linear;
+        animation: load8 1.1s infinite linear;
+    }
+
+    @-webkit-keyframes load8 {
+        0% {
+            -webkit-transform: rotate(0deg);
+            transform: rotate(0deg);
+        }
+
+        100% {
+            -webkit-transform: rotate(360deg);
+            transform: rotate(360deg);
+        }
+    }
+
+    @keyframes load8 {
+        0% {
+            -webkit-transform: rotate(0deg);
+            transform: rotate(0deg);
+        }
+
+        100% {
+            -webkit-transform: rotate(360deg);
+            transform: rotate(360deg);
+        }
+    }
+
+</style>
+<link href="assets/global/plugins/bootstrap-fileinput/bootstrap-fileinput.css" rel="stylesheet" type="text/css" />
+
+<div class="page-head">
+    <!-- BEGIN PAGE TITLE -->
+    <div class="page-title col-md-12">
+        <h1>
+            Yazılı Yoklama Listesi <span onclick="YardimGoster(ID_MENU);" class="pull-right" style="cursor:pointer;"><img src="assets/global/img/info.gif" class="info-image-icon" /> </span>
+        </h1>
+    </div>
+    <!-- END PAGE TITLE -->
+</div>
+
+<div class="row" id="app">
+    <div class="col-md-12">
+        <div class="portlet box blue-hoki dd-item" style="border:none">
+            <div class="portlet-title dd-handle" data-toggle='collapse' data-target='#filters' style="cursor:pointer;">
+                <div class="caption">
+                    <i class="icon-list"></i>
+                    <span class="caption-subject bold uppercase"> Filtreler </span>
+                    <span class="caption-helper"></span>
+                </div>
+                <div class='actions'>
+                    <a href='javascript:;' class='btn btn-default btn-sm' style='border:none;'>
+                        <i class='fa fa-chevron-down'></i>
+                    </a>
+                </div>
+            </div>
+            <!-- BEGIN PORTLET-->
+            <div class="portlet-body form collapse in" id="filters">
+                <form role="form" style="padding:12px 20px">
+                    <div class="row">
+                        <c-donem controller="YYListele"
+                                 @OnChange="DonemSelected">
+                        </c-donem>
+                    </div>
+                    <div class="row">
+                        <c-kademe3 controller="YYListele"
+                                   :idkademe3="ID_KADEME3"
+                                   @OnChange="IdKademe3Selected">
+                        </c-kademe3>
+                    </div>
+                    <div class="row">
+                        <c-kademe2 controller="YYListele"
+                                   :idkademe3="ID_KADEME3"
+                                   :idkademe2="ID_KADEME2"
+                                   :idkademe2temp="ID_KADEME2TEMP"
+                                   @OnChange="IdKademe2Selected">
+                        </c-kademe2>
+                    </div>
+                    <div class="row">
+                        <c-ders controller="YYListele"
+                                :idkademe3="ID_KADEME3"
+                                :idderstemp="ID_DERSTEMP"
+                                @OnChange="DersSelected">
+                        </c-ders>
+                    </div>
+                    <div class="row">
+                        <c-yariyil @OnChange="YariyilSelected"
+                                   :yariyil="YARIYIL">
+                        </c-yariyil>
+                    </div>
+                    <div class="row">
+                        <label class="control-label col-md-3" style="vertical-align:middle;">Pasif Yazılılar Görünsün</label>
+                        <div class="col-md-9" style="height:34px; vertical-align:middle;">
+                            <div class="md-checkbox" style="margin:auto!important; width:20px!important; height:20px; margin:0px; margin-top:6px; display:block;">
+                                <input type="checkbox" v-model="pasifGorunsun" id="pasifGorunsun" class="md-check" v-bind:true-value="true" v-bind:false-value="false" />
+                                <label for="pasifGorunsun">
+                                    <span></span>
+                                    <span class="check"></span>
+                                    <span class="box"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group" style="margin-top:10px;">
+                            <div class="col-md-12 text-right">
+                                <button type="button" class="btn green" @click="YYListele">Yazılı Listele</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-12" v-if="YAZILILISTESI.length>0">
+        <div class="portlet light">
+            <div class="portlet-title">
+                <div class="caption">
+                    <i class="icon-list font-green"></i>
+                    <span class="caption-subject bold font-green uppercase"> Yazılı Listesi </span>
+                    <span class="caption-helper"></span>
+                </div>
+            </div>
+            <!-- BEGIN PORTLET-->
+            <div class="portlet-body form">
+                <form role="form">
+                    <div class="portlet light bordered">
+                        <div class="portlet-body">
+                            <table class="table table-striped table-bordered table-hover table-checkable" id="yazilitable">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>KOD</th>
+                                        <th>YAZILI ADI</th>
+                                        <th>GRUP</th>
+                                        <th>KATILIM</th>
+                                        <th>AKTİF</th>
+                                        <th>Öğrenci Veli Görsün</th>
+                                        <th title="Öğrenci Belge / Ara Karne">Karnede Görünsün</th>
+                                        <th>TARİH</th>
+                                        <th style="width:82px;">İŞLEM</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="odd gradeX" v-for="u in YAZILILISTESI">
+                                        <td>{{u.ID_YAZILI}}</td>
+                                        <td>{{u.KOD}}</td>
+                                        <td>{{u.AD}}</td>
+                                        <td>{{u.GRUP}}</td>
+                                        <td>{{u.KATILIM}}</td>
+                                        <td>
+                                            <div class="col-md-9" style="height:34px; vertical-align:middle;">
+                                                <div class="md-checkbox" style="margin:auto!important; width:20px!important; height:20px; margin:0px; margin-top:6px; display:block;">
+                                                    <input type="checkbox" v-model="u.AKTIF" :id="u.ID_YAZILI+'AKTIF'" class="md-check" v-bind:true-value="true" v-bind:false-value="false" @click="AktifDegistir(u)" />
+                                                    <label :for="u.ID_YAZILI+'AKTIF'">
+                                                        <span></span>
+                                                        <span class="check"></span>
+                                                        <span class="box"></span>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="col-md-9" style="height:34px; vertical-align:middle;">
+                                                <div class="md-checkbox" style="margin:auto!important; width:20px!important; height:20px; margin:0px; margin-top:6px; display:block;">
+                                                    <input type="checkbox" v-model="u.OVGORSUN" :id="u.ID_YAZILI+'OVGORSUN'" class="md-check" v-bind:true-value="true" v-bind:false-value="false" @click="OVGorsunDegistir(u)" />
+                                                    <label :for="u.ID_YAZILI+'OVGORSUN'">
+                                                        <span></span>
+                                                        <span class="check"></span>
+                                                        <span class="box"></span>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td title="Öğrenci Belge / Ara Karne">
+                                            <div class="col-md-9" style="height:34px; vertical-align:middle;">
+                                                <div class="md-checkbox" style="margin:auto!important; width:20px!important; height:20px; margin:0px; margin-top:6px; display:block;">
+                                                    <input type="checkbox" v-model="u.KARNEDEGORUNSUN" :id="u.ID_YAZILI+'KARNEDEGORUNSUN'" class="md-check" v-bind:true-value="true" v-bind:false-value="false" @click="KarnedeGorunsunDegistir(u)" />
+                                                    <label :for="u.ID_YAZILI+'KARNEDEGORUNSUN'">
+                                                        <span></span>
+                                                        <span class="check"></span>
+                                                        <span class="box"></span>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>{{u.YAZILITARIH}}</td>
+                                        <td>
+                                            <div class="row-fluid">
+                                                <div class="dropdown clearfix">
+                                                    <ul class="nav nav-pills pull-right">
+                                                        <li class="dropdown">
+                                                            <a class="dropdown-toggle btn green btn-xs" data-toggle="dropdown" href="#">İşlemler<b class="caret"></b></a>
+                                                            <ul class="dropdown-menu pull-right" role="menu" aria-labelledby="dropdownMenu">
+                                                                <li @click="Duzenle(u.ID_YAZILI)">
+                                                                    <a href="javascript:;">
+                                                                        <i class="fa fa-lg fa-pencil-square-o" /> Düzenle
+                                                                    </a>
+                                                                </li>
+                                                                <li @click="YaziliAktifPasifYap(u)" v-if="u.AKTIF==true">
+                                                                    <a href="javascript:;">
+                                                                        <i class="fa fa-lg fa-eye-slash" /> Pasif Yap
+                                                                    </a>
+                                                                </li>
+                                                                <li @click="YaziliAktifPasifYap(u)" v-if="u.AKTIF==false">
+                                                                    <a href="javascript:;">
+                                                                        <i class="fa fa-lg fa-eye" /> Aktif Yap
+                                                                    </a>
+                                                                </li>
+                                                                <li @click="YaziliKopyala(u)">
+                                                                    <a href="javascript:;">
+                                                                        <i class="fa fa-lg fa-files-o" /> Yazılı Kopyala
+                                                                    </a>
+                                                                </li>
+                                                                <li @click="BildirimGonder(u)">
+                                                                    <a href="javascript:;">
+                                                                        <i class="fa fa-lg fa-files-o" /> Bildirim Gönder
+                                                                    </a>
+                                                                </li>
+
+                                                                <li class="divider"> </li>
+                                                                <li v-if="u.ID_YAZILITURU==1 ||u.ID_YAZILITURU==2" @click="OzellikIndir(u.ID_YAZILI)">
+                                                                    <a href="javascript:;">
+                                                                        <i class="fa fa-lg fa-upload" /> Özellikleri İndir
+                                                                    </a>
+                                                                </li>
+                                                                <li v-if="u.ID_YAZILITURU==2" @click="ExelSonucYukle(u)">
+                                                                    <a href="javascript:;">
+                                                                        <i class="fa fa-lg fa-upload" /> Excel Sonuç Yükle
+                                                                    </a>
+                                                                </li>
+                                                            </ul>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <!-- END PORTLET-->
+        </div>
+    </div>
+
+    <!--Excel_Okuma_Sonuc_Yukle_modal-->
+    <div id="Excel_Okuma_Sonuc_Yukle_modal" class="modal fade in" tabindex="-1" data-replace="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                    <h4 class="modal-title">Sonuç Yükle</h4>
+                    <div class="portlet-body form collapse in" id="filters">
+                        <form role="form" style="padding:12px 20px">
+                            <div class="row">
+                                <div class="fileinput fileinput-new" data-provides="fileinput">
+                                    <span class="fileinput-preview thumbnail" style="max-width: 1000px; max-height: 1000px;"> </span>
+                                    <span>
+                                        <span class="btn default btn-file">
+                                            <span class="fileinput-new yellow"> Sonuç Yükle </span>
+                                            <span class="fileinput-exists"> Değiştir </span>
+                                            <input type="file" name="..." accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" id="dosya" @change="previewFile" data-preview-file-type="text">
+                                        </span>
+                                        <a href="javascript:;" class="btn red fileinput-exists" data-dismiss="fileinput"> Sil </a>
+                                        <a href="javascript:;" class="btn green fileinput-exists" data-dismiss="modal"> Tamam </a>
+                                    </span>
+                                </div>
+                                <button type="button" style="float:right" class="btn yellow" @click="ExcelTaslakIndir">Taslak İndir</button>
+                            </div>
+                        </form>
+                    </div>
+
+
+                </div>
+
+                <div class="modal-body" style="padding-bottom:10px;min-height:500px;">
+
+                    <div class="col-md-5 col-xs-12" style="max-height: 500px; overflow: auto;">
+                        <h5 class="bold text-center">YÜKLENECEK ÖĞRENCİ LİSTESİ</h5>
+
+                        <table class="table table-responsive table-hover table-checkable" id="KOS_Excel_Sonuc_ValidTable">
+                            <thead>
+                                <tr style="background: #e1e5e8;">
+                                    <th> T.C. </th>
+
+                                </tr>
+                            </thead>
+                            <tbody style="margin:0px; max-height:500px; overflow:auto;">
+                                <tr v-show="!OGRENCILISTESI.length">
+                                    <td class="text-primary">Yüklenecek data yok lütfen yüklenecek dosya seçiniz.</td>
+                                </tr>
+                                <tr v-show="OGRENCILISTESI.length" v-for="u in OGRENCILISTESI">
+                                    <td class="text-success"> {{u.TCKIMLIKNO}} </td>
+
+
+                                </tr>
+
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="col-md-7 col-xs-12" style="max-height:500px;">
+                        <h5 class="bold text-center">HATALI ÖĞRENCİ LİSTESİ</h5>
+                        <table class="table table-responsive table-bordered table-hover table-checkable" id="KOS_Excel_Sonuc_ErrTable">
+                            <thead>
+                                <tr style="background: #e1e5e8;">
+                                    <th> T.C. </th>
+                                    <th style="width:200px;"> Hata Detayı </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+
+                                <tr v-show="EXCEL_TOPLU_SONUC_HATALIST.length" v-for="u in EXCEL_TOPLU_SONUC_HATALIST">
+                                    <td> {{u.TCKIMLIKNO}} </td>
+                                    <td class="text-danger" style="font-size:8px;"> {{u.HATA}} </td>
+                                </tr>
+                                <tr v-show="!EXCEL_TOPLU_SONUC_HATALIST.length">
+                                    <td colspan="2" class="text-primary"> Hatalı data yok </td>
+
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div id="loadDataMessage" v-show="topluSonucKaydetButtonStatus" class="text-center">
+                            <span>Listeniz kontrol ediliyor.Lütfen bekleyiniz...</span>
+                            <div id="loadingExcelImportData"  class="loader">Loading...</div>
+
+                        </div>
+                    </div>
+            </div>
+            <div class="modal-footer" style="margin-top:10px;">
+                <button type="button" class="btn green" @click="ExcelSonucYukle" :disabled="topluSonucKaydetButtonStatus" data-dismiss="modal"> Kaydet </button>
+                <button type="button" class="btn default" @click="ExcelSonucYukleVazgec" data-dismiss="modal">Vazgeç</button>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.9/xlsx.full.min.js" integrity="sha512-wBcFatf7yQavHQWtf4ZEjvtVz4XkYISO96hzvejfh18tn3OrJ3sPBppH0B6q/1SHB4OKHaNNUKqOmsiTGlOM/g==" crossorigin="anonymous"></script>
+
+<script src="VueComponents/Yazili/Filtreler.js?v=4"></script>
+
+<script>
+    var vue = new Vue({
+
+        el: "#app",
+        name: "YYListele.html",
+
+        data: {
+            DONEM: '',
+            ID_KADEME3: 0,
+            ID_KADEME2: [],
+            ID_KADEME2TEMP: [],
+            ID_DERS: 0,
+            ID_DERSTEMP: 0,
+            YARIYIL: 0,
+            YAZILILISTESI: [],
+            pasifGorunsun: false,
+            SORUNO: 0,
+            ID_YAZILI: 0,
+            tblSorular: null,
+            OGRENCILISTESI: [],
+            TCLISTESI: [],
+            EXCEL_TOPLU_SONUC_HATALIST: [],
+            topluSonucKaydetButtonStatus: false
+        },
+
+        mounted() {
+            this.$nextTick(function () {
+                if (parseInt(getParameterByName("ID_YAZILI")) > 0) {
+                    var p = {
+                        TCKIMLIKNO: session.TCKIMLIKNO,
+                        OTURUM: session.OTURUM,
+                        ID_YAZILI: parseInt(getParameterByName("ID_YAZILI")),
+                    };
+
+                    WebPost(this, "YYListele", "YaziliBilgiGetirListe", p, '#sinavtable', 'Yükleniyor..', function (data, parent) {
+                        if (data != null) {
+                            var k = JSON.parse(data)[0];
+                            parent.DONEM = k.DONEM;
+
+                            parent.YARIYIL = k.YARIYIL;
+                            $('#YARIYIL').val(k.YARIYIL);
+                            $('#YARIYIL').selectpicker('render');
+
+                            parent.ID_KADEME3 = k.ID_KADEME3;
+                            vue.$forceUpdate();
+                            parent.$nextTick(function () {
+                                parent.ID_KADEME2 = [];
+                                parent.ID_KADEME2TEMP = [];
+                                for (var i = 0; i < k.ID_KADEME2.length; i++) {
+                                    parent.ID_KADEME2.push(k.ID_KADEME2[i].ID_KADEME2);
+                                    parent.ID_KADEME2TEMP.push(k.ID_KADEME2[i].ID_KADEME2);
+                                }
+
+                                parent.ID_DERS = k.ID_DERS;
+                                parent.ID_DERSTEMP = k.ID_DERS;
+                                vue.$forceUpdate();
+
+                                parent.YYListele();
+                            });
+
+                        }
+                    });
+                }
+            });
+        },
+
+        methods: {
+            DonemSelected(DONEM) {
+                this.DONEM = DONEM;
+            },
+            IdKademe3Selected(ID_KADEME3) {
+                this.ID_KADEME3 = ID_KADEME3;
+            },
+            IdKademe2Selected(ID_KADEME2) {
+                this.ID_KADEME2 = ID_KADEME2;
+            },
+            YariyilSelected(YARIYIL) {
+                this.YARIYIL = YARIYIL;
+            },
+
+            DersSelected(ID_DERS) {
+                this.ID_DERS = ID_DERS;
+            },
+
+            YYListele() {
+                var _this = this;
+
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    DONEM: this.DONEM,
+                    ID_KADEME3: this.ID_KADEME3,
+                    ID_DERS: this.ID_DERS,
+                    ID_KADEME2: JSON.stringify(this.ID_KADEME2),
+                    YARIYIL: this.YARIYIL,
+                    PASIF: this.pasifGorunsun
+                };
+
+                WebPost(this, "YYListele", "YaziliListele", p, '', '', function (data, parent) {
+                    if (data != null && data.length > 0) {
+                        _this.YAZILILISTESI = JSON.parse(data);
+                        
+                        $('#filters').collapse();
+                    }
+                    else {
+                        _this.YAZILILISTESI = [];
+                        Alert_Warning("Liste Bulunamadı!");
+                    }
+                });
+            },
+
+            Duzenle(id) {
+                window.location.replace('/anasayfa.html#Yazili/YYTanimla?ID_YAZILI=' + id);
+            },
+
+            YaziliAktifPasifYap(u) {
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    ID_YAZILI: u.ID_YAZILI
+                };
+
+                WebPost(this, "YYListele", "YaziliAktifPasifYap", p, '', '', function (data, parent) {
+                    if (data != null || data != undefined) {
+                        parent.YYListele();
+                        if (data == 1) {
+                            Alert_Info("Yazılı Aktif Yapıldı");
+                        }
+                        else {
+                            Alert_Info("Yazılı Pasif Yapıldı");
+                        }
+                    }
+                    else {
+                        Alert_Warning("Liste Bulunamadı!");
+                    }
+                });
+            },
+
+            YaziliKopyala(u) {
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    ID_YAZILI: u.ID_YAZILI
+                };
+                var _this = this;
+                WebPost(this, "YYListele", "YaziliKopyala", p, '', '', function (data, parent) {
+                    if (data != null || data != undefined) {
+                        Alert_Info("Yazılı Kopyalama İşlemi Yapıldı.");
+                        parent.YYListele();
+                    }
+                    else {
+                        Alert_Warning("Liste Bulunamadı!");
+                    }
+                });
+            },
+            BildirimGonder(u) {
+               
+                window.location.replace('/anasayfa.html#Rapor/Viu/ViuTopluMesaj?ID_YAZILI=' + u.ID_YAZILI);
+
+            },
+            ListeOlustur(tabloAdi) {
+                this.tblSorular = $('#' + tabloAdi).DataTable(
+                    {
+                        select: 'multiple',
+                        "aaSorting": [[0, 'asc']],
+                        language: {
+                            "url": "./Utility/dil.json"
+                            ,
+                            "select": {
+                                "rows": "%d satır seçildi."
+                            }
+                        },
+                    });
+            },
+
+            getObjects(obj, key, val) {
+                var objects = [];
+                for (var i in obj) {
+                    if (!obj.hasOwnProperty(i)) continue;
+                    if (typeof obj[i] == 'object') {
+                        objects = objects.concat(this.getObjects(obj[i], key, val));
+                    } else if (i == key && obj[key] == val) {
+                        objects.push(obj);
+                    }
+                }
+                return objects;
+            },
+
+            OVGorsunDegistir(YAZILI) {
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    ID_YAZILI: YAZILI.ID_YAZILI,
+                    OVGORSUN: YAZILI.OVGORSUN
+                };
+
+                WebPost(this, "YYListele", "OVGorsunDegistir", p, '', '', function (data, parent) {
+                    if (data != null || data != undefined) {
+                        if (data == 1) {
+                            Alert_Info("Yazılının Öğrenci Veli Görsün Özelliği Düzenlendi");
+                        }
+                        else {
+                            Alert_Info("Yazılının Öğrenci Veli Görsün Özelliği Düzenlenemedi");
+                        }
+                    }
+                    else {
+                        Alert_Warning("Liste Bulunamadı!");
+                    }
+                });
+            },
+
+            KarnedeGorunsunDegistir(YAZILI) {
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    ID_YAZILI: YAZILI.ID_YAZILI,
+                    KARNEDEGORUNSUN: YAZILI.KARNEDEGORUNSUN
+                };
+
+                WebPost(this, "YYListele", "KarnedeGorunsunDegistir", p, '', '', function (data, parent) {
+                    if (data != null || data != undefined) {
+                        if (data == 1) {
+                            Alert_Info("Yazılının Karnede Görünsün Özelliği Düzenlendi");
+                        }
+                        else {
+                            Alert_Info("Yazılının Karnede Görünsün Özelliği Düzenlenemedi");
+                        }
+                    }
+                    else {
+                        Alert_Warning("Liste Bulunamadı!");
+                    }
+                });
+            },
+
+            AktifDegistir(YAZILI) {
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    ID_YAZILI: YAZILI.ID_YAZILI,
+                    AKTIF: YAZILI.AKTIF
+                };
+
+                WebPost(this, "YYListele", "AktifDegistir", p, '', '', function (data, parent) {
+                    if (data != null || data != undefined) {
+                        if (data == 1) {
+                            Alert_Info("Yazılının Aktif Özelliği Düzenlendi");
+                        }
+                        else {
+                            Alert_Info("Yazılının Aktif Özelliği Düzenlenemedi");
+                        }
+                    }
+                    else {
+                        Alert_Warning("Liste Bulunamadı!");
+                    }
+                });
+            },
+            ExcelTaslakIndir() {
+                window.open("Dosyalar/ExcelTaslak/Okuma_Sinavi_Sonuc_Yukle.xlsx", "_blank");
+            },
+
+            ExelSonucYukle(u) {
+                
+                vue.ID_YAZILI = u.ID_YAZILI;
+                vue.EXCEL_TOPLU_SONUC_HATALIST = [];
+                console.log(vue.EXCEL_TOPLU_SONUC_HATALIST.length);
+                $('#Excel_Okuma_Sonuc_Yukle_modal').modal();
+            },
+            OzellikIndir(idYazili) {
+                
+                window.open('../Rapor.aspx?rapor=Yazili.Ozellikler&raporTur=xls&p='
+                    + session.TCKIMLIKNO + ';'
+                    + session.OTURUM + ';'
+                    + idYazili , '_blank');
+            },
+            previewFile() {
+
+
+                selectedFile = document.getElementById('dosya').files[0];
+
+                if (selectedFile.length == 0) {
+                    Alert_Info('Lütfen Dosya Seçiniz.');
+                    return;
+                }
+
+                var reader = new FileReader();
+                reader.onload = function (event) {
+                    vue.topluSonucKaydetButtonStatus = true;
+
+                    let data = event.target.result;
+                    let excelList = [];
+                    var workbook = XLSX.read(data, {
+                        type: 'binary'
+                    });
+                    let tumData = []
+
+
+                    workbook.SheetNames.forEach(sheet => {
+                        let rowObject = XLSX.utils.sheet_to_row_object_array(workbook.Sheets[sheet]);
+                        tumData.push(rowObject);
+
+                    })
+
+                    tumData[0].forEach((item, i) => {
+                        if (item.TCKIMLIKNO) excelList.push(item);
+                    });
+
+                    vue.OGRENCILISTESI = excelList;
+                };
+
+                reader.onerror = function (event) {
+                    vue.topluSonucKaydetButtonStatus = false;
+                    //console.error("Dosya Okunamadı" + event.target.error.code);
+                };
+                reader.readAsBinaryString(selectedFile);
+
+                Alert_Confirm("Yüklediğiniz excel listesi kontrol edilecek?", "Kaydet dediğinizde sadece doğrulamadan geçen öğrencilerin not girişi yapılacaktır!", function () {
+                    var p = {
+                        TCKIMLIKNO: session.TCKIMLIKNO,
+                        OTURUM: session.OTURUM,
+                        SQLJSONOGRENCICEVAP: JSON.stringify(vue.OGRENCILISTESI),
+                        ID_YAZILI: vue.ID_YAZILI
+                    };
+                    WebPost(vue, "YYListele", "ExcelTopluSonucKontrol", p, '', '', function (data, parent) {
+                        if (data) {
+                            vue.EXCEL_TOPLU_SONUC_HATALIST = JSON.parse(data);
+
+                            vue.EXCEL_TOPLU_SONUC_HATALIST.filter(function (elem) {
+                                let silineceData = elem.TCKIMLIKNO;
+
+                                vue.OGRENCILISTESI.forEach((item, i) => {
+
+                                    if (item.TCKIMLIKNO == silineceData)
+                                        vue.OGRENCILISTESI.splice(i, 1);
+                                    vue.OGRENCILISTESI = vue.OGRENCILISTESI;
+                                });
+                            });
+                            
+                             vue.topluSonucKaydetButtonStatus = false;
+                        }
+                        else {
+                           
+                            vue.topluSonucKaydetButtonStatus = false;
+
+                        }
+                        vue.topluSonucKaydetButtonStatus = false;
+                    });
+                });
+
+
+            },
+            ExcelSonucYukle() {
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    SQLJSONOGRENCICEVAP: JSON.stringify(vue.OGRENCILISTESI),
+                    ID_YAZILI: vue.ID_YAZILI
+                };
+
+                WebPost(vue, "YYListele", "ExcelTopluSonucKaydet", p, '', '', function (data, parent) {
+                    if (data) {
+                        vue.EXCEL_TOPLU_SONUC_HATALIST = [];
+                        document.getElementById("dosya").value = "";
+                        vue.OGRENCILISTESI = [];
+                        vue.EXCEL_TOPLU_SONUC_HATALIST = [];
+                        Alert_Warning("Sınav sonuçları başarıyla kaydedildi!");
+                        parent.YYListele();
+
+                    }
+                    else {
+                        document.getElementById("dosya").value = "";
+                        vue.OGRENCILISTESI = [];
+                        vue.EXCEL_TOPLU_SONUC_HATALIST = [];
+                        Alert_Warning("Kaydetme sırasında bir hata oluştu!");
+
+                    }
+                    topluSonucKaydetButtonStatus = false;
+                });
+
+            },
+            ExcelSonucYukleVazgec() {
+                document.getElementById("dosya").value = "";
+                vue.OGRENCILISTESI = [];
+                vue.EXCEL_TOPLU_SONUC_HATALIST = [];
+                vue.topluSonucKaydetButtonStatus = false;
+             }
+        }
+    });
+</script>
+<script src="Scripts/PublicMethods.js"></script>

@@ -1,0 +1,583 @@
+﻿<link href="assets/global/plugins/bootstrap-fileinput/bootstrap-fileinput.css" rel="stylesheet" type="text/css" />
+<style>
+    td {
+        vertical-align: middle !important;
+    }
+
+    .row {
+        margin-top: 10px !important;
+    }
+
+    .modal-dialog {
+        width: 400px;
+    }
+
+    table.dataTable {
+        margin: 0px !important;
+    }
+</style>
+
+<div class="row" id="app">
+    <div class="page-head col-md-12">
+        <!-- BEGIN PAGE TITLE -->
+        <div class="page-title col-md-12">
+            <h1>
+                Yazılı
+                <small v-if="ID_YAZILI==0">Yazılı Yoklama Tanımla</small>
+                <small v-else>Yazılı Yoklama <span style="color:red;">Ders ekleme ve çıkarma işlemlerinde optik ve katsayı tanımlamaları tekrar kontrol edilmelidir...</span></small>
+                 <span onclick="YardimGoster(ID_MENU);" class="pull-right" style="cursor:pointer;"><img src="assets/global/img/info.gif" class="info-image-icon" /> </span>
+            </h1>
+        </div>
+        <!-- END PAGE TITLE -->
+    </div>
+
+    <div class="col-md-12">
+        <div class="portlet light">
+            <div class="portlet-title">
+                <div class="caption">
+                    <i class="icon-magnifier font-green"></i>
+                    <span class="caption-subject bold font-green uppercase">Yazılı Bilgileri</span>
+                    <span class="caption-helper"></span>
+                </div>
+                <div class="pull-right">
+                    <button v-if="ID_YAZILI>0" type="button" class="btn yellow" @click="YaziliListele()">Yazılı Listele</button>
+                    <div v-if="ID_YAZILI==0">
+                        <div class="fileinput fileinput-new" data-provides="fileinput">
+                            <span class="fileinput-preview thumbnail" style="max-width: 1000px; max-height: 1000px;"> </span>
+                            <span>
+                                <span class="btn default btn-file">
+                                    <span class="fileinput-new yellow"> Excel'den Yükle </span>
+                                    <span class="fileinput-exists"> Değiştir </span>
+                                    <input type="file" name="..." accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" id="Dosya" data-preview-file-type="text">
+                                </span>
+                                <a href="javascript:;" class="btn red fileinput-exists" data-dismiss="fileinput"> Sil </a>
+                                <a href="javascript:;" @click="DosyaKaydet()" class="btn green fileinput-exists" data-dismiss="modal"> Tamam </a>
+                            </span>
+                        </div>
+                        <button type="button" class="btn yellow" @click="OrnekExcelIndir">Excel Taslağı İndir</button>
+                    </div>
+                </div>
+                <!--<span class="pull-right fa fa-lg" style="cursor:pointer;" onclick="YardimGoster(ID_MENU);"> </span>-->
+            </div>
+            <!-- BEGIN PORTLET-->
+            <div class="portlet-body form">
+                <form role="form">
+                    <div class="portlet light bordered">
+                        <div class="portlet-body" style="padding:0px;">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="row">
+                                        <div class="form-md-line-input">
+                                            <label class="control-label col-md-3" style="vertical-align:middle;">Yazılı Adı </label>
+                                            <div class="col-md-9">
+                                                <input type="text" maxlength="50" placeholder="Yazılı Adı" class="form-control" v-model="YAZILIADI" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="form-md-line-input">
+                                            <label class="control-label col-md-3" style="vertical-align:middle;">Yazılı Kodu </label>
+                                            <div class="col-md-9">
+                                                <input type="text" maxlength="50" placeholder="Yazılı Kodu" class="form-control" v-model="YAZILIKODU" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <c-kademe3 controller="YYTanimla"
+                                                   :idkademe3="ID_KADEME3"
+                                                   :idyazili="ID_YAZILI"
+                                                   @OnChange="IdKademe3Selected">
+                                        </c-kademe3>
+                                    </div>
+                                    <div class="row">
+                                        <c-kademe2 controller="YYTanimla"
+                                                   :idkademe3="ID_KADEME3"
+                                                   :idkademe2temp="ID_KADEME2TEMP"
+                                                   @OnChange="IdKademe2Selected">
+                                        </c-kademe2>
+                                    </div>
+                                    <div class="row">
+                                        <c-ders controller="YYTanimla"
+                                                :idkademe3="ID_KADEME3"
+                                                :idderstemp="ID_DERSTEMP"
+                                                :idyazili="ID_YAZILI"
+                                                @OnChange="DersSelected">
+                                        </c-ders>
+                                    </div>
+                                    <div class="row">
+                                        <c-sorusayisi @OnChange="SoruSaySelected"
+                                                      :idyazili="ID_YAZILI"
+                                                      :sorusayisi="SORUSAYISI">
+                                        </c-sorusayisi>
+                                    </div>
+                                    <div class="row">
+                                        <c-yariyil @OnChange="YariyilSelected"
+                                                   :yariyil="YARIYIL">
+                                        </c-yariyil>
+                                    </div>
+                                    <div class="row">
+                                        <c-tarih :tarih="TARIH"
+                                                 @change-date="TarihSelected">
+                                        </c-tarih>
+                                    </div>
+                                    <div class="row">
+                                        <c-yazilituru controller="YYTanimla"
+                                                      :id_yaziliturutemp="ID_YAZILITURUTEMP"
+                                                      @OnChange="YaziliTuruSelected">
+                                        </c-yazilituru>
+                                    </div>
+                                    <div style="text-align:right; margin-top: 10px;">
+                                        <button v-if="ID_YAZILI==0" type="button" class="btn green" @click="SorulariOlustur()">Soruları Oluştur</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <!-- END PORTLET-->
+        </div>
+    </div>
+
+    <div id="dersler" v-if="SORULIST!=null && SORULIST.length>0" class="col-md-12">
+        <div class='portlet box blue-hoki dd-item' id='ders' style='border:none;'>
+            <div class='portlet-title derssorudiv'>
+                <div class='caption'>
+                    <i class='fa fa-cogs'></i> SORULAR
+                </div>
+            </div>
+            <div class='portlet-body' style='padding:0px;'>
+                <table v-if="parseInt(SORUSAYISI)>0" class='table table-striped table-hover dataTable tabledersitem' style='margin:0px;'>
+                    <thead>
+                        <tr>
+                            <th style="width:20px; text-align:center;">No</th>
+                            <th>Ünite</th>
+                            <th style="text-align:center;">Bilgi</th>
+                            <th style="text-align:center;">Bilişsel Süreç</th>
+                            <th style="text-align:center;">Puan</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="soru in SORULIST">
+                            <td style="text-align:center;"> {{soru.SORUNO}} </td>
+                            <td>
+                                <input class='form-control pull-left' style="width:calc(50% - 27px);" v-model="soru.KOD==0?'':soru.KOD" placeholder="Ünite Kodu" :id='"soru"+soru.SORUNO' @keyup.enter='UniteAra(soru,"soru"+soru.SORUNO)' />
+                                <input class='form-control pull-left' style="width:calc(50% - 27px); margin-left:10px;" v-model="soru.UNITE" placeholder="Ünite Adı" readonly />
+                                <i class="fa fa-lg fa-arrow-circle-o-down pull-right" style="margin-top:10px; cursor:pointer;" @click="UniteKopyala(soru,soru.KOD,soru.UNITE)"></i>
+                                <i class="fa fa-lg fa-crosshairs pull-right" @click="DersKonuSec(soru)" style="margin-top:10px; cursor:pointer;"></i>
+                            </td>
+                            <td>
+                                <select v-model="soru.ID_BILGI" class="form-control">
+                                    <option value="0">Seçiniz</option>
+                                    <option v-for="BILGI in BILGILIST" :value="BILGI.ID_BILGI">{{BILGI.AD}}</option>
+                                </select>
+                            </td>
+                            <td>
+                                <select v-model="soru.ID_BILISSELSUREC" class="form-control">
+                                    <option value="0">Seçiniz</option>
+                                    <option v-for="BILISSELSUREC in BILISSELSURECLIST" :value="BILISSELSUREC.ID_BILISSELSUREC">{{BILISSELSUREC.AD}}</option>
+                                </select>
+                            </td>
+                            <td><input type="text" class='form-control' style="text-align:center;" v-model="soru.PUAN" onkeypress='return event.charCode >= 48 && event.charCode <= 57' /></td>
+                        </tr>
+                        <tr>
+                            <td colspan="4"></td>
+                            <td><input type="text" class='form-control' style="text-align:center;" v-model="toplamPuan" disabled v-bind:style="[toplamPuan>100 ? {background:'indianred', color:'white'} : {background:'lightgray'}]" /></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div style="text-align:right;">
+            <button v-if="ID_YAZILI == 0" id="BTNKAYDET" type="button" class="btn green" @click="YaziliOlustur()">Kaydet</button>
+            <button v-else id="BTNKAYDET" type="button" class="btn green" @click="YaziliOlustur()">Güncelle</button>
+        </div>
+    </div>
+
+    <div class="modal fade" id="dersKonuModal" role="dialog" style="display: none;">
+        <div class="modal-dialog">
+            <div class="modal-content" id="dersKonu">
+                <div class="modal-header" id="unite_header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title"><label id="modal_baslik">Ünite Seçimi</label></h4>
+                </div>
+                <div class="modal-body">
+                    <div id="div_uniteler" class="row" style="max-height:600px; overflow-y:auto">
+
+                    </div>
+                </div>
+                <div class="modal-footer" id="div_footer">
+                    <button type="button" class="btn success btn-default" data-dismiss="modal">Tamam</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Kapat</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="VueComponents/Yazili/Filtreler.js?v=4"></script>
+<script>
+    var vue = new Vue({
+        el: "#app",
+        name: "YYTanimla.html",
+        data: {
+            ID_YAZILI: 0,
+            YAZILIADI: '',
+            YAZILIKODU: '',
+            ID_KADEME3: 0,
+            SORUSAYISI: 0,
+            ID_KADEME2: [],
+            ID_KADEME2TEMP: [],
+            TARIH: '',
+            ID_DERS: 0,
+            ID_DERSTEMP: 0,
+            YARIYIL: 1,
+            SORULIST: null,
+            ID_YAZILITURU: 0,
+            ID_YAZILITURUTEMP: 0,
+            BILGILIST: [],
+            BILISSELSURECLIST: []
+        },
+
+        computed: {
+            toplamPuan: function () {
+                if (this.SORULIST != null) {
+                    return this.SORULIST.reduce((sum, item) => parseInt(sum) + parseInt(item.PUAN == '' ? 0 : item.PUAN), 0);
+                } else {
+                    return 0;
+                }
+            }
+        },
+        
+        mounted() {
+            var p = { TCKIMLIKNO: session.TCKIMLIKNO, OTURUM: session.OTURUM };
+            WebPost(this, "YYTanimla", "BilgiListele", p, "", "", function (data, parent) {
+                parent.BILGILIST = JSON.parse(data);
+
+                WebPost(parent, "YYTanimla", "BilisselSurecListele", p, "", "", function (data, parent2) {
+                    parent2.BILISSELSURECLIST = JSON.parse(data);
+
+                    parent2.$nextTick(function () {
+                        if (getParameterByName("ID_YAZILI") != null) {
+                            parent2.ID_YAZILI = parseInt(getParameterByName("ID_YAZILI"));
+                            parent2.YaziliBilgiGetir();
+                        }
+                    });
+                })
+            })
+        },
+
+        methods: {
+            YaziliTuruSelected(ID_YAZILITURU) {
+                this.ID_YAZILITURU = ID_YAZILITURU;
+            },
+
+            IdKademe3Selected(ID_KADEME3) {
+                this.ID_KADEME3 = ID_KADEME3;
+            },
+
+            IdKademe2Selected(ID_KADEME2) {
+                this.ID_KADEME2 = ID_KADEME2;
+            },
+
+            YariyilSelected(YARIYIL) {
+                this.YARIYIL = YARIYIL;
+            },
+
+            TarihSelected(TARIH) {
+                this.TARIH = TARIH;
+            },
+
+            DersSelected(ID_DERS) {
+                this.ID_DERS = ID_DERS;
+            },
+
+            SoruSaySelected(SORUSAYISI) {
+                this.SORUSAYISI = SORUSAYISI;
+            },
+
+            YaziliBilgiGetir() {
+                var p = { TCKIMLIKNO: session.TCKIMLIKNO, OTURUM: session.OTURUM, ID_YAZILI: this.ID_YAZILI };
+                WebPost(this, "YYTanimla", "YaziliBilgiGetir", p, "", "", function (data, parent) {
+                    var JSONx = JSON.parse(data)[0].T1[0];
+                    var T2 = JSON.parse(data)[0].T2;
+
+                    parent.YAZILIADI = JSONx.AD;
+                    parent.YARIYIL = JSONx.YARIYIL;
+                    $('#YARIYIL').val(JSONx.YARIYIL);
+                    $('#YARIYIL').selectpicker('render');
+                    parent.YAZILIKODU = JSONx.KOD;
+                    parent.ID_KADEME3 = JSONx.ID_KADEME3;
+                    parent.TARIH = JSONx.YAZILITARIH;
+                    vue.$forceUpdate();
+
+                    parent.$nextTick(function () {
+                        parent.ID_KADEME2 = [];
+                        parent.ID_KADEME2TEMP = [];
+                        for (var i = 0; i < T2.length; i++) {
+                            parent.ID_KADEME2.push(T2[i].ID_KADEME2);
+                            parent.ID_KADEME2TEMP.push(T2[i].ID_KADEME2);
+                        }
+                        parent.SORUSAYISI = JSONx.SORUSAYISI;
+                        parent.ID_DERS = JSONx.ID_DERS;
+                        parent.ID_DERSTEMP = JSONx.ID_DERS;
+                        parent.ID_YAZILITURU = JSONx.ID_YAZILITURU;
+                        parent.ID_YAZILITURUTEMP = JSONx.ID_YAZILITURU;
+                        vue.$forceUpdate();
+                    });
+
+                    parent.SORULIST = JSONx.SORULIST;
+                })
+            },
+
+            SorulariOlustur() {
+                var SORULIST = new Array();
+                for (var j = 0; j < parseInt(this.SORUSAYISI); j++) {
+                    var SORU = new Object();
+                    SORU.SORUNO = j + 1;
+                    SORU.KOD = '';
+                    SORU.UNITE = '';
+                    SORU.PUAN = '';
+                    SORU.ID_BILGI = 0;
+                    SORU.ID_BILISSELSUREC = 0;
+                    SORULIST.push(SORU);
+                }
+                this.SORULIST = SORULIST;
+            },
+
+            YaziliOlustur() {
+                if (this.ID_YAZILITURU > 0) {
+                    var _this = this;
+                    if (this.ID_YAZILI > 0) {
+                        //Alert_Confirm("Dikkat!!", "İşleme Devam Etmeniz Halinde Seçili Sınava Ait Tüm Öğrenci Cevapları Silinecektir.", function () {
+                        _this.YaziliKaydet();
+                        //});
+                    }
+                    else {
+                        _this.YaziliKaydet();
+                    }
+                } else {
+                    Alert_Warning('Yazılı türü seçilmelidir.');
+                }
+            },
+
+            YaziliKaydet() {
+                $('#BTNKAYDET').attr("disabled", true);
+                var JSONx = new Object();
+                JSONx.AD = this.YAZILIADI;
+                JSONx.KOD = this.YAZILIKODU;
+                JSONx.ID_KADEME3 = this.ID_KADEME3;
+                JSONx.YAZILITARIH = this.TARIH;
+                JSONx.ID_DERS = this.ID_DERS;
+                JSONx.JSONKADEME2 = this.ID_KADEME2;
+                JSONx.YARIYIL = this.YARIYIL;
+                JSONx.ID_YAZILI = this.ID_YAZILI;
+                JSONx.ID_YAZILITURU = this.ID_YAZILITURU;
+                JSONx.SORULIST = this.SORULIST;
+
+                var p = { TCKIMLIKNO: session.TCKIMLIKNO, OTURUM: session.OTURUM, ID_YAZILI: this.ID_YAZILI, SQLJSON: JSON.stringify(JSONx).replace(new RegExp('\'', 'g'), '') };
+
+                WebPost(this, "YYTanimla", this.ID_YAZILI == 0 ? "YaziliTanimla" : "YaziliGuncelle", p, '', 'Yükleniyor..', function (data, parent) {
+                    if (parent.ID_YAZILI == 0) {
+                        parent.Alert_Yazili("Kaydedildi", data);
+                    } else {
+                        if (data) {
+                            parent.Alert_Yazili("Kaydedildi", data);
+                        }
+                    }
+
+                    $('#BTNKAYDET').attr("disabled", false);
+                });
+            },
+
+            Alert_Yazili(message, ID_YAZILI2) {
+                bootbox.dialog({
+                    message: "<font color='green'>" + message + "</font>",
+                    title: "<font color='green'>İşlem Tamam</font>",
+                    buttons: {
+                        success: {
+                            label: "Tamam!",
+                            className: "btn-success",
+                            callback: function () {
+                                if (ID_YAZILI2 == true) {
+                                    location.reload();
+                                } else {
+                                    window.location.replace((document.URL.indexOf('?') > -1 ? (document.URL.substring(0, document.URL.indexOf('?'))) : (document.URL)) + '?ID_YAZILI=' + ID_YAZILI2);
+                                }
+                            }
+                        },
+                    }
+                });
+            },
+
+            DersKonuSec(SORU) {
+                var p = { TCKIMLIKNO: session.TCKIMLIKNO, OTURUM: session.OTURUM, ID_DERS: this.ID_DERS };
+                WebPost(this, "YYTanimla", "DersKonuListele", p, '#dersler', '', function (data, parent) {
+                    $("#div_uniteler").html('');
+                    var Uniteler = '<option value="0">Ünite Seçiniz ...</option>';
+                    $('#dersKonuModal').modal();
+                    var unitekodu = "";
+                    $.each(data, function (j) {
+                        if (this.KOD.substring(0, 6) != unitekodu) {
+                            if (j != 0) {
+                                Uniteler += '</optgroup>';
+                                Uniteler += '</optgroup>';
+                            }
+                            unitekodu = this.KOD;
+                            Uniteler += '<optgroup style="background-color:yellow;" label="' + vue.bosluk(this.KOD.length, this.AD) + '">';
+                        }
+                        else {
+                            Uniteler += '</optgroup>';
+
+                            if (this.SECILEBILIR) {
+                                Uniteler += '<option value="' + this.KOD + '" unite="' + this.AD + '">' + vue.bosluk(this.KOD.length, this.AD) + '</option>';
+                            } else {
+                                Uniteler += '<optgroup label="' + vue.bosluk(this.KOD.length, this.AD) + '">';
+                            }
+                        }
+                    })
+
+                    Uniteler += '</optgroup>';
+                    Uniteler += '</optgroup>';
+
+                    $("#div_uniteler").html('' +
+                        '<div class="col-md-12 selectunite">' +
+                        '<select id="su' + SORU.SORUNO + '" class="form-control input-sm" data-live-search="true">' +
+                        Uniteler +
+                        '</select>' +
+                        '</div>' +
+                        '<br/>');
+
+                    $('#su' + SORU.SORUNO).change(function () {
+                        SORU.KOD = $(this).val();
+                        SORU.UNITE = this.options[this.selectedIndex].getAttribute('unite');
+                        vue.$forceUpdate();
+                    })
+                })
+            },
+
+            UniteKopyala(soru, KOD, UNITE) {
+                try {
+                    this.SORULIST[soru.SORUNO].KOD = KOD;
+                    this.SORULIST[soru.SORUNO].UNITE = UNITE;
+                    vue.$forceUpdate();
+                } catch (e) {
+                }
+            },
+
+            bosluk(length, ad) {
+                var str = '';
+                for (var i = 0; i < (length - 6); i++) {
+                    str += '&nbsp ';
+                }
+                return str + ad;
+            },
+
+            UniteAra(SORU, ID) {
+                var text = $('#' + ID).val();
+                var p = { TCKIMLIKNO: session.TCKIMLIKNO, OTURUM: session.OTURUM, ID_DERS: this.ID_DERS, UNITEKOD: text };
+                WebPost(this, "YYTanimla", "UniteAra", p, '#dersler', '', function (data, parent) {
+                    if (data != null) {
+                        SORU.KOD = text;
+                        SORU.UNITE = data;
+                    } else {
+                        SORU.KOD = text;
+                        SORU.UNITE = 'Eşleşme bulunamadı!';
+                    }
+                    vue.$forceUpdate()
+                });
+            },
+
+            getObjects(obj, key, val) {
+                var objects = [];
+                for (var i in obj) {
+                    if (!obj.hasOwnProperty(i)) continue;
+                    if (typeof obj[i] == 'object') {
+                        objects = objects.concat(this.getObjects(obj[i], key, val));
+                    } else if (i == key && obj[key] == val) {
+                        objects.push(obj);
+                    }
+                }
+                return objects;
+            },
+
+            YaziliListele() {
+                window.location.replace('/anasayfa.html#Yazili/YYListele?ID_YAZILI=' + this.ID_YAZILI);
+            },
+
+            DosyaKaydet() {
+                var guid = '';
+                var dosyaadi = '';
+                var _this = this;
+                var dosya = document.getElementById('Dosya').files;
+                dosyaadi = $("#Dosya").val().replace(/^.*[\\\/]/, '');
+                if (dosya.length == 0) {
+                    Alert_Info('Lütfen Dosya Seçiniz.');
+                    return;
+                }
+
+                YaziliTaslakYukle(dosya, function (response) {
+                    $('.fileinput').fileinput("clear");
+                    var json = JSON.parse(response);
+
+                    console.log(json);
+                    var p = {
+                        TCKIMLIKNO: session.TCKIMLIKNO,
+                        OTURUM: session.OTURUM,
+                        SQLJSON: JSON.stringify(json).replace(new RegExp('\'', 'g'), '')
+                    };
+
+                    WebPost(vue, "YYTanimla", "YaziliTanimlaExcel", p, '', '', function (data, parent) {
+                        if (data > 0) {
+                            parent.Alert_Yazili("Kaydedildi", data);
+                        }
+                    })
+                });
+            },
+
+            UniteAraExcel(ID_DERS, SORU, KOD) {
+                var p = { TCKIMLIKNO: session.TCKIMLIKNO, OTURUM: session.OTURUM, ID_DERS: ID_DERS, UNITEKOD: KOD };
+                WebPost(this, "YYTanimla", "UniteAra", p, '#dersler', '', function (data, parent) {
+                    if (data != null) {
+                        SORU.UNITE = data;
+                    } else {
+                        SORU.UNITE = 'Eşleşme bulunamadı!';
+                    }
+                    vue.$forceUpdate()
+                });
+            },
+
+            OrnekExcelIndir() {
+                window.open("Dosyalar/SinavTemplate/YAZILITASLAK.xlsx?v=001", "_blank")
+            },
+
+            SinavBilgileriniGuncelle() {
+                Alert_Confirm("Uyarı", "Bu işlem yalnızca üst kısımda yer alan genel yazılı bilgilerini günceller. Eğer sorular kısmında bir değiklik yaptıysanız alt kısımda yer alan kaydet butonuna tıklamalısınız.", function () {
+                    $('#BTNGUNCELLE').attr("disabled", true);
+                    var JSONx = new Object();
+                    JSONx.AD = vue.YAZILIADI;
+                    JSONx.KOD = vue.YAZILIKODU;
+                    JSONx.ID_KADEME3 = vue.ID_KADEME3;
+                    JSONx.YAZILITARIH = vue.TARIH;
+                    JSONx.ID_DERS = vue.ID_DERS;
+                    JSONx.JSONKADEME2 = vue.ID_KADEME2;
+                    JSONx.YARIYIL = vue.YARIYIL;
+                    JSONx.ID_YAZILI = vue.ID_YAZILI;
+                    JSONx.ID_YAZILITURU = vue.ID_YAZILITURU;
+
+                    var p = { TCKIMLIKNO: session.TCKIMLIKNO, OTURUM: session.OTURUM, ID_YAZILI: vue.ID_YAZILI, SQLJSON: JSON.stringify(JSONx).replace(new RegExp('\'', 'g'), '') };
+
+                    WebPost(vue, "YYTanimla", "YaziliBilgileriniGuncelle", p, '', 'Yükleniyor..', function (data, parent) {
+                        if (data) {
+                            parent.Alert_Yazili("Kaydedildi", data);
+                        }
+
+                        $('#BTNGUNCELLE').attr("disabled", false);
+                    });
+                });
+            }
+        }
+    });
+</script>
+<script src="Scripts/PublicMethods.js"></script>
+<script src="assets/global/plugins/bootstrap-fileinput/bootstrap-fileinput.js" type="text/javascript"></script>

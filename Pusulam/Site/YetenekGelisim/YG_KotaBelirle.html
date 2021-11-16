@@ -1,0 +1,283 @@
+﻿<style>
+    .optionGroup {
+        font-weight: bold;
+        font-style: italic;
+    }
+
+    .optionChild {
+        margin-left: 15px !important;
+    }
+
+    .divider {
+        background: #337ab7 !important;
+        margin: 0px !important;
+    }
+
+    .dropdown-header {
+        padding: 0px !important;
+    }
+
+    .m-grid.m-grid-demo .m-grid-col {
+        height: auto !important;
+        padding: 8px;
+    }
+</style>
+
+<div class="page-head">
+    <div class="page-title col-md-12">
+        <h1>
+            Yetenek Gelişim Kota Belirle
+             <span onclick="YardimGoster(ID_MENU);" class="pull-right" style="cursor:pointer;"><img src="assets/global/img/info.gif" class="info-image-icon" /> </span>
+        </h1>
+    </div>
+</div>
+
+<div class="row" id="app">
+    <div class="portlet light col-md-12" id="Tablodiv" style="min-height:100px;padding:0px;">
+
+        <div class="col-md-12" style="padding-top:10px; padding-bottom:10px;">
+            <c-donem :controller="controller"
+                     @OnChange="DonemSelected">
+            </c-donem>
+        </div>
+                
+        <div class="col-md-12" style="padding-top:10px; padding-bottom:10px;">
+            <c-sube-multi :controller="controller"
+                            @OnChange="SubeSelected">
+            </c-sube-multi>
+        </div>
+        
+        <div class="col-md-12">
+            <c-yetenek-ders :controller="controller"
+                            :idset="ID_YETENEKDERS"
+                            @OnChange="YetenekDersSelected">
+            </c-yetenek-ders>
+        </div>
+
+
+        <div class="col-md-12" style="padding-top:20px">
+            <input style="float:right;margin: 10px;" type="button" class="btn btn-success" v-on:click="Kaydet" :disabled="KOTALISTE.length == 0" value="Kaydet">
+        </div>
+
+    </div>
+
+
+    <div class="portlet light col-md-12" style="min-height:100px;padding:0px;" v-if="KOTALISTE.length > 0">
+
+
+        <!--<div class="m-grid m-grid-responsive-xs m-grid-demo margin-top-10" id="Liste">
+            <div class="m-grid-row">
+                <div class="m-grid-col" style=" WORD-WRAP: break-word;"> </div>
+                <div class="m-grid-col" style=" WORD-WRAP: break-word;" v-for="u in KADEME3LISTE">{{u.KADEME3}} </div>
+            </div>
+
+
+            <div class="m-grid-row" v-for="u in SUBELISTE">
+                <div class="m-grid-col" style=" WORD-WRAP: break-word;"> {{u.SUBEAD}} </div>
+                <div class="m-grid-col" style=" WORD-WRAP: break-word;"  v-for="ul in KADEME3LISTE">
+                    <div>
+                        <label :for="'kota' + u.ID_SUBE">Kota: </label>
+                        <input :id="'kota' + u.ID_SUBE" type="number" style="width:100%; text-align:center;" min="0" v-model="getObjects(getObjects(KOTALISTE, 'ID_SUBE', u.ID_SUBE), 'ID_KADEME3', ul.ID_KADEME3)[0].KOTA" max="999" />
+                    </div>
+                </div>
+            </div>
+        </div>-->
+
+
+        <table class="table table-striped table-bordered table-hover table-checkable">
+            <!--<thead>
+                <tr>
+                    <th></th>
+                    <th v-for="u in KADEME3LISTE">{{u.KADEME3}}</th>
+                </tr>
+            </thead>-->
+            <tbody>
+                <tr v-for="u in SUBELISTE">
+
+                    <td>{{u.SUBEAD}}</td>
+                    <td v-for="ul in KADEME3LISTE" style="text-align: center; vertical-align: top !important;     position: relative;">
+                        <div>
+                            <table class="table table-striped table-bordered table-hover table-checkable">
+                                <thead>
+                                    <tr>
+                                        <th>{{ul.KADEME3}}</th>
+                                    </tr>
+                                </thead>
+                            </table>
+                        </div>
+                        <div>
+                            <label :for="'kota' + u.ID_SUBE">Kota: </label>
+                            <input :id="'kota' + u.ID_SUBE" type="number" min="0" max="999"  style="width:100%; text-align:center;" v-model="getObjects(getObjects(KOTALISTE, 'ID_SUBE', u.ID_SUBE), 'ID_KADEME3', ul.ID_KADEME3)[0].KOTA"  />
+                        </div>
+
+                        <div style="margin-bottom:54px ;    margin-top: 10px;">
+                            <table class="table table-striped table-bordered table-hover table-checkable">
+                                <tr>
+                                    <td style="text-align: left; width:70%"> Öğrenci </td>
+                                    <td style="width:30%"> {{getObjects(getObjects(KOTALISTE, 'ID_SUBE', u.ID_SUBE), 'ID_KADEME3', ul.ID_KADEME3)[0].OGRENCISAYISI}} </td>
+                                </tr>
+                                <tr>
+                                    <td style="text-align: left;"> Toplam Kota </td>
+                                    <td> {{getObjects(getObjects(KOTALISTE, 'ID_SUBE', u.ID_SUBE), 'ID_KADEME3', ul.ID_KADEME3)[0].TOPLAMKOTA}} </td>
+                                </tr>
+                                <tr>
+                                    <td style="text-align: left;"> Seçim Yapan Toplam Öğrenci Sayısı </td>
+                                    <td> {{getObjects(getObjects(KOTALISTE, 'ID_SUBE', u.ID_SUBE), 'ID_KADEME3', ul.ID_KADEME3)[0].SECIMYAPANOGRENCISAYISI}} </td>
+                                </tr>
+                                <tr>
+                                    <td style="text-align: left;"> Seçim Yapmayan Toplam Öğrenci Sayısı </td>
+                                    <td> {{getObjects(getObjects(KOTALISTE, 'ID_SUBE', u.ID_SUBE), 'ID_KADEME3', ul.ID_KADEME3)[0].SECIMYAPMAYANOGRENCISAYISI}} </td>
+                                </tr>
+                                <tr>
+                                    <td style="text-align: left;"> Toplam Öğrenci </td>
+                                    <td> {{getObjects(getObjects(KOTALISTE, 'ID_SUBE', u.ID_SUBE), 'ID_KADEME3', ul.ID_KADEME3)[0].TOPLAMOGRENCISAYISI}} </td>
+                                </tr>
+
+                            </table>
+                        </div>
+
+                        <div style="position: absolute; bottom: 10px; width: 100%;">
+                            <input type="button" class="btn btn-success" v-on:click="Bosalt(u.ID_SUBE,ul.ID_KADEME3 )" :disabled="getObjects(getObjects(KOTALISTE, 'ID_SUBE', u.ID_SUBE), 'ID_KADEME3', ul.ID_KADEME3)[0].OGRENCISAYISI == 0" value="Boşalt">
+                        </div>
+
+                    </td>
+                </tr>
+            </tbody>
+
+        </table>
+
+
+    </div>
+</div>
+
+<script src="../../VueComponents/Filtre.js"></script>
+<script src="../../VueComponents/YetenekGelisim/Filtreler.js?v=1"></script>
+<script src="../../VueComponents/SoruFiltreleri.js"></script>
+
+<script>
+    var vue = new Vue({
+        el: "#app",
+        name: "YG_KotaBelirle.html",
+
+        data: {
+            ID_YETENEKDERS: undefined,
+            DONEM: undefined,
+            controller: 'YG_KotaBelirle',
+
+            KOTALISTE: [],
+            KADEME3LISTE: [],
+            SUBELISTE: [],
+            ID_SUBELIST: [],
+
+        },
+
+        methods: {
+            
+            SubeSelected(val) {
+                this.ID_SUBELIST = val;
+                if (this.ID_YETENEKDERS != undefined) {
+                    this.YG_KategoriKotaGetir();
+                }
+            },
+
+            DonemSelected(val) {
+                this.DONEM = val;
+                if (this.ID_YETENEKDERS != undefined) {
+                    this.YG_KategoriKotaGetir();
+                }
+            },
+
+            YetenekDersSelected(val) {
+                this.ID_YETENEKDERS = val;
+                this.YG_KategoriKotaGetir();
+            },
+
+            YG_KategoriKotaGetir() {
+                var _this = this;
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    ID_KATEGORI: this.ID_YETENEKDERS,
+                    DONEM: this.DONEM,
+                    ID_SUBELIST: JSON.stringify( this.ID_SUBELIST)
+                };
+
+                WebPost(this, this.controller, "YG_KategoriKotaGetir", p, "", "Yükleniyor...", function (data, parent) {
+                    _this.KOTALISTE = JSON.parse(data)[0].KOTALISTE;
+                    _this.KADEME3LISTE = JSON.parse(data)[0].KADEME3LISTE;
+                    _this.SUBELISTE = JSON.parse(data)[0].SUBELISTE;
+                    
+                    //var slist = [];
+                    //$.each(JSON.parse(data)[0].SUBELISTE, function (j, el) {                        
+                    //    var result = $.grep(_this.ID_SUBELIST, function (sel, i) { return sel == el.ID_SUBE; });
+                    //    if (result.length > 0) {
+                    //        slist.push({ "ID_SUBE": el.ID_SUBE, "SUBEAD": el.SUBEAD });
+                    //    }
+                    //});
+                    //
+                    //_this.SUBELISTE = slist;
+
+                });
+            },
+            Kaydet() {
+                var _this = this;
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    ID_KATEGORI: this.ID_YETENEKDERS,
+                    KOTALISTE: JSON.stringify(this.KOTALISTE),
+                };
+
+
+                WebPost(this, this.controller, "YG_KotaBelirle", p, "", "Yükleniyor...", function (data, parent) {
+                    if (data != null) {
+                        Alert_Info("Kayıt İşlemi Yapıldı");
+                        _this.ID_YETENEKDERS = undefined;
+                        _this.KOTALISTE = [];
+                    } else {
+                        Alert_Warning("Kayıt İşlemi Yapılamadı..!");
+                    }
+                });
+            },
+            Bosalt(idSube, idKademe3) {
+                var _this = this;
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    ID_KATEGORI: this.ID_YETENEKDERS,
+                    DONEM: this.DONEM,
+                    ID_SUBE : idSube,
+                    ID_KADEME3 : idKademe3,
+                };
+
+                Alert_OkCancelConfirm("Öğrenci Boşalt", "Şubedeki Kademedeki Tüm Öğrencilerin Kayıtları Silinecektir. Devam Etmek İstiyor Musunuz?", function () {
+                    WebPost(_this, _this.controller, "YG_OgrenciBosalt", p, "", "", function (data, parent) {
+                        if (data == true) {
+                            Alert_Info("Yetenek Dersi Öğrenci Listesi Temizlendi");
+                            _this.YG_KategoriKotaGetir();
+                        } else {
+                            Alert_Warning("Kayıt İşlemi Yapılamadı..!");
+                        }
+                    });
+                }, function () {
+                    Alert_Warning("İşlem İptal Edildi..!");
+                })
+            },
+
+
+            getObjects(obj, key, val) {
+                var objects = [];
+                for (var i in obj) {
+                    if (!obj.hasOwnProperty(i)) continue;
+                    if (typeof obj[i] == 'object') {
+                        objects = objects.concat(this.getObjects(obj[i], key, val));
+                    } else if (i == key && obj[key] == val) {
+                        objects.push(obj);
+                    }
+                }
+                return objects;
+            },
+        },
+    });
+</script>
+<script src="../../../Scripts/PublicMethods.js"></script>

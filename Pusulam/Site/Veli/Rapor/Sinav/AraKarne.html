@@ -1,0 +1,635 @@
+﻿<head>
+    <script src="/Scripts/Rapor/amcharts.js"></script>
+    <script src="/Scripts/Rapor/jquery.easypiechart.js"></script>
+    <script src="/Scripts/Rapor/light.js"></script>
+    <script src="/Scripts/Rapor/serial.js"></script>
+</head>
+<link href="../../../../assets/fixed-table/css/component.css?v=4" rel="stylesheet" />
+
+<style>
+    #chartdiv {
+        width: 100%;
+        height: 500px;
+        font-size: 11px;
+    }
+
+    .table > tbody > tr > td, .table > tbody > tr > th, .table > tfoot > tr > td, .table > tfoot > tr > th, .table > thead > tr > td, .table > thead > tr > th {
+        font-size: 11px;
+    }
+
+    .turuncu {
+        background-color: #EA5702;
+        color: white;
+        font-size: 12px !important;
+    }
+
+    .fontsize12 {
+        font-size: 12px !important;
+    }
+
+    .koyumavi {
+        background-color: #0E3170;
+        color: white;
+    }
+
+    .acikmavi {
+        background-color: #2786C3;
+        color: white;
+    }
+
+    .bordermavi {
+        border: #2786C3 1px solid;
+        text-align: center;
+        color: black;
+    }
+
+    .bordersag {
+        border-right: #b4d2e6 1px solid;
+        text-align: center;
+    }
+
+    .analizbaslik {
+        background-color: #FFA500 !important;
+    }
+
+    .fixed-table-body {
+        overflow-x: hidden !important;
+    }
+
+    .red {
+        color: red;
+    }
+</style>
+
+<div class="page-head">
+    <div class="page-title col-md-12">
+        <h1> TÜM SINAV SONUÇLARI <small>Ara Karne</small>  <span onclick="YardimGoster(ID_MENU);" class="pull-right" style="cursor:pointer;"><img src="assets/global/img/info.gif" class="info-image-icon" /> </span></h1>
+    </div>
+</div>
+
+
+<div class="row" id="app">
+    <div class="col-md-12">
+        <div class="portlet box green-haze dd-item" style="border:none">
+            <div class="portlet-title dd-handle" data-toggle='collapse' data-target='#filters' style="cursor:pointer;">
+                <div class="caption">
+                    <i class="icon-magnifier"></i>
+                    <span class="caption-subject bold uppercase"> Filtreler </span>
+                    <span class="caption-helper"></span>
+                </div>
+                <div class='actions'>
+                    <a href='javascript:;' class='btn btn-default btn-sm' style='border:none;'>
+                        <i class='fa fa-chevron-down'></i>
+                    </a>
+                </div>
+            </div>
+            <div class="portlet-body form collapse in" id="filters">
+                <form role="form" style="padding:12px 20px">
+                    <div class="form-body form-group-lg form-horizontal row" style="padding: 0px;margin-top: 0px !important;">
+
+                        <div class="portlet light col-md-12" id="FiltreDivOgretmen" style="margin:0px; border-bottom-style: solid;border-bottom-width: 3px;border-bottom-color: rgb(0, 173, 239);"
+                             v-if="ListKullaniciTipi.indexOf(4)==-1 && ListKullaniciTipi.indexOf(5)==-1">
+                            <div class="portlet-body">
+                                <div class="form-inline">
+                                    <c-sube controller="VeliAraKarne"
+                                            @OnChange="SubeSelected">
+                                    </c-sube>
+                                    <c-kademe3 controller="VeliAraKarne"
+                                               :idsube="idsube"
+                                               @OnChange="Kademe3Selected">
+                                    </c-kademe3>
+                                    <c-sinif controller="VeliAraKarne"
+                                             :idsube="idsube"
+                                             :idkademe3="idkademe3"
+                                             @OnChange="SinifSelected">
+                                    </c-sinif>
+                                    <c-ogrenci controller="VeliAraKarne"
+                                               :idsinif="idsinif"
+                                               @OnChange="OgrenciSelected">
+                                    </c-ogrenci>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="portlet light  col-md-12" id="FiltreDivVeli" style="margin:0px; border-bottom-style: solid;border-bottom-width: 3px;border-bottom-color: rgb(0, 173, 239);"
+                             v-if="ListKullaniciTipi.indexOf(5)>-1">
+                            <div class="portlet-body">
+                                <div class="form-inline">
+                                    <c-ogrenci-veli controller="VeliAraKarne"
+                                                    :tc="TCKIMLIKNO"
+                                                    @OnChange="OgrenciVeliSelected">
+                                    </c-ogrenci-veli>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="portlet light col-md-12" id="FiltreDivOgrenci" style="margin:0px; border-bottom-style: solid;border-bottom-width: 3px;border-bottom-color: rgb(0, 173, 239);"
+                             v-if="ListKullaniciTipi.indexOf(4)>-1 || divOgrenci==1">
+                            <div class="portlet-body">
+                                <div class="form-inline">
+                                    <c-donem controller="VeliAraKarne"
+                                             @OnChange="DonemSelected">
+                                    </c-donem>
+                                    <input style="float:right;margin: 10px;" type="button" class="btn btn-success" v-on:click="Raporla" value="Raporla">
+                                    <input style="float:right;margin: 10px;" type="button" class="btn btn-success" v-on:click="Yazdir" value="Yazdır">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="portlet light col-md-12" style="min-height: 100px;padding:0px;" v-html="htmlYaz"></div>
+</div>
+<script src="/VueComponents/SinavIstatistikFiltreleri.js?v=3"></script>
+<script>
+    var vue = new Vue({
+        el: "#app",
+        name: "SinavIstatistik.html",
+
+        data: {
+            TCKIMLIKNO: '',
+            DONEM: 0,
+            idsinav: 0,
+            t1: [],
+            t2: [],
+            t3: [],
+            t4: [],
+            t5: [],
+            t6: [],
+            t7: [],
+            t8: [],
+            t9: [],
+            t10: [],
+            sinavlar: [],
+            a1: [],
+            a3: [],
+            htmlYaz: "",
+            idsube: 0,
+            idkademe3: 0,
+            idsinif: 0,
+            tcogrenci: '',
+            idsinavturu: 0,
+            idkullanicitur: 0,
+            ListKullaniciTipi: [],
+            divOgrenci: 0,
+            ogrBilgi: 0
+        },
+
+        mounted() {
+            var p = {
+                TCKIMLIKNO: session.TCKIMLIKNO,
+                OTURUM: session.OTURUM
+            };
+            var list = [];
+            WebPost(this, "VeliAraKarne", "KullaniciTipiGetir", p, "#app", "Yükleniyor...", function (data, parent) {
+                if (data != null) {
+                    $.each(data, function (j, el) {
+                        list.push(this.ID_KULLANICITIPI)
+                    });
+                    parent.ListKullaniciTipi = list;
+                    if (list.indexOf(4) > -1)
+                        parent.tcogrenci = session.TCKIMLIKNO;
+                } else {
+                    Alert_Warning("Kullanıcı Bulunamadı..!");
+                }
+            });
+        },
+
+        methods: {
+            Yazdir: function (event) {
+                if ((this.tcogrenci == undefined || this.tcogrenci == "0")
+                    || (this.DONEM == undefined || this.DONEM == "0")
+                    //|| (this.idsinavturu == undefined || this.idsinavturu == "0")
+                ) {
+                    Alert_Warning("Öğrenci seçmeniz gerekmektedir.");
+                    return;
+                } else {
+                    window.open('/Rapor.aspx?rapor=Sinav.AraKarne&raporTur=pdf&p=' + session.TCKIMLIKNO + ';' + session.OTURUM + ';' + this.tcogrenci + ';' + this.DONEM + ";" + 1, '_blank');//+ this.idsinavturu + ';'
+                }
+            },
+
+            Raporla: function (event) {
+                $('#filters').collapse('hide');
+                this.Getir();
+            },
+
+            SubeSelected(item) {
+                this.idsube = item;
+                this.idkademe3 = 0;
+                this.idsinif = 0;
+                this.divOgrenci = 0;
+                this.htmlYaz = '<div class="col-md-12"><div>';
+            },
+            Kademe3Selected(item) {
+                this.idkademe3 = item;
+                this.idsinif = 0;
+                this.divOgrenci = 0;
+                this.htmlYaz = '<div class="col-md-12"><div>';
+            },
+            SinifSelected(item) {
+                this.idsinif = item;
+                this.divOgrenci = 0;
+                this.htmlYaz = '<div class="col-md-12"><div>';
+            },
+            OgrenciSelected(item) {
+                this.tcogrenci = item;
+                this.divOgrenci = 1;
+                this.idsinav = 0;
+                this.htmlYaz = '<div class="col-md-12"><div>';
+            },
+            OgrenciVeliSelected(item) {
+                this.tcogrenci = item;
+                this.divOgrenci = 1;
+                this.idsinav = 0;
+                this.htmlYaz = '<div class="col-md-12"><div>';
+            },
+            DonemSelected(item) {
+                this.DONEM = item;
+                this.Getir();
+                this.htmlYaz = '<div class="col-md-12"><div>';
+            },
+            SinavTuruSelected(item) {
+                this.idsinavturu = item;
+                this.htmlYaz = '<div class="col-md-12"><div>';
+            },
+
+            Getir() {
+
+                this.htmlYaz = '<div class="col-md-12"><div>';
+                if ((this.tcogrenci == undefined || this.tcogrenci == "0")
+                    || (this.DONEM == undefined || this.DONEM == "0")
+                    //    || (this.idsinavturu == undefined || this.idsinavturu == "0")
+                ) {
+                    Alert_Warning("Öğrenci ve Sınav Türü seçmeniz gerekmektedir.");
+                    return;
+                }
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    TC_OGRENCI: this.tcogrenci,
+                    DONEM: this.DONEM,
+                    ID_SINAVTURU: this.idsinavturu
+                };
+
+
+                WebPost(this, "VeliAraKarne", "AraKarneDeneme", p, "#app", "Yükleniyor...", function (data, parent) {
+                    if (data != null) {
+                        //parent.t1 = JSON.parse(data)[0].t1;
+                        //parent.t2 = JSON.parse(data)[0].t2;
+                        //parent.t3 = JSON.parse(data)[0].t3;
+                        //parent.t4 = JSON.parse(data)[0].t4;
+                        //parent.t5 = JSON.parse(data)[0].t5;
+                        //parent.t6 = JSON.parse(data)[0].t6;
+
+                        parent.t2 = JSON.parse(data)[0].t2;
+                        var dt1 = _.groupBy(JSON.parse(data)[0].t1, function (d) { return d.ID_SINAVTURU });
+                        var dt3 = _.groupBy(JSON.parse(data)[0].t3, function (d) { return d.ID_SINAVTURU });
+                        var dt4 = _.groupBy(JSON.parse(data)[0].t4, function (d) { return d.ID_SINAVTURU });
+                        var dt5 = _.groupBy(JSON.parse(data)[0].t5, function (d) { return d.ID_SINAVTURU });
+                        var dt6 = _.groupBy(JSON.parse(data)[0].t6, function (d) { return d.ID_SINAVTURU });
+
+                        parent.t7 = JSON.parse(data)[0].y1;
+                        parent.t8 = JSON.parse(data)[0].y2;
+                        parent.t9 = JSON.parse(data)[0].y3;
+                        parent.t10 = JSON.parse(data)[0].y4;
+
+
+                        divFixedTableClear();
+
+
+                        $.each(JSON.parse(data)[0].t1, function (j, el) {
+                            parent.idsinavturu = el.ID_SINAVTURU;
+                            parent.t1 = dt1[el.ID_SINAVTURU];
+                            parent.t3 = dt3[el.ID_SINAVTURU];
+                            parent.t4 = dt4[el.ID_SINAVTURU];
+                            parent.t5 = dt5[el.ID_SINAVTURU];
+                            parent.t6 = dt6[el.ID_SINAVTURU];
+
+                            parent.Listele();
+                        });
+
+                        parent.$nextTick(() => {
+                            fixedTableCreate();
+                        });
+                        //return;
+                        //parent.Listele();
+                    }
+                    else {
+                        Alert_Warning("Sınav Bulunamadı..!");
+                        return;
+                    }
+                });
+                // var groupedData = _.groupBy(this.t1, function (d) { return d.ID_SINAVTURU });
+
+
+
+                ////AraKarneYazili
+                //if (this.idsinavturu == -1) {
+                //    WebPost(this, "VeliAraKarne", "AraKarneYazili", p, "#app", "Yükleniyor...", function (data, parent) {
+                //        if (data != null) {
+                //            parent.t1 = JSON.parse(data)[0].t1;
+                //            parent.t2 = JSON.parse(data)[0].t2;
+                //            parent.t3 = JSON.parse(data)[0].t3;
+                //            parent.t4 = JSON.parse(data)[0].t4;
+                //            parent.t5 = JSON.parse(data)[0].t5;
+                //            parent.t6 = JSON.parse(data)[0].t6;
+                //            parent.Listele();
+                //        }
+                //        else {
+                //            Alert_Warning("Sınav Bulunamadı..!");
+                //            return;
+                //        }
+                //    });
+                //}
+                ////AraKarneDeneme
+                //else {
+                //    WebPost(this, "VeliAraKarne", "AraKarneDeneme", p, "#app", "Yükleniyor...", function (data, parent) {
+                //        if (data != null) {
+                //            parent.t1 = JSON.parse(data)[0].t1;
+                //            parent.t2 = JSON.parse(data)[0].t2;
+                //            parent.t3 = JSON.parse(data)[0].t3;
+                //            parent.t4 = JSON.parse(data)[0].t4;
+                //            parent.t5 = JSON.parse(data)[0].t5;
+                //            parent.t6 = JSON.parse(data)[0].t6;
+                //            parent.Listele();
+                //        }
+                //        else {
+                //            Alert_Warning("Sınav Bulunamadı..!");
+                //            return;
+                //        }
+                //    });
+                //}
+            },
+
+            Listele() {
+                if (this.t1 == undefined) { Alert_Warning("Sınav Bulunamadı..!"); return; }
+                if (this.ogrBilgi == 0) {
+                    this.ogrBilgi++;
+
+
+                    var ogrenci = this.t1[0];
+
+                    var html = '';
+
+                    html += '<div class="row" style="margin-top:20px!important;"><div class="col-md-4"><table id="tblDers" data-height="700" class="table table-striped table-bordered  table-checkable" data-width="100%" style="margin-bottom:0px; color:#111; width:100%; "><tr>                                                                                    ';
+                    html += '    <th colspan="2" style="text-align:center" class="koyumavi">ÖĞRENCİ BİLGİLERİ</th>   ';
+                    html += '</tr>                                                                                   ';
+                    html += '<tr>                                                                                    ';
+                    html += '    <td class="acikmavi">OKUL</td>                                                      ';
+                    html += '    <td class="bordersag">' + ogrenci["SUBEAD"] + '</td>                                ';
+                    html += '</tr>                                                                                   ';
+                    html += '<tr>                                                                                    ';
+                    html += '    <td class="acikmavi">SINIF</td>                                                     ';
+                    html += '    <td class="bordersag">' + ogrenci["SINIF"] + '</td>                                 ';
+                    html += '</tr>                                                                                   ';
+                    html += '<tr>                                                                                    ';
+                    html += '    <td class="acikmavi">AD SOYAD</td>                                                  ';
+                    html += '    <td class="bordersag">' + ogrenci["ADSOYAD"] + '</td>                               ';
+                    html += '</tr>                                                                                   ';
+                    html += '<tr>                                                                                    ';
+                    html += '    <th class="acikmavi">TC KİMLİK NO</th>                                              ';
+                    html += '    <td class="bordersag">' + ogrenci["TCKIMLIKNO"] + '</td>                            ';
+                    html += '</tr></table></div>                                                                     ';
+
+
+
+                    html += '<div class="col-md-8"><table id="tblDers" data-height="700" class="table table-striped table-bordered  table-checkable" data-width="100%" style="margin-bottom:0px; color:#111; width:100%; "> <tr> <th colspan="4" style="text-align:center" class="koyumavi">DERS ÖĞRETMENLERİ</th> </tr>';
+                    $.each(this.t2, function (j, el) {
+                        if (j % 2 == 0) html += '<tr>';
+                        html += '<td class="acikmavi" >' + el.DERSAD + '</td>';
+                        html += '<td class="bordersag">' + el.ADSOYAD + '</td>';
+                        if (j % 2 == 1) html += '</tr>';
+                    });
+                    html += "</table></div></div>";
+                    this.htmlYaz += html;
+                }
+                var sinavlar = [];
+                $.each(this.t4, function (j) { if (sinavlar.indexOf(this.ID_SINAV) == -1) { sinavlar.push(this.ID_SINAV) } });
+                this.sinavlar = sinavlar;
+
+                if (this.idsinavturu == -1) {
+                    this.YaziliTablo();
+                }
+                else {
+                    this.DersTablo();
+                    this.PuanTablo();
+                }
+            },
+
+            DersTablo() {
+                if (this.t3 == undefined) {
+                    $("#thDers").html("");
+                    $("#tbDers").html("");
+                    return;
+                }
+                var tt3 = this.t3;//dersler
+                var tt4 = this.t4;//DERS DYBN
+
+                var dersPuanGizle = tt4.filter(function (element) { return element.OLCEKSINAVI == true; }).length > 0 ? false : true;
+                var derspuansizkolongenislik = dersPuanGizle == true ? 4 : 5;
+
+                var html = '<div style="margin-top:20px;">';
+                html += '   <div class="comp-table" id="divFixedTable"> ';
+                html += '   <table id="tblDers" class="overflow-y fixed-table">';
+                html += '   <thead><tr>                                                     ';
+                html += '  <th rowspan="3" class="acikmavi">SINAV</th>    ';
+                html += '       <th colspan="' + ((tt3.length * derspuansizkolongenislik) + 4) + '"  class="koyumavi">' + tt3[0].SINAVTURU.toUpperCase() + ' NET TABLOSU</th>            ';
+                html += '   </tr>                                                    ';
+
+                html += '<tr>                                ';
+                $.each(tt3, function (j, el) {
+                    html += '  <th colspan="' + derspuansizkolongenislik + '" class="acikmavi">' + this.DERSAD + '</th>';
+                });
+                html += '<th colspan="4" class="acikmavi"> TOPLAM </th>';
+                html += '</tr>';
+                html += '<tr>';
+                $.each(tt3, function (j, el) {
+                    html += '   <th class="acikmavi">D</th>        ';
+                    html += '   <th class="acikmavi">Y</th>        ';
+                    html += '   <th class="acikmavi">B</th>        ';
+                    html += '   <th class="acikmavi">N</th>        ';
+                    if (!dersPuanGizle) {
+                        html += '   <th class="acikmavi">P</th>        ';
+                    }
+                });
+                html += '   <th class="acikmavi">TD</th>        ';
+                html += '   <th class="acikmavi">TY</th>        ';
+                html += '   <th class="acikmavi">TB</th>        ';
+                html += '   <th class="acikmavi">TN</th>        ';
+                html += ' </tr> </thead>    <tbody>                            ';
+
+                $.each(this.sinavlar, function (j, sinav) {
+                    html += '<tr>';
+                    parent.a1 = tt4.filter(function (element) { return element.ID_SINAV == sinav; })
+                    html += '<th class="bordersag" >' + a1[0].SINAVAD + '</th>';
+
+                    $.each(tt3, function (j, el) {
+                        var girdi = false;
+                        $.each(parent.a1, function (j, sel) {
+                            if (el.DERSAD == sel.DERSAD) {
+                                html += '<td class="bordersag" >' + sel.DOGRU + '</td>';
+                                html += '<td class="bordersag" >' + sel.YANLIS + '</td>';
+                                html += '<td class="bordersag" >' + sel.BOS + '</td>';
+                                html += '<td class="bordersag" >' + sel.NET + '</td>';
+                                if (sel.OLCEKSINAVI == true)
+                                    html += '<td class="bordersag" >' + sel.DERSPUAN + '</td>';
+                                //else
+                                //    html += '<td class="bordersag" > - </td>';
+                                girdi = true;
+                            }
+                        });
+                        if (girdi == false) {
+                            html += '<td class="bordersag" > - </td>';
+                            html += '<td class="bordersag" > - </td>';
+                            html += '<td class="bordersag" > - </td>';
+                            html += '<td class="bordersag" > - </td>';
+                            if (!dersPuanGizle)
+                                html += '<td class="bordersag" > - </td>';
+                        }
+
+                    });
+                    html += '<td class="bordersag" >' + a1[0].TD + '</td>';
+                    html += '<td class="bordersag" >' + a1[0].TY + '</td>';
+                    html += '<td class="bordersag" >' + a1[0].TB + '</td>';
+                    html += '<td class="bordersag" >' + a1[0].TN + '</td>';
+                    html += '</tr>';
+                });
+                html += "</tbody></table></div></div>"
+                this.htmlYaz += html;
+
+
+            },
+
+            PuanTablo() {
+
+                $("#thPuan").html("");
+                $("#tbPuan").html("");
+                if (this.t6 == undefined || this.t5[0].PUANGIZLE == true) {
+                    return;
+                }
+
+                console.log(this.t6);
+                var tt5 = this.t5;//PUAN
+                var tt6 = this.t6;//PUAN turleri
+
+                var html = '<div style="margin-top:20px"><div style="overflow-x: auto"><table id="tblDers" data-height="700" class="table table-striped table-bordered table-checkable" data-width="100%" style="margin-bottom:0px; color:#111; width:100%; "><tr>';
+                html += '<th class="acikmavi" style="text-align:center;" colspan="' + ((tt6.length * 6) + 1) + '" >' + this.t3[0].SINAVTURU.toUpperCase() + ' PUAN / SIRALAMA BİLGİLERİ TABLOSU</th>';
+                html += '</tr>';
+
+                html += '<tr>';
+                html += '  <td  class="turuncu"  style="text-align:center;"  rowspan="2">SINAV</td>';
+                $.each(tt6, function (j, el) {
+                    html += '  <td  class="turuncu"  style="text-align:center;"  colspan="6">' + el.PUANTURU + '</td>       ';
+                });
+                html += '</tr>';
+                html += '<tr>';
+                $.each(tt6, function (j, el) {
+                    html += '<td class="turuncu" style="text-align:center;"  >PUAN</td>';
+                    html += '<td class="turuncu" style="text-align:center;"  >SINIF</td>';
+                    html += '<td class="turuncu" style="text-align:center;"  >OKUL</td>';
+                    html += '<td class="turuncu" style="text-align:center;"  >ILCE</td>';
+                    html += '<td class="turuncu" style="text-align:center;"  >IL</td>';
+                    html += '<td class="turuncu" style="text-align:center;"  >GENEL</td>';
+                });
+                html += ' </tr>';
+
+
+                var sinavlar = [];
+                $.each(this.t5, function (j) {
+                    if (sinavlar.indexOf(this.ID_SINAV) == -1) {
+                        sinavlar.push(this.ID_SINAV)
+                    }
+                });
+
+                $.each(sinavlar, function (j, sinav) {
+                    html += '<tr>';
+                    parent.a1 = tt5.filter(function (element) { return element.ID_SINAV == sinav; });
+                    html += '<td class="bordersag" >' + a1[0].SINAVAD + '</td>';
+                    $.each(parent.a1, function (j, sel) {
+                        $.each(tt6, function (j, el) {
+                            if (el.PUANTURU == sel.PUANTURU) {
+                                html += '<td class="bordersag" >' + sel.PUAN + '</td>';
+                                html += '<td class="bordersag" >' + sel.SINIFSIRA + ' / ' + sel.SINIFKATILIM + '</td>';
+                                html += '<td class="bordersag" >' + sel.OKULSIRA + ' / ' + sel.SUBEKATILIM + '</td>';
+                                html += '<td class="bordersag" >' + sel.ILCESIRA + ' / ' + sel.ILCEKATILIM + '</td>';
+                                html += '<td class="bordersag" >' + sel.ILSIRA + ' / ' + sel.ILKATILIM + '</td>';
+                                html += '<td class="bordersag" >' + sel.GENELSIRA + ' / ' + sel.GENELKATILIM + '</td>';
+                            }
+                        });
+                    });
+                    html += '</tr>';
+                });
+                html += '</table></div></div>';
+                this.htmlYaz += html;
+
+            },
+
+            YaziliTablo() {
+                if (this.t9 == undefined) {
+                    $("#thYazili").html("");
+                    $("#tbYazili").html("");
+                    return;
+                }
+
+                var tt3 = this.t9;//dersler
+                var tt4 = this.t10;//DERS PUAN
+
+                var html = '<div style="margin-top:20px; margin-bottom:20px;"><div style="overflow-x: auto"><table id="tblDers" data-height="700" class="table table-striped table-bordered table-checkable" data-width="100%" style="margin-bottom:0px; color:#111; width:100%; "><tr>                                                     ';
+                html += '       <th class="acikmavi"  colspan="7" >YAZILI YOKLAMA SONUÇLARI</th>            ';
+                html += '   </tr>                                                    ';
+
+                html += '<tr>';
+                html += '<td class="turuncu"  rowspan="2">DERSLER</td>';
+                html += '<td class="turuncu"  style="text-align:center;"  colspan="3">1. Dönem</td>';
+                html += '<td class="turuncu"  style="text-align:center;"  colspan="3">2. Dönem</td>';
+                html += '</tr>';
+                html += '<tr>';
+
+                html += '<td class="turuncu" >1. Sınav</td>';
+                html += '<td class="turuncu" >2. Sınav</td>';
+                html += '<td class="turuncu" >3. Sınav</td>';
+
+                html += '<td class="turuncu" >1. Sınav</td>';
+                html += '<td class="turuncu" >2. Sınav</td>';
+                html += '<td class="turuncu" >3. Sınav</td>';
+
+                html += '</tr>';
+
+                $.each(tt3, function (j, sinav) {
+                    html += '<tr>';
+                    parent.a3 = tt4.filter(function (element) {
+                        //return element.ID_DERS == sinav.ID_DERS;
+                        return element.DERSAD == sinav.DERSAD;
+                    })
+                    html += '<td>' + sinav.DERSAD + '</td>';
+                    var s11 = "";
+                    var s12 = "";
+                    var s13 = "";
+                    var s21 = "";
+                    var s22 = "";
+                    var s23 = "";
+                    $.each(parent.a3, function (j, sel) {
+                        if (sel.SINAVADI.indexOf("101") > -1) { s11 = sel.PUAN }
+                        if (sel.SINAVADI.indexOf("102") > -1) { s12 = sel.PUAN }
+                        if (sel.SINAVADI.indexOf("103") > -1) { s13 = sel.PUAN }
+                        if (sel.SINAVADI.indexOf("201") > -1) { s21 = sel.PUAN }
+                        if (sel.SINAVADI.indexOf("202") > -1) { s22 = sel.PUAN }
+                        if (sel.SINAVADI.indexOf("203") > -1) { s23 = sel.PUAN }
+                    });
+                    html += '<td class="bordersag" >' + s11 + '</td>';
+                    html += '<td class="bordersag" >' + s12 + '</td>';
+                    html += '<td class="bordersag" >' + s13 + '</td>';
+                    html += '<td class="bordersag" >' + s21 + '</td>';
+                    html += '<td class="bordersag" >' + s22 + '</td>';
+                    html += '<td class="bordersag" >' + s23 + '</td>';
+
+                    html += '</tr>';
+                });
+                html += '</table></div></div>';
+                this.htmlYaz += html;
+            },
+        },
+    });
+</script>
+<script src="Scripts/PublicMethods.js"></script>
+<script src="../../../../assets/fixed-table/js/jquery.stickyheader.js?v=4"></script>

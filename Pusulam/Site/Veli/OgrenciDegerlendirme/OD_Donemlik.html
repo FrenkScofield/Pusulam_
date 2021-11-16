@@ -1,0 +1,248 @@
+﻿<div class="page-head">
+    <!-- BEGIN PAGE TITLE -->
+    <div class="page-title col-md-12">
+        <h1>
+            Öğrenci Değerlendirme <small> Dönemlik Değerlendirme</small> <span onclick="YardimGoster(ID_MENU);" class="pull-right" style="cursor:pointer;"><img src="assets/global/img/info.gif" class="info-image-icon" /> </span>
+        </h1>
+    </div>
+    <!-- END PAGE TITLE -->
+</div>
+
+<div class="row" id="app">
+    <div class="col-md-12">
+        <div class="portlet box green-haze dd-item" style="border:none">
+            <div class="portlet-title dd-handle" data-toggle='collapse' data-target='#filters' style="cursor:pointer;">
+                <div class="caption">
+                    <i class="icon-magnifier"></i>
+                    <span class="caption-subject bold uppercase"> Filtreler </span>
+                    <span class="caption-helper"></span>
+                </div>
+                <div class='actions'>
+                    <a href='javascript:;' class='btn btn-default btn-sm' style='border:none;'>
+                        <i class='fa fa-chevron-down'></i>
+                    </a>
+                </div>
+            </div>
+            <div class="portlet-body form collapse in" id="filters">
+                <form role="form" style="padding:12px 20px">
+                    <div class="form-body form-group-lg form-horizontal row" style="padding: 0px;margin-top: 0px !important;">
+
+                        <div class="portlet light col-md-12" id="FiltreDivVeli" style="margin:0px; border-bottom-style: solid;border-bottom-width: 3px;border-bottom-color: rgb(0, 173, 239);"
+                             v-if="ListKullaniciTipi.indexOf(5)>-1">
+
+                            <div class="portlet-body">
+                                <div class="form-inline">
+                                    <c-ogrenci-veli :controller="controller"
+                                                    :tc="TCKIMLIKNO"
+                                                    @OnChange="OgrenciVeliSelected">
+                                    </c-ogrenci-veli>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="portlet light col-md-12">
+        <div class="form-group" style="text-align: center;" v-if="LISTE.length>0 && DETAY.length==0">
+
+            <table class="table-bordered table-striped table-condensed cf display col-md-12" style="margin-top:15px">
+                <thead>
+                    <tr>
+                        <td>#</td>
+                        <td>AD</td>
+                        <td>SOYAD</td>
+                        <td>SINIF</td>
+                        <td>ÖĞR. NO</td>
+                        <td>FORM</td>
+                        <td>İŞLEMLER</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="(u,i) in LISTE">
+                        <td>{{(i+1)}}</td>
+                        <td>{{u.AD}}</td>
+                        <td>{{u.SOYAD}}</td>
+                        <td>{{u.SINIFAD}}</td>
+                        <td>{{u.OGRNO}}</td>
+                        <td>{{u.FORM}}</td>
+                        <td><button class="btn blue" @click="Detay(u)">Detay</button></td>
+                    </tr>
+                </tbody>
+            </table>
+
+        </div>
+        <div class="form-group" style="text-align: center;" v-if="DETAY.length>0 && OGRENCIDETAY != undefined">
+
+            <div>
+                <button class="btn yellow" style="float: right;margin: 25px;" @click="Geri">Geri</button>
+            </div>
+
+
+            <table class="table-bordered table-striped table-condensed cf display col-md-12">
+                <tbody>
+                    <tr>
+                        <td rowspan="4">
+                            <img src="../../../img/okyanus_logoyeni.png" height="150" style="border-color: #CCC; border-width: 1px; border-style: solid;" v-if="OGRENCIDETAY.FOTOGRAF==''" />
+                            <img :src="'data:image/ png;base64,'+ OGRENCIDETAY.FOTOGRAF" height="150" style="border-color: #CCC; border-width: 1px; border-style: solid;" v-else />
+                        </td>
+                        <td>AD SOYAD</td>
+                        <td>{{OGRENCIDETAY.ADSOYAD}}</td>
+                    </tr>
+
+                     <tr>
+                        <td>KAMPÜS</td>
+                        <td>{{OGRENCIDETAY.SUBEAD}}</td>
+                    </tr>
+
+                    <tr>
+                        <td>SINIF DÜZEY</td>
+                        <td>{{OGRENCIDETAY.KADEME3}}</td>
+                    </tr>
+
+                    <tr>
+                        <td>SINIF</td>
+                        <td>{{OGRENCIDETAY.SINIFAD}}</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            
+            <table class="table-bordered table-striped table-condensed cf display col-md-12" style="margin-top:15px">
+                <tbody>
+                    <tr>
+                        <td colspan="3">
+                            {{BASLIK}}     
+                        </td>
+                    </tr>
+
+                     <tr v-for="(u,i) in DETAY">
+                        <td style="width:5%;">{{i+1}}</td>
+                        <td style="width:25%;">{{u.FORMBASLIK}}</td>
+                        <td style="vertical-align:middle; text-align:left;">{{u.DEGERLENDIRME}}</td>
+                    </tr>
+                   
+                </tbody>
+            </table>
+
+
+        </div>
+    </div>
+</div>
+<script src="../../../VueComponents/FiltreEk.js"></script>
+<script src="../../../VueComponents/OgrenciDegerlendirme.js"></script>
+<script>
+    var vue = new Vue({
+        el: "#app",
+        name: "OD_Donemlik",
+
+        data: {
+            controller: 'OD_Donemlik',
+            TCKIMLIKNO: '',
+            DONEM: '',
+            AY: '',
+            LISTE: [],
+            DETAY: [],
+            OGRENCIDETAY: undefined,
+
+            BASLIK:'',
+            TC_OGRENCI: '',
+            ListKullaniciTipi: [],
+        },
+
+        mounted() {
+
+            var p = {
+                TCKIMLIKNO: session.TCKIMLIKNO,
+                OTURUM: session.OTURUM
+            };
+            var list = [];
+            WebPost(this, this.controller, "KullaniciTipiGetir", p, "#app", "Yükleniyor...", function (data, parent) {
+                if (data != null) {
+                    $.each(data, function (j, el) {
+                        list.push(this.ID_KULLANICITIPI)
+                    });
+                    parent.ListKullaniciTipi = list;
+                    if (list.indexOf(4) > -1)
+                        parent.TC_OGRENCI = session.TCKIMLIKNO;
+                } else {
+                    Alert_Warning("Kullanıcı Bulunamadı..!");
+                }
+            });
+        },
+
+        methods: {
+            OgrenciVeliSelected(item) {
+                this.TC_OGRENCI = item;
+            },
+
+            Geri() {                
+                this.OGRENCIDETAY = undefined;
+                ListeTemizle(this.DETAY);
+            },
+
+            Listele() {
+                
+                this.OGRENCIDETAY = undefined;
+                ListeTemizle(this.DETAY);
+                ListeTemizle(this.LISTE);
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    TC_OGRENCI: this.TC_OGRENCI,
+                }
+
+                WebPost(this, this.controller, "OD_DonemlikDegerlendirmeListele", p, "", "", function (data, parent) {
+                    if (JSON.parse(data) != undefined) {
+                        parent.LISTE = JSON.parse(data);
+                    } else {
+                        Alert_Warning("Hata..!");
+                    }
+                });
+
+
+            },
+
+            Detay(item) {
+
+                
+                this.OGRENCIDETAY = undefined;
+                ListeTemizle(this.DETAY);
+
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    TC_OGRENCI: this.TC_OGRENCI,
+                    ID_DONEMDEGERLENDIRMEFORMUOO: item.ID_DONEMDEGERLENDIRMEFORMUOO,
+                }
+                this.BASLIK = item.FORM;
+                this.OgrenciDetay(item.DONEM)
+
+                WebPost(this, this.controller, "OD_DonemlikDegerlendirmeDetay", p, "", "", function (data, parent) {
+                    parent.DETAY = JSON.parse(data);
+                });
+            },
+            
+            OgrenciDetay(donem) {
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    TC_OGRENCI: this.TC_OGRENCI,
+                    DONEM: donem,
+                }
+                WebPost(this, this.controller, "OD_OgrenciDonemDetay", p, "", "", function (data, parent) {
+                    parent.OGRENCIDETAY = JSON.parse(data)[0];
+                });
+            },
+
+        },
+        watch: {
+            TC_OGRENCI() {
+                this.Listele();
+            }
+        }
+    });
+</script>
+<script src="../../../Scripts/PublicMethods.js"></script>

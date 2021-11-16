@@ -1,0 +1,292 @@
+﻿<link href="assets/global/plugins/bootstrap-fileinput/bootstrap-fileinput.css" rel="stylesheet" type="text/css" />
+<div class="page-head">
+    <div class="page-title col-md-12">
+        <h1>
+            Özel Sayfa
+            <span onclick="YardimGoster(ID_MENU);" class="pull-right" style="cursor:pointer;"><img src="assets/global/img/info.gif" class="info-image-icon" /> </span>
+        </h1>
+    </div>
+</div>
+
+<div class="row" id="app">
+    <div class="col-md-12">
+        <div class="portlet box blue-hoki dd-item" style="border:none">
+            <div class="portlet-title dd-handle" data-toggle='collapse' data-target='#filters' style="cursor:pointer;">
+                <div class="caption">
+                    <i class="icon-list"></i>
+                    <span class="caption-subject bold uppercase"> Özel Sayfa Ekle/Düzenle İşlemleri </span>
+                    <span class="caption-helper"></span>
+                </div>
+                <div class='actions'>
+                    <a href='javascript:;' class='btn btn-default btn-sm' style='border:none;'> <i class='fa fa-chevron-down'></i> </a>
+                </div>
+            </div>
+            <div class="portlet-body form collapse in" id="filters">
+                <form role="form" style="padding:12px 20px">
+                    <div class="row">
+                        <div class="row">
+                            <c-kullanici-tipi-multi :controller="controller"
+                                                    :idset="SAYFA.ID_KULLANICITIPILIST"
+                                                    @onchange="KullaniciTipiSelected">
+                            </c-kullanici-tipi-multi>
+                        </div>
+                        <div class="row">
+                            <c-kademe-multi :controller="controller"
+                                            :idset="SAYFA.ID_KADEMELIST"
+                                            @onchange="KademeSelected">
+                            </c-kademe-multi>
+                        </div>
+                        <div class="row">
+                            <c-kademe3-multi :controller="controller"
+                                             :idkademelist="SAYFA.ID_KADEMELIST"
+                                             :idset="SAYFA.ID_KADEME3LIST"
+                                             @onchange="Kademe3Selected">
+                            </c-kademe3-multi>
+                        </div>
+                        <div class="row">
+                            <div class="form-md-line-input">
+                                <label class="control-label col-md-3" style="vertical-align:middle;">Sayfa Adı </label>
+                                <div class="col-md-9">
+                                    <input type="text" class="form-control" v-model="SAYFA.AD" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-md-line-input">
+                                <label class="control-label col-md-3" style="vertical-align:middle;">Sayfa Açıklama </label>
+                                <div class="col-md-9">
+                                    <input type="text" class="form-control" v-model="SAYFA.ACIKLAMA" />
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="row">
+                            <c-sayfa-tur :controller="controller"
+                                         :idset="SAYFA.ID_OZELSAYFATURU"
+                                         @onchange="SayfaTuruSelected">
+                            </c-sayfa-tur>
+
+                        </div>
+                        <div class="row">
+                            <div class="form-md-line-input" v-if="SAYFA.ID_OZELSAYFATURU == idUrl">
+                                <label class="control-label col-md-3" style="vertical-align:middle;">Sayfa URL </label>
+                                <div class="col-md-9">
+                                    <input type="text" class="form-control" v-model="SAYFA.YOL" />
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="row">
+                            <div class="fileinput fileinput-new" style="float:right; margin:25px;" data-provides="fileinput" v-if="SAYFA.ID_OZELSAYFATURU == idDosya">
+                                <span class="fileinput-preview thumbnail" style="max-width: 1000px; max-height: 1000px;"> </span>
+                                <span>
+                                    <span class="btn default btn-file">
+                                        <span class="fileinput-new yellow"> Dosya Yükle </span>
+                                        <span class="fileinput-exists"> Değiştir </span>
+                                        <input type="file" name="..." accept="application/pdf" id="dosya" data-preview-file-type="text">
+                                    </span>
+                                    <a href="javascript:;" class="btn red fileinput-exists" data-dismiss="fileinput"> Sil </a>
+                                    <a href="javascript:;" @click="OSDosyaYukle" class="btn green fileinput-exists" data-dismiss="modal"> Yükle ve Kaydet </a>
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="row" style="margin:5px;" v-if="SAYFA.ID_OZELSAYFATURU == idDosya && ID_OZELSAYFA > 0">
+                            <button type="button" style="float:right" class="btn blue" @click="SayfaEkle">Düzenle</button>
+                        </div>
+                        <div class="row" style="margin:5px;" v-if="SAYFA.ID_OZELSAYFATURU == idUrl">
+                            <button type="button" style="float:right" class="btn blue" @click="SayfaEkle">Kaydet</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="VueComponents/Genel.js"></script>
+<script src="VueComponents/Filtre.js"></script>
+<script src="VueComponents/OzelSayfaFiltreleri.js"></script>
+<script>
+    var vue = new Vue({
+
+        el: "#app",
+        name: "OzelSayfaIslemleri",
+
+        data: {
+            TCKIMLIKNO: undefined,
+            OTURUM: undefined,
+            controller: 'OzelSayfaIslemleri',
+
+            idUrl: 1,
+            idDosya: 2,
+            ID_OZELSAYFA: undefined,
+
+            SAYFA: {
+                ID_OZELSAYFA: undefined,
+                AD: undefined,
+                ACIKLAMA: undefined,
+                YOL: undefined,
+                ID_OZELSAYFATURU: undefined,
+
+                ID_KULLANICITIPILIST: [],
+                ID_KADEMELIST: [],
+                ID_KADEME3LIST: [],
+
+            },
+        },
+
+        mounted() {
+            this.TCKIMLIKNO = session.TCKIMLIKNO;
+            this.OTURUM = session.OTURUM;
+
+            this.$nextTick(function () {
+                if (parseInt(getParameterByName("ID_OZELSAYFA")) > 0) {
+
+                    vue.ID_OZELSAYFA = parseInt(getParameterByName("ID_OZELSAYFA"));
+
+                    var p = {
+                        TCKIMLIKNO: session.TCKIMLIKNO,
+                        OTURUM: session.OTURUM,
+                        ID_OZELSAYFA: vue.ID_OZELSAYFA,
+                    };
+
+
+                    WebPost(vue, vue.controller, "OzelSayfaDetay", p, '', '', function (data, parent) {
+
+                        if (data != null) {
+                            var jObj = JSON.parse(data)[0];
+
+                            parent.SAYFA.ID_OZELSAYFA = jObj.ID_OZELSAYFA;
+                            parent.SAYFA.AD = jObj.AD;
+                            parent.SAYFA.ACIKLAMA = jObj.ACIKLAMA;
+                            parent.SAYFA.YOL = jObj.YOL;
+
+                            vue.$nextTick(function () {
+
+                                //$.each(jObj.ID_KULLANICITIPILIST, function (j, el) { parent.SAYFA.ID_KULLANICITIPILIST.push(el.ID_KULLANICITIPI); });
+                                //$.each(jObj.ID_KADEMELIST, function (j, el) { parent.SAYFA.ID_KADEMELIST.push(el.ID_KADEME); });
+                                //$.each(jObj.ID_KADEME3LIST, function (j, el) { parent.SAYFA.ID_KADEME3LIST.push(el.ID_KADEME3); });
+                                
+                                parent.SAYFA.ID_KULLANICITIPILIST = jObj.ID_KULLANICITIPILIST.map(c => c.ID_KULLANICITIPI);
+                                parent.SAYFA.ID_KADEMELIST = jObj.ID_KADEMELIST.map(c => c.ID_KADEME);
+                                parent.SAYFA.ID_KADEME3LIST = jObj.ID_KADEME3LIST.map(c => c.ID_KADEME3);
+
+                                this.$nextTick(function () {
+                                    parent.SAYFA.ID_OZELSAYFATURU = jObj.ID_OZELSAYFATURU;
+                                });
+                            });
+                        }
+                    });
+                }
+            });
+        },
+
+        methods: {
+
+            KullaniciTipiSelected(val) { this.SAYFA.ID_KULLANICITIPILIST = val; },
+            KademeSelected(val) { this.SAYFA.ID_KADEMELIST = val; },
+            Kademe3Selected(val) { this.SAYFA.ID_KADEME3LIST = val; },
+            SayfaTuruSelected(val) { this.SAYFA.ID_OZELSAYFATURU = val; },
+
+            SayfaEkle() {
+                if (this.SAYFA.ID_OZELSAYFATURU != this.idUrl) {
+                    Alert_Warning("Sayfa Türünü URL Olarak Seçmelisiniz");
+                    return;
+                }
+                else if (this.SAYFA.AD == undefined || this.SAYFA.AD == "") {
+                    Alert_Warning("Sayfa Adını Giriniz");
+                    return;
+                }
+                else if (this.SAYFA.YOL == undefined || this.SAYFA.YOL == "") {
+                    Alert_Warning("Sayfanın Yönlendirileceği Adresi Giriniz");
+                    return;
+                }
+                else if (this.SAYFA.ID_KULLANICITIPILIST.length == 0) {
+                    Alert_Warning("Sayfa Yetkileri için Kullanıcı Tipini/Tiplerini Seçiniz");
+                    return;
+                }
+                else if (this.SAYFA.ID_KADEMELIST.length == 0) {
+                    Alert_Warning("Sayfa Yetkileri için Kullanıcı Kademesini/Kademelerini Seçiniz");
+                    return;
+                }
+                else if (this.SAYFA.ID_KADEME3LIST.length == 0) {
+                    Alert_Warning("Sayfa Yetkileri için Kullanıcı Sınıf Düzeyini/Düzeylerini Seçiniz");
+                    return;
+                }
+
+                this.Kaydet();
+            },
+
+            Kaydet() {
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    SQLJSON: JSON.stringify(this.SAYFA),
+                    ID_OZELSAYFA: this.ID_OZELSAYFA,
+                };
+
+                WebPost(this, this.controller, "OzelSayfaEkle", p, '', '', function (data, parent) {
+                    if (data > 0) {
+                        Alert_Info("Özel Sayfa Eklenmiştir.");
+                        window.location.replace('/anasayfa.html#Yonetim/OzelSayfaIslemleri');
+                    } else {
+                        Alert_Warning("Özel Sayfa Eklenmesi Sırasında Hata Oluştu..!");
+                    }
+                });
+            },
+
+            OSDosyaYukle() {
+
+                this.SAYFA.YOL = undefined;
+
+                if (this.SAYFA.ID_OZELSAYFATURU != this.idDosya) {
+                    Alert_Warning("Sayfa Türünü Dosya Olarak Seçmelisiniz");
+                    return;
+                }
+                else if (this.SAYFA.AD == undefined || this.SAYFA.AD == "") {
+                    Alert_Warning("Sayfa Adını Giriniz");
+                    return;
+                }
+                else if (this.SAYFA.ID_KULLANICITIPILIST.length == 0) {
+                    Alert_Warning("Sayfa Yetkileri için Kullanıcı Tipini/Tiplerini Seçiniz");
+                    return;
+                }
+                else if (this.SAYFA.ID_KADEMELIST.length == 0) {
+                    Alert_Warning("Sayfa Yetkileri için Kullanıcı Kademesini/Kademelerini Seçiniz");
+                    return;
+                }
+                else if (this.SAYFA.ID_KADEME3LIST.length == 0) {
+                    Alert_Warning("Sayfa Yetkileri için Kullanıcı Sınıf Düzeyini/Düzeylerini Seçiniz");
+                    return;
+                }
+
+                var dosya = document.getElementById('dosya').files[0];
+
+                dosyaadi = $('#dosya').val().replace(/^.*[\\\/]/, '');
+                if (dosya.length == 0) {
+                    Alert_Warning('Lütfen Dosya Seçiniz.');
+                    return;
+                }
+
+                if (dosya.type != "application/pdf") {
+
+                    Alert_Warning("Sadece Pdf Yüklenebilir.");
+                    return;
+                }
+
+                DosyaYukle(dosya, 11, 'OzelSayfa', function (response) {
+                    var jObj = JSON.parse(response);
+                    if (!jObj.success) {
+                        Alert_Warning("Dosya Yüklenemedi..!")
+                        return;
+                    }
+                    $('.fileinput').fileinput("clear");
+                    vue.SAYFA.YOL = jObj.YOL;
+                    vue.Kaydet();
+                });
+            },
+        }
+    });
+</script>
+<script src="Scripts/PublicMethods.js"></script>
+<script src="assets/global/plugins/bootstrap-fileinput/bootstrap-fileinput.js" type="text/javascript"></script>

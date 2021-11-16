@@ -1,0 +1,376 @@
+﻿<head>
+    <script src="../../../Scripts/Rapor/amcharts.js"></script>
+    <script src="../../../Scripts/Rapor/jquery.easypiechart.js"></script>
+    <script src="../../../Scripts/Rapor/light.js"></script>
+    <script src="../../../Scripts/Rapor/serial.js"></script>
+    <script src="../../../Scripts/Rapor/pie.js"></script>
+</head>
+<style>
+   
+    #chartdiv {
+        width: 100%;
+        height: 500px;
+        font-size: 11px;
+    }
+
+    .amcharts-pie-slice {
+        transform: scale(1);
+        transform-origin: 50% 50%;
+        transition-duration: 0.3s;
+        transition: all .3s ease-out;
+        -webkit-transition: all .3s ease-out;
+        -moz-transition: all .3s ease-out;
+        -o-transition: all .3s ease-out;
+        cursor: pointer;
+        box-shadow: 0 0 30px 0 #000;
+    }
+
+        .amcharts-pie-slice:hover {
+            transform: scale(1.1);
+            filter: url(#shadow);
+        }
+</style>
+
+
+<div class="page-head">
+    <!-- BEGIN PAGE TITLE -->
+    <div class="page-title col-md-12">
+        <h1>
+            Ödev <small> Öğrenci Ödev Takibi</small> <span onclick="YardimGoster(ID_MENU);" class="pull-right" style="cursor:pointer;"><img src="assets/global/img/info.gif" class="info-image-icon" /> </span>
+        </h1>
+    </div>
+    <!-- END PAGE TITLE -->
+</div>
+
+<div class="row" id="app">	
+	<div class="col-md-12">
+		<div class="portlet box green-haze dd-item" style="border:none">
+			<div class="portlet-title dd-handle" data-toggle='collapse' data-target='#filters' style="cursor:pointer;">
+				<div class="caption">
+					<i class="icon-magnifier"></i>
+					<span class="caption-subject bold uppercase"> Filtreler </span>
+					<span class="caption-helper"></span>
+				</div>
+				<div class='actions'>
+					<a href='javascript:;' class='btn btn-default btn-sm' style='border:none;'>
+						<i class='fa fa-chevron-down'></i>
+					</a>
+				</div>
+			</div>
+			<div class="portlet-body form collapse in" id="filters">
+				<form role="form" style="padding:12px 20px">
+					<div class="form-body form-group-lg form-horizontal row" style="padding: 0px;margin-top: 0px !important;">
+                        <div class="portlet light col-md-12" id="FiltreDivOgretmen" style="margin:0px; border-bottom-style: solid;border-bottom-width: 3px;border-bottom-color: rgb(0, 173, 239);"
+                             v-if="ListKullaniciTipi.indexOf(4)==-1 && ListKullaniciTipi.indexOf(5)==-1">
+                            <div class="portlet-body">
+                                <div class="form-inline">
+                                    <c-sube controller="OdevTakibi"
+                                            @OnChange="SubeSelected">
+                                    </c-sube>
+                                    <c-kademe3 controller="OdevTakibi"
+                                               :idsube="idsube"
+                                               @OnChange="Kademe3Selected">
+                                    </c-kademe3>
+                                    <c-sinif controller="OdevTakibi"
+                                             :idsube="idsube"
+                                             :idkademe3="idkademe3"
+                                             @OnChange="SinifSelected">
+                                    </c-sinif>
+                                    <c-ogrenci controller="OdevTakibi"
+                                               :idsinif="idsinif"
+                                               @OnChange="OgrenciSelected">
+                                    </c-ogrenci>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="portlet light col-md-12" id="FiltreDivVeli" style="margin:0px; border-bottom-style: solid;border-bottom-width: 3px;border-bottom-color: rgb(0, 173, 239);"
+                             v-if="ListKullaniciTipi.indexOf(5)>-1">
+
+                            <div class="portlet-body">
+                                <div class="form-inline">
+                                    <c-ogrenci-veli controller="OdevTakibi"
+                                                    :tc="TCKIMLIKNO"
+                                                    @OnChange="OgrenciVeliSelected">
+                                    </c-ogrenci-veli>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="portlet light col-md-12" id="FiltreDivOgrenci" style="margin:0px; border-bottom-style: solid;border-bottom-width: 3px;border-bottom-color: rgb(0, 173, 239);"
+                             v-show="ListKullaniciTipi.indexOf(4)>-1 || divOgrenci==1">
+                            <div class="portlet-body">
+                                <div class="form-inline">
+                                    <c-donem controller="OdevTakibi"
+                                             @OnChange="DonemSelected">
+                                    </c-donem>
+                                    <div class="form-md-line-input">
+                                        <div class="col-md-2">
+                                            <select class ="selectpicker form-control" v-model="idders" title="Ders Seçiniz." @change="Listele">
+                                                <option v-for="u in LISTE" v-bind:value="u.ID_DERS">{{u.DERSAD}}</option>
+                                            </select>
+                                        </div>
+                                    </div>            
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+				</form>
+			</div>
+		</div>
+	</div>
+
+    <div class="portlet light col-md-12" v-show="LISTE.length>0">
+        <div class="form-group" style="text-align: center;">
+            <h4 v-html="baslik"> </h4>
+            <h6><div style="color:red;" id="divTOS"></div></h6>
+            <div id="chartdiv" class="chart" style="width: 100%; height: 300px;">
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../../../VueComponents/Genel.js?v=3"></script>
+<script src="../../../VueComponents/SinavFiltreleri.js?v=4"></script>
+<script src="../../../VueComponents/SinavIstatistikFiltreleri.js?v=3"></script>
+<script>
+    var vue = new Vue({
+        el: "#app",
+        name: "OdevTakibi.html",
+
+        data: {
+            idsinavpuanturu: 0,
+            TCKIMLIKNO: '',
+            DONEM: '',
+            LISTE: [],
+            DERSLISTE: [],
+
+
+            divAc: 0,
+            idsinav: 0,
+            idsube: 0,
+            idders: 0,
+            idkademe3: 0,
+            idsinif: 0,
+            tcogrenci: '',
+            idsinavturu: 0,
+            idkullanicitur: 0,
+            ListKullaniciTipi: [],
+            divOgrenci: 0,
+            baslik: 'Genel Ödev Durumu',
+
+        },
+
+        mounted() {
+
+            var p = {
+                TCKIMLIKNO: session.TCKIMLIKNO,
+                OTURUM: session.OTURUM
+            };
+            var list = [];
+            WebPost(this, "OdevTakibi", "KullaniciTipiGetir", p, "#app", "Yükleniyor...", function (data, parent) {
+                if (data != null) {
+                    $.each(data, function (j, el) {
+                        list.push(this.ID_KULLANICITIPI)
+                    });
+                    parent.ListKullaniciTipi = list;
+                    if (list.indexOf(4) > -1)
+                        parent.tcogrenci = session.TCKIMLIKNO;
+                } else {
+                    Alert_Warning("Kullanıcı Bulunamadı..!");
+                }
+            });
+        },
+
+        methods: {
+
+
+            SubeSelected(item) {
+                this.idsube = item;
+                this.idkademe3 = 0;
+                this.idsinif = 0;
+                this.divOgrenci = 0;
+                this.divAc = 0;
+            },
+            Kademe3Selected(item) {
+                this.idkademe3 = item;
+                this.idsinif = 0;
+                this.divOgrenci = 0;
+                this.divAc = 0;
+            },
+            SinifSelected(item) {
+                this.idsinif = item;
+                this.divOgrenci = 0;
+                this.divAc = 0;
+            },
+            OgrenciSelected(item) {
+                this.tcogrenci = item;
+                this.divOgrenci = 1;
+                this.divAc = 0;
+                this.Getir();
+            },
+            OgrenciVeliSelected(item) {
+                this.tcogrenci = item;
+                this.divOgrenci = 1;
+                this.divAc = 0;
+                this.Getir();
+            },
+            DonemSelected(item) {
+                this.DONEM = item;
+                this.divAc = 0;
+                this.Getir();
+            },
+
+            Getir() {
+                var _this = this;
+                if (this.DONEM != "" && this.tcogrenci != "") {
+                    this.divAc = 1;
+                    var p = {
+                        TCKIMLIKNO: session.TCKIMLIKNO,
+                        OTURUM: session.OTURUM,
+                        TC_OGRENCI: this.tcogrenci,
+                        DONEM: this.DONEM,
+                    }
+                    _this.LISTE = [];
+                    WebPost(this, "OdevTakibi", "OdevTakibi", p, "#app", "Yükleniyor...", function (data, parent) {
+                        if (JSON.parse(data)[0].LISTE != undefined) {
+                            //$('#filters').collapse('hide');
+
+                            _this.LISTE = JSON.parse(data)[0].LISTE;
+                            _this.$nextTick(() => {
+                                $('.selectpicker').selectpicker('refresh');
+                            });
+                            _this.Listele();
+                            
+                        } else {
+                            Alert_Warning("Ödev Bulunamadı..!");
+                        }
+                    });
+
+                }
+            },
+            Listele() {
+                var _this = this;
+                var data1 = { value: 0, text: "", count: 0 };
+                var data2 = { value: 0, text: "", count: 0 };
+                var data3 = { value: 0, text: "", count: 0 };
+                var data4 = { value: 0, text: "", count: 0 };
+                var data5 = { value: 0, text: "", count: 0 };
+
+                var result = $.grep(_this.LISTE, function (el, i) { return el.ID_DERS == _this.idders; });
+                
+                this.baslik = result[0].DERSAD == 'Tümü' ? '' : result[0].DERSAD
+                this.baslik += ' Genel Ödev Durumu'
+                var TOS = 0;
+                $.each(result[0].DURUM, function (j) {
+                    TOS += this.SAYI;
+                    if (this.ODEVDURUM === "Tam Yaptı") {
+                        data1.value = this.YUZDE;
+                        data1.text = this.ODEVDURUM;
+                        data1.count = this.SAYI;
+                    }
+                    else if (this.ODEVDURUM === "Eksik Yaptı") {
+                        data2.value = this.YUZDE;
+                        data2.text = this.ODEVDURUM;
+                        data2.count = this.SAYI;
+                    }
+                    else if (this.ODEVDURUM === "Yapmadı") {
+                        data3.value = this.YUZDE;
+                        data3.text = this.ODEVDURUM;
+                        data3.count = this.SAYI;
+                    }
+                    else if (this.ODEVDURUM === "Geç Yaptı") {
+                        data4.value = this.YUZDE;
+                        data4.text = this.ODEVDURUM;
+                        data4.count = this.SAYI;
+                    }
+                    else if (this.ODEVDURUM === "Diğer") {
+                        data5.value = this.YUZDE;
+                        data5.text = this.ODEVDURUM;
+                        data5.count = this.SAYI;
+                    }
+                    if (result[0].DURUM.length == (j + 1)) {
+
+                        _this.Grafik(data1, data2, data3, data4, data5);
+                    }
+                })
+                $("#divTOS").html("Toplam Ödev Sayısı : " + TOS);
+            },
+            
+            Grafik(data1, data2, data3, data4, data5) {
+                var chartData = [];
+                if (data1.count > 0)
+                    chartData.push({ title: data1.text, count: data1.count, color: "#1CF140" });
+                if (data2.count > 0)
+                    chartData.push({ title: data2.text, count: data2.count, color: "#F31D13" });
+                if (data3.count > 0)
+                    chartData.push({ title: data3.text, count: data3.count});
+                if (data4.count > 0)
+                    chartData.push({ title: data4.text, count: data4.count});
+                if (data5.count > 0)
+                    chartData.push({ title: data5.text, count: data5.count});
+    
+
+                var chart = AmCharts.makeChart("chartdiv", {
+                    "type": "pie",
+                    "startDuration": 0,
+                    "theme": "light",
+                    "addClassNames": true,
+                    "legend": {
+                        "position": "right",
+                        "marginRight": 100,
+                        "autoMargins": false
+                    },
+                    "innerRadius": "30%",
+                    "defs": {
+                        "filter": [{
+                            "id": "shadow",
+                            "width": "200%",
+                            "height": "200%",
+                            "feOffset": {
+                                "result": "offOut",
+                                "in": "SourceAlpha",
+                                "dx": 0,
+                                "dy": 0
+                            },
+                            "feGaussianBlur": {
+                                "result": "blurOut",
+                                "in": "offOut",
+                                "stdDeviation": 5
+                            },
+                            "feBlend": {
+                                "in": "SourceGraphic",
+                                "in2": "blurOut",
+                                "mode": "normal"
+                            }
+                        }]
+                    },
+                    "dataProvider": chartData,
+                    "valueField": "count",
+                    "titleField": "title",
+                    "colorField": "color",
+                    "export": {
+                        "enabled": true
+                    }
+                });
+
+                chart.addListener("init", handleInit);
+
+                chart.addListener("rollOverSlice", function (e) {
+                    handleRollOver(e);
+                });
+
+                function handleInit() {
+                    chart.legend.addListener("rollOverItem", handleRollOver);
+                }
+
+                function handleRollOver(e) {
+                    var wedge = e.dataItem.wedge.node;
+                    wedge.parentNode.appendChild(wedge);
+                }
+
+                },
+
+        }
+    });
+</script>
+<script src="../../../Scripts/PublicMethods.js"></script>
+<script src="../../../Scripts/Rapor/amcharts.js"></script>

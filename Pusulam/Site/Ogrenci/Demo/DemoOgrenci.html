@@ -1,0 +1,207 @@
+﻿
+
+<div class="page-head">
+    <div class="page-title col-md-12">
+        <h1> Demo Öğrenci  <span onclick="YardimGoster(ID_MENU);" class="pull-right" style="cursor:pointer;"><img src="assets/global/img/info.gif" class="info-image-icon" /> </span></h1>
+    </div>
+</div>
+
+
+<div class="row" id="app">	
+	<div class="col-md-12">
+		<div class="portlet box green-haze dd-item" style="border:none">
+			<div class="portlet-title dd-handle" data-toggle='collapse' data-target='#filters' style="cursor:pointer;">
+				<div class="caption">
+					<i class="icon-magnifier"></i>
+					<span class="caption-subject bold uppercase"> Filtreler </span>
+					<span class="caption-helper"></span>
+				</div>
+				<div class='actions'>
+					<a href='javascript:;' class='btn btn-default btn-sm' style='border:none;'>
+						<i class='fa fa-chevron-down'></i>
+					</a>
+				</div>
+			</div>
+			<div class="portlet-body form collapse in" id="filters">
+				<form role="form" style="padding:12px 20px">
+					<div class="form-body form-group-lg form-horizontal row" style="padding: 0px;margin-top: 0px !important;">
+					
+    <div class="portlet light col-md-12" id="FiltreDivOgretmen" style="margin:0px; border-bottom-style: solid;border-bottom-width: 3px;border-bottom-color: rgb(0, 173, 239);">
+        <div class="portlet-body">
+            <div class="form-inline">                
+                <c-sube controller="DemoOgrenci"
+                        @OnChange="SubeSelected">
+                </c-sube>
+                <c-kademe3 controller="DemoOgrenci"
+                           :idsube="idsube"
+                           @OnChange="Kademe3Selected">
+                </c-kademe3>
+                <c-sinif-tumu controller="DemoOgrenci"
+                         :idsube="idsube"
+                         :idkademe3="idkademe3"
+                         @OnChange="SinifSelected">
+                </c-sinif-tumu>    
+                <input style="float:right;margin: 10px;" type="button" class="btn btn-success" v-on:click="Getir" value="Listele">            
+            </div>
+        </div>
+    </div>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+		
+    <div class="portlet light col-md-12" id="FiltreDivOgrenci" style="margin:0px; border-bottom-style: solid;border-bottom-width: 3px;border-bottom-color: rgb(0, 173, 239);" v-if="divOgrenci==1">
+        <div class="portlet-body">
+            <div class="form-inline">
+                
+                <table id="TblOgr">
+                    <thead>
+                        <tr>
+                            <th>FOTOĞRAF</th>                            
+                            <th>TC KİMLİK NO</th>
+                            <th>AD SOYAD</th>
+                            <th>ÖĞRENCİ NO</th>
+                            <th>SINIF</th>
+                            <th>İŞLEM</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="u in dtOgrenciList" >
+                            <td v-if="u.FOTOGRAF==''">
+                                <img src="../../../img/okyanus_image.jpg" class='img-rounded' height="60" width="60" style="position:center" /> 
+                            </td>
+                            <td v-else>
+                                <img :src='"data:image/png;base64,"+ u.FOTOGRAF' class='img-rounded' height="60" width="60" style="position:center" /> 
+                            </td>
+                            <td>{{u.TCKIMLIKNO}}</td>
+                            <td>{{u.ADSOYAD}}</td>
+                            <td>{{u.OGRNO}}</td>
+                            <td>{{u.SINIF}}</td>
+                            <td><input style="float:right;margin: 10px;" type="button" class="btn btn-success" v-on:click="DemoLogin(u)" value="Giriş Yap"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../../../VueComponents/SinavIstatistikFiltreleri.js?v=3"></script>
+<script src="../../../VueComponents/Genel.js?v=3"></script>
+<script>
+ 
+       
+    var vue = new Vue({
+        el: "#app",
+        name: "DemoOgrenci.html",
+
+        data: {
+            TCKIMLIKNO: '',
+            DONEM: 0,
+            idsinav: 0,
+            idsube: 0,
+            idkademe3: 0,
+            idsinif: 0,
+            tcogrenci: '',
+            oturumogrenci:'',
+
+            dtOgrenciList: [],
+
+            divOgrenci: 0,
+        },
+
+        mounted() {
+            var _this = this;
+
+            $("#TblOgr").DataTable().destroy();
+            _this.$nextTick(function () {
+                _this.ListeOlustur('TblOgr');
+            });
+        },
+
+        methods: {
+
+
+            Raporla: function (event) {
+                $('#filters').collapse('hide');
+                this.Getir();
+            },
+
+            SubeSelected(item) {
+                this.idsube = item;
+                this.idkademe3 = 0;
+                this.idsinif = 0;
+                this.divOgrenci = 0;
+            },
+            Kademe3Selected(item) {
+                this.idkademe3 = item;
+                this.idsinif = 0;
+                this.divOgrenci = 0;
+            },
+            SinifSelected(item) {
+                this.idsinif = item;
+                this.divOgrenci = 0;
+                //this.Getir();
+            },
+          
+            Getir() {
+                var _this = this;
+                //this.htmlYaz = '<div class="col-md-12"><div>';
+                if ((this.idsube == undefined || this.idsube == "0")
+                        || (this.idkademe3 == undefined || this.idkademe3 == "0")
+                    ) {
+                    Alert_Warning("Şube ve Sınıf Kademesi seçmeniz gerekmektedir.");
+                        _this.divOgrenci = 0;
+                    return;
+                }
+                this.divOgrenci = 1;
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    ID_SUBE: this.idsube,
+                    ID_SINIF: this.idsinif,
+                    ID_KADEME3: this.idkademe3
+                };
+
+
+                WebPost(this, "DemoOgrenci", "DemoOgrenciList", p, "#app", "Yükleniyor...", function (data, parent) {
+                    if (JSON.parse(data)[0] != null) {
+                        _this.dtOgrenciList = JSON.parse(data)[0].DemoOgrenciList;
+
+                        $("#TblOgr").DataTable().destroy();
+                        _this.$nextTick(function () {
+                            _this.ListeOlustur('TblOgr');
+                        });
+                        
+                    }
+                    else {
+                        Alert_Warning("Öğrenci Bulunamadı..!");
+                        _this.divOgrenci = 0;
+                        return;
+                    }
+                });
+            },
+
+            DemoLogin(u) {
+                 window.open('https://pusulam.okyanuskoleji.k12.tr/index.html?TC=' + u.TCKIMLIKNO + '&OTURUM=' + u.OTURUM , '_blank');
+                 return;              
+            },
+            
+            ListeOlustur(tabloAdi) {
+                this.tblSorular = $('#' + tabloAdi).DataTable(
+                {
+                    "search": {
+                        "caseInsensitive": true
+                    },
+                    "aaSorting": [[3, 'asc']],
+                    language: {
+                        "url": "./Utility/dil.json"
+                                                
+                    },
+                });
+            },
+
+        },
+    });
+</script>
+<script src="Scripts/PublicMethods.js"></script>

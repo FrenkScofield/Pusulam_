@@ -1,0 +1,604 @@
+  10050213732                                                                                                               
+  10051117152                                                                       DCCBDBADBCADCCAACCDCCBCBDDBCBDBACDABAAAD
+  10137211422                                                                       BCBDABAD AAB CAABBCC                    
+  10146211376                                                                       A  A A B A  B  A  D  CDBBCACBACBBDABADAA
+  10186085470                                                                       ADCAAABDDBCCAADABCDBBAAADBBABDAAADABBABA
+  10198049934                                                                                                               
+  10246323764                                                                       ABCBABCDBCAACCAACCDCDBDBDDBCBDCACDACAACD
+  10246927382                                                                       DBCBDBCDBCADCCABCCDCBCABDDCCADBACAABAACD
+  10487145910                                                                       DCCBACBBDAB ADBA   BBABBDDCABCDBABAAB   
+  10525226182                                                                        C B BABBCA CCAABCD  CABDB CBDCAC A ADD 
+  10598147230                                                                       DCCBDBCDBCABCCABCCDCCBDBDDBCBDAACDABAACD
+  10631524776                                                                                                               
+  10670187178                                                                       DCCDDAADBA  CDCBCCD BCA DDBCBDBBC ADADCD
+  10735064062                                                                       DCCBD  DBCA BCA CCDCCCABCD CCACADCABAAD 
+  10775563532                                                                       DCCADBCDBCADCCABCCDC CCBDCACBDCACDABAACD
+  10888789706                                                                        A DAB D C  C  ACCCB BCBDDBBDD  BDA AAAC
+  10963402230                                                                       DCAABDCDBCA CAABCBDCBCDBDDACDACACDACAADC
+  10990168048                                                                                                               
+  11002162610                                                                       AD BAABD BAABC DCCDCBBDBDBACBDAADDA AAAB
+  11011167750                                                                       DCCBDCADBCADCCABCCDBABDBDDDCBDBACDABAAB 
+  11117519422                                                                       BCABABADBBABCCABCCDBABDCDDCCDDBADAACAABC
+  11122015070                                                                       DCCBDBADBCADBCABCCDCCADBDDBCBDDADDAAADAA
+  11165654762                                                                              B    A   C   BBDBDDBCDD  C A AACD
+  11181176804                                                                       B   CDAB D  ABACB   BBDBCD C  CAADA ABC 
+  11230400720                                                                       DCCBABCDCCAABCABCCDCACDBDDBCCDBACCADAACB
+  11233405098                                                                       DCCBDCADBCADDCABCCDCBCDBDDBBCDDAADACAADA
+  11239408154                                                                       ADCDACCD CA D AACCD BBBADB ABDAACDADAACC
+  11276516492                                                                        B DB  AAB    B   B    A  D C D    A  BB
+  11279519162                                                                       A CBABADBCAACCAACCDCBCCBDBBCBDBACDADAACA
+  11315516520                                                                                                               
+  11321515302                                                                       ADDADCACCDCBCDACBDABADBBCCDBCADBCDBACDAB
+  11333425484                                                                       DCCBDBADBCADCCABCCDB                    
+  11468506966                                                                       DC BDBADBCA CCABC   DBCBAB  DDD         
+  11495179928                                                                       CBBDAAABBCBDABCACC DBCDBDDACCADDCDADAAAC
+  11548041486                                                                       DCCBDBADBCADCCABCCDCCBDBDDBCBDBACDABAACD
+  11558245720                                                                       DCCBDBDBBCAACCABCCDCDCDBDBBCBDCBCDACAACB
+  11612478156                                                                       DDCBAB  BAA B AACBD                     
+  11623931220                                                                                                               
+  11638617980                                                                       DACBACDDAA    AADCDCCBDBDDBCBDBACDACA   
+  11725928746                                                                                                               
+  11806139290                                                                         BDAB DCB DACCA    DC                  
+  11848142302                                                                       BDCBD ADABBCCB  C  CCCB DDC  C  B     AC
+  11855752600                                                                       DBCBACBADCBABBCADCADBCBBDBBCBACCACACAAAA
+  11875138262                                                                                                               
+  11900512548                                                                                                               
+  12053176274                                                                                                               
+  12076649106                                                                          D                CCDBDDCCBDBAC ABABDA
+  12086994234                                                                       DCCBDBCDBCADCCABCCDCCBDBDDBCBDAACDABAAAD
+  12181065914                                                                       DBBDABADBAABABABCCDDBCDBCBBCBADCCAABADBA
+  12215295850                                                                       DCCBDDADBCAACCABCCDCABCBDDBCBDBACDABAAAC
+  12226640328                                                                       DBCBDBADBCADCCAACCDBDBDBDDBCBDBACDABAACD
+  12265894164                                                                       DCCBDBCDBCAADCCABCCDCBDBDDBCBDBAACDABACD
+  12292120694                                                                          B                                    
+  12292639486                                                                       D CDABAC CADCCAB CD  CDBDABCBDCADDADAACA
+  12355635684                                                                                                               
+  12367890286                                                                       CAAA B  ABA BBBDBBDBADDACDABDBABCCDBABDA
+  12439851160                                                                       DCCBDBCDBCAABCAACCDCCBDBDDBCBDBACAABAACD
+  12629524416                                                                       DCBBDACCDABACDBCBDDBDCCABAACDBBCBDACBDAB
+  12727113802                                                                       DCCBDACDBCADCCABCCDCDCDBDDBCBDBACDABAACD
+  12853106174                                                                       A                                       
+  12998457476                                                                                                               
+  13212088858                                                                       DCCBABADBAA CCAAACD CBDBDDBCBDBACDAAAABC
+  13230108446                                                                                                               
+  13255337302                                                                                                               
+  13333333158                                                                       BD DCBCDBAA DCAACCAACCCBDC CCA ACDABACA 
+  13375856806                                                                       AACACB D ACDBC ADCB BCDADBDBACBADABDA   
+  13426325466                                                                       D        C  C     B  BDBDD CBADADDADADDA
+  13474087026                                                                       DCBDABCDBBAACCBAABADCCCBDDCCBDCACBACAACA
+  13538676852                                                                       DCCBDBCDBCAADCCABCCDCBDBDDBCBDBACDABAACD
+  13723792060                                                                       BAADABABBCACCCACCCDBBCDBDDBCBDBACDAAAADD
+  13729862064                                                                        CABCCAD  AB CA CCD ACDACBBC  AAADADADCC
+  13735870824                                                                       DCCBDBCDBCAADCCABCCDCBDBDDBCBDBACDABAACD
+  13736284262                                                                       DCCBABCDBCADCCAACCDDCBDBDDBCBDBACDABAACD
+  13777080014                                                                                                               
+  13834305456                                                                       DCBDDBCDCCABDCDBCCDABCDBDBACBADBDCADAADA
+  13850421116                                                                        C DA  B BA D AAC D  BDBDDBABDCAC A A CA
+  13859421834                                                                       A  AADDD AACACBACBA ABABDDCCAABA        
+  13919277852                                                                                                               
+  13951074280                                                                                                               
+  13985446190                                                                       DBCBAB BBCABCCABCCDCCCDBCDBCBDBBCDABAACA
+  14062312346                                                                                                               
+  14072414924                                                                                                               
+  14080199080                                                                                                               
+  14091079944                                                                       DDBBABAB  A CCAACCD  CDBDD CBDCACDABAAD 
+  14147446034                                                                                                               
+  14150459830                                                                       D CDABADBCABACADCCDCBCDBDD CBDCACDABADD 
+  14153411842                                                                        CBDABADBDA CCAACCDC BDBDBCCBDCAC ACAADB
+  14183445190                                                                       DACDABDDBCAABCAACCBDACCBDDBCBACADAABACDA
+  14227194190                                                                                                               
+  14237437898                                                                       ACABABCBBCAACCCAA DBBCBBDD CBACACDA B A 
+  14308192312                                                                       BABABACACDACCCCDCADDBBBBCBDBBCCDDBABACBC
+  14345439654                                                                       DBCBABCDBBABB ABC DCACCBDDACBDCACBABAAAD
+  14353055938                                                                       DCCBDBCDBCADCCABCCDCDBDADDACDDBACDABAACC
+  14401094148                                                                       DAABDBA   A BCABCCD BBDBDBBDADBACDACADCA
+  14434054386                                                                       CCB DA BC B  BB B C BCD  CB BB CB B CBBC
+  14636412366                                                                        DCDACADBCADCCABCCDCACCBCDBABDBACDADA AA
+  14719190372                                                                       DCCBDBADBCADCCABCCDCABDBDBCCBDBACDADADAD
+  14854406406                                                                       D CBD  DB A   AACCD  BCBDBBBBD  CDA ADA 
+  14860123038                                                                       CDACAACBCB CACAABBDA                    
+  14891245600                                                                                                               
+  14947120592                                                                       DCCBABCDBCAD CABCCD CCDBDDBDBD ADAACAACD
+  14983121324                                                                       DD BABADBCA DCABCCDCDCCBDDADBDCACDADAACD
+  15085029662                                                                       D                                       
+  15144044148                                                                       DCADBCCAAABBCCCADDDBCCCAADAAADDBDAACADAD
+  15238111664                                                                       ACDCDB  BABBAC    CBBCCBCBC CDAAAAAAA AD
+  15328023150                                                                       B                                       
+  15353429552                                                                       BDCBBBCDBCACAAAACCDDADDBDDCCBDBABDACADAA
+  15454016972                                                                       DCCBDBCDCCAADCAACCD BBDBDBCCBDACDDABAAAA
+  15523164412                                                                       D CB A D  ACACCC  BB                    
+  15538263384                                                                       CBBCACADBBDBAADBAABDBCBCADBACDBDACABADBB
+  15592179256                                                                       DACBDBADDCABCCABCCDCBADDDDBCBDACCDADADAA
+  15620227072                                                                            BABABAACCABCBD BDD DBCCBD BDCA AAAA
+  15628011116                                                                        C   ADD BB  C     B BDBDD CBD ACDAC AAB
+  15648027340                                                                       BCCBCACBDBCBABBCCBCCBCCDBDDBCDABBCCB    
+  15676962484                                                                       DCCBDBCDBCAADCCABCCDCBDBDDBCBDBACDABAACD
+  15710224158                                                                       D  DAA D CACCCAACCDB BDBDBCCCDCACDACADCC
+  15728223730                                                                       DD  DB BBBA                             
+  15750024510                                                                       DCCBABADB A CCABCCDBDBCADDBCDDBACDACAACD
+  15767677624                                                                       DCCBDBAD CAADCABCCDABCDBDBBCBDAADDAAADCD
+  15770221814                                                                       D CAAB D AA  DADCCDBAC DDDACD CC DA CD  
+  15781092328                                                                       DCCBABADBBABBCAACCDBACCBDDBCDDDACDAAADAA
+  15904002012                                                                       ABCDAAABBBBBAABACBDACAAC C              
+  15949005092                                                                         C                                     
+  15976085944                                                                                                               
+  16028213698                                                                       DC BA BBBAACBCAACCDCABD BDCCBDBAC ACADAD
+  16074013754                                                                       BDADDABCDAABCADBCAABACCAACDDBDACBBDABDAB
+  16087145800                                                                       DDCBABCDCBACD                           
+  16210027942                                                                       DACBDBCDDCADCCABCCDDCBCBDDBCADBACDABAACD
+  16222984004                                                                       DACBDBADBCA CCABCCDD                    
+  16240010532                                                                       DCCBDBCDBCAACCAACCDCCCDBBBBADDAACDABAACD
+  16240492918                                                                       DCCBDBCDBCAADCCABCCDC DBDDBCBDBACDABAACD
+  16270940458                                                                                                               
+  16309075304                                                                       DCCBDBBDBCADCCABCCDCABDBBDBCBDBACDABADCC
+  16318099490                                                                       AADCAACB CAB A      BBCABDCCBDAAABA DD  
+  16474221254                                                                       D   AB   A           DA DB CB  AD A AB  
+  16549069156                                                                       D                                       
+  16609014782                                                                       DCCBDACDBCABAAAACCDCDCDBDDBDBDBACDAAAADA
+  16666012974                                                                       DCCBDBBB CABCCABCCDBBBBBDBBCCDCACDABAADC
+  16789123366                                                                                                               
+  16804059014                                                                                                               
+  16826186378                                                                       C                                       
+  16861012656                                                                       DCCBDBADBCAACCAACCDCCBCADBBCDDCBCDADAADC
+  16891057344                                                                          DABCDAAADCCAACCD                     
+  16963003378                                                                       DCCBDBCDBCADCCABCCDCCBDBDDACBDBACDABAACD
+  16963749252                                                                       DDABCCABBBABAAABBBDABCCBDDACCDCAADADAAB 
+  16978202308                                                                       DDACCBADCBAACABDDACDBBDADBCBBACADBAACCCA
+  16984051914                                                                       D    BAD CA CC BC DBBCDBDDBCADCDCDADADBA
+  16996747324                                                                        CAD                 C                  
+  17002001584                                                                       DCABABADBBABBCAACCDBACCBDDBCDDCACDADADAA
+  17005102882                                                                                                               
+  17006363916                                                                                                               
+  17149097648                                                                       CD BCCBDACABCCAACCDCACDBBDDCBDBACDAACACB
+  17222975016                                                                       CACDDBAD CA CCAACCDABBBADDBABDBACDACAADD
+  17245755466                                                                                                               
+  17287043316                                                                       DCCBDBDDBCAACCAACCDCCBDBDDBCBDBACDADAACD
+  17357970368                                                                       DCCBDBADBCADCCABCCDCCCDBDDBCBDBACDABAACB
+  17402282422                                                                       DDAAAACDBCAABCAACCDCABDBCBBCBDAADDABADAA
+  17408152064                                                                       DCCBDBCDBCADCCABCCDCCBDBDDCCBDBACDADAACD
+  17441275270                                                                         CADC B AACACAAC D BCABDA DDDBA AABA   
+  17443037098                                                                       CDC                                     
+  17510335690                                                                       DCCBDBADBCADCCA CCDCCCDBDDBCDDAACDA AACD
+  17716027764                                                                                           CC                  
+  17873347224                                                                       BCCBABADBCAACCABCCDCCADBDDBBBDDACDADAAAA
+  17924953886                                                                                                               
+  17927953340                                                                       A                                       
+  17951308420                                                                          DAB D B  C AAC DD                    
+  18050166300                                                                       DCCBABADBCAAACABCCDCAACBBBBCBDCACDACAADC
+  18139077220                                                                                                               
+  18145698136                                                                                                               
+  18181076462                                                                       DACADBADBCCAACABCCDCDBCBDBDCBDCABDACAADC
+  18203942874                                                                         ACB  B A  BCBACAD DBD  B DBAAACABC CAC
+  18509932692                                                                       C  A                                    
+  18536931286                                                                       DCABCADDBCBCCCABBCDAACCBDDBDCDDACCACBADC
+  18602242780                                                                       DCABCDCDBBD                             
+  18623241748                                                                       DC B DCDBCADCCAACCDCCBCBCDBCBDCABAADAACD
+  18629242060                                                                       DCCBDBADBCADCCABCCDCCBDBDDBCDDCACDABAACD
+  18650929718                                                                       CCCBDBAD BAABCAACCDABBDBDBBCDDBBCAADADAD
+  18655430394                                                                       CDADABABBCABDBAABCDAACBBDDBCDDDACDAAAAAD
+  19009010538                                                                         BC DB             BCBBDD DD CDABCC CCD
+  19052257034                                                                       ADCDDBCDBCABCCAACCDC CDBDDBCBDBACDAAAACA
+  19052913886                                                                       DCCAABADBBADCCAACCDCDCDBDDBCBABAADABABCD
+  19139172700                                                                       DCCBDBAD CAA CABCCDCACABDDBCBDBCCDACAAAA
+  19159031100                                                                                                               
+  19205222384                                                                       DD     B B          BCDBDDBCBDCABDABAAAD
+  19231843348                                                                       DCCBDBDD CADCCABCCDCCBDBDDBCBDAACDACAACD
+  19307483836                                                                       DACBDBCDBAADDCABCCDCCCCBDDBCBDBACDABAACD
+  19361279536                                                                       CABA DABDCDABCBAACBDCCDBDDDDBCAACAACACC 
+  19412277610                                                                       DCCDDBBDBBABCCABCCD CCDBDDCCD BABAA ADAB
+  19466900274                                                                       DACBDBADBCAACCAACCDCABDDDDBCB AACDADABCD
+  19559266362                                                                       ABBACADABCDBABCABDBDBBDBBCDACABACBBBDACA
+  19667244672                                                                       DCCBDBADBCACBCABCBDCCBDBDDBCBDCACDADAACB
+  19712084574                                                                       DACBDBADBCABCCAACCDCB D  D C D ABDACAD  
+  19739090176                                                                                                               
+  19762388240                                                                       D                                       
+  19775889802                                                                       DC BDBADBCDCCCCBCCDCCBABDDBCBDBBCDACAACD
+  19814889176                                                                       BACBDBDADADBDACACACDACDABDBDDDAABDACADCD
+  19868886688                                                                       BDBDCABBABBACCAABCDADBDBDBACDDCBDDAAAACD
+  20062633732                                                                       DCCBDBADBCABDCABCBDBBCDADDADBDCAADABABBC
+  20173501784                                                                       ACCBDBADBCABCCAACCDCC DA     C          
+  20558361538                                                                              D CA C    BD  BC DBBCBDCACDAADBDB
+  20567034546                                                                                                               
+  20671084086                                                                       DCCBBACDBBBADBCABCCDCBDBDDCCBDBACDABAACD
+  20689639698                                                                       C      D BA  C ACBDC CC DC BBDCACDA  D  
+  20765859248                                                                       BDBACADBBCACADBCDBADBBDCABCADCBDDBCACBDC
+  20788080452                                                                        CBBABCD DABCAABCCDBCCDBDBBADAAADDAAAABD
+  21040616358                                                                                                               
+  21106599564                                                                                                               
+  21140195036                                                                       DCADCBBDBCA                             
+  21290839880                                                                       DBA B  BACCCDBDAA  BCBADDBDBDACBABDADCB 
+  21473025734                                                                       ACCBBACCABABBBBAAABBAADDADADACCDBCADADAC
+  21722192354                                                                          BAAADBDABBCAACCBCCCCBADBADDBACDADAACD
+  21863820178                                                                         CDCA DBAAC CBACDBA CCBDD CBBAA DABBA C
+  21941131394                                                                       DD BABCDBAD CB ACBDCBBBADDBDBDBADDABACAA
+  22025814790                                                                       C  DC                                   
+  22103162546                                                                       DDCBDB DBCADDCABCCDC BD DB C  CA DA AAD 
+  22106812080                                                                                                               
+  22115130656                                                                       AD                                      
+  22268806880                                                                       A CDABCABAA CDBADCDDCCA BDBD BCACDACAC B
+  22280806424                                                                       DC DDBADBBACCCABCCDABBCADDBCBDCACDABAAD 
+  22427801534                                                                       ADCDA  D AA    ACAC ABCBDDDBBD ADADDADA 
+  22561019994                                                                       DCCBDBCDBCAADCCABCCDCBDBDDBCBDABAACDAADD
+  22603274152                                                                       BD DABADBBABDCAACCDA CDBDDCCBDBACDABACCB
+  22625163816                                                                       BCCBDBCDBCADCCAACCDCBCDBDDACBDAACDABAADD
+  22643794108                                                                       DCCBDCCDBCACACABCCDCDBCAD BCDDABCCBAADDB
+  22655107996                                                                       D                                       
+  22811585002                                                                       DCABDBADBCADCCABCCDCCBCBDDADCDCACDABAABD
+  22871786562                                                                       CCCD ACABBA CAAACCAC  D DB AD AACAAAADDD
+  22897011044                                                                       DDADABADBAACDCABCCDCBCDBADAADDBCCDAAAACD
+  22924004148                                                                       DCCDDBADBCABCCADCCDCCCDBDDACBDBACDACAACD
+  22975549902                                                                       BDBBABADCCAAACABCDCBBCDBDDBCBDBACAAAAAAD
+  23164004684                                                                       DBDBAADDBCADCCAACCCA CCACDCCBDAACAAAAADB
+  23383247978                                                                       BA C   D      D C                       
+  23405109666                                                                                                               
+  23639074914                                                                       DCABABADBBABCC ACBCBBBCADDBABDBACDAAADAC
+  23642760842                                                                       DCCBDBCDBCADCCABCBDCABABDDBCBDBACDACADCD
+  23747757372                                                                       DACBDBADBCADCCABCCDCCBDBDDBCBDCACDACAACD
+  23774114896                                                                       ADCA   D    B   C D  CC DB  BBC C A ADDD
+  23872978444                                                                                                               
+  23921060700                                                                       AADADBACBDACACACDBACBCBBACACDADBDBADBBAB
+  23921751516                                                                       DDBBACCDBCADCCABCCDCACDCDBBCCDDACDADADAB
+  23965161968                                                                       BBCBBBAADCADBBCBCADBABAACBCADADBAAACCDAC
+  24089521102                                                                        C BDA  B A          BABBBCCA C DDAC    
+  24370934642                                                                       DCCBDBCDBCADCCAACCDCBCDDDDBBBAABBAAAADDD
+  24412088784                                                                       DACDDBABBDAACCAACCDCCBDDDD CBDAACDABACAC
+  24509731944                                                                       DCCBDBADCCCDDCABCCDABBDABBBCADBABDABABAD
+  24775490132                                                                       ACCDAAABBDAADAAA CDABCCBDBACCACACDACADBA
+  24839034968                                                                       C                 C                     
+  24857398714                                                                       BCBDABCABCBADDCACADBBCDBDDBCBD ACDABAAAD
+  24976899970                                                                       BC BC CB B CABABCCD BCCBBBA BD  C ACABBA
+  25028028850                                                                                                               
+  25259706916                                                                                                               
+  25277706400                                                                       DBABCADDD A BB  C   ACDABDCA C ADB C BAC
+  25367045204                                                                                                               
+  25370703108                                                                       AA BBBABA CB CBCACB ACCBCDBAABD BA AB BB
+  25622694826                                                                       AC DABCAAC           CABBD              
+  25682043190                                                                       DCCBDBADBCADCCAACCDCCBBBDDBCDDCACDABADDD
+  25745007268                                                                       DCCBACADBACBBCAACC  CADBCBDCBADABCACAB D
+  25790032468                                                                       DCCDDBCDBCACDCABCCDCABDBDBAABDBACDABADAA
+  25874057288                                                                       DCCADCCDBCABCCAACCDCACBBDDADBABACDABAACD
+  25889686664                                                                       DA BAB DBCADDCAACCDCACDBBDACCDBACAACAAAD
+  26030035560                                                                                                               
+  26099061104                                                                          D B      A  A  D   ADDDBA DCACDAAADA 
+  26296865666                                                                                                               
+  26321641364                                                                                           ADCDBBAC DBCBCADA BC
+  26327032432                                                                                                               
+  26551468434                                                                       CA                                      
+  26581415866                                                                       DA BDBADBCACCCABCCDCCBCBDDCCBACACDABAACD
+  26600018474                                                                                                               
+  26606030418                                                                       DCCDAB DBCAAACABCCDCACDBDDBABDCACDA ADCD
+  26615661788                                                                       DC DAACBBCA CCAACCDCCBCABBCCDADACDAAAADD
+  26948421882                                                                                                               
+  27100979678                                                                       BCBCCACBCBABCBCACBDACCDBACBCCACABAADAADC
+  27184396774                                                                       DCBBDBCBBCABCCABCCDCCCCBDDBBBDBAADABADCD
+  27272525574                                                                       BADBCCCCBA BBCCA CCBDBDACDDBCAA CABDCACC
+  27383636312                                                                       DD BCDB CAB BB AC B CCABDBCB ACBDBAC DAC
+  27682818822                                                                       ACCADBADBCADDCABCCD   CBBD CCABABDA AA  
+  28111925548                                                                                           CCBADD C DAACDACA   
+  28171964266                                                                       DA                                      
+  28213975816                                                                       DDCD                                    
+  28237976554                                                                       DCCBDACDBCADCCABCCDCCCDBDDBCDD  CDAAADCD
+  28384937262                                                                        DDBAAADBCABAC B DCCCCCADBDCBBABBDDAADAB
+  28441071816                                                                       DDCBCBBDBAABCCABCCDCCCCBDD D DCAC A AADD
+  28561349604                                                                                                               
+  28705358592                                                                        D BA  D BA CC ACCD ACDBDDBCBDAABDA ADAC
+  28760566864                                                                       DCCBDBADBCAADCAACCDDCBDBDDBCBDBACDABAACD
+  28982384048                                                                       AA BDB D BA BCAACCCD CC DD  DDAABDAB    
+  29099579044                                                                         CBABADBCABCCAACCDCCCDBDDBCDD ACAA AACD
+  29236772772                                                                       DDCBABCDBCADCCABCCDCCCDBDDBCBDCACDABAACD
+  29264574188                                                                          C  AB            ABDBDDCD  CD  AACD  
+  29389920136                                                                       BABBCCCBBBCABCABCBCABBDCBBCBCBABA CDB AD
+  29587060726                                                                        ACBABAD CAACCABCCD BBBBCBCCBDCACDABAAAA
+  29612561990                                                                       DBCDDBCDBCADCCABCCDCCCDBDDACBDBACDABAABB
+  29648560752                                                                                                               
+  30103898440                                                                       DA B DCDBCACCCAACCDCBBDBDDCADDCACDADAAAA
+  30211876200                                                                       BAABDACDDAABCCAACBDCBCBBDDBDBDCACDACAADD
+  30529284452                                                                                                               
+  30766876496                                                                       DCCBDBCDBCAADCCABCCDCBDBDDBCBDBACDABAACD
+  30793904308                                                                       ADADDB DB ACBDDDDC C CB BB D            
+  30919852254                                                                       DDABACADCAAABCAACCD  BDBDB          A   
+  30946844390                                                                       DCCBDBCDBCABACABCCDCCBDBDDBCBDBACDABAACD
+  30949020524                                                                       DCCBDBCDBCAADCCABCCDCBDBDDBCBDBACDABAACD
+  31051827636                                                                       DA ACBCD AAC CABCCCCBDCBDDBCCDAAADACADCA
+  31117846786                                                                       DAA D CD ADBAAB   BABCCCBDBAB ABBCA CC A
+  31195822832                                                                       BDA ABA CA  BC ACBDBBBC CB CBDBADDA ABAD
+  31295505796                                                                       DCCBDACDBCADBCAACCBCBCCBBDBCBDDACDA ADAC
+  31334104492                                                                       D CD C B ACBCC  DC BACBAAD CB C DBADAB  
+  31804802972                                                                       DDCDABCDBCADCDAACCDCABDBDBCCBABACDACADCD
+  31859488602                                                                       B  B BCD CACBCABCBD  CDADDCDCDBBDDAAAABC
+  32170257748                                                                       DDCBDBADBCADCCABCCDCCBCBDDBCCDAACDADAACD
+  32236815370                                                                       D                                       
+  32260841512                                                                       DCCBDBADBCA CCAACCD CBBADDBCBDBACDACAACD
+  32302787754                                                                       DA BDBADBCAABCABCCDCCBDBDDACBDBADAABAACA
+  32405468710                                                                                                               
+  32411469190                                                                       DCBDBBCDBCAADCAACCDDBBCBDDBCBDBACDABAACD
+  32435468308                                                                       ACCBCBADBCACBCABCCDBBCCBDBBCBDCACDABAACB
+  32462469590                                                                       ACADAB DBBAABCDACCAC BBBCDCCCABA DADADBA
+  32582464116                                                                       DDCBABAD BABACDACADBBBDDDDDDBDBACDADABDD
+  32591464206                                                                       DCCBDBCDBCAADCCABCCDCBDBDDBCBDBACDABAACD
+  33145130370                                                                                                               
+  33211378750                                                                       A                   CCCBCBDCBDCCD       
+  33248440604                                                                       AACBB BACBC BCC C BACBBBBABC BCCDAA AD D
+  33337819748                                                                       B DDCABBCBD DADABBB BCBADB DBDDA DABADD 
+  33358525666                                                                                                               
+  33422436164                                                                       BAAACCDDAAABCCAACCDCADDBDDBCDDCACDACAACD
+  33449433924                                                                       DBCBDBCDBCADCCABCCDCABDBDDBCDDDACDACABAA
+  33502746022                                                                                                               
+  33512431888                                                                       ABAADCCCDABBBCADCABBBBDADACADBCDACBBBADD
+  33757779660                                                                       DCCDDBCDBAABCCAACCDBBBDBDDDCBDDACDABADDD
+  33817803014                                                                                                               
+  33895786346                                                                       DCCDDBCDCAADDCCABCCDCBDBDDBCBCBADDABABCD
+  33962416824                                                                       BA             A  D                     
+  33976182920                                                                       DCCBDBCDBCACDCAABABDCBDDADCCADAACDABA CB
+  34139410904                                                                       DCCBDBCDDCAACCABCCDCACDADDBCBDCADDAAABCD
+  34297747294                                                                        D B  CABC   CBACCD CCA CBCBBD AADABDBAC
+  34553398482                                                                                                               
+  34592396494                                                                       CDBBCD DBBABBCAAC DBCBBCDBCCBDDABDABACAB
+  34648764260                                                                                                               
+  34741709038                                                                       DCCBDBCDBCAADCCABCCDCBDBDDBCBDBACDABAACD
+  34927706738                                                                       BCABCAADB  BDB  D  C                    
+  34957734428                                                                                                               
+  35293429108                                                                       ACCBDBDDBCADCCABCCDCDBDBBBBCBDBACDABAACD
+  35293565110                                                                        A   BCD  A    B BD CBABDDACBDA CDA AAAD
+  35338569530                                                                       DC BDBADBCACACAACCDCCCCADDBCDDCAABABA CD
+  35404704186                                                                        A                                      
+  35405368868                                                                       DCCBDBCDBCADCCABCCDCC CBDDBC AC         
+  35470148068                                                                        BCBABCBBCA CCAACCDADBC DDCCBDAABDABACA 
+  35642179388                                                                       DAADACDD BABCCDACCDBCCCBDBBBBACAADABAACB
+  35918351678                                                                       DDCB   D                                
+  35926693340                                                                       DACBDDADBCADCCABCCDC                    
+  36173344450                                                                                                               
+  36263340164                                                                       ABACBDDBABAADBBABADBACBAADCBBAABCCBAACBA
+  36283682558                                                                       DCCDDBCDBCABCCABCCDA CA CDCBBDBACDABADDA
+  36455207428                                                                       DACDBCBCDCBCAADCDCDC                    
+  36554331796                                                                                                               
+  36854321732                                                                                                               
+  36856702782                                                                       DBBDACADAACCCDAACBBDACCBCBDCBDDAADADABAD
+  37031315148                                                                       CDCBACDBACBDBCADBCAD                    
+  37037314480                                                                       DCCBDBADBCADCCABCCDCCCC DDBDCDAACDABAACD
+  37058313752                                                                       DC BABCDB ABCC BC                       
+  37399672860                                                                       DCCBDBADBBA CCABCCBBBCCBBDACDDAAD ABACAA
+  37441643978                                                                       DCCBDBADBCADCCABCCDCCBDBDDBCBDCACDABAACD
+  37496299076                                                                       DCABDABDACABCCABCCDABBCADDCBBAAABDACACAD
+  37544297450                                                                       DACDABAD CAA CADCCD                     
+  37586296602                                                                       DCCDBBCDBCCBDCDABCCDCBDBDDCCBDBAC ABAA D
+  37847287950                                                                                                               
+  38017061578                                                                       DCCBDBADBBADCCAACCDCABDADDBCBDBACDABADCD
+  38057280946                                                                       A                                       
+  38086033360                                                                       DCCBDBCDBCADBCABCCDCCBDBDDBCBDCACDACAACA
+  38099280256                                                                       DCCBDACDBCADCCABCCDCCBDBBDBCBDBACDADAACD
+  38102280150                                                                       DCCBDACDBCADCCABCCDCACDBBDBCBDBACDADADCD
+  38150277294                                                                       DCCBDB BB A BC BCCD BCDBDB DDDBAC ACA DD
+  38207275396                                                                       DDCBABABACACBBABCCDB CDB B CBDBAC A A   
+  38269854454                                                                       DDBADBCDBCAACCBBCCDCABDBDDCCBDBACDACADDA
+  38278585882                                                                       BA A C   DC CAAAB DBBBCBDDBCBDBADDADADDA
+  38294272490                                                                       CCDDABCBAAAACAAAC D CCDBDBCCBDAACDACABBD
+  38360270290                                                                       DBADBBCBCDBCDBAACDDBCBDCDDCABACACDACBDBC
+  38500618494                                                                       DCCBD BD  ADCCABCCD        D            
+  38635653278                                                                       DCCBDBCDBCAADCCABCCDCBDBDDBCBDBACDABAACD
+  38713702966                                                                                                               
+  38843254120                                                                       DC BDCADBCACCCABCCDCBCD DBCCBDCCCDABA D 
+  38941444096                                                                                                               
+  39044144920                                                                       DCCBDBCDBCADCCABCCDCCCDBDDBCBDBACDACAACD
+  39662226848                                                                       DCCBDBADBCABCCABCCDCCBDBDDBDBDCACAA AACD
+  39881057810                                                                       DCCBDBADBCABCCABCCDCACDBDDADDDACCDACADBD
+  39895532082                                                                       BAABDBCBAABDBCDAACBDABCCBBDBBABABDACADBD
+  40264520586                                                                                                               
+  40295205704                                                                       DC BDBADBCADCCABCBDBACCBCBBCBDCABCACAAA 
+  40330768348                                                                                                               
+  40391203192                                                                       CBABABCDBADACCCACBDCCCDCDDBCBDBACDABACCC
+  40397202984                                                                        D D A   BA  B D    CAAABCBBD   B  B C  
+  40441513608                                                                       DC DCBCD  A CCAACCD  CDBDDBCCDAADDAAAACC
+  40675505844                                                                       DCCBDBABBCACCCABCCDCCCCBBDBCBDCACDACAAAA
+  40708549074                                                                       CA BDBADBCADACAA CCABACBDBCCDDBA BADAADD
+  40882379214                                                                                                               
+  41182488804                                                                       DC BABADB A ACABCCD  BC DB CBDCACDAB    
+  41248487918                                                                                                               
+  41480166268                                                                       DC BDAADBCADBCABCCDBBCCBDBBCCDCADDACAACA
+  41690160186                                                                       CCBCA ADBAACCBDACDABACDB DAADCB         
+  41791734118                                                                                                               
+  41878512400                                                                        A DA CDBD   C  CCDBBCC DB DB AADAADBBB 
+  42028341420                                                                                                               
+  42188175668                                                                       AAABDBACBBBBDAAAABCCBCCBDBDCBDCADDADABC 
+  42209111606                                                                        CCBDBADBCADCCABCCDCCBDBDDBCBDAACDACAACB
+  42211340186                                                                       DCCBDBCDBCADCCABCCDCBCCBDBBCBDDCADABAAAA
+  42307520744                                                                                                               
+  42355453124                                                                       DA BD  BB            CDBBD CBDC CDACAB  
+  42358472252                                                                       DCCBDBADBCADCCABCCDCBCDBDBBCBDACCAABAA  
+  42526485602                                                                       DDCBDBADBBA BCAACCDBACDBDDCCBDBBCDADAAAA
+  42662127404                                                                       AABAD  D  B D  B D AA                   
+  42773123784                                                                       DCCBABADBAAACCAACADCABCBDDBABADCCDACAAAA
+  42799469910                                                                       D CBABCDBCAAB ABCCDC CCBDDDB  B CDA ADCB
+  42890119240                                                                       DCBDABADCCABCCCACCDBBCAADDBCBDAACDDAAAAA
+  42898511626                                                                       CD  AB ABAA  C AD D ACDBDD CAACADDABAB D
+  42929117926                                                                                                               
+  43007115360                                                                       AACB DBDAA CBC  A CD BCADBBCADACBBDBCACA
+  43106112154                                                                       DCCBD  DBCA   AB    CBD DBBC    C A AACD
+  43207462592                                                                       CDCDABCDBCABCCAACDDBCBDBDBADCDACADAACBCD
+  43366301466                                                                                                               
+  43405877266                                                                       DCCBDBCCBCADCCABCCDD                    
+  43477447336                                                                       BACDACCDBCBABCDDACBACADBCCBBCDBCABADADDB
+  43651407606                                                                       A                                       
+  43687440646                                                                       DDABACADBCABCCAACCDBBCDBDCADBACADDACAAAC
+  43687440714                                                                       DCCBDBADBCADCCABCCDCCBDBDDBCBDAACDADAACD
+  43759459354                                                                                                               
+  43786456890                                                                       BAC                 ACAADDDDBD ACDA AACA
+  43843429096                                                                        DB CD D CAC C A BD B D DD CBD  C A AA  
+  43972395866                                                                                                               
+  44056428722                                                                       ACCBDBADBCADCCABCCDCCCDBDDBCDDCACDACAACA
+  44071435132                                                                       ADCBA  DBBA   ABCCDC BCBDDDBBDABCAADABCA
+  44308413018                                                                                                               
+  44354103352                                                                       BDABABCDBADBBCAACCDABCDBCDBCCAAACAACAADD
+  44371383744                                                                       DCCBDBABBCABCCABCCDCCBDBDDBCBDCCCDABAACD
+  44386217690                                                                       DCCDABADBCABCCAACCDADCCBDDBDDDAACDABAACA
+  44392424372                                                                       A ADBB BC A CCCABDAAACDBBB DBDBACDABAAC 
+  44407261794                                                                       DCCADBCDBBABDCABCCDCBBDBDDBBCDCCCDABAACD
+  44500420784                                                                       DCCBDBCDBCACCCABCCDCCCABDBBCBDAAADACADCD
+  44551262920                                                                       DA BABCB CACCCAACCDABCBBDDCCBDCACDABAADD
+  44585062756                                                                       ACCBDBCDBCADCCABCCDCCBDBDDBCBDBBCDABAAAA
+  44686372280                                                                       ADBDDDABCBBBDACACCADAA BCAADCCCBBDABBCAD
+  44725250920                                                                       A      D       AC D  CDBDD    D D A     
+  44785411330                                                                        D BDBADBCADCCAACCD CBDBDDACBDB CDAAAAD 
+  44800403968                                                                       DACBCADDBCAABCABCCDDCBDDDDACBDCACDABAACD
+  44818367832                                                                          DACDBBCAAAC ADB  CCCCDDABADCAC A AAD 
+  44833409814                                                                       DA BABCDBCABCCABCCD ACCBDBBDBDBACDABADCD
+  44944114102                                                                       DABDCA BBCADCDB CC CBADCBDCBBDCACDADCABB
+  45301386606                                                                       DCDBAAADADAAABAACCDC CDBCBBDDDCAACAAABCD
+  45349371602                                                                        D     D          D  CDBDB C D  D A A D 
+  45622384206                                                                       CA D BCBB   CC BC D BCCBDDCBBDACADABAACC
+  45715337836                                                                       DCADAAADBBA CCAACCDCBBCADDCCDDCACDACADAA
+  45721337776                                                                       DCCBDBCDBCADCCABCCDCDBDBDDBABDCACDADADDC
+  45856368218                                                                       C  BDBABBCABADAACCDBBBCBDBACCDACCCABADCA
+  45928400754                                                                       ADADDBCDCCAABCAACCDCCBCDDBACBADAC A ADAA
+  45940330312                                                                        DCDDD DBCAAC  AC D CCCBDDBADD ABAACAAAD
+  45944017622                                                                                                               
+  46420356730                                                                           AB BBCA ADAACCDBDCCBDD CBDAABDABABAC
+  46424002046                                                                       BD DDBAD BA ACABC DB BDADDCCBDAAADADAA  
+  46543997568                                                                       CCAACAABBCAACCAACDDABBCADDBAADCACDACAADA
+  46720348688                                                                        CCBDCBDBCADCCAACCDCCBDBDDBCDDBACDACAACB
+  46882320744                                                                          DABCDBBAD  AACCD BCB CDCCCDD CDABAA  
+  46990337900                                                                                                               
+  47056173340                                                                       DCCBDBCDBCAAD AACCDCCBDBDBBDBDAACDACAADA
+  47173174992                                                                       B                                       
+  47266973914                                                                       CAD C  ABD BDA D ABCACBBDCAA CC ADD BDBC
+  47323363832                                                                       DACBD  D  A B ABCCDC CDBDCCDACCACDADAACD
+  47371346016                                                                       C ADAC   BACBDAACCB BCAADDCADABCAAACAADB
+  47614314000                                                                       DCBBDBCDBAACCCABCCDCCCDBDBBABDBABDA AAAA
+  47623311748                                                                          BAA D AA         DCDADDCCBAD BDADAAC 
+  47659315796                                                                       BD     D  A   AACCBCABCDDB CBDAACDAAAAAA
+  47773291358                                                                                   B       A CABB C DC C A ADDA
+  47776311848                                                                       DA                                      
+  47818305736                                                                       AAC                 A                   
+  47851449664                                                                       BDACAABBCADBCCDADCDABCBBBBCBBBBAADABBCCA
+  47878308432                                                                       B                                       
+  48568286276                                                                        ACDABCDBCAACCABCCDCBCCBDDADDDCACAACAAAA
+  48670294572                                                                          A BCBAAABAC A  D  C D BC B   A A  AA 
+  48865238992                                                                                           B                   
+  48898267440                                                                       CCCBA       DA A B  ADDBDD CBAACBDABACAB
+  48913272848                                                                       DCCBDBADBCADCCABCCDCBBCBDDBCDDBACDABAADB
+  49018257488                                                                       DCCDDB DBCA  CAACCDCACCBDD CBD AC ACAAA 
+  49024227550                                                                       DBCDCDBDBAADABAACCDBCBCBDBBBCDCACDACAACD
+  49204263088                                                                       BACACBACCBCDBADCCDCCCACAABDABCABCABDCCDA
+  49240220328                                                                                                               
+  49369259636                                                                                                               
+  49402904608                                                                       DBCBDBCDBCAACCABCCDCCCCBDDBCBDCBCDADAAAA
+  49510253728                                                                       D C    C            CADB                
+  49579236892                                                                       DCCBDBADBCABCCABCCDBBCCBDDBCBDCACDADAACD
+  49714083534                                                                       DCCDDB              ACD DACBADDACCA ADC 
+  49864886856                                                                       DCCBDBADBCA CCABCCDA BDBDD CBDBACDAAABAD
+  49870242196                                                                                                               
+  50065227546                                                                                                               
+  50134190610                                                                       ABDDBCABBADCCACBBDBB                    
+  50161202614                                                                          B   A    BCAA CB ACCBDB CBDAA DA A A 
+  50224875328                                                                        CDDD  D            DA                  
+  50515177742                                                                       CD DACCBCBBBABBBADBBACABBDCCBDCABDABABAC
+  50524221696                                                                       DCCBDBCDBCAADCCABCCDCBACDDBCBDBACDABAAC 
+  50728217754                                                                       DACBDBADBBADCCABCCDCCCDBDDBBBDDACDACAACD
+  50758179046                                                                       DCCBDBADBCADCCABCCDCACCBDBADBDBACDA AAAA
+  50908207292                                                                       DCCBABADBCADCCABCCDCCBCBDBBCBDCACDACADCA
+  51028203348                                                                                                               
+  51028427492                                                                                                               
+  51052202546                                                                       DCCBDBCDBCADCCABCCDCCBDBDDBCDDBACDABAACD
+  51274174348                                                                        D DA CDACBDDCAC     CCBDDCCADCCCAADADBD
+  51328185474                                                                       DC BABADBCAACCAACCDCBDDBDBAC DCCCDACADAA
+  51331193220                                                                       DACBDCDDDAACCCAADCDBAC BDBCCBAAABDAAABB 
+  51379184716                                                                       ABDCBACB                                
+  51409835274                                                                                                               
+  51460855082                                                                       DCCBDBCDBCCB D CB DBCBCBB BCAD ACD BAA  
+  51481834486                                                                       DCCBDB DBCADCCAB CB   CBDD CBD ACDABA   
+  51499833822                                                                        DCBBCBCB           BCDADDDDCBCACBBCADAB
+  51508179804                                                                                                               
+  51571028740                                                                       ACBC DBBACABBDCCBBBDCCCACBBBBADC        
+  51610197246                                                                       DCCBDBCDBAACCCABCCDCCCDBDBBABDBABDA AAAA
+  51661827062                                                                       DC BDBCDBCADB ABCCDBBCABBDBCBDCACAABAAAA
+  51685826652                                                                       DD C BDD CA BCAACCDC CDBBDAC D AC A ACBA
+  51931131622                                                                       DCCDDBADBAADDCABCCDABCDBDDACBDBACDACAACD
+  52351002806                                                                          D        D  A  DDACCBBBAD ACA DACACDA
+  52411137004                                                                                                               
+  52663141378                                                                       AADD BDCCACBCCAB  A                     
+  52813114184                                                                       DC BDBADBCABBCAACCDC CDBDDBCBDCACDA AABD
+  52825466288                                                                        AADDA BBBBABA ACCD CCDBDB D DCBCDAAAAD 
+  53125103774                                                                       DCCBDAADBCABCCABCCDCCBCBDDACBDBACCADADCD
+  53158132222                                                                                                               
+  53185088974                                                                                                               
+  53236775952                                                                       BCCDDBABBCADCCABCCDCCBCBDDBDBDBACDADAACB
+  53314097518                                                                       BACBDBADBCABCCABCCDCBBDBCBACBDCACAACAAAA
+  53380126402                                                                       DCCBDBCDBCADCCAACCDBCCCBDDBCDDDACDA AAAD
+  53452769742                                                                       CAABDACBDCABDADACBBDCBDCADCCADBABDADABCA
+  53506113330                                                                       DCCBDBADBCADDCABCCDC CDBDBCCCA DDDA AA  
+  53518108034                                                                       DCBBAD DCCADC AACCDCACDCDDCCBDDAB ACADCD
+  53590762704                                                                       CB D DB A CCDBCDACC BBDCDCAB B DACADBCBB
+  53734113232                                                                       CCCBABABBBACCCAACCD ACDBDDACCDAAADADBACD
+  53761104760                                                                        DADAB D AAAA AAACDABBABCBAABADCCCABBDDA
+  53800108858                                                                       ADAD B BCCABCCABCBBDCBCBDBCBDDDAAAACCDAC
+  53827070800                                                                       CDBBCBADBAAACCAACCDBACCBDDCCDABBBDADACDA
+  53896107964                                                                       B                                       
+  53938751438                                                                        C                                      
+  54004750386                                                                                                               
+  54100071378                                                                                             CBDD CB           
+  54241097282                                                                       DC BD ADBCA CC BCCD CB                  
+  54475049200                                                                       C CD BCCBDABADBABCDABCDBCADACDAAC AAAD  
+  54652082686                                                                                                               
+  54685051970                                                                       BDCBDBADBCADCCABCCDCBBDCDBBCBDBACDADAACD
+  54712080614                                                                       ADADCB                                  
+  54754066300                                                                        BADAACDBB  CCAACCDADBCBDDBCBDBBBDABA CD
+  54886096916                                                                                                               
+  54922719762                                                                       DDAACADACAACCACBDADCCCAADBCCBAABBDACABCA
+  54946058922                                                                        B BAACDBCCDCCAACCDCACCBDDBCBDAACDABADAD
+  55333086542                                                                        BBDAADDD   DC ACCD CCCCDDCCDD  DDA AA  
+  55372703394                                                                       DDCDABDDBCAACCABCCDABCABDDBDBABABDACAACD
+  55672040908                                                                       DCABDBADBBABBCABCCDAB CBD CCB AABDABAADD
+  55699047522                                                                       DDCBDBCDBCADBCAACCDCCBCBDBBCBDBACDABAACD
+  55729017174                                                                        CCDAACD CAACCAACCDCCCCADBBDBDBACDBCAACB
+  55960040672                                                                                                               
+  56023024226                                                                       DCCBDBADBCACCCABCCDCCBDBDDDBCDBACAACCBAA
+  56062680384                                                                       AD ACBABBAA CCAAC DA CCBDDACDDBABAA AAAA
+  56182031578                                                                       DCCBDBADBCADCCABCCBCCBDBDDBCBDCBCDABAACD
+  56437022818                                                                                                               
+  56515665234                                                                       CACDDBCBBCADCCAACCBAC BADDACBABABDABADAA
+  56518030312                                                                                                               
+  56626661514                                                                        C BDBBDBCAACCAB CDCCBDADDBCBDCACDA B   
+  56638016296                                                                       DDCBAAADBAAADAAACCDDDBCBDDABBDBABDACADBC
+  56944650986                                                                       ACAB BCDAB  CCAACBCAACDDDDDC D ACCACAAAD
+  57109645748                                                                       D A  CDBBADBCDAABCCCBDCBCBDADABAACDBBAAD
+  57238365470                                                                       ACBBBBBDCBABBCCABCDBBCCBDBAACDBABDACAAAD
+  57472634738                                                                       BCCB BAD CA CCABCCDCCBDBDDBCBDCAADACADAA
+  57481633074                                                                       DACBDBCDBCAACCAACCDCCCCBDBCCBDCACDACA CD
+  57487633160                                                                       D CBDBADACADDCBBCCDBCBCBDDBCBDCCCAABAACD
+  57643351914                                                                       DCABADCDACABCAABDCAABBCBDBBCBDBADDADAACA
+  59380388802                                                                       DCCBDBCDBCAACCABCCDBACDBDDBDCDCACDACAACD
+  59590562528                                                                          D BADBBA CCAACCDB BBBDBBCBDAACDABAD A
+  60757523566                                                                         AAAB C    B D CCBBBBDBDB DB AB AA ACA 
+  61318504918                                                                       AD              A                       
+  61909485114                                                                                                               
+  62437441696                                                                                                               
+  62458466944                                                                       DCCBDBCDBCAADCABCCDCCBDBDDACBDBACDABAACA
+  64165410906                                                                        A                                A     
+  64189355146                                                                       D ADAB  A                               
+  64723399766                                                                       DCCBDACDBCABCCAACCDCACDBDDACBDABCDACABCD
+  65860354366                                                                       DCCBDBADBCADCCABCCDCCBDBDDBCDACABDA ADAD
+  66142346888                                                                       ABCACCBDBBCCDADADCDABCDBDDBCBDCBCAADADCB
+  67066313710                                                                       DCCBDBADBCADCCABCCDCCCDBDBBCBDAACDADAACD
+  67603295974                                                                       D CBD  D CA   AACCD  CCADDBC  AA  A ACD 
+  67786291848                                                                                                               
+  68128278428                                                                       DCCBDBAD AABCCAACCDA CDCDD ABDAACDA BDCD
+  68149277622                                                                                          DCAD        A DABAAA 
+  68341271732                                                                       BABB D BBAABDCABACDDDCDADDDCBAACBBBABCA 
+  68653260400                                                                                                               
+  69061247724                                                                           DBCC AA AC DC D ACCBDBCC DCACBA AACB
+  69316238750                                                                       DCCBDBADBCADCCAACCDCCBCBDDCDCDCACDAAAAAA
+  69463233950                                                                       DCCBDBCDBCAAAABDBCCDCCDBDDBCBDBACDABAACD
+  70255208896                                                                                                               
+  71539164792                                                                       A BCCACB BDC CDACCACBCCACBADBAABADAC  AC
+  71914152246                                                                       CDBCCBBBBABB        CBCBCBBBDA          
+  75277042138                                                                       AABCBADCBCDDBBBADCBDABACDCBBCBABCBABABCC
+  75553030682                                                                       DCCDDBADBBADCCABCCDCCCDBDDBCDDBACDABAACD
+  76120011424                                                                       DCCBDBADBCACCCAACCDCCBDBDDBCDDBACDABAABD
+  99211382050                                                                       BACBCDCBDAABDBBADBABBCCBDBCCDDAADDDAADCC
+  99224087034                                                                                                               
+  99261209222                                                                       CCACDABCACAADBCACDBAACBDB DBAACCBCDBDCBA
+  99487235692                                                                       DCCBDBADBCAACCABCCDCABDBDDBCBDCACDABAAAA
+  99508304154                                                                       BAABDBADCCABCCBAACBBCBDCDBCCBDCACDABABAB
+  99533965672                                                                       DBCDDBADBCADDBAACCDDBBDA BCCC           
+  99750217516                                                                                                               
+  99886453888                                                                        ACBA                                   

@@ -1,0 +1,305 @@
+﻿<div class="page-head">
+    <div class="page-title col-md-12">
+        <h1>
+            Ders Programı Listesi <span onclick="YardimGoster(ID_MENU);" class="pull-right" style="cursor:pointer;"><img src="assets/global/img/info.gif" class="info-image-icon" /> </span>
+        </h1>
+    </div>
+</div>
+
+<div class="row" id="app">
+    <div class="col-md-12">
+        <div class="portlet box blue-hoki dd-item" style="border:none">
+            <div class="portlet-title dd-handle" data-toggle='collapse' data-target='#filters' style="cursor:pointer;">
+                <div class="caption">
+                    <i class="icon-magnifier"></i>
+                    <span class="caption-subject bold uppercase"> Filtreler </span>
+                    <span class="caption-helper"></span>
+                </div>
+                <div class='actions'>
+                    <a href='javascript:;' class='btn btn-default btn-sm' style='border:none;'>
+                        <i class='fa fa-chevron-down'></i>
+                    </a>
+                </div>
+            </div>
+            <div class="portlet-body form collapse in" id="filters">
+                <form role="form" style="padding:12px 20px">
+                    <div class="row">
+                        <c-sube :controller="controller"
+                                @OnChange="SubeSelected">
+                        </c-sube>
+                    </div>
+                    <div class="row">
+                        <c-kademe3 :controller="controller"
+                                   :idsube="ID_SUBE"
+                                   :idset="ID_KADEME3"
+                                   @OnChange="Kademe3Selected">
+                        </c-kademe3>
+                    </div>
+                    <div class="row">
+                        <c-sinif :controller="controller"
+                                 :idkademe3="ID_KADEME3"
+                                 :idsube="ID_SUBE"
+                                 :idset="ID_SINIF"
+                                 kurharic=true
+                                 @OnChange="SinifSelected">
+                        </c-sinif>
+                    </div>
+
+                    <div class="row">
+                        <div class="form-group" style="margin-top:10px;">
+                            <div class="col-md-12 text-right">
+                                <button type="button" class="btn green" @click="Listele" :disabled=" ID_SINIF == 0 ">Listele</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-12" v-if="LISTE.length > 0">
+        <div class="portlet light">
+            <div class="portlet-title">
+                <div class="caption">
+                    <i class="icon-list font-green"></i>
+                    <span class="caption-subject bold font-green uppercase"> Online Ders Programı</span>
+                    <span class="caption-helper"></span>
+                </div>
+            </div>
+            <div class="portlet-body" style="overflow:auto">
+                <table class="table table-striped table-bordered table-hover table-checkable" style="margin: 0px;">
+                    <thead>
+                        <tr style="background: #e1e5e8;">
+                            <th>Baş. Saati</th>
+                            <th>Bit. Saati</th>
+                            <th v-for="u in LISTE">
+                                {{u.GUN}}
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="u in LISTE[0].SA">
+                            <td> {{u.BASSAAT}} </td>
+                            <td> {{u.BITSAAT}} </td>
+                            <template v-for="tarih in LISTE">
+                                <td>
+                                    <div class="col-md-12" v-for="(d,index) in getObjects(tarih, 'DERSNO', u.DERSNO)[0].SN" v-if="d.LINK != null">
+                                        <div class="col-md-4">
+                                            <a href="javascript:;" @click="getObjects(tarih, 'DERSNO', u.DERSNO)[0].SN.splice(index, 1)">
+                                                <i class="fa fa-lg fa-close" style="color:brown"></i>
+                                            </a>
+                                            <a href="javascript:;" @click="Duzenle(d,tarih,u.DERSNO,index)">
+                                                <i class="fa fa-lg fa-pencil" style="color:blue"></i>
+                                            </a>
+                                        </div>
+                                        <div class="col-md-8" style="margin-bottom: 15px;">
+                                            <small> {{d.DERSAD}} </small>
+                                            <br />
+                                            <a :href="d.LINK" target="_blank">{{d.LINK}}</a>
+                                            <br />
+                                            <small style="color:brown">Şifre : {{d.SIFRE}} </small>
+                                        </div>
+                                        <hr style="width:100%; border-top: 1px solid cadetblue;" />
+                                    </div>
+                                    <div class="col-md-12">
+                                        <a href="javascript:;" @click="LinkEkleModal(getObjects(tarih, 'DERSNO', u.DERSNO)[0].SN)" style="float:right">
+                                            <i class="fa fa-lg fa-plus"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </template>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="row">
+                    <div class="form-group" style="margin-top:10px;">
+                        <div class="col-md-12 text-right">
+                            <button type="button" class="btn blue" @click="Kaydet">Kaydet</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="modalLink" class="modal fade" tabindex="-1" data-replace="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header" style="background-color:#67809F;color:#fff;">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true" style="margin-top:8px!important;"></button>
+                    <h4 class="modal-title bold">Link Bilgileri</h4>
+                </div>
+                <div class="modal-body" style="padding:0px;">
+                    <div class="form-body form-horizontal">
+                        <div class="row" style="margin:0px!important; display:flex;">
+
+                            <table class="table table-striped table-bordered table-hover table-checkable" style="margin: 0px;">
+                                <tbody>
+                                    <tr>
+                                        <th style="text-align:right">Ders Ad : </th>
+                                        <td> <input type="text" class="form-control" v-model="LINK.DERSAD" /> </td>
+                                    </tr>
+                                    <tr>
+                                        <th style="text-align:right">Link : </th>
+                                        <td> <input type="text" class="form-control" v-model="LINK.LINK" /> </td>
+                                    </tr>
+                                    <tr>
+                                        <th style="text-align:right">Şifre : </th>
+                                        <td> <input type="text" class="form-control" v-model="LINK.SIFRE" /> </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn default" data-dismiss="modal">Kapat</button>
+                    <button type="button" class="btn green" data-dismiss="modal" @click="LinkEkle">
+                        {{LINK.DUZENLE ? 'Düzenle' : 'Ekle'}}
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="../../VueComponents/Filtre.js"></script>
+<script src="../../VueComponents/FiltreEk.js"></script>
+
+<script>
+    var vue = new Vue({
+
+        el: "#app",
+        name: "DersProgramiGiris",
+
+        data: {
+            TCKIMLIKNO: '',
+            OTURUM: '',
+            controller: 'DersProgramiGiris',
+
+            DONEM: '',
+            ID_KADEME3: 0,
+            ID_SUBE: 0,
+            ID_SINIF: 0,
+
+            LISTE: [],
+            LINK: {
+                DERSAD: null,
+                LINK: null,
+                SIFRE: null,
+                DUZENLE: false,
+            },
+            SECILI: undefined,
+
+            vDERSNO: undefined,
+            vINDEX: undefined,
+            vTARIH: undefined,
+
+        },
+
+        mounted() {
+            this.TCKIMLIKNO = session.TCKIMLIKNO;
+            this.OTURUM = session.OTURUM;
+        },
+
+        methods: {
+
+            SubeSelected(val) {
+                this.ID_SUBE = val;
+                this.ID_KADEME3 = 0;
+                this.ID_SINIF = 0;
+                ListeTemizle(this.LISTE);
+            },
+            Kademe3Selected(val) {
+                this.ID_KADEME3 = val;
+                this.ID_SINIF = 0;
+                ListeTemizle(this.LISTE);
+            },
+            SinifSelected(val) {
+                this.ID_SINIF = val;
+                ListeTemizle(this.LISTE);
+            },
+
+            LinkEkleModal(item) {
+                this.SECILI = item;
+                this.LINK = {
+                    DERSAD: undefined,
+                    LINK: undefined,
+                    SIFRE: undefined,
+                    DUZENLE: false,
+                };
+                $("#modalLink").modal();
+            },
+            LinkEkle() {
+
+                if (this.LINK.DUZENLE)
+                    getObjects(this.vTARIH, 'DERSNO', this.vDERSNO)[0].SN[this.vINDEX] = {                        
+                        DERSAD: this.LINK.DERSAD,
+                        LINK: this.LINK.LINK,
+                        SIFRE: this.LINK.SIFRE
+                    }
+                else
+                    this.SECILI.push(this.LINK);
+
+                this.$forceUpdate();
+
+            },
+            Duzenle(item,tarih,dersNo,index) {
+                this.SECILI = item;
+                this.vDERSNO = dersNo;
+                this.vINDEX = index;
+                this.vTARIH = tarih;
+                this.LINK = JSON.parse(JSON.stringify(item));
+                this.LINK.DUZENLE = true;
+                $("#modalLink").modal();
+            },
+            Listele() {
+                var p = {
+                    TCKIMLIKNO: this.TCKIMLIKNO,
+                    OTURUM: this.OTURUM,
+                    ID_SINIF: this.ID_SINIF
+                };
+                ListeTemizle(this.LISTE);
+                WebPost(this, this.controller, "OnlineDersProgramiListele", p, '', '', function (data, parent) {
+                    if (data != '[]')
+                        vue.LISTE = JSON.parse(data);
+                });
+            },
+            Kaydet() {
+                var p = {
+                    TCKIMLIKNO: this.TCKIMLIKNO,
+                    OTURUM: this.OTURUM,
+                    ID_SINIF: this.ID_SINIF,
+                    SQLJSON: JSON.stringify(this.LISTE),
+                };
+
+                WebPost(this, this.controller, "OnlineDersProgramiKaydet", p, '', '', function (data, parent) {
+                    (data)
+                        ? Alert_Info("Kayıt İşlemi Tamamlandı")
+                        : Alert_Error("Hata...")
+
+                    vue.Listele();
+                });
+
+            },
+            getObjects(obj, key, val) {
+                var objects = [];
+                for (var i in obj) {
+                    if (!obj.hasOwnProperty(i))
+                        continue;
+                    if (typeof obj[i] == 'object') {
+                        objects = objects.concat(this.getObjects(obj[i], key, val));
+                    }
+                    else if (i == key && obj[key] == val) {
+                        objects.push(obj);
+                    }
+                }
+                return objects;
+            },
+
+        },
+    });
+</script>
+<script src="Scripts/PublicMethods.js"></script>

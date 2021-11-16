@@ -1,0 +1,81 @@
+﻿INSERT INTO Menu (AD,ACIKLAMA,KOD,URL,RESIM,GIZLI,OZEL)
+SELECT 'IBAN Listesi', 'IBAN Listesi', '000', '#Rapor/Mete/IbanListesi', 'icon-list', 0, 1
+
+USE [Pusulam]
+GO
+/****** Object:  UserDefinedFunction [dbo].[fn_GenelHak]    Script Date: 17.10.2020 12:54:43 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+ALTER FUNCTION [dbo].[fn_GenelHak]
+(
+	@TCKIMLIKNO	VARCHAR(11)		= ''
+)
+RETURNS bit
+AS
+BEGIN
+	DECLARE @R bit
+	SET @R = (SELECT COUNT(TCKIMLIKNO) 
+	FROM [OkyanusDB].[dbo].[v3Kullanici] 
+	WHERE TCKIMLIKNO = @TCKIMLIKNO 
+		AND @TCKIMLIKNO IN ('56545519606','52432651008','32051057542', '13955371880', '11462506566' ,'22723353928','62362359264','16733919908', '16142297406') 
+		AND AKTIF = 1)
+	RETURN @R
+END
+
+go
+
+USE [Pusulam]
+GO
+/****** Object:  StoredProcedure [dbo].[sp_VIU]    Script Date: 17.10.2020 12:51:32 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE procedure [dbo].[sp_GenelHak]
+	@ISLEM				INT				= NULL,
+	@TCKIMLIKNO			VARCHAR(11)		= NULL,
+	@OTURUM				VARCHAR(36)		= NULL,
+	@ID_MENU			INT				= NULL
+AS
+BEGIN
+	
+	
+	DECLARE @PROCNAME VARCHAR(MAX) = (SELECT OBJECT_NAME(@@PROCID))
+	DECLARE @LOGJSON VARCHAR(MAX)
+	SET @LOGJSON = (
+		SELECT	 ISLEM				= @ISLEM
+				,TCKIMLIKNO			= @TCKIMLIKNO
+				,OTURUM				= @OTURUM
+				,ID_MENU			= @ID_MENU
+		FOR JSON PATH, WITHOUT_ARRAY_WRAPPER	   
+	)	
+
+	DECLARE @ID_LOG INT = 0
+
+	BEGIN TRY    
+		EXEC @ID_LOG = dbo.sp_OturumKontrolMenuYetkiLog @OTURUM = @OTURUM, @TCKIMLIKNO = @TCKIMLIKNO, @ID_MENU = @ID_MENU, @LOGJSON = @LOGJSON, @ISLEM = @ISLEM, @PROSEDURADI = @PROCNAME
+		
+		IF @ID_LOG > 0
+		BEGIN	
+			IF @ISLEM = 1	--	Genel Yetki
+			BEGIN			
+				SELECT dbo.fn_GenelHak(@TCKIMLIKNO)
+			END	
+		END 
+	END TRY
+	BEGIN CATCH
+		DECLARE @ErrorSeverity INT;
+		DECLARE @ErrorState INT;
+
+		SELECT 
+			@ErrorSeverity 	= ERROR_SEVERITY(),
+			@ErrorState		= ERROR_STATE()
+				
+		DECLARE @MSG VARCHAR(4000)
+		SELECT @MSG = ERROR_MESSAGE()
+
+		EXEC [dbo].[sp_CustomRaiseError] @MESSAGE = @MSG, @SEVERITY = @ErrorSeverity , @STATE = @ErrorState , @ID_LOG = @ID_LOG, @ID_LOGTUR = 2
+	END CATCH;
+END

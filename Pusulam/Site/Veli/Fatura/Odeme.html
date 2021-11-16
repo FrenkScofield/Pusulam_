@@ -1,0 +1,278 @@
+﻿<style>
+    input[type=number]::-webkit-inner-spin-button,
+    input[type=number]::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+
+
+    #popup {
+        display: none;
+        position: fixed;
+        top: 12%;
+        left: 15%;
+        width: 70%;
+        height: 70%;
+        background-color: white;
+        z-index: 1000;
+    }
+
+        #popup iframe {
+            width: 100%;
+            height: 100%;
+            border: 0;
+        }
+
+    #popupdarkbg {
+        position: fixed;
+        z-index: 999;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background-color: rgba(0,0,0,.75);
+        display: none;
+    }
+</style>
+<div class="page-head">
+    <div class="page-title col-md-12">
+        <h1>
+            Fatura Ödeme  <span onclick="YardimGoster(ID_MENU);" class="pull-right" style="cursor:pointer;"><img src="assets/global/img/info.gif" class="info-image-icon" /> </span>
+        </h1>
+    </div>
+</div>
+
+<div class="row" id="app">
+
+    <div class="portlet light col-md-12" v-if="OGRENCILIST.length>0" style=" overflow: auto; ">
+        <div class="form-group" style="text-align: center;">
+
+            <table class="table-bordered table-striped table-condensed col-md-12">
+                <thead>
+                    <tr>
+                        <th> AD SOYAD </th>
+                        <th> SINIF </th>
+                        <th style="width:300px !important"> FATURA </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="u in OGRENCILIST">
+                        <td>{{u.ADSOYAD}}</td>
+                        <td>{{u.EGITIM}}</td>
+                        <td>
+                            <div v-for="fl in u.hr"
+                                 class="md-checkbox"
+                                 style="margin:auto!important;height:20px; margin:0px; margin-top:6px; display:block;">
+                                <input type="checkbox"
+                                       v-model="fl.SECILI"
+                                       :id="'chxFatura-'+fl.ID"
+                                       class="md-check"
+                                       v-bind:true-value="true"
+                                       v-bind:false-value="false"
+                                       @click="TOPLAMTUTAR = fl.SECILI ? (TOPLAMTUTAR + fl.TUTAR)  : (TOPLAMTUTAR - fl.TUTAR)" />
+                                <label :for="'chxFatura-'+fl.ID">
+                                    {{fl.TUTARTL}} TL ({{fl.VADETARIH}})
+                                    <span></span>
+                                    <span class="check"></span>
+                                    <span class="box"></span>
+                                </label>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr v-if="TOPLAMTUTAR>0">
+                        <td colspan="2">
+                            {{ (TOPLAMTUTAR/100).toFixed(2) }} TL
+                        </td>
+                        <td>
+                            <button class="btn green" @click="modalAc">
+                                <i class="icon-basket-loaded"></i> ÖDEME İŞLEMİNE GEÇ
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>""
+
+    <span class="badge badge-warning col-md-12"
+          v-else>
+        Öğrencinize ait ödenecek fatura bulunmamaktadır.
+
+    </span>
+
+    <div id="popup" v-show="popupAc">
+        <!--https://allwebco-templates.com/support/-->
+        <iframe id="popupiframe" name="Framename" src="" width="550" height="550" frameborder="0" scrolling="yes" style="width: 100%;"></iframe>
+    </div>
+    <div id="popupdarkbg" v-show="popupAc"></div>
+
+    <div id="modalOdeme" class="modal fade" tabindex="-1" data-replace="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header" style="background-color:#67809F;color:#fff;">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true" style="margin-top:8px!important;"></button>
+                    <h4 class="modal-title bold">Ödeme</h4>
+                </div>
+                <div class="modal-body" style="padding:0px;">
+                    <div class="form-body form-horizontal">
+                        <div class="row" style="margin:0px!important; display:flex;">
+
+
+                            <iframe name="Framename" width="550" height="550" frameborder="0" scrolling="yes" style="width: 100%;"></iframe>
+
+
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn default" data-dismiss="modal">Ödeme İptal</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+<script src="../../../VueComponents/FiltreEk.js"></script>
+<script src="../../../VueComponents/OgrenciHarcama.js"></script>
+<script src="../../../assets/global/plugins/jquery-inputmask/jquery.inputmask.bundle.min.js"></script>
+
+<script>
+    var vue = new Vue({
+        el: "#app",
+        name: "FaturaOdeme",
+
+        data: {
+            controller: 'FaturaOdeme',
+            TCKIMLIKNO: undefined,
+            OTURUM: undefined,
+
+            ID_FATURAODEME: '',
+            OGRENCILIST: [],
+            TOPLAMTUTAR: 0,
+            html: '',
+            time: undefined,
+            popupAc: false,
+
+            linkListe: 'https://api.xBase.web.tr/xBase/OgrenciOdemeListesi',
+            linkListeKontrol: 'https://api.xBase.web.tr/xBase/OgrenciOdemeListeKontrol',
+        },
+
+        mounted() {
+            var vue = this;
+            vue.TCKIMLIKNO = session.TCKIMLIKNO;
+            vue.OTURUM = session.OTURUM;
+
+            //vue.TCKIMLIKNO = "22723353928";
+
+            vue.$nextTick(() => {
+                vue.OgrenciOdemelistesi();
+            });
+        },
+
+        methods: {
+            OgrenciOdemelistesi() {
+                var p = {
+                    "APIKEY": "483747ce-e66d-4c3f-b299-ca4761bc41a4",
+                    "VELITCKIMLIKNO": vue.TCKIMLIKNO
+                };
+                vue.TOPLAMTUTAR = 0;
+                WebPostLink(vue, vue.linkListe, p, '', '', function (data) {
+                    vue.OGRENCILIST = JSON.parse(data).OdemeList;
+                    $.each(vue.OGRENCILIST, (j, el) => {
+                        el.hr = el.hr.map(x => { x.SECILI = false; return x });
+                    });
+                });
+            },
+
+            OgrenciDetay(tc) {
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    TC_OGRENCI: tc,
+                }
+                WebPost(this, this.controller, "OgrenciDonemDetay", p, "", "", function (data, parent) {
+                    parent.OGRENCIDETAY = JSON.parse(data)[0];
+                });
+            },
+
+            modalAc() {
+                var toplamTutar = 0;
+                var toplamTutarKontrol = 0;
+                var faturaList = [];
+
+                var seciliFaturaList = getObjects(vue.OGRENCILIST, "SECILI", true);
+                $.each(seciliFaturaList, (j, el) => {
+                    toplamTutar += el.TUTAR;
+                    faturaList.push(el.ID)
+                });
+
+                var p = {
+                    "APIKEY": "483747ce-e66d-4c3f-b299-ca4761bc41a4",
+                    "IDLER": JSON.stringify(faturaList)
+                };
+                WebPostLink(vue, vue.linkListeKontrol, p, '', '', function (data) {
+                    toplamTutarKontrol = JSON.parse(data)[0].TOPLAMTUTAR;
+                    if (toplamTutar != toplamTutarKontrol) {
+                        Alert_Error("Toplam Tutarda Hata")
+                        return;
+                    }
+                    else {
+                        var p = {
+                            TCKIMLIKNO: vue.TCKIMLIKNO,
+                            OTURUM: vue.OTURUM,
+                            SQLJSON: JSON.stringify(vue.OGRENCILIST),
+                            TOPLAMTUTAR: toplamTutar
+                        }
+                        WebPost(vue, vue.controller, "FaturaOdemeEkle", p, "", "", function (data, parent) {
+                            if (data > 0) {
+                                vue.ID_FATURAODEME = 'EGT' + data + '_' + vue.OGRENCILIST[0].TCKIMLIKNO;
+                                vue.popupAc = true;
+                                vue.$nextTick(() => {
+                                    document.getElementById("popupdarkbg").style.display = "block";
+                                    document.getElementById("popup").style.display = "block";
+                                    document.getElementById('popupiframe').src = "https://bankatech.techlife.com.tr/pages/odemeal.aspx?Profil_GUID=39ef56e9-6ada-4f8b-a415-3674e1d08727&EmailAddress=&OrderID=" + vue.ID_FATURAODEME + "&Amount=" + toplamTutarKontrol + "&ReturnURL=https://pusulam.okyanuskoleji.k12.tr/FaturaOdeme/FaturaOdemeCevap";
+                                    vue.time = setInterval(vue.FaturaOdemeKontrol, 5000);
+                                    //    
+                                });
+
+                            }
+                            else {
+                                Alert_Warning("Seçmiş olduğunuz faturalar ile ilgili ödeme işlemi yapılmaktadır. Lütfen daha sonra tekrar deneyiniz.")
+                            }
+                        });
+                    }
+                });
+            },
+
+            FaturaOdemeKontrol() {
+                var p = {
+                    TCKIMLIKNO: this.TCKIMLIKNO,
+                    OTURUM: this.OTURUM,
+                    ID_FATURAODEME: this.ID_FATURAODEME,
+                };
+                WebPost(this, this.controller, "FaturaOdemeCevapKontrol", p, "", "", function (data, parent) {
+                    //console.log(JSON.parse(data)[0].CEVAP)
+                    if (JSON.parse(data)[0].CEVAP === null)
+                        return;
+
+                    if (JSON.parse(data)[0].CEVAP) {
+                        Alert_Basic("Fatura Ödeme İşlemi", "Fatura Ödeme İşleminiz Tamamlanmıştır.")
+                        location.reload();
+                        vue.OgrenciOdemelistesi();
+                    }
+                    else {
+                        Alert_Error("Fatura Ödeme İşlemi Sırasında Bir Hata Oluştu");
+                    }
+                    vue.popupAc = false;
+                    clearInterval(vue.time);
+                });
+            }
+        },
+
+        watch: {
+        },
+    });
+</script>
+<script src="../../../Scripts/PublicMethods.js"></script>
+

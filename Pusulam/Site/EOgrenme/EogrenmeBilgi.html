@@ -1,0 +1,515 @@
+﻿<link href="assets/global/plugins/bootstrap-fileinput/bootstrap-fileinput.css" rel="stylesheet" type="text/css" />
+
+<link href="../../../assets/global/plugins/nouislider/jquery.nouislider.css" rel="stylesheet" />
+<head>
+    <script src="../../../assets/global/plugins/nouislider/jquery.nouislider.js"></script>
+</head>
+<style>
+    .card-title {
+        margin-bottom: 2rem;
+    }
+
+    .accordion.accordion-toggle-arrow .card .card-header .card-title.collapsed {
+        color: #3F4254;
+        -webkit-transition: all 0.15s ease;
+        transition: all 0.15s ease;
+    }
+
+    .accordion.accordion-toggle-arrow .card .card-header .card-title {
+        color: #3699FF;
+        position: relative;
+    }
+
+    .accordion .card .card-header .card-title.collapsed {
+        color: #3F4254;
+        -webkit-transition: all 0.15s ease;
+        transition: all 0.15s ease;
+    }
+
+    .accordion .card .card-header .card-title {
+        padding: 1rem 1.25rem;
+        margin: 0;
+        font-size: 1.30rem !important;
+        font-weight: 500;
+        font-weight: bold !important;
+        color: #3699FF;
+        display: -webkit-box;
+        display: -ms-flexbox;
+        display: flex;
+        -webkit-box-pack: start;
+        -ms-flex-pack: start;
+        justify-content: flex-start;
+        -webkit-box-align: center;
+        -ms-flex-align: center;
+        align-items: center;
+        -webkit-transition: all 0.15s ease;
+        transition: all 0.15s ease;
+    }
+
+    .card-header {
+        padding: 2rem 2.25rem;
+        margin-bottom: 0;
+        background-color: #ffffff;
+        border-bottom: 1px solid #EBEDF3;
+    }
+
+    .accordion .card .card-header {
+        cursor: pointer;
+        margin: 0;
+        border-bottom: 0;
+        padding: 0;
+        background-color: #F3F6F9;
+    }
+
+    .accordion > .card > .card-header {
+        border-radius: 0;
+        margin-bottom: -1px;
+    }
+
+    .card-header:first-child {
+        border-radius: calc(0.42rem - 1px) calc(0.42rem - 1px) 0 0;
+    }
+
+    .card {
+        position: relative;
+        display: -webkit-box;
+        display: -ms-flexbox;
+        display: flex;
+        -webkit-box-orient: vertical;
+        -webkit-box-direction: normal;
+        -ms-flex-direction: column;
+        flex-direction: column;
+        min-width: 0;
+        word-wrap: break-word;
+        background-color: #ffffff;
+        background-clip: border-box;
+        border: 1px solid #EBEDF3;
+        border-radius: 0.42rem;
+    }
+
+    .accordion {
+        overflow-anchor: none;
+    }
+
+        .accordion > .card:not(:first-of-type) {
+            border-top-left-radius: 0;
+            border-top-right-radius: 0;
+        }
+
+        .accordion .card:last-child {
+            margin-bottom: 0;
+        }
+
+        .accordion .card {
+            overflow: visible !important;
+        }
+
+        .accordion > .card {
+            overflow: hidden;
+        }
+</style>
+<div class="page-head">
+    <div class="page-title col-md-12">
+        <h1>
+            E-Ogrenme <small>Bilgiler</small>
+            <span onclick="YardimGoster(ID_MENU);" class="pull-right" style="cursor:pointer;"><img src="assets/global/img/info.gif" class="info-image-icon" /> </span>
+        </h1>
+    </div>
+</div>
+<div class="row" id="app">
+    <div class="col-sm-12">
+        <div class="portlet light">
+            <div class="row">
+                <c-sinavgrup controller="Eogrenme"
+                             :id_kademe3="ID_KADEME3"
+                             @OnChange="KademeDersSelected">
+                </c-sinavgrup>
+            </div>
+            <div class="row">
+                <c_ders controller="Eogrenme"
+                        :id_kademe3="ID_KADEME3"
+                        @OnChange="DersSelected">
+                </c_ders>
+            </div>
+            <div class="row">
+                <c_dersunite controller="Eogrenme"
+                             :id_ders="ID_DERS"
+                             :id_kademe3="ID_KADEME3"
+                             @OnChange="UniteSelected">
+                </c_dersunite>
+            </div>
+            <div class="row">
+                <div class="form-group" style="margin-top:10px;">
+                    <div class="col-md-12 text-right">
+                        <button type="button" class="btn blue" @click="Listele">Listele</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-12" v-show="Filtre">
+        <div class="portlet light">
+            <div class="accordion accordion-toggle-arrow" id="accordion">
+                <div class="card" v-for="u in EOGRENMELIST">
+                    <div class="card-header">
+                        <div class="card-title collapsed" data-toggle="collapse" :data-target="'#collapse'+u.ID" @click="Log(u.ID)">
+                            {{u.BASLIK}}
+                        </div>
+                    </div>
+                    <div :id="'collapse'+u.ID" class="collapse" data-parent="#accordionExample1">
+                        <div class="card-body">
+                            <ul class="nav nav-tabs" role="tablist" style="margin-top:10px;">
+                                <li role="presentation" v-for="(i,index) in u.SEVIYE" :class="{ active: index == 0 }">
+                                    <a :href="'#' + i.ID_EOGRENMESEVIYE" data-toggle="tab">{{i.AD}}</a>
+                                </li>
+                            </ul>
+                            <div class="tab-content">
+                                <div v-for="(i,index) in u.SEVIYE" :id="i.ID_EOGRENMESEVIYE" v-bind:class="[{ active: index == 0 }, 'tab-pane']">
+                                    <div class="row" style="padding:0 10px 10px 10px">
+                                        <div class="col-md-8" v-show="BASKAN">
+
+                                            <textarea :id="'editor' + i.ID_EOGRENMESEVIYE">{{i.ACIKLAMA}}</textarea>
+                                        </div>
+                                        <div class="col-md-8" v-show="!BASKAN" v-html="i.ACIKLAMA">
+                                        </div>
+                                        <div class="col-sm-4">
+                                            <div class="row" style="padding: 0 10px" v-show="BASKAN">
+                                                <div class="col-md-12">
+                                                    <div class="fileinput fileinput-new" data-provides="fileinput">
+                                                        <div class="input-group" style="width:100%!important;">
+                                                            <div class="form-control uneditable-input input-fixed input-medium" data-trigger="fileinput" style="width:100%!important;">
+                                                                <i class="fa fa-file fileinput-exists"></i>&nbsp;
+                                                                <span class="fileinput-filename"> </span>
+                                                            </div>
+                                                            <span class="input-group-addon btn default btn-file">
+                                                                <span class="fileinput-new"> Dosya Seç </span>
+                                                                <span class="fileinput-exists"> Değiştir </span>
+                                                                <input multiple="multiple" type="file" name="..." :id="'file'+i.ID_EOGRENMESEVIYE">
+                                                            </span>
+                                                            <a href="javascript:;" class="input-group-addon btn red fileinput-exists" data-dismiss="fileinput"> Sil </a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <ul class="list-group">
+                                                <li class="list-group-item" v-for="item in i.DOSYA">
+                                                    <div class="row" style="margin-top:0!important;">
+                                                        <div class="col-sm-9">
+
+                                                            <a :href="'https://okyanusdata.s3-eu-west-1.amazonaws.com/pusulam/EOgrenme/EOgrenmeBilgi/' + item.DOSYA_GUID " target="_blank">{{item.DOSYA_AD}}</a>
+                                                        </div>
+                                                        <div class="col-sm-3 text-right" v-show="BASKAN">
+                                                            <a class="btn btn-danger btn-sm" @click="DosyaSil(item.ID_EOGRENMEDOSYA)"><i class="fa fa-trash"></i></a>
+                                                        </div>
+                                                    </div>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row" v-show="BASKAN">
+            <div class="form-group" style="margin-top:10px;">
+                <div class="col-md-12 text-right">
+                    <button type="button" class="btn blue" @click="Kaydet">Kaydet</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="MODAL_DETAY" class="modal fade in" tabindex="-1" data-replace="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body" style="padding-bottom:0px;" id="modal-body">
+                    <div class="row">
+                        <div class="col-md-12"><h4><strong>Dosyalar</strong></h4></div>
+                        <ul class="list-group">
+                            <li class="list-group-item" v-for="u in LIST_DOSYA">
+                                <div class="row" style="margin-top:0!important;">
+                                    <div class="col-sm-9">
+                                        <a :href="'https://okyanusdata.s3-eu-west-1.amazonaws.com/pusulam/EOgrenme/EOgrenmeBilgi/' + u.DOSYA_GUID " target="_blank">{{u.DOSYA_AD}}</a>
+                                    </div>
+                                    <div class="col-sm-3 text-right">
+                                        <a class="btn btn-danger btn-sm" @click="DosyaSil(u.ID_EOGRENMEDOSYA)"><i class="fa fa-trash"></i></a>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn default" data-dismiss="modal">Kapat</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="VueComponents/SinavFiltreleri.js"></script>
+<script src="/Scripts/Tools.js"></script>
+<script src="assets/global/plugins/ckeditor/ckeditor.js"></script>
+
+<script>
+    var vue = new Vue({
+        el: "#app",
+        name: "EogrenmeBilgi.html",
+        data: {
+            TCKIMLIKNO: '',
+            OTURUM: '',
+            controller: 'Eogrenme',
+            ID_KADEME3: 0,
+            ID_DERS: 0,
+            EOGRENMELIST: {},
+            EOGRENMEDETAYLIST: [],
+            ID_UNITE: 0,
+            EOGRENMEDOSYA: [],
+            ID_EOGRENME: 0,
+            ID_EOGRENMEDETAY: 0,
+            LIST_DOSYA: [],
+            Filtre: false,
+            BASKAN: false,
+        },
+        mounted() {
+            this.KullaniciTipGetir();
+
+        },
+        methods: {
+            KademeDersSelected(ID_KADEME3) {
+                this.ID_KADEME3 = ID_KADEME3;
+            },
+            DersSelected(ID_DERS) {
+                this.ID_DERS = ID_DERS;
+            },
+            UniteSelected(ID_UNITE) {
+                this.ID_UNITE = ID_UNITE;
+            },
+            OnChange() {
+                this.$emit('onchange', this.ID_KADEME3)
+            },
+            KullaniciTipGetir() {
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM
+                };
+                WebPost(this, this.controller, "KullaniciTipGetir", p, '', '', function (data, parent) {
+
+                    if (JSON.parse(data)[0].BASKAN == 1) {
+                        parent.BASKAN = true;
+                    }
+                    if (JSON.parse(data)[0].OGRENCI == 1) {
+                        parent.ID_KADEME3 = JSON.parse(data)[0].ID_KADEME3;
+
+                    }
+
+                });
+            },
+
+            Listele() {
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    ID_KONU: this.ID_UNITE
+                }
+                WebPost(this, this.controller, "Listele", p, '', '', function (data, parent) {
+                    if (JSON.parse(data)) {
+                        parent.EOGRENMELIST = {};
+                        parent.EOGRENMELIST = JSON.parse(data);
+
+
+                        vue.$nextTick(function () {
+                            if (CKEDITOR.instances.editor1)
+                                CKEDITOR.instances.editor1.destroy();
+                            if (CKEDITOR.instances.editor2)
+                                CKEDITOR.instances.editor2.destroy();
+                            if (CKEDITOR.instances.editor3)
+                                CKEDITOR.instances.editor3.destroy();
+                            if (CKEDITOR.instances.editor4)
+                                CKEDITOR.instances.editor4.destroy();
+                            if (CKEDITOR.instances.editor5)
+                                CKEDITOR.instances.editor5.destroy();
+                            if (CKEDITOR.instances.editor6)
+                                CKEDITOR.instances.editor6.destroy();
+                            if (CKEDITOR.instances.editor7)
+                                CKEDITOR.instances.editor7.destroy();
+                            if (CKEDITOR.instances.editor8)
+                                CKEDITOR.instances.editor8.destroy();
+                            if (CKEDITOR.instances.editor9)
+                                CKEDITOR.instances.editor9.destroy();
+                            if (CKEDITOR.instances.editor10)
+                                CKEDITOR.instances.editor10.destroy();
+                            if (CKEDITOR.instances.editor11)
+                                CKEDITOR.instances.editor11.destroy();
+                            if (CKEDITOR.instances.editor12)
+                                CKEDITOR.instances.editor12.destroy();
+                            if (CKEDITOR.instances.editor13)
+                                CKEDITOR.instances.editor13.destroy();
+                            if (CKEDITOR.instances.editor14)
+                                CKEDITOR.instances.editor14.destroy();
+                            if (CKEDITOR.instances.editor15)
+                                CKEDITOR.instances.editor15.destroy();
+                            if (CKEDITOR.instances.editor16)
+                                CKEDITOR.instances.editor16.destroy();
+                            if (CKEDITOR.instances.editor17)
+                                CKEDITOR.instances.editor17.destroy();
+                        });
+
+
+                        for (var i = 0; i < parent.EOGRENMELIST.length; i++) {
+
+                            for (var a = 0; a < parent.EOGRENMELIST[i].SEVIYE.length; a++) {
+                                if (parent.EOGRENMELIST[i].SEVIYE[a].ID_EOGRENMEDETAY != null && parent.EOGRENMELIST[i].SEVIYE[a].ID_EOGRENMEDETAY != undefined) {
+                                    parent.ID_EOGRENME = parent.EOGRENMELIST[i].SEVIYE[a].ID_EOGRENME;
+                                    let editor = 'editor' + parent.EOGRENMELIST[i].SEVIYE[a].ID_EOGRENMESEVIYE;
+                                    let aciklama = parent.EOGRENMELIST[i].SEVIYE[a].ACIKLAMA;
+                                    vue.$nextTick(function () {
+                                        CKEDITOR.replace(editor);
+                                        CKEDITOR.instances[editor].setData(aciklama);
+
+                                    });
+                                }
+                                else {
+                                    let editor = 'editor' + parent.EOGRENMELIST[i].SEVIYE[a].ID_EOGRENMESEVIYE;
+                                    let aciklama = parent.EOGRENMELIST[i].SEVIYE[a].ACIKLAMA;
+
+                                    vue.$nextTick(function () {
+
+                                        CKEDITOR.replace(editor);
+                                        CKEDITOR.instances[editor].setData(aciklama);
+                                        this.EOGRENMEDETAYLIST = [];
+                                    });
+
+                                }
+
+                            }
+                        }
+                        parent.Filtre = true;
+                    }
+                });
+            },
+            Kaydet() {
+
+
+
+                for (var i = 0; i < this.EOGRENMELIST.length; i++) {
+                    for (var a = 0; a < this.EOGRENMELIST[i].SEVIYE.length; a++) {
+                        let editor = 'editor' + this.EOGRENMELIST[i].SEVIYE[a].ID_EOGRENMESEVIYE;
+                        var EOGRENMETEST = {
+                            ID_TUR: this.EOGRENMELIST[i].ID,
+                            ID_SEVIYE: this.EOGRENMELIST[i].SEVIYE[a].ID_EOGRENMESEVIYE,
+                            ICERIK: CKEDITOR.instances[editor].getData(),
+                            ID_EOGRENMEDETAY: this.EOGRENMELIST[i].SEVIYE[a].ID_EOGRENMEDETAY
+                        };
+                        this.EOGRENMEDETAYLIST.push(EOGRENMETEST);
+                    }
+                }
+                let metot = "Kaydet";
+                if (this.ID_EOGRENME > 0) {
+                    metot = "Guncelle";
+                }
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    ID_DERS: this.ID_DERS,
+                    ID_KADEME3: this.ID_KADEME3,
+                    ID_KONU: this.ID_UNITE,
+                    ID_EOGRENME: this.ID_EOGRENME,
+                    SQLJSON: JSON.stringify(this.EOGRENMEDETAYLIST)
+                }
+
+                WebPost(this, this.controller, metot, p, '', '', function (data, parent) {
+                    if (JSON.parse(data)) {
+                        let result = JSON.parse(data);
+                        for (var i = 0; i < result.length; i++) {
+                            if (result[i].ID_SEVIYE == parent.EOGRENMEDETAYLIST[i].ID_SEVIYE) {
+                                let document_ID = "";
+                                document_ID = 'file' + result[i].ID_SEVIYE;
+                                let dosya = document.getElementById(document_ID)
+                                if ('files' in dosya) {
+                                    if (dosya.files.length > 0) {
+                                        var formData = new FormData();
+                                        for (var a = 0; a < dosya.files.length; a++) {
+                                            formData.append("file", dosya.files[a])
+                                        }
+                                        formData.append("TCKIMLIKNO", session.TCKIMLIKNO);
+                                        formData.append("OTURUM", session.OTURUM);
+                                        formData.append("ID_EOGRENMEDETAY", result[i].ID_EOGRENMEDETAY)
+                                        $.ajax({
+                                            url: vue.controller + '/DosyaKaydet',
+                                            processData: false,
+                                            contentType: false,
+                                            data: formData,
+                                            type: 'POST'
+                                        }).done(function (result1) {
+                                            App.unblockUI('#app');
+                                            if (result1 != null) {
+                                                $('#' + document_ID).val("");
+                                                parent.Listele();
+                                            }
+                                            else
+                                                Alert_Error("Dosya Yüklenirken Hata Oluştu")
+                                        });
+                                    }
+
+                                }
+                            }
+                        }
+                        vue.$nextTick(function () {
+                            $('.fileinput').removeClass("fileinput-exists").addClass("fileinput-new");
+                            $(".fileinput-filename").text("");s
+                            Alert_Info("Kaydedildi.");
+                        });
+                    }
+                });
+                
+            },
+            DetayGor(IdEogrenmeDetay) {
+                vue.$forceUpdate();
+                $('.fileinput').fileinput('clear');
+                var p = { TCKIMLIKNO: session.TCKIMLIKNO, OTURUM: session.OTURUM, ID_EOGRENMEDETAY: IdEogrenmeDetay };
+                WebPost(vue, vue.controller, "DosyaDetay", p, '', '', function (data, parent) {
+                    if (data != null) {
+                        parent.LIST_DOSYA = JSON.parse(data);
+                        $('#MODAL_DETAY').modal();
+                    }
+                    else {
+                        Alert_Warning("Bir Hata Oluştu!");
+                    }
+                })
+            },
+            DosyaSil(ID) {
+                debugger;
+                var p = { TCKIMLIKNO: session.TCKIMLIKNO, OTURUM: session.OTURUM, ID_EOGRENMEDOSYA: ID }
+                WebPost(vue, vue.controller, "DosyaSil", p, '', '', function (data, parent) {
+                    if (data != null) {
+                        Alert_Info("Başarılı bir şekilde silindi!")
+                        parent.LIST_DOSYA = JSON.parse(data);
+                        //$('#MODAL_DETAY').modal();
+
+                        vue.$nextTick(function () {
+                            parent.Listele();
+                        });
+
+                    }
+                    else {
+                        Alert_Warning("Bir Hata Oluştu!");
+                    }
+                })
+            },
+            Log(id) {
+
+                if (!this.BASKAN) {
+                    var p = { TCKIMLIKNO: session.TCKIMLIKNO, OTURUM: session.OTURUM, ID_TUR: id, BAS_TARIH: basTarih, BIT_TARIH: bitTarih };
+                    WebPost(vue, vue.controller, "LogKaydet", p, '', '', function (data, parent) {
+
+                    })
+                }
+            }
+        },
+
+    });
+</script>
+<script src="Scripts/PublicMethods.js"></script>
+<script src="assets/global/plugins/bootstrap-fileinput/bootstrap-fileinput.js" type="text/javascript"></script>

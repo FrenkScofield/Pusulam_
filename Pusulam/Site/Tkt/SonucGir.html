@@ -1,0 +1,460 @@
+﻿<style>
+    td {
+        vertical-align: middle !important;
+    }
+
+    .row {
+        margin-top: 10px !important;
+    }
+</style>
+
+<div class="page-head">
+    <!-- BEGIN PAGE TITLE -->
+    <div class="page-title col-md-12">
+        <h1>
+            Öğrenci Listesi <small>TKT Sonuç Gir</small> <span onclick="YardimGoster(ID_MENU);" class="pull-right" style="cursor:pointer;"><img src="assets/global/img/info.gif" class="info-image-icon" /> </span>
+        </h1>
+    </div>
+    <!-- END PAGE TITLE -->
+</div>
+
+<div class="row" id="app">
+    <!--<div class="col-md-12" v-if="TCKIMLIKNO != '56545519606'">Sayfa güncelleniyor. Daha sonra tekrar deneyiniz.</div>
+    <div v-else>-->
+    <div>
+        <div class="col-md-12">
+            <div class="portlet box green-haze dd-item" style="border:none">
+                <div class="portlet-title dd-handle" data-toggle='collapse' data-target='#filters' style="cursor:pointer;">
+                    <div class="caption">
+                        <i class="icon-magnifier"></i>
+                        <span class="caption-subject bold uppercase"> Filtreler </span>
+                        <span class="caption-helper"></span>
+                    </div>
+                    <div class='actions'>
+                        <a href='javascript:;' class='btn btn-default btn-sm' style='border:none;'>
+                            <i class='fa fa-chevron-down'></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="portlet-body form collapse in" id="filters">
+                    <div class="form-body form-horizontal">
+
+                        <div class="row">
+                            <c-sube controller="SonucGir"
+                                    @OnChange="SubeSelected">
+                            </c-sube>
+                        </div>
+                        <div class="row">
+                            <c-sinavgrup controller="SonucGir"
+                                         :idsube="ID_SUBE"
+                                         @OnChange="SinavGrupSelected">
+                            </c-sinavgrup>
+                        </div>
+                        <div class="row">
+                            <c-donem controller="SonucGir"
+                                     @OnChange="DonemSelected">
+                            </c-donem>
+                        </div>
+                        <div class="row">
+                            <c-sinif-donem controller="SonucGir"
+                                           :idsube="ID_SUBE"
+                                           :idkademe3="ID_SINAVGRUP"
+                                           :donem="DONEM"
+                                           @OnChange="SinifSelected">
+                            </c-sinif-donem>
+                        </div>
+                        <div class="row">
+                            <c-tkttest-listesi controller="SonucGir"
+                                               @OnChange="SinavSelected">
+                            </c-tkttest-listesi>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-12 text-right">
+                                <button type="button" class="btn green" @click="OgrenciListele">Öğrenci Listele</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-12" v-show="OGRENCI_LISTESI.length>0">
+            <div class="portlet light">
+                <div class="portlet-title">
+                    <div class="caption">
+                        <i class="icon-list font-green"></i>
+                        <span class="caption-subject bold font-green uppercase"> Öğrenci Listesi </span>
+                        <span class="caption-helper"></span>
+                    </div>
+                </div>
+                <div class="portlet-body form">
+                    <form role="form">
+                        <div class="portlet light bordered">
+                            <div class="portlet-body">
+                                <table class="table table-striped table-bordered table-hover table-checkable order-column" id="ogrenciliste">
+                                    <thead>
+                                        <tr>
+                                            <th>Tc Kimlik No</th>
+                                            <th>Ad</th>
+                                            <th>Soyad</th>
+                                            <th style="text-align:center;">Doğum Tarihi</th>
+                                            <th style="text-align:center;">Yaş (AY)</th>
+                                            <th style="text-align:center;">Giriş</th>
+                                            <th style="text-align:center;width:10px;"></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr class="odd gradeX" v-for="u in OGRENCI_LISTESI">
+                                            <td style="vertical-align:middle;">{{u.TCKIMLIKNO}}</td>
+                                            <td style="vertical-align:middle;">{{u.AD}}</td>
+                                            <td style="vertical-align:middle;">{{u.SOYAD}}</td>
+                                            <td style="text-align:center;vertical-align:middle;">{{u.DOGUMTARIHI}}</td>
+                                            <td style="text-align:center;vertical-align:middle;">{{u.YASAY}}</td>
+                                            <td style="text-align:center;vertical-align:middle;">
+                                                <span v-if="u.DURUM==0">Giriş Yapılamaz.</span>
+                                                <a v-else style="margin:0px;display:block; margin-bottom:4px;" class='btn btn-sm green' @click='KategoriSoruGetir(u,k)' v-for="k in KATEGORI_LISTESI">{{k.AD}}</a>
+                                            </td>
+                                            <td v-if="u.DURUM!=0" style="text-align:center;width:10px;">
+                                                <div v-for="k in KATEGORI_LISTESI">
+                                                    <i v-if="k.ID_KATEGORI==1&&u.PUANGIRISI1==0" class='fa fa-lg fa-circle-o' style="display:block; line-height:34px;" />
+                                                    <i v-else-if="k.ID_KATEGORI==2&&u.PUANGIRISI2==0" class='fa fa-lg fa-circle-o' style="display:block; line-height:34px;" />
+                                                    <i v-else-if="k.ID_KATEGORI==3&&u.PUANGIRISI3==0" class='fa fa-lg fa-circle-o' style="display:block; line-height:34px;" />
+                                                    <i v-else-if="k.ID_KATEGORI==4&&u.PUANGIRISI4==0" class='fa fa-lg fa-circle-o' style="display:block; line-height:34px;" />
+                                                    <i v-else class='fa fa-lg fa-trash' style="display:block; line-height:34px; cursor:pointer;" title="Sil" @click="SilSor(u,k)" data-toggle='modal' href='#Sil' />
+                                                </div>
+                                            </td>
+                                            <td v-else></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div id="soru_modal" class="modal fade" tabindex="-1" data-replace="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                        <h4 class="modal-title">Öğrenci Cevap Girişi</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <p v-if="KATEGORISORU_LISTESI.length==0" style="margin-left:25px;"><b>Bu test için seçilen kategoride soru girişi yapılmamış.</b></p>
+
+                            <div v-if="KATEGORISORU_LISTESI.length>0" class="row" style="margin:0px!important;">
+                                <div class="col-md-4" style="line-height:34px;">Sınav Tarihi</div>
+                                <div class="col-md-8">
+                                    <div class="dropdown-toggle btn grey-cararra" data-toggle="dropdown" role="button" title="Tarih Seçiniz.." style="width:100%; padding:0px;">
+                                        <input type="text" id="btn_Tarih" style="cursor:pointer; text-align:left; width:100%;
+                                            background:transparent; border:none; padding-left:14px; padding-right:14px; padding-top:8px;
+                                            padding-bottom:7px;" v-model="TARIH" readonly placeholder="Seçiniz..">
+                                        <span class="bs-caret" style="position:absolute; right:12px; top:5px;">
+                                            <span class="caret"></span>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <table v-if="KATEGORISORU_LISTESI.length>0" style="margin-top:20px;" class="table table-striped table-bordered table-hover table-checkable order-column" id="ogrencicevapliste">
+                                <thead>
+                                    <tr>
+                                        <th>Soru</th>
+                                        <th>Ölçülen Nitelik</th>
+                                        <th>Doğru Cevap</th>
+                                        <th style="text-align:center;">Öğrenci Cevabı</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="odd gradeX" v-for="u in KATEGORISORU_LISTESI">
+                                        <td>{{u.SORUNO}}</td>
+                                        <td>{{u.ALTKATEGORI}}</td>
+                                        <td v-if="u.ID_SORUTUR==3">PUAN ALIR</td>
+                                        <td v-else>{{u.DOGRUCEVAP}}</td>
+                                        <td style="text-align:center;">
+                                            <div class="md-checkbox" style="margin:auto!important; width:20px!important; display:block;">
+                                                <input type="checkbox" v-model="u.OGRENCICEVAP" :id="u.ID_TKTSORU" class="md-check" v-bind:true-value="true" v-bind:false-value="false" />
+                                                <label :for="u.ID_TKTSORU">
+                                                    <span></span>
+                                                    <span class="check"></span>
+                                                    <span class="box"></span>
+                                                </label>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn default" data-dismiss="modal">Kapat</button>
+                        <button type="button" class="btn green" @click="Kaydet" v-if="KATEGORISORU_LISTESI.length>0">Kaydet</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="Sil" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                        <h4 class="modal-title">Sil</h4>
+                    </div>
+                    <div class="modal-body"> Seçilen öğrencinin {{SECILI_KATEGORI!=null?SECILI_KATEGORI.AD:""}} kategorisindeki cevapları silinsin mi? </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn default" data-dismiss="modal">Hayır</button>
+                        <button type="button" class="btn green" @click="Sil()">Evet</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="VueComponents/SoruFiltreleri.js?v=3"></script>
+<script src="VueComponents/Abide/Filtreler.js?v=3"></script>
+<script src="VueComponents/SubeGrupSinif.js?v=3"></script>
+
+<script>
+
+    var tblOgrenciler = null;
+    var vue = new Vue({
+
+        el: "#app",
+        name: "SonucGir.html",
+
+        data: {
+            TCKIMLIKNO: '',
+            DONEM: '',
+            ID_SUBE: 0,
+            ID_SINAVGRUP: 0,
+            ID_SINIF: 0,
+            OGRENCI_LISTESI: [],
+            KATEGORI_LISTESI: [],
+            ID_TKTTEST: 0,
+            TARIH: '',
+            KATEGORISORU_LISTESI: [],
+            SECILI_OGRENCI: null,
+            SECILI_KATEGORI: null,
+        },
+
+        mounted() {
+            this.TCKIMLIKNO = session.TCKIMLIKNO;
+            this.KategoriListele();
+        },
+
+        methods: {
+            DonemSelected(DONEM) {
+                this.DONEM = DONEM;
+            },
+
+            SubeSelected(ID_SUBE) {
+                this.ID_SUBE = ID_SUBE;
+            },
+
+            SinavGrupSelected(ID_SINAVGRUP) {
+                this.ID_SINAVGRUP = ID_SINAVGRUP;
+            },
+
+            SinifSelected(ID_SINIF) {
+                this.ID_SINIF = ID_SINIF;
+            },
+
+            SinavSelected(ID_TKTTEST) {
+                this.ID_TKTTEST = ID_TKTTEST;
+            },
+
+            //TarihSelected(TARIH) {
+            //    this.TARIH = TARIH;
+            //},
+
+            OgrenciListele() {
+                if (this.ID_TKTTEST == 0) {
+                    Alert_Warning("Lütfen Sınav Seçin.");
+                    return;
+                }
+
+                this.OGRENCI_LISTESI = [];
+                if (tblOgrenciler != null) {
+                    tblOgrenciler.rows().remove().draw();
+                    tblOgrenciler.destroy();
+                }
+
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    ID_SUBE: this.ID_SUBE,
+                    ID_SINAVGRUP: this.ID_SINAVGRUP,
+                    ID_SINIF: this.ID_SINIF,
+                    ID_TKTTEST: this.ID_TKTTEST,
+                    DONEM: this.DONEM,
+                    //TARIH: this.TARIH
+                };
+
+                WebPost(this, "SonucGir", "TKTOgrenciListele", p, '', '', function (data, parent) {
+                    if (data != null) {
+                        $('#filters').collapse('hide');
+                        parent.OGRENCI_LISTESI = data;
+                        //DOM update olmasını bekleyip update olunca listeyi oluşturuyor.
+                        Vue.nextTick(function () {
+                            parent.ListeOlustur();
+                        })
+                    }
+                    else {
+                        Alert_Warning("Liste Bulunamadı!");
+                    }
+                })
+            },
+
+            KategoriListele() {
+                this.KATEGORI_LISTESI = [];
+
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    DONEM: this.DONEM
+                };
+
+                WebPost(this, "SonucGir", "TKTKategoriListele", p, '', '', function (data, parent) {
+                    if (data != null) {
+                        parent.KATEGORI_LISTESI = data;
+                        Vue.nextTick(function () {
+                            parent.ListeOlustur();
+                        });
+                    }
+                    else {
+                        Alert_Warning("Kategori Listesi Bulunamadı!");
+                    }
+                })
+
+            },
+
+            ListeOlustur() {
+                tblOgrenciler = $('#ogrenciliste').DataTable(
+                    {
+                        language: {
+                            "url": "./Utility/dil.json"
+                        }
+                    });
+            },
+
+            KategoriSoruGetir(Ogrenci, Kategori) {
+                this.SECILI_OGRENCI = Ogrenci;
+                this.SECILI_KATEGORI = Kategori;
+                this.KATEGORISORU_LISTESI = [];
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    TCKIMLIKNO_OGR: Ogrenci.TCKIMLIKNO,
+                    ID_TKTTEST: this.ID_TKTTEST,
+                    ID_KATEGORI: Kategori.ID_KATEGORI,
+                    DONEM: this.DONEM
+                };
+
+                WebPost(this, "SonucGir", "TKTOgrenciCevapListele", p, '', '', function (data, parent) {
+                    if (data != null) {
+                        parent.KATEGORISORU_LISTESI = data;
+
+                        vue.$nextTick(function () {
+                            $('#btn_Tarih').datepicker({
+                                format: 'dd.mm.yyyy',
+                                language: 'tr',
+                                autoclose: true
+                            }).on(
+                                'changeDate', () => {
+                                    var day1 = $("#btn_Tarih").datepicker('getDate').getDate();
+                                    var month1 = $("#btn_Tarih").datepicker('getDate').getMonth() + 1;
+                                    var year1 = $("#btn_Tarih").datepicker('getDate').getFullYear();
+                                    var fullDate = day1 + "/" + month1 + "/" + year1;
+                                    $('#txt_Tarih').html(fullDate);
+                                    vue.TARIH = fullDate;
+                                }
+                            );
+
+                            $("#btn_Tarih").datepicker().datepicker("setDate", new Date());
+
+                            vue.TARIH = data[0].TARIH;
+
+                            $('#soru_modal').modal();
+                        });
+                    }
+                    else {
+                        Alert_Warning("Liste Bulunamadı!");
+                    }
+                })
+            },
+
+            SilSor(Ogrenci, Kategori) {
+                this.SECILI_OGRENCI = Ogrenci;
+                this.SECILI_KATEGORI = Kategori;
+            },
+
+            Sil() {
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    TCKIMLIKNO_OGR: this.SECILI_OGRENCI.TCKIMLIKNO,
+                    ID_TKTTEST: this.ID_TKTTEST,
+                    ID_KATEGORI: this.SECILI_KATEGORI.ID_KATEGORI,
+                    DONEM: this.DONEM
+                };
+
+                WebPost(this, "SonucGir", "TKTOgrenciCevapSil", p, '', '', function (data, parent) {
+                    if (data != null) {
+                        $('#Sil').modal('hide');
+                        parent.OgrenciListele();
+                    }
+                    else {
+                        Alert_Warning("Silme sırasında bir hata oluştu!");
+                    }
+                })
+            },
+
+            Kaydet() {
+                if (this.TARIH == null) {
+                    Alert_Warning("Sınav Tarihi Seçilmedi!");
+                } else {
+                    var LIST = [];
+                    for (var i = 0; i < this.KATEGORISORU_LISTESI.length; i++) {
+                        var OBJ = new Object();
+                        OBJ.ID_TKTSORU = this.KATEGORISORU_LISTESI[i].ID_TKTSORU;
+                        OBJ.OGRENCICEVAP = this.KATEGORISORU_LISTESI[i].OGRENCICEVAP;
+                        LIST.push(OBJ);
+                    }
+                    var p = {
+                        TCKIMLIKNO: session.TCKIMLIKNO,
+                        OTURUM: session.OTURUM,
+                        TCKIMLIKNO_OGR: this.SECILI_OGRENCI.TCKIMLIKNO,
+                        ID_TKTTEST: this.ID_TKTTEST,
+                        ID_KATEGORI: this.SECILI_KATEGORI.ID_KATEGORI,
+                        SINAV_TARIH: this.TARIH,
+                        DONEM: this.DONEM,
+                        SQLJSON: JSON.stringify({
+                            KATEGORISORU_LISTESI: LIST
+                        })
+                    };
+
+                    WebPost(this, "SonucGir", "TKTOgrenciCevapKaydet", p, '', '', function (data, parent) {
+                        if (data == true) {
+                            parent.KATEGORISORU_LISTESI = [];
+                            parent.SECILI_OGRENCI.PUANGIRISI = 1;
+                            parent.SECILI_OGRENCI = null;
+                            $('#soru_modal').modal('hide');
+                            Alert_Info("Kaydedildi");
+                            parent.OgrenciListele();
+                        }
+                        else {
+                            Alert_Warning("İşlem Başarısız Oldu!");
+                        }
+                    })
+                }
+            }
+        }
+    });
+</script>
+<script src="Scripts/PublicMethods.js"></script>

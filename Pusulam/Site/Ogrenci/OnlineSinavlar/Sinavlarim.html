@@ -1,0 +1,984 @@
+﻿<head>
+    <script src="../../../Scripts/Rapor/amcharts.js"></script>
+    <script src="../../../Scripts/Rapor/light.js"></script>
+    <script src="../../../Scripts/Rapor/pie.js"></script>
+    <script src="../../../assets/global/plugins/nouislider/jquery.nouislider.js"></script>
+</head>
+<style>
+    td {
+        vertical-align: middle !important;
+    }
+
+    .table-scrollable {
+        overflow: visible;
+    }
+
+    tr {
+        height: 50px !important;
+    }
+
+        tr td:first-child {
+            text-align: left !important;
+        }
+
+        tr th:first-child {
+            text-align: left !important;
+        }
+
+    .portlet-body tr td:last-child {
+        width: 50px !important;
+        text-align: center;
+    }
+
+    .portlet-body tr th:last-child {
+        width: 50px !important;
+        text-align: center;
+    }
+
+    .margintop0 {
+        margin-top: 0px !important;
+        margin-bottom: 10px !important;
+    }
+
+    .nav-tabs .active {
+        border-bottom: 5px solid #32c5d2 !important;
+    }
+
+    .dondur {
+        transform: rotate(180deg);
+        bottom: 2px !important;
+        left: 0px !important;
+    }
+
+    .pmargin0 p {
+        margin-top: 5px;
+        margin-bottom: 5px;
+    }
+
+    .cevap {
+        cursor: pointer;
+    }
+
+        .cevap:hover {
+            /*transform: scale(1.01);*/
+            border-color: #896d2c !important;
+        }
+
+    #chart {
+        width: 100%;
+        height: 100%;
+    }
+</style>
+
+<div class="page-head">
+    <div class="page-title col-md-12">
+        <h1> Online Sınav <small>Sınavlarım</small>  <span onclick="YardimGoster(ID_MENU);" class="pull-right" style="cursor:pointer;"><img src="assets/global/img/info.gif" class="info-image-icon" /> </span></h1>
+    </div>
+</div>
+
+<div class="row" id="app" style="margin-top:0px!important;">
+    <div class="col-md-12" v-if="SORU==null">
+        <div class="portlet box blue-hoki dd-item" style="border:none">
+            <div class="portlet-title dd-handle" data-toggle='collapse' data-target='#filters' style="cursor:pointer;">
+                <div class="caption">
+                    <i class="icon-magnifier"></i>
+                    <span class="caption-subject bold uppercase"> Filtreler </span>
+                    <span class="caption-helper"></span>
+                </div>
+                <div class='actions'>
+                    <a href='javascript:;' class='btn btn-default btn-sm' style='border:none;'>
+                        <i class='fa fa-chevron-down'></i>
+                    </a>
+                </div>
+            </div>
+            <!-- BEGIN PORTLET-->
+            <div class="portlet-body form collapse" id="filters">
+                <form role="form" style="padding:12px 20px">
+                    <div class="row" style="margin-top:0px!important;">
+                        <c-sinavturu controller="Sinavlarim"
+                                     @OnChange="SinavTuruSelected">
+                        </c-sinavturu>
+                    </div>
+                    <div class="row">
+                        <c-genel-ders @OnChange="DersSelected">
+                        </c-genel-ders>
+                    </div>
+                    <div class="row" style="margin-top:10px;">
+                        <div class="col-md-12 text-right">
+                            <button type="button" class="btn green" @click="Filtrele">Filtre Uygula</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-12" v-if="SORU==null">
+        <div class="portlet light">
+            <div class="portlet-title">
+                <div class="caption">
+                    <i class="icon-list font-green"></i>
+                    <span class="caption-subject bold font-green uppercase"> Sınavlarım </span>
+                    <span class="caption-helper"></span>
+                </div>
+                <ul class="nav nav-tabs">
+                    <li class="active">
+                        <a href="#portlet_tab1" data-toggle="tab"> Bekleyen </a>
+                    </li>
+                    <li>
+                        <a href="#portlet_tab2" data-toggle="tab"> Tamamlanan </a>
+                    </li>
+                </ul>
+            </div>
+            <!-- BEGIN PORTLET-->
+            <div class="portlet-body form">
+                <div class="tab-content">
+                    <div class="tab-pane active" id="portlet_tab1">
+                        <form role="form">
+                            <div class="portlet light bordered">
+                                <div class="portlet-body">
+                                    <table class="table table-striped table-bordered table-checkable" id="table_bekleyen">
+                                        <thead>
+                                            <tr>
+                                                <th>#</th>
+                                                <th>DERS</th>
+                                                <th>SINAV TÜRÜ</th>
+                                                <th>ADI</th>
+                                                <th>GİRİŞ SAYISI</th>
+                                                <th>SON GİRİŞ</th>
+                                                <th>PERFORMANS</th>
+                                                <th>İŞLEMLER</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr v-for="B in SINAVLAR_BEKLEYEN">
+                                                <td>{{B.ID_ONLINESINAVOGRENCI}}</td>
+                                                <td>{{B.DERS}}</td>
+                                                <td>{{B.SINAVTURU}}</td>
+                                                <td>{{B.ADI}}</td>
+                                                <td>{{B.GIRIS}}</td>
+                                                <td>{{B.SONGIRIS}}</td>
+                                                <td>{{B.PERFORMANS}}</td>
+                                                <td>
+                                                    <div class="btn-group" style="position:relative; display:inline-block">
+                                                        <button class="btn btn-xs green dropdown-toggle form-control" type="button" data-toggle="dropdown" aria-expanded="false">
+                                                            İşlemler
+                                                            <i class="fa fa-angle-down"></i>
+                                                        </button>
+                                                        <ul class="dropdown-menu pull-right" role="menu">
+                                                            <li @click="GirisEkle(B.ID_ONLINESINAVOGRENCI, B.ID_SINAV)">
+                                                                <a href="javascript:;">
+                                                                    <i class="fa fa-lg fa-play" /> Sınava Başla
+                                                                </a>
+                                                            </li>
+                                                            <li @click="DetayGor(B.ID_ONLINESINAVOGRENCI)">
+                                                                <a href="javascript:;">
+                                                                    <i class="fa fa-lg fa-search" /> DETAY GÖR
+                                                                </a>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="tab-pane" id="portlet_tab2">
+                        <form role="form">
+                            <div class="portlet light bordered">
+                                <div class="portlet-body">
+                                    <table class="table table-striped table-bordered table-checkable" id="table_tamamlanan">
+                                        <thead>
+                                            <tr>
+                                                <th>#</th>
+                                                <th>DERS</th>
+                                                <th>SINAV TÜRÜ</th>
+                                                <th>ADI</th>
+                                                <th>GİRİŞ SAYISI</th>
+                                                <th>SON GİRİŞ</th>
+                                                <th>PERFORMANS</th>
+                                                <th>İŞLEMLER</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr v-for="T in SINAVLAR_TAMAMLANAN">
+                                                <td>{{T.ID_ONLINESINAVOGRENCI}}</td>
+                                                <td>{{T.DERS}}</td>
+                                                <td>{{T.SINAVTURU}}</td>
+                                                <td>{{T.ADI}}</td>
+                                                <td>{{T.GIRIS}}</td>
+                                                <td>{{T.SONGIRIS}}</td>
+                                                <td>{{T.PERFORMANS+'%'}}</td>
+                                                <td>
+                                                    <div class="btn-group" style="position:relative; display:inline-block">
+                                                        <button class="btn btn-xs green dropdown-toggle form-control" type="button" data-toggle="dropdown" aria-expanded="false">
+                                                            İşlemler
+                                                            <i class="fa fa-angle-down"></i>
+                                                        </button>
+                                                        <ul class="dropdown-menu pull-right" role="menu">
+                                                            <li @click="SinavIncele(T.ID_ONLINESINAVOGRENCI, T.ID_SINAV)">
+                                                                <a href="javascript:;">
+                                                                    <i class="fa fa-lg fa-file-text-o" /> İncele
+                                                                </a>
+                                                            </li>
+                                                            <li @click="GirisEkle(T.ID_ONLINESINAVOGRENCI, T.ID_SINAV)" v-if="T.DEVAM==1">
+                                                                <a href="javascript:;">
+                                                                    <i class="fa fa-lg fa-retweet" /> Sınavı Tekrarla
+                                                                </a>
+                                                            </li>
+                                                            <li @click="DetayGor(T.ID_ONLINESINAVOGRENCI)">
+                                                                <a href="javascript:;">
+                                                                    <i class="fa fa-lg fa-search" /> DETAY GÖR
+                                                                </a>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <!-- END PORTLET-->
+        </div>
+    </div>
+
+    <div class="col-md-12" v-else>
+        <div id="div_soru" class="col-md-9 col-lg-9">
+            <div v-for="s in SORU">
+                <div class="col-md-12" style="border:2px solid #32c5d2; padding:15px; margin-top:20px; margin-bottom:10px" v-html="s.SoruHtmlListesi[0].SORUHTML">
+
+                </div>
+                <div v-for="c in s.CevapListesi">
+                    <!--AÇIK UÇLU-->
+                    <div v-if="s.Soru[0].ID_SORUTUR==2">
+                        <div class="col-md-12 pmargin0 cevap" style="border:2px solid #32c5d2; padding:15px; margin-bottom:5px;">
+                            <input v-if="INCELE==0" style="display:inline-block; width:100%;" type="text" class="form-control" v-model="c.CEVAP" />
+                            <div v-else>
+                                <div v-if="c.CEVAP!=undefined">
+                                    <div v-if="c.CEVAP.toLowerCase()!=c.DEGER.toLowerCase()">
+                                        <input style="display:inline-block; width:100%;" type="text" class="form-control" :value="c.CEVAP" disabled />
+                                        <input style="display:inline-block; width:100%; border:2px solid green; margin-top:5px;" type="text" class="form-control" :value="c.DEGER" disabled />
+                                    </div>
+                                    <div v-else-if="c.CEVAP.toLowerCase()==c.DEGER.toLowerCase()">
+                                        <input style="display:inline-block; width:100%; border:2px solid green;" type="text" class="form-control" :value="c.CEVAP" disabled />
+                                    </div>
+                                </div>
+                                <div v-else>
+                                    <input style="display:inline-block; width:100%; border:2px solid green; margin-top:5px;" type="text" class="form-control" :value="c.DEGER" disabled />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!--DOĞRU YANLIŞ-->
+                    <div v-else-if="s.Soru[0].ID_SORUTUR==3">
+                        <div class="col-md-12 pmargin0 cevap" style="display:table; border:2px solid #32c5d2; padding:15px; margin-bottom:5px;">
+                            <div style="display:table-cell; vertical-align:middle; width:30px;">{{String.fromCharCode(64 + c.CEVAPNO) + ' - )'}}</div>
+                            <div style="display:table-cell; vertical-align:middle; width:calc(100% - 180px); margin-left:5px;" v-html="c.CEVAPHTML"></div>
+                            <div style="display:table-cell; vertical-align:middle; width:130px; margin-left:5px;">
+                                <div v-if="INCELE==0">
+                                    <div class="form-group form-md-radios">
+                                        <div class="md-radio-list col-md-12">
+                                            <div class="md-radio">
+                                                <input type="radio" :id="'rdDogru-'+s.SORUNO+'-'+c.CEVAPNO" :name="'radioGrup-'+s.SORUNO+'-'+c.CEVAPNO" class="md-radiobtn" value="1" v-model="c.CEVAP">
+                                                <label :for="'rdDogru-'+s.SORUNO+'-'+c.CEVAPNO">
+                                                    <span class="inc"></span>
+                                                    <span class="check"></span>
+                                                    <span class="box"></span> Doğru
+                                                </label>
+                                            </div>
+                                            <div class="md-radio" style="margin:0px;">
+                                                <input type="radio" :id="'rdYanlis-'+s.SORUNO+'-'+c.CEVAPNO" :name="'radioGrup-'+s.SORUNO+'-'+c.CEVAPNO" class="md-radiobtn" value="0" v-model="c.CEVAP">
+                                                <label :for="'rdYanlis-'+s.SORUNO+'-'+c.CEVAPNO">
+                                                    <span></span>
+                                                    <span class="check"></span>
+                                                    <span class="box"></span> Yanlış
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div v-else>
+                                    <div class="form-group form-md-radios">
+                                        <div class="md-radio-list col-md-12">
+                                            <div class="md-radio">
+                                                <input type="radio" :id="'rdDogru-'+s.SORUNO+'-'+c.CEVAPNO" :name="'radioGrup-'+s.SORUNO+'-'+c.CEVAPNO" class="md-radiobtn" value="1" v-model="c.DEGER" disabled>
+                                                <label :for="'rdDogru-'+s.SORUNO+'-'+c.CEVAPNO">
+                                                    <span class="inc"></span>
+                                                    <span class="check"></span>
+                                                    <span class="box"></span> Doğru <i v-if="c.DEGER==1" class="fa fa-lg fa-check" style="color:green; display:inline;"></i>
+                                                </label>
+                                            </div>
+                                            <div class="md-radio" style="margin:0px;">
+                                                <input v-if="c.DEGER==0" type="radio" :id="'rdYanlis-'+s.SORUNO+'-'+c.CEVAPNO" :name="'radioGrup-'+s.SORUNO+'-'+c.CEVAPNO" style="border-color:green;" class="md-radiobtn" value="0" v-model="c.DEGER" disabled>
+                                                <input v-else type="radio" :id="'rdYanlis-'+s.SORUNO+'-'+c.CEVAPNO" :name="'radioGrup-'+s.SORUNO+'-'+c.CEVAPNO" class="md-radiobtn" value="0" v-model="c.CEVAP" disabled>
+                                                <label :for="'rdYanlis-'+s.SORUNO+'-'+c.CEVAPNO">
+                                                    <span></span>
+                                                    <span class="check"></span>
+                                                    <span class="box"></span> Yanlış <i v-if="c.DEGER==0" class="fa fa-lg fa-check" style="color:green; display:inline;"></i>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!--TEST-->
+                    <div v-else-if="s.Soru[0].ID_SORUTUR==4">
+                        <div v-if="INCELE==0">
+                            <div class="col-md-12 pmargin0 cevap" v-if="c.SECILI==null||c.SECILI==0||c.SECILI==undefined" @click="CevapSec(s.CevapListesi,c)" style="border:2px solid #32c5d2; padding:15px; margin-bottom:5px;">
+                                <div style="display:inline-block; width:30px;">{{String.fromCharCode(64 + c.CEVAPNO) + ' - )'}}</div>
+                                <div style="display:inline-block; width:calc(100% - 40px); margin-left:5px;" v-html="c.CEVAPHTML"></div>
+                            </div>
+                            <div class="col-md-12 pmargin0 cevap" v-if="c.SECILI==1" @click="CevapSec(s.CevapListesi,c)" style="border:2px solid #896d2c; padding:15px; margin-bottom:5px;">
+                                <div style="display:inline-block; width:30px;">{{String.fromCharCode(64 + c.CEVAPNO) + ' - )'}}</div>
+                                <div style="display:inline-block; width:calc(100% - 40px); margin-left:5px;" v-html="c.CEVAPHTML"></div>
+                            </div>
+                        </div>
+                        <div v-else>
+                            <div v-if="c.SECILI==1&&c.DEGER==1">
+                                <div class="col-md-12 pmargin0 cevap" style="border:2px solid green; padding:15px; margin-bottom:5px;">
+                                    <div style="display:inline-block; width:30px;">{{String.fromCharCode(64 + c.CEVAPNO) + ' - )'}}</div>
+                                    <div style="display:inline-block; width:calc(100% - 40px); margin-left:5px;" v-html="c.CEVAPHTML"></div>
+                                </div>
+                            </div>
+                            <div v-else-if="c.SECILI==0&&c.DEGER==1">
+                                <div class="col-md-12 pmargin0 cevap" style="border:2px solid green; padding:15px; margin-bottom:5px;">
+                                    <div style="display:inline-block; width:30px;">{{String.fromCharCode(64 + c.CEVAPNO) + ' - )'}}</div>
+                                    <div style="display:inline-block; width:calc(100% - 40px); margin-left:5px;" v-html="c.CEVAPHTML"></div>
+                                </div>
+                            </div>
+                            <div v-else-if="c.SECILI==1&&c.DEGER==0">
+                                <div class="col-md-12 pmargin0 cevap" v-if="c.SECILI==1" style="border:2px solid #896d2c; padding:15px; margin-bottom:5px;">
+                                    <div style="display:inline-block; width:30px;">{{String.fromCharCode(64 + c.CEVAPNO) + ' - )'}}</div>
+                                    <div style="display:inline-block; width:calc(100% - 40px); margin-left:5px;" v-html="c.CEVAPHTML"></div>
+                                </div>
+                            </div>
+                            <div v-else-if="c.SECILI==0&&c.DEGER==0">
+                                <div class="col-md-12 pmargin0 cevap" style="border:2px solid #32c5d2; padding:15px; margin-bottom:5px;">
+                                    <div style="display:inline-block; width:30px;">{{String.fromCharCode(64 + c.CEVAPNO) + ' - )'}}</div>
+                                    <div style="display:inline-block; width:calc(100% - 40px); margin-left:5px;" v-html="c.CEVAPHTML"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!--EŞLEŞTİRME-->
+                    <div v-if="s.Soru[0].ID_SORUTUR==5">
+                        <div class="col-md-12 pmargin0 cevap" style="display:table; border:2px solid #32c5d2; padding:15px; margin-bottom:5px;" v-if="c.DEGER!=''">
+                            <div style="display:table-cell; vertical-align:middle; width:30px;">{{c.CEVAPNO + ' - )'}}</div>
+                            <div style="display:table-cell; vertical-align:middle; width:calc(100% - 160px); margin-left:5px;" v-html="c.CEVAPHTML"></div>
+                            <div style="display:table-cell; vertical-align:middle; width:112px; margin-left:5px;">
+                                <div v-if="INCELE==0">
+                                    <select class="selectpicker form-control" v-model="c.CEVAP" style="display:inline-block!important;">
+                                        <option v-for="n in (s.CevapListesi.length/2)" :value="String.fromCharCode(64 + n)">{{String.fromCharCode(64 + n)}}</option>
+                                    </select>
+                                </div>
+                                <div v-else>
+                                    <select class="selectpicker form-control" v-model="c.CEVAP" style="width:calc(100% - 24px); display:inline-block!important;" disabled>
+                                        <option v-for="n in (s.CevapListesi.length/2)" :value="String.fromCharCode(64 + n)">{{String.fromCharCode(64 + n)}}</option>
+                                    </select>
+                                    <span v-if="c.CEVAP!=c.DEGER">{{c.DEGER}}</span>
+                                    <i v-else class="fa fa-lg fa-check" style="color:green; display:inline;"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12 pmargin0 cevap" style="display:table; border:2px solid #32c5d2; padding:15px; margin-bottom:5px;" v-else>
+                            <div style="display:table-cell; vertical-align:middle; width:30px;">{{String.fromCharCode(64 + c.CEVAPNO) + ' - )'}}</div>
+                            <div style="display:table-cell; vertical-align:middle; width:calc(100% - 140px); margin-left:5px;" v-html="c.CEVAPHTML"></div>
+                        </div>
+                    </div>
+                    <!--BOŞLUK DOLDURMA-->
+                    <div v-else-if="s.Soru[0].ID_SORUTUR==6">
+                        <div class="col-md-12 pmargin0 cevap" style="border:2px solid #32c5d2; padding:15px; margin-bottom:5px;">
+                            <div style="display:inline-block; width:30px;">{{String.fromCharCode(64 + c.CEVAPNO) + ' - )'}}</div>
+                            <input v-if="INCELE==0" style="display:inline-block; width:calc(100% - 40px); margin-left:5px;" type="text" class="form-control" v-model="c.CEVAP" />
+                            <div v-else style="display:inline-block; width:calc(100% - 40px);">
+                                <div v-if="c.CEVAP!=undefined">
+                                    <input v-if="c.CEVAP.toLowerCase()!=c.DEGER.toLowerCase()" style="width:100%;" type="text" class="form-control" :value="c.CEVAP" disabled />
+                                    <input v-if="c.CEVAP.toLowerCase()!=c.DEGER.toLowerCase()" style="width:100%; border:2px solid green; margin-top:5px;" type="text" class="form-control" :value="c.DEGER" disabled />
+                                    <input v-if="c.CEVAP.toLowerCase()==c.DEGER.toLowerCase()" style="width:100%; border:2px solid green;" type="text" class="form-control" :value="c.CEVAP" disabled />
+                                </div>
+                                <div v-else>
+                                    <input style="width:100%; border:2px solid green; margin-top:5px;" type="text" class="form-control" :value="c.DEGER" disabled />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="div_sorugecis" class="col-md-3 col-lg-3" style="min-width:99.906px; border:2px solid #32c5d2; border-radius:0px 0px 0px 5px; padding-top:15px; padding-bottom:15px; margin-top:20px;">
+            <button v-if="INCELE==0" type="button" class="btn green" style="width:100%; font-weight:600; font-size:14px;" data-dismiss="modal" @click="SinaviBitir()"><i class="fa fa-flag-checkered"></i> Bitir</button>
+            <div class="col-md-12" style="text-align:center;line-height:42px; margin-top:5px; padding:0px;">
+                <i style="vertical-align:middle; cursor:pointer;" class="fa fa-3x fa-angle-left" @click="Onceki()"></i>
+                <h3 style="display:inline; vertical-align:middle; font-weight:600; margin-left:5px; margin-right:5px;">{{SORUNO +' / '+ LISTE_SORU.length}}</h3>
+                <i style="vertical-align:middle; cursor:pointer;" class="fa fa-3x fa-angle-right" @click="Sonraki()"></i>
+            </div>
+            <div v-if="INCELE==0" class="col-md-12" style="text-align:center; margin-top:10px; padding:0px; font-weight:500; font-size:14pt;">{{(MINUTE<10?'0'+MINUTE:MINUTE)+':'+(SECOND<10?'0'+SECOND:SECOND)}}</div>
+            <div class="col-md-12" id="table_soru">
+                <label>SORU LİSTESİ</label>
+                <div style="width:100%; overflow-y:auto;">
+                    <table class="table" style="width:100%; margin:0px;">
+                        <tr v-for="soru in LISTE_SORU" @click="SoruGetir(soru.ID_SORU)" style="cursor:pointer;">
+                            <td style="width:50px;" v-if="SORUNO==soru.SORUNO"><i class="fa fa-lg fa-pencil"></i></td>
+                            <td style="width:50px;" v-else>
+                                <i v-if="CevapVarMi(soru.SoruPaketList)" class="fa fa-lg fa-circle"></i>
+                                <i v-else class="fa fa-lg fa-close"></i>
+                            </td>
+                            <td>{{soru.SORUNO}} - {{soru.SoruPaketList[0].Soru[0].SORUTUR}}</td>
+                            <td style="width:100px;">Soruya Git <i class="fa fa-lg fa-angle-right"></i></td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            <i id="dondur" @click="BoyutDegis()" class="fa fa-lg fa-external-link-square" style="position:absolute; left:-2px; bottom:-1px; color:#32c5d2; cursor:pointer;"></i>
+        </div>
+    </div>
+
+    <div id="detay_modal" class="modal fade" tabindex="-1" data-replace="true">
+        <div class="modal-dialog">
+            <div class="modal-content" v-if="DATA_SELECTED!=null">
+                <div class="modal-header" style="background-color:#67809F;color:#fff;">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true" style="margin-top:8px!important;"></button>
+                    <h4 class="modal-title bold">Sınav Bilgileri</h4>
+                </div>
+                <div class="modal-body" style="padding:0px;">
+                    <div class="form-body form-horizontal">
+                        <div class="row" style="margin:0px!important; display:flex;">
+                            <div style="flex:1; padding:8px;">
+                                <table class="table" style="width:100%; margin:0px;">
+                                    <tr>
+                                        <td style="border-top:0px!important;">Ders Adı: </td>
+                                        <td style="border-top:0px!important;">{{DATA_SELECTED.DERS}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Sınav Türü: </td>
+                                        <td style="text-align:left;">{{DATA_SELECTED.SINAVTURU}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Sınav Adı: </td>
+                                        <td style="text-align:left;">{{DATA_SELECTED.ADI}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Durum: </td>
+                                        <td style="text-align:left;">{{DATA_SELECTED.DURUM==0?'YAPILMADI':'YAPILDI'}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Giriş Sayısı: </td>
+                                        <td style="text-align:left;">{{DATA_SELECTED.GIRIS}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Son Giriş: </td>
+                                        <td style="text-align:left;">{{DATA_SELECTED.SONGIRIS}}</td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div v-if="DATA_SELECTED.DURUM==0" style="flex:1; text-align:center;  padding:8px;">
+                                <div style="display: table; height:100%;">
+                                    <div style="display: table-cell; vertical-align: middle;">
+                                        <label>Bu sınava ait giriş kaydı bulunamadı.</label>
+                                        <button type="button" class="btn green" style="margin-top:20px;" data-dismiss="modal" @click="GirisEkle(DATA_SELECTED.ID_ONLINESINAVOGRENCI, DATA_SELECTED.ID_SINAV)"><i class="fa fa-play"></i> Sınava Başla</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-5" v-else style="flex:1; text-align:center;  padding:8px;">
+                                <table class="table" style="width:100%; margin:0px; text-align:center;">
+                                    <tr>
+                                        <td style="text-align:center!important; border-top:0px!important;">SINAV SÜRESİ: {{DATA_SELECTED.SURE}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="text-align:center!important;">DOĞRU: {{DATA_SELECTED.DOGRU}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="text-align:center!important;">YANLIŞ: {{DATA_SELECTED.YANLIS}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="text-align:center!important;">BOŞ: {{DATA_SELECTED.BOS}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="text-align:center!important;">PERFORMANS: {{DATA_SELECTED.PERFORMANS}}/100</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="text-align:center!important;">
+                                            <button type="button" class="btn yellow" style="margin-top:20px;" data-dismiss="modal" @click="SinavIncele(DATA_SELECTED.ID_ONLINESINAVOGRENCI,DATA_SELECTED.ID_SINAV)"><i class="fa fa-search"></i> İncele</button>
+                                            <button type="button" class="btn green" style="margin-top:20px;" data-dismiss="modal" @click="SinavTekrarla(DATA_SELECTED.ID_ONLINESINAVOGRENCI)"><i class="fa fa-repeat"></i> Tekrarla</button>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="rapor_modal" class="modal fade" tabindex="-1" data-replace="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content" v-if="DATA_SELECTED!=null">
+                <div class="modal-header" style="background-color:#67809F;color:#fff;">
+                    <button type="button" class="close" @click="Yenile()" aria-hidden="true" style="margin-top:8px!important;"></button>
+                    <h4 class="modal-title bold">Sınav Raporu</h4>
+                </div>
+                <div class="modal-body" style="padding:0px;">
+                    <div class="form-body form-horizontal">
+                        <div class="row" style="margin:0px!important; display:flex;">
+                            <div style="flex:1; padding:8px;">
+                                <div id="chart"></div>
+                            </div>
+                            <div style="flex:1; padding:8px;">
+                                <table class="table" style="width:100%; margin:0px;">
+                                    <tr>
+                                        <td style="border-top:0px!important;">Ders Adı: </td>
+                                        <td style="border-top:0px!important;">{{DATA_SELECTED.DERS}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Sınav Türü: </td>
+                                        <td style="text-align:left;">{{DATA_SELECTED.SINAVTURU}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Sınav Adı: </td>
+                                        <td style="text-align:left;">{{DATA_SELECTED.ADI}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Durum: </td>
+                                        <td style="text-align:left;">{{DATA_SELECTED.DURUM==0?'YAPILMADI':'YAPILDI'}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Giriş Sayısı: </td>
+                                        <td style="text-align:left;">{{DATA_SELECTED.GIRIS}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Son Giriş: </td>
+                                        <td style="text-align:left;">{{DATA_SELECTED.SONGIRIS}}</td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn default" @click="Yenile()">Kapat</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+<script src="/VueComponents/SoruTipleri.js?v=3"></script>
+<script src="/VueComponents/Genel.js?v=3"></script>
+<script src="/VueComponents/OnlineSinavFiltreleri.js?v=3"></script>
+<script>
+    var vue = new Vue({
+        el: "#app",
+        name: "Sinavlarim.html",
+
+        data: {
+            table_bekleyen: null,
+            table_tamamlanan: null,
+            DATA: null,
+            DATA_SELECTED: null,
+            SINAVLAR_BEKLEYEN: null,
+            SINAVLAR_TAMAMLANAN: null,
+            LISTE_SORU: null,
+            SORU: null,
+            SORUNO: 0,
+            boyut: 0,
+            ID_DERS: 0,
+            ID_SINAVTURU: 0,
+            MINUTE: 0,
+            SECOND: 0,
+            ID_SINAV: 0,
+            ID_ONLINESINAVOGRENCI: 0,
+            INCELE: 0
+        },
+
+        mounted() {
+            vue = this;
+            this.SinavListele();
+        },
+
+        methods: {
+            SinavListele() {
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                };
+                if (this.table_bekleyen != null) {
+                    this.table_bekleyen.destroy();
+                }
+                if (this.table_tamamlanan != null) {
+                    this.table_tamamlanan.destroy();
+                }
+
+                var p = { TCKIMLIKNO: session.TCKIMLIKNO, OTURUM: session.OTURUM };
+                WebPost(this, "Sinavlarim", "SinavListele", p, '', '', function (data, parent) {
+                    parent.DATA = JSON.parse(data);
+                    parent.SINAVLAR_BEKLEYEN = parent.getObjects(parent.getObjects(parent.DATA, 'DURUM', 0), 'DEVAM', 1);
+                    parent.SINAVLAR_TAMAMLANAN = parent.getObjects(parent.DATA, 'DURUM', 1);
+
+                    var zamanigecen = parent.getObjects(parent.getObjects(parent.DATA, 'DURUM', 0), 'DEVAM', 0);
+                    if (zamanigecen[0] != null) {
+                        for (var i = 0; i < zamanigecen.length; i++) {
+                            parent.SINAVLAR_TAMAMLANAN.push(zamanigecen[i])
+                        }
+                    }
+
+                    Vue.nextTick()
+                    .then(function () {
+                        parent.TabloYap(parent);
+                    })
+                })
+            },
+
+            DersSelected(ID_DERS) {
+                this.ID_DERS = ID_DERS;
+            },
+
+            SinavTuruSelected(ID_VARLIK) {
+                this.ID_SINAVTURU = ID_VARLIK;
+            },
+
+            Filtrele() {
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                };
+                if (this.table_bekleyen != null) {
+                    this.table_bekleyen.destroy();
+                }
+                if (this.table_tamamlanan != null) {
+                    this.table_tamamlanan.destroy();
+                }
+                var p = { TCKIMLIKNO: session.TCKIMLIKNO, OTURUM: session.OTURUM, ID_DERS: this.ID_DERS, ID_SINAVTURU: this.ID_SINAVTURU };
+                WebPost(this, "Sinavlarim", "SinavListele", p, '', '', function (data, parent) {
+                    parent.DATA = JSON.parse(data);
+                    parent.SINAVLAR_BEKLEYEN = parent.getObjects(parent.DATA, 'DURUM', 0);
+                    parent.SINAVLAR_TAMAMLANAN = parent.getObjects(parent.DATA, 'DURUM', 1);
+
+                    Vue.nextTick()
+                    .then(function () {
+                        parent.TabloYap(parent);
+                    })
+                })
+            },
+
+            getObjects(obj, key, val) {
+                var objects = [];
+                for (var i in obj) {
+                    if (!obj.hasOwnProperty(i)) continue;
+                    if (typeof obj[i] == 'object') {
+                        objects = objects.concat(this.getObjects(obj[i], key, val));
+                    } else if (i == key && obj[key] == val) {
+                        objects.push(obj);
+                    }
+                }
+                return objects;
+            },
+
+            TabloYap(parent) {
+                parent.table_bekleyen = $('#table_bekleyen').DataTable(
+                {
+                    "order": [[0, 'asc']],
+                    "columnDefs": [
+                        {
+                            "targets": 0,
+                            "visible": false,
+                            "searchable": false,
+                            "orderable": false
+                        },
+                        {
+                            "targets": 7,
+                            "searchable": false,
+                            "orderable": false
+                        }
+                    ],
+                    language: {
+                        "url": "./Utility/dil.json"
+                    }
+                });
+                parent.table_tamamlanan = $('#table_tamamlanan').DataTable(
+                {
+                    "order": [[0, 'asc']],
+                    "columnDefs": [
+                        {
+                            "targets": 0,
+                            "visible": false,
+                            "searchable": false,
+                            "orderable": false
+                        },
+                        {
+                            "targets": 7,
+                            "searchable": false,
+                            "orderable": false
+                        }
+                    ],
+                    language: {
+                        "url": "./Utility/dil.json"
+                    }
+                });
+            },
+
+            DetayGor(ID_ONLINESINAVOGRENCI) {
+                vue.DATA_SELECTED = vue.getObjects(vue.DATA, 'ID_ONLINESINAVOGRENCI', ID_ONLINESINAVOGRENCI)[0];
+                $('#detay_modal').modal();
+            },
+
+            SinavaBasla(ID_SINAV) {
+                var p = { TCKIMLIKNO: session.TCKIMLIKNO, OTURUM: session.OTURUM, ID_SINAV: ID_SINAV };
+                WebPost(this, "Sinavlarim", "SoruListele", p, '', '', function (data, parent) {
+                    parent.LISTE_SORU = JSON.parse(data);
+                    parent.SORU = parent.LISTE_SORU[0].SoruPaketList;
+                    parent.SORUNO = 1;
+                    //JSON.parse('[{"SORUNO":1,"Soru":[{"ID_SORU":1126,"ID_USTSORU":0,"ID_SORUTUR":4,"SORUTUR":"Test","KOD":"12TUR001","ID_SINAVGRUP":18,"ID_DERS":1046,"UNITE":"DİL105001003","ID_ZORLUKTUR":9}],"SoruHtmlListesi":[{"ID_SORUHTML":1121,"ID_SORU":1126,"SORUHTML":"Dosyalar\/50081859-5ca9-4019-975f-00b5aefd0da4.html","ID_TASLAKTUR":20}],"CevapListesi":[{"ID_CEVAP":1212,"ID_SORU":1126,"CEVAPNO":1,"CEVAPHTML":"Dosyalar\/93c336d5-09f5-475c-8047-c79a54eedc80.html","DEGER":"0"},{"ID_CEVAP":1213,"ID_SORU":1126,"CEVAPNO":2,"CEVAPHTML":"Dosyalar\/fb08c65a-0443-4633-9e7a-ca9886bf0f76.html","DEGER":"0"},{"ID_CEVAP":1214,"ID_SORU":1126,"CEVAPNO":3,"CEVAPHTML":"Dosyalar\/d88f0cf2-06b8-467e-b02c-3fac33206b92.html","DEGER":"0"},{"ID_CEVAP":1215,"ID_SORU":1126,"CEVAPNO":4,"CEVAPHTML":"Dosyalar\/9384858c-bfc2-4057-8894-041887c13eae.html","DEGER":"0"},{"ID_CEVAP":1216,"ID_SORU":1126,"CEVAPNO":5,"CEVAPHTML":"Dosyalar\/028274e9-27da-420a-8e2b-0749e868726d.html","DEGER":"1"}],"CozumListesi":null}]');
+                    //JSON.parse('[{"SORUNO":6,"Soru":[{"ID_SORU":1131,"ID_USTSORU":0,"ID_SORUTUR":7,"SORUTUR":"Paragraf","KOD":"12PRTEST","ID_SINAVGRUP":18,"ID_DERS":851,"UNITE":"TED170001003","ID_ZORLUKTUR":9}],"SoruHtmlListesi":[{"ID_SORUHTML":1126,"ID_SORU":1131,"SORUHTML":"Dosyalar\/52e9eeca-4f10-4e3a-adc1-317dd239adbb.html","ID_TASLAKTUR":20}],"CevapListesi":null,"CozumListesi":null},{"SORUNO":6,"Soru":[{"ID_SORU":1132,"ID_USTSORU":1131,"ID_SORUTUR":4,"SORUTUR":"Test","KOD":"12PRTEST","ID_SINAVGRUP":18,"ID_DERS":851,"UNITE":"TED170001003","ID_ZORLUKTUR":9}],"SoruHtmlListesi":[{"ID_SORUHTML":1127,"ID_SORU":1132,"SORUHTML":"Dosyalar\/a4cbdcf9-3781-4821-879b-1b996dc8677d.html","ID_TASLAKTUR":20}],"CevapListesi":[{"ID_CEVAP":1225,"ID_SORU":1132,"CEVAPNO":1,"CEVAPHTML":"Dosyalar\/f3f138ac-b211-4a67-a882-bf6ea06e8b1b.html","DEGER":"0"},{"ID_CEVAP":1226,"ID_SORU":1132,"CEVAPNO":2,"CEVAPHTML":"Dosyalar\/2c076be2-d793-4b91-8bb5-c716bcef33cb.html","DEGER":"1"},{"ID_CEVAP":1227,"ID_SORU":1132,"CEVAPNO":3,"CEVAPHTML":"Dosyalar\/7d92a3f5-8b76-4a04-875a-5355c93509ae.html","DEGER":"0"},{"ID_CEVAP":1228,"ID_SORU":1132,"CEVAPNO":4,"CEVAPHTML":"Dosyalar\/5af7263c-842f-43ce-8540-b0c09e4adaf2.html","DEGER":"0"},{"ID_CEVAP":1229,"ID_SORU":1132,"CEVAPNO":5,"CEVAPHTML":"Dosyalar\/fd9a81af-0188-4499-a1ca-2d8f79ec35c1.html","DEGER":"0"}],"CozumListesi":null},{"SORUNO":6,"Soru":[{"ID_SORU":1133,"ID_USTSORU":1131,"ID_SORUTUR":4,"SORUTUR":"Test","KOD":"12PRTEST","ID_SINAVGRUP":18,"ID_DERS":851,"UNITE":"TED170001003","ID_ZORLUKTUR":9}],"SoruHtmlListesi":[{"ID_SORUHTML":1128,"ID_SORU":1133,"SORUHTML":"Dosyalar\/92f5592c-8014-41e2-beef-691384b18382.html","ID_TASLAKTUR":20}],"CevapListesi":[{"ID_CEVAP":1230,"ID_SORU":1133,"CEVAPNO":1,"CEVAPHTML":"Dosyalar\/46031385-d011-42f8-b442-7180288506fc.html","DEGER":"0"},{"ID_CEVAP":1231,"ID_SORU":1133,"CEVAPNO":2,"CEVAPHTML":"Dosyalar\/92339b15-15cf-43da-8635-d27fd6ba01b3.html","DEGER":"0"},{"ID_CEVAP":1232,"ID_SORU":1133,"CEVAPNO":3,"CEVAPHTML":"Dosyalar\/a7b5e45d-758c-41d8-b68c-4081517e1721.html","DEGER":"1"},{"ID_CEVAP":1233,"ID_SORU":1133,"CEVAPNO":4,"CEVAPHTML":"Dosyalar\/15730288-b252-4977-b972-9a3a28f5955b.html","DEGER":"0"},{"ID_CEVAP":1234,"ID_SORU":1133,"CEVAPNO":5,"CEVAPHTML":"Dosyalar\/b97f3231-c6da-48c6-a820-ab429eafc224.html","DEGER":"0"}],"CozumListesi":null}]')
+                    parent.HtmlAyarla();
+                    setInterval(parent.Timer, 1000);
+                });
+            },
+
+            SinavIncele(ID_ONLINESINAVOGRENCI, ID_SINAV) {
+                this.ID_SINAV = ID_SINAV;
+                var p = { TCKIMLIKNO: session.TCKIMLIKNO, OTURUM: session.OTURUM, ID_SINAV: ID_SINAV, ID_ONLINESINAVOGRENCI: ID_ONLINESINAVOGRENCI };
+                WebPost(this, "Sinavlarim", "SoruListeleCevapli", p, '', '', function (data, parent) {
+                    parent.LISTE_SORU = JSON.parse(data);
+                    parent.SORU = parent.LISTE_SORU[0].SoruPaketList;
+                    parent.SORUNO = 1;
+                    //JSON.parse('[{"SORUNO":1,"Soru":[{"ID_SORU":1126,"ID_USTSORU":0,"ID_SORUTUR":4,"SORUTUR":"Test","KOD":"12TUR001","ID_SINAVGRUP":18,"ID_DERS":1046,"UNITE":"DİL105001003","ID_ZORLUKTUR":9}],"SoruHtmlListesi":[{"ID_SORUHTML":1121,"ID_SORU":1126,"SORUHTML":"Dosyalar\/50081859-5ca9-4019-975f-00b5aefd0da4.html","ID_TASLAKTUR":20}],"CevapListesi":[{"ID_CEVAP":1212,"ID_SORU":1126,"CEVAPNO":1,"CEVAPHTML":"Dosyalar\/93c336d5-09f5-475c-8047-c79a54eedc80.html","DEGER":"0"},{"ID_CEVAP":1213,"ID_SORU":1126,"CEVAPNO":2,"CEVAPHTML":"Dosyalar\/fb08c65a-0443-4633-9e7a-ca9886bf0f76.html","DEGER":"0"},{"ID_CEVAP":1214,"ID_SORU":1126,"CEVAPNO":3,"CEVAPHTML":"Dosyalar\/d88f0cf2-06b8-467e-b02c-3fac33206b92.html","DEGER":"0"},{"ID_CEVAP":1215,"ID_SORU":1126,"CEVAPNO":4,"CEVAPHTML":"Dosyalar\/9384858c-bfc2-4057-8894-041887c13eae.html","DEGER":"0"},{"ID_CEVAP":1216,"ID_SORU":1126,"CEVAPNO":5,"CEVAPHTML":"Dosyalar\/028274e9-27da-420a-8e2b-0749e868726d.html","DEGER":"1"}],"CozumListesi":null}]');
+                    //JSON.parse('[{"SORUNO":6,"Soru":[{"ID_SORU":1131,"ID_USTSORU":0,"ID_SORUTUR":7,"SORUTUR":"Paragraf","KOD":"12PRTEST","ID_SINAVGRUP":18,"ID_DERS":851,"UNITE":"TED170001003","ID_ZORLUKTUR":9}],"SoruHtmlListesi":[{"ID_SORUHTML":1126,"ID_SORU":1131,"SORUHTML":"Dosyalar\/52e9eeca-4f10-4e3a-adc1-317dd239adbb.html","ID_TASLAKTUR":20}],"CevapListesi":null,"CozumListesi":null},{"SORUNO":6,"Soru":[{"ID_SORU":1132,"ID_USTSORU":1131,"ID_SORUTUR":4,"SORUTUR":"Test","KOD":"12PRTEST","ID_SINAVGRUP":18,"ID_DERS":851,"UNITE":"TED170001003","ID_ZORLUKTUR":9}],"SoruHtmlListesi":[{"ID_SORUHTML":1127,"ID_SORU":1132,"SORUHTML":"Dosyalar\/a4cbdcf9-3781-4821-879b-1b996dc8677d.html","ID_TASLAKTUR":20}],"CevapListesi":[{"ID_CEVAP":1225,"ID_SORU":1132,"CEVAPNO":1,"CEVAPHTML":"Dosyalar\/f3f138ac-b211-4a67-a882-bf6ea06e8b1b.html","DEGER":"0"},{"ID_CEVAP":1226,"ID_SORU":1132,"CEVAPNO":2,"CEVAPHTML":"Dosyalar\/2c076be2-d793-4b91-8bb5-c716bcef33cb.html","DEGER":"1"},{"ID_CEVAP":1227,"ID_SORU":1132,"CEVAPNO":3,"CEVAPHTML":"Dosyalar\/7d92a3f5-8b76-4a04-875a-5355c93509ae.html","DEGER":"0"},{"ID_CEVAP":1228,"ID_SORU":1132,"CEVAPNO":4,"CEVAPHTML":"Dosyalar\/5af7263c-842f-43ce-8540-b0c09e4adaf2.html","DEGER":"0"},{"ID_CEVAP":1229,"ID_SORU":1132,"CEVAPNO":5,"CEVAPHTML":"Dosyalar\/fd9a81af-0188-4499-a1ca-2d8f79ec35c1.html","DEGER":"0"}],"CozumListesi":null},{"SORUNO":6,"Soru":[{"ID_SORU":1133,"ID_USTSORU":1131,"ID_SORUTUR":4,"SORUTUR":"Test","KOD":"12PRTEST","ID_SINAVGRUP":18,"ID_DERS":851,"UNITE":"TED170001003","ID_ZORLUKTUR":9}],"SoruHtmlListesi":[{"ID_SORUHTML":1128,"ID_SORU":1133,"SORUHTML":"Dosyalar\/92f5592c-8014-41e2-beef-691384b18382.html","ID_TASLAKTUR":20}],"CevapListesi":[{"ID_CEVAP":1230,"ID_SORU":1133,"CEVAPNO":1,"CEVAPHTML":"Dosyalar\/46031385-d011-42f8-b442-7180288506fc.html","DEGER":"0"},{"ID_CEVAP":1231,"ID_SORU":1133,"CEVAPNO":2,"CEVAPHTML":"Dosyalar\/92339b15-15cf-43da-8635-d27fd6ba01b3.html","DEGER":"0"},{"ID_CEVAP":1232,"ID_SORU":1133,"CEVAPNO":3,"CEVAPHTML":"Dosyalar\/a7b5e45d-758c-41d8-b68c-4081517e1721.html","DEGER":"1"},{"ID_CEVAP":1233,"ID_SORU":1133,"CEVAPNO":4,"CEVAPHTML":"Dosyalar\/15730288-b252-4977-b972-9a3a28f5955b.html","DEGER":"0"},{"ID_CEVAP":1234,"ID_SORU":1133,"CEVAPNO":5,"CEVAPHTML":"Dosyalar\/b97f3231-c6da-48c6-a820-ab429eafc224.html","DEGER":"0"}],"CozumListesi":null}]')
+                    parent.HtmlAyarla();
+                    setInterval(parent.Timer, 1000);
+                    parent.INCELE = 1;
+                });
+            },
+
+            SinaviBitir() {
+                var LISTE_CEVAP = new Array();
+                for (var i = 0; i < this.LISTE_SORU.length; i++) {
+                    for (var j = 0; j < this.LISTE_SORU[i].SoruPaketList.length; j++) {
+                        var ID_SORU = this.LISTE_SORU[i].SoruPaketList[j].Soru[0].ID_SORU;
+                        var CEVAP = '0';
+                        var CEVAPNO = 0;
+                        if (this.LISTE_SORU[i].SoruPaketList[j].CevapListesi != null) {
+                            for (var k = 0; k < this.LISTE_SORU[i].SoruPaketList[j].CevapListesi.length; k++) {
+                                switch (this.LISTE_SORU[i].SoruPaketList[j].Soru[0].ID_SORUTUR) {
+                                    case 2:/*AÇIK UÇLU*/
+                                        CEVAP = this.LISTE_SORU[i].SoruPaketList[j].CevapListesi[k].CEVAP;
+                                        if (CEVAP != undefined) {
+                                            LISTE_CEVAP.push(new Object({ 'ID_SORU': ID_SORU, 'CEVAPNO': 1, 'CEVAP': CEVAP }));
+                                        }
+                                        break;
+                                    case 3:/*DOĞRU YANLIŞ*/
+                                        CEVAPNO = this.LISTE_SORU[i].SoruPaketList[j].CevapListesi[k].CEVAPNO;
+                                        CEVAP = this.LISTE_SORU[i].SoruPaketList[j].CevapListesi[k].CEVAP;
+                                        if (CEVAP != undefined) {
+                                            LISTE_CEVAP.push(new Object({ 'ID_SORU': ID_SORU, 'CEVAPNO': CEVAPNO, 'CEVAP': CEVAP }));
+                                        }
+                                        break;
+                                    case 4:/*TEST*/
+                                        if (this.LISTE_SORU[i].SoruPaketList[j].CevapListesi[k].SECILI == 1) {
+                                            CEVAP = this.LISTE_SORU[i].SoruPaketList[j].CevapListesi[k].CEVAPNO;
+                                            if (CEVAP != undefined) {
+                                                LISTE_CEVAP.push(new Object({ 'ID_SORU': ID_SORU, 'CEVAPNO': 1, 'CEVAP': CEVAP }));
+                                            }
+                                            break;
+                                        }
+                                        break;
+                                    case 5:/*EŞLEŞTİRME*/
+                                        if (this.LISTE_SORU[i].SoruPaketList[j].CevapListesi[k].DEGER != '') {
+                                            CEVAPNO = this.LISTE_SORU[i].SoruPaketList[j].CevapListesi[k].CEVAPNO;
+                                            CEVAP = this.LISTE_SORU[i].SoruPaketList[j].CevapListesi[k].CEVAP;
+                                            if (CEVAP != undefined) {
+                                                LISTE_CEVAP.push(new Object({ 'ID_SORU': ID_SORU, 'CEVAPNO': CEVAPNO, 'CEVAP': CEVAP }));
+                                            }
+                                        }
+                                        break;
+                                    case 6:/*BOŞLUK DOLDURMA*/
+                                        CEVAPNO = this.LISTE_SORU[i].SoruPaketList[j].CevapListesi[k].CEVAPNO;
+                                        CEVAP = this.LISTE_SORU[i].SoruPaketList[j].CevapListesi[k].CEVAP;
+                                        if (CEVAP != undefined) {
+                                            LISTE_CEVAP.push(new Object({ 'ID_SORU': ID_SORU, 'CEVAPNO': CEVAPNO, 'CEVAP': CEVAP }));
+                                        }
+                                        break;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                var p = { TCKIMLIKNO: session.TCKIMLIKNO, OTURUM: session.OTURUM, ID_ONLINESINAVOGRENCI: this.ID_ONLINESINAVOGRENCI, JSON: JSON.stringify(LISTE_CEVAP) };
+                WebPost(this, "Sinavlarim", "SinaviBitir", p, '', '', function (data, parent) {
+                    if (data) {
+                        parent.Rapor();
+                    } else {
+                        Alert_Info('Bir hata oluştu. Daha sonra tekrar deneyiniz...');
+                    }
+                });
+            },
+
+            Timer() {
+                if (this.SECOND < 60) {
+                    this.SECOND++;
+                } else {
+                    this.MINUTE++;
+                    this.SECOND = 0;
+                }
+            },
+
+            GirisEkle(ID_ONLINESINAVOGRENCI, ID_SINAV) {
+                
+                this.ID_ONLINESINAVOGRENCI = ID_ONLINESINAVOGRENCI;
+                this.ID_SINAV = ID_SINAV;
+                var p = { TCKIMLIKNO: session.TCKIMLIKNO, OTURUM: session.OTURUM, ID_SINAV: this.ID_SINAV };
+                WebPost(this, "Sinavlarim", "GirisEkle", p, '', '', function (data, parent) {
+                    if (data > 0) {
+                        parent.ID_ONLINESINAVOGRENCI = data;
+                        parent.SinavaBasla(parent.ID_SINAV);
+                    } else {
+                        Alert_Info('Bir hata oluştu. Daha sonra tekrar deneyiniz...');
+                    }
+                });
+            },
+
+            SoruGetir(ID_SORU) {
+                //var p = { TCKIMLIKNO: session.TCKIMLIKNO, OTURUM: session.OTURUM, ID_SORU: ID_SORU };
+                //WebPost(this, "Sinavlarim", "SoruGetir", p, '', '', function (data, parent) {
+                var item = this.getObjects(this.LISTE_SORU, 'ID_SORU', ID_SORU)[0];
+                this.SORU = item.SoruPaketList;
+
+                this.SORUNO = item.SORUNO;
+                //})
+            },
+
+            BoyutDegis() {
+                if (this.boyut == 0) {
+                    $('#table_soru').toggleClass('hidden');;
+                    $('#div_soru').toggleClass('col-lg-9 col-lg-11');
+                    $('#div_sorugecis').toggleClass('col-lg-3 col-lg-1');
+
+                    $('#div_soru').toggleClass('col-md-9 col-md-10');
+                    $('#div_sorugecis').toggleClass('col-md-3 col-md-2');
+                    $('#dondur').toggleClass('dondur');
+                }
+            },
+
+            HtmlAyarla() {
+                for (var i = 0; i < this.LISTE_SORU.length; i++) {
+                    for (var j = 0; j < this.LISTE_SORU[i].SoruPaketList.length; j++) {
+                        if (this.LISTE_SORU[i].SoruPaketList[j].SoruHtmlListesi != null) {
+                            for (var k = 0; k < this.LISTE_SORU[i].SoruPaketList[j].SoruHtmlListesi.length; k++) {
+                                this.HtmlOku(this.LISTE_SORU[i].SoruPaketList[j].SoruHtmlListesi[k], this.LISTE_SORU[i].SoruPaketList[j].SoruHtmlListesi[k].SORUHTML, 1);
+                            }
+                        }
+
+                        if (this.LISTE_SORU[i].SoruPaketList[j].CevapListesi != null) {
+                            for (var k = 0; k < this.LISTE_SORU[i].SoruPaketList[j].CevapListesi.length; k++) {
+                                this.HtmlOku(this.LISTE_SORU[i].SoruPaketList[j].CevapListesi[k], this.LISTE_SORU[i].SoruPaketList[j].CevapListesi[k].CEVAPHTML, 2);
+                            }
+                        }
+                    }
+                }
+            },
+
+            HtmlOku(item, url, which) {
+                $.get('https://pusulam.okyanuskoleji.k12.tr/' + url.replace('Dosyalar', 'OnlineSinav'), function (html) {
+                    if (which == 1) {
+                        item.SORUHTML = '<h3 style="margin:0px;">Soru</h3>' + html;
+                    } else if (which == 2) {
+                        item.CEVAPHTML = html;
+                    }
+                }, false);
+            },
+
+            CevapSec(CevapListesi, Cevap) {
+                if (Cevap.SECILI == null || Cevap.SECILI == undefined || Cevap.SECILI == 0) {
+                    for (var i = 0; i < CevapListesi.length; i++) {
+                        CevapListesi[i].SECILI = 0;
+                    }
+                    Cevap.SECILI = 1;
+                } else {
+                    Cevap.SECILI = 0;
+                }
+
+                vue.$forceUpdate()
+            },
+
+            Onceki() {
+                var SORUNO = this.getObjects(this.LISTE_SORU, 'ID_SORU', (this.SORU[0].Soru[0].ID_SORU))[0].SORUNO;
+                if (SORUNO > 1) {
+                    this.SORUNO = SORUNO - 1;
+                    var item = this.getObjects(this.LISTE_SORU, 'SORUNO', (SORUNO - 1))[0];
+                    this.SORU = item.SoruPaketList;
+                    vue.$forceUpdate()
+                } else {
+                    Alert_Info('Zaten İlk Sorudasınız!')
+                }
+            },
+
+            Sonraki() {
+                var SORUNO = this.getObjects(this.LISTE_SORU, 'ID_SORU', (this.SORU[0].Soru[0].ID_SORU))[0].SORUNO;
+
+                var item = this.getObjects(this.LISTE_SORU, 'SORUNO', (SORUNO + 1))[0];
+                if (item != undefined || item != null) {
+                    this.SORUNO = SORUNO + 1;
+                    this.SORU = item.SoruPaketList;
+                    vue.$forceUpdate()
+                } else {
+                    if (this.INCELE == 0) {
+                        Alert_Info('Zaten Son Sorudasınız!');
+                    } else {
+                        this.Rapor();
+                    }
+                }
+            },
+
+            Rapor() {
+                var p = { TCKIMLIKNO: session.TCKIMLIKNO, OTURUM: session.OTURUM, ID_SINAV: this.ID_SINAV };
+                WebPost(this, "Sinavlarim", "SinavListele", p, '', '', function (data, parent) {
+                    var ITEM = JSON.parse(data)[0];
+                    parent.DATA_SELECTED = ITEM;
+
+                    var datapro = [];
+                    var eleman = { "durum": "Doğru", "yuzde": ((ITEM.DOGRU.toFixed(2) / (ITEM.DOGRU + ITEM.YANLIS + ITEM.BOS)).toFixed(4) * 100).toFixed(2), "color": "#DDD" };
+                    datapro.push(eleman);
+                    var eleman = { "durum": "Yanlış", "yuzde": ((ITEM.YANLIS.toFixed(2) / (ITEM.DOGRU + ITEM.YANLIS + ITEM.BOS)).toFixed(4) * 100).toFixed(2), "color": "#CCC" };
+                    datapro.push(eleman);
+                    var eleman = { "durum": "Boş", "yuzde": ((ITEM.BOS.toFixed(2) / (ITEM.DOGRU + ITEM.YANLIS + ITEM.BOS)).toFixed(4) * 100).toFixed(2), "color": "#BBB" };
+                    datapro.push(eleman);
+                    $('#rapor_modal').modal({
+                        backdrop: 'static',
+                        keyboard: false
+                    });
+                    Vue.nextTick()
+                    .then(function () {
+                        AmChartPieOlustur("chart", datapro, "yuzde", "durum", false, "Doğru:" + ITEM.DOGRU + " Yanlış:" + ITEM.YANLIS + " Boş:" + ITEM.BOS + " Doğru Yüzdesi:" + ((ITEM.DOGRU.toFixed(2) / (ITEM.DOGRU + ITEM.YANLIS + ITEM.BOS)).toFixed(4) * 100).toFixed(2));
+                    })
+                })
+            },
+            Yenile() {
+                location.reload();
+            },
+            CevapVarMi(Liste) {
+                for (var i = 0; i < Liste.length; i++) {
+                    if (Liste[i].CevapListesi!=null) {
+                        for (var j = 0; j < Liste[i].CevapListesi.length; j++) {
+                            if (Liste[i].CevapListesi[j].CEVAP != undefined && Liste[i].CevapListesi[j].CEVAP.length>0) {
+                                return true;
+                            }
+                        }
+                    }                    
+                }
+                return false;
+            }
+        }
+    });
+</script>
+<script src="Scripts/PublicMethods.js"></script>

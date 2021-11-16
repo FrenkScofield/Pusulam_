@@ -1,0 +1,11 @@
+bin/
+obj/
+.vscode/
+.vs/
+Api/Logs/log.txt
+# Publish Web Output
+*.[Pp]ublish.xml
+*.azurePubxml
+*.pubxml
+*.pubxml.user
+*.publishproj

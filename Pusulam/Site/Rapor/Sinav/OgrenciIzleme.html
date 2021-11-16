@@ -1,0 +1,480 @@
+﻿<head>
+    <script src="../../../Scripts/Rapor/amcharts.js"></script>
+    <script src="../../../Scripts/Rapor/jquery.easypiechart.js"></script>
+    <script src="../../../Scripts/Rapor/light.js"></script>
+    <script src="../../../Scripts/Rapor/serial.js"></script>
+</head>
+
+<style>
+    #chartdiv {
+        width: 100%;
+        height: 500px;
+        font-size: 11px;
+    }
+
+    #chartdiv2 {
+        width: 100%;
+        height: 500px;
+        font-size: 11px;
+    }
+
+    .table > tbody > tr > td, .table > tbody > tr > th, .table > tfoot > tr > td, .table > tfoot > tr > th, .table > thead > tr > td, .table > thead > tr > th {
+        font-size: 11px;
+    }
+
+
+    .table-hover > tbody > tr:hover, .table-hover > tbody > tr:hover > td {
+        color: black !important;
+    }
+
+    .turuncu {
+        background-color: #EA5702;
+        color: white;
+        font-size: 12px !important;
+    }
+
+    .fontsize12 {
+        font-size: 12px !important;
+    }
+
+    .koyumavi {
+        background-color: #0E3170;
+        color: white;
+    }
+
+    .acikmavi {
+        background-color: #2786C3;
+        color: white;
+    }
+
+    .bordermavi {
+        border: #2786C3 1px solid;
+        text-align: center;
+        color: black;
+    }
+
+    .bordersag {
+        border-right: #b4d2e6 1px solid;
+        text-align: center;
+    }
+
+    .analizbaslik {
+        background-color: #FFA500 !important;
+    }
+
+    .fixed-table-body {
+        overflow-x: hidden !important;
+    }
+
+    .red {
+        color: red;
+    }
+</style>
+
+
+<div class="page-head">
+    <div class="page-title col-md-12">
+        <h1> Öğrenci İzleme Raporu   <span onclick="YardimGoster(ID_MENU);" class="pull-right" style="cursor:pointer;"><img src="assets/global/img/info.gif" class="info-image-icon" /> </span> </h1>
+    </div>
+</div>
+
+<div class="row" id="app">
+    <div class="col-md-12">
+        <div class="portlet box green-haze dd-item" style="border:none">
+            <div class="portlet-title dd-handle" data-toggle='collapse' data-target='#filters' style="cursor:pointer;">
+                <div class="caption">
+                    <i class="icon-magnifier"></i>
+                    <span class="caption-subject bold uppercase"> Filtreler </span>
+                    <span class="caption-helper"></span>
+                </div>
+                <div class='actions'>
+                    <a href='javascript:;' class='btn btn-default btn-sm' style='border:none;'>
+                        <i class='fa fa-chevron-down'></i>
+                    </a>
+                </div>
+            </div>
+            <div class="portlet-body form collapse in" id="filters">
+                <form role="form" style="padding:12px 20px">
+                    <div class="form-body form-group-lg form-horizontal row" style="padding: 0px;margin-top: 0px !important;">
+
+                        <div class="portlet light col-md-12" id="FiltreDiv" style="margin:0px; border-bottom-style: solid;border-bottom-width: 3px;border-bottom-color: rgb(0, 173, 239);">
+                            <div class="portlet-body">
+                                <div class="form-inline">
+                                    <c-donem controller="OgrenciIzleme"
+                                             @OnChange="DonemSelected">
+                                    </c-donem>
+                                    <c-sube-multi controller="OgrenciIzleme"
+                                                  @OnChange="SubeSelected">
+                                    </c-sube-multi>
+                                    <c-kademe3 controller="OgrenciIzleme"
+                                               :idsubelist="idsubelist"
+                                               @OnChange="Kademe3Selected">
+                                    </c-kademe3>
+                                    <c-sinif-multi-donem controller="OgrenciIzleme"
+                                                         :idsubelist="idsubelist"
+                                                         :idkademe3="idkademe3"
+                                                         :donem="donem"
+                                                         @OnChange="SinifSelected">
+                                    </c-sinif-multi-donem>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="portlet light col-md-12" id="FiltreDiv" style="margin:0px; border-bottom-style: solid;border-bottom-width: 3px;border-bottom-color: rgb(0, 173, 239);">
+                            <div class="portlet-body">
+                                <div class="form-inline">
+                                    <c-donem controller="OgrenciIzleme"
+                                             @OnChange="SinavDonemSelected">
+                                    </c-donem>
+                                    <c-sinav-turu-tc controller="OgrenciIzleme"
+                                                     :donem="donemSinav"
+                                                     :ogrencidonem="donem"
+                                                     :idkademe3="idkademe3"
+                                                     @OnChange="SinavTuruSelected">
+                                    </c-sinav-turu-tc>
+                                    <c-ders-multi controller="OgrenciIzleme"
+                                                  :idsinavturu="idsinavturu"
+                                                  :idkademe3="idkademe3"
+                                                  :donem="donemSinav"
+                                                  :ogrencidonem="donem"
+                                                  @OnChange="DersSelected">
+                                    </c-ders-multi>
+
+                                    <input style="float:right;margin: 10px;" type="button" class="btn btn-success" v-on:click="Yazdir" value="Yazdır">
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="portlet light col-md-12" id="Tablodiv" style="min-height:100px;padding:0px;" v-if="divAc==1">
+        <div class="col-md-12 form-group">
+            <div class="col-md-1" style="float:right;" id="ExcelButon" v-if="TblNet.length>0">
+                <input style="float:right;margin: 10px;" type="button" class="btn btn-success" onclick="tableToExcel('tblOgrenciIzleme', 'W3C Example Table')" value="Excel">
+            </div>
+            <div style="overflow: auto;max-height: 500px;">
+                <table id="tblOgrenciIzleme"
+                       class="table table-striped table-bordered table-hover table-checkable"
+                       data-height="700"
+                       data-width="100%"
+                       style="margin-bottom:0px; color:#111; width:100%;">
+                    <thead id="th"></thead>
+                    <tbody id="tb"></tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script src="../../../VueComponents/GenelSinavRaporuFiltreleri.js?v=17"></script>
+<script>
+
+
+    var vue = new Vue({
+        el: "#app",
+        name: "OgrenciIzleme.html",
+
+        data: {
+
+            donem: '',
+            donemSinav: '',
+            idkademe3: 0,
+            idsinavturu: 0,
+            idsinav: 0,
+            idsinavlist: [],
+            idsubelist: [],
+            idsiniflist: [],
+            DERSAD: 'Tümü',
+
+            TblNet: [],
+            TblNetSinav: [],
+            TblPuan: [],
+            TblPuanSinav: [],
+            TblBaslik: [],
+
+            dersler: [],
+            puanTuru: [],
+
+
+            dersGenel: [],
+            puanGenel: [],
+            subeler: [],
+            sinavlar: [],
+
+            tcGorunsun: false,
+            toplamSoru: 0,
+            dID_SINAVPUANTURU: 0,
+            TCKIMLIKNO: '',
+            LISTE: [],
+
+            divAc: 1, // 0 olacak
+            tcogrenci: '',
+            idkullanicitur: 0,
+            ListKullaniciTipi: [],
+            divOgrenci: 1,
+            kurGorunsun: false,
+            ESKIDONEMSINIF: false,
+
+        },
+        mounted() {
+            //this.Getir();
+
+            var p = {
+                TCKIMLIKNO: session.TCKIMLIKNO,
+                OTURUM: session.OTURUM
+            };
+            var list = [];
+            WebPost(this, "OgrenciIzleme", "KullaniciTipiGetir", p, "#app", "Yükleniyor...", function (data, parent) {
+                if (data != null) {
+                    $.each(data, function (j, el) {
+                        list.push(this.ID_KULLANICITIPI)
+                    });
+                    parent.ListKullaniciTipi = list;
+                    if (list.indexOf(4) > -1)
+                        parent.tcogrenci = session.TCKIMLIKNO;
+                } else {
+                    Alert_Warning("Kullanıcı Bulunamadı..!");
+                }
+            });
+        },
+        methods: {
+
+
+            DonemSelected(item) {
+                this.donem = item;
+                //this.divAc = 0;
+                this.divOgrenci = 0;
+            },
+            SinavDonemSelected(item) {
+                this.donemSinav = item;
+                this.divAc = 0;
+                //this.divOgrenci = 0;
+            },
+            SubeSelected(item) {
+                this.idsubelist = item;
+                this.idsinif = 0;
+                this.divAc = 0;
+                this.divOgrenci = 0;
+            },
+            Kademe3Selected(item) {
+                this.idkademe3 = item;
+                this.divAc = 0;
+                this.divOgrenci = 0;
+            },
+            SinifSelected(item) {
+                this.idsiniflist = item;
+                this.divAc = 0;
+                if (item.length > 0)
+                    this.divOgrenci = 1;
+            },
+            SinavTuruSelected(item) {
+                this.idsinavturu = item;
+                this.idsinav = 0;
+                this.divAc = 0;
+                this.kurGorunsun = false;
+
+            },
+            SinavSelected(item) {
+                this.idsinavlist = item;
+                this.divAc = 0;
+            },
+            DersSelected(item) {
+                this.dersler = item;
+                this.divAc = 0;
+            },
+            DonemSecimSelected(item) {
+                if (item != undefined)
+                    this.ESKIDONEMSINIF = item;
+            },
+
+            Yazdir() {
+                window.open('../Rapor.aspx?rapor=Sinav.OgrenciIzlemePivot&raporTur=XLSX&p=' + session.TCKIMLIKNO + ';' + session.OTURUM + ';' + this.donem + ';' + this.donemSinav + ';' + this.idkademe3 + ';' + this.idsinavturu + ';' + JSON.stringify(this.idsubelist) + ';' + JSON.stringify(this.idsiniflist) + ';' + JSON.stringify(this.dersler), '_blank');
+            },
+
+            Raporla: function (event) {
+                this.Getir();
+            },
+
+
+            distinct(data, key) {
+                var distList = [];
+                $.each(data, function (j, item) {
+                    if (distList.indexOf(item[key]) == -1) {
+                        distList.push(item[key]);
+                    }
+                });
+                return distList;
+            },
+
+            Getir() {
+                var _this = this;
+                if (this.idkademe3 != 0) {
+                    this.divAc = 1;
+                    var idsubelist = JSON.stringify(this.idsubelist);
+                    var idsiniflist = JSON.stringify(this.idsiniflist);
+
+
+                    $('#filters').collapse('hide');
+
+                    var p = {
+                        TCKIMLIKNO: session.TCKIMLIKNO,
+                        OTURUM: session.OTURUM,
+                        DONEM: this.donem,//'2017',//
+                        DONEMSINAV: this.donemSinav,
+                        ID_KADEME3: this.idkademe3,//18,//
+                        ID_SINAVTURU: this.idsinavturu,//3,//
+                        ID_SUBEs: idsubelist,//'[335,368]'//
+                        ID_SINIFs: idsiniflist,//'[335,368]'//
+                        DERSAD: 'Tümü'
+                    };
+
+                    WebPost(this, "OgrenciIzleme", "OgrenciIzleme", p, "#app", "Yükleniyor...", function (data, parent) {
+                        if (data != null) {
+                            _this.TblNet = JSON.parse(data)[0].TblNet;
+                            _this.TblNetSinav = JSON.parse(data)[0].TblNetSinav;
+
+                            _this.TblPuan = JSON.parse(data)[0].TblPuan;
+                            _this.TblPuanSinav = JSON.parse(data)[0].TblPuanSinav;
+
+                            _this.TblBaslik = JSON.parse(data)[0].TblBaslik;
+
+                            _this.dersler = _this.distinct(_this.TblNet, "TAKMAAD");
+                            _this.puanTuru = _this.distinct(_this.TblPuan, "PUANTURU");
+
+                            parent.Listele();
+
+                        } else {
+                            Alert_Warning("Sınav Bulunamadı..!");
+                        }
+                    });
+                }
+                else {
+                    Alert_Warning("Lütfen Gerekli Seçimleri Yapınız")
+                    this.divAc = 0;
+                }
+                //this.$nextTick(() => { });
+            },
+
+
+            Listele() {
+
+                if (this.TblNet == undefined) {
+                    return;
+                }
+
+                this.Baslik();
+                this.Icerik();
+            },
+
+
+            Baslik() {
+                var _this = this;
+                var TblNet = this.TblNet;
+                var TblNetSinav = this.TblNetSinav; // sınav listesi (ID_SINAV,SINAVAD)
+                var TblPuan = this.TblPuan;
+                var TblPuanSinav = this.TblPuanSinav; // sınav listesi (ID_SINAV,SINAVAD)
+
+                var sinavListesi = '';
+                $.each(TblNetSinav, function (j, veri) {
+                    sinavListesi += veri.SINAVAD + ', ';
+                });
+                var html = '<tr>';
+                html += '    <th colspan="4" rowspan="2">' + _this.TblBaslik[0].DONEM + ' ' + _this.TblBaslik[0].KADEME3 + ' ' + _this.TblBaslik[0].STKISAAD + ' DENEME SINAVLARI DERS KARŞILAŞTIRMA ANALİZLERİ ( ' + sinavListesi.substring(0, (sinavListesi.length - 2)) + ')</th>  ';
+                html += '<th colspan="' + (TblNetSinav.length * _this.dersler.length) + '"> DERSLER </th>';
+                html += '<th colspan="' + (TblPuanSinav.length * _this.puanTuru.length) + '"> PUANLAR </th>';
+
+                html += '  </tr>                                '
+                html += '  <tr>                                 '
+                $.each(_this.dersler, function (j, veri) {
+                    html += '<th colspan="' + TblNetSinav.length + '" >' + veri + '</th>';
+                });
+                $.each(_this.puanTuru, function (j, veri) {
+                    html += '<th colspan="' + TblPuanSinav.length + '" >' + veri + '</th>';
+                });
+                html += '  </tr>                                '
+                html += '  <tr>                                 '
+
+                html += '    <td>OKUL</td>                          '
+                html += '    <td>SINIF</td>                          '
+                html += '    <td>TC</td>                          '
+                html += '    <td>AD SOYAD</td>                          '
+                $.each(_this.dersler, function (j, ders) {
+                    $.each(TblNetSinav, function (j, veri) {
+                        html += '<th>' + veri.SINAVAD + '</th>';
+                    });
+                });
+                $.each(_this.puanTuru, function (j, pt) {
+                    $.each(TblPuanSinav, function (j, veri) {
+                        html += '<th>' + veri.SINAVAD + '</th>';
+                    });
+                });
+                html += '  </tr>                                '
+
+                $("#th").html(html);
+            },
+
+            Icerik() {
+                var _this = this;
+                var TblNet = this.TblNet;
+                var TblNetSinav = this.TblNetSinav; // sınav listesi (ID_SINAV,SINAVAD)
+                var TblPuan = this.TblPuan;
+                var TblPuanSinav = this.TblPuanSinav; // sınav listesi (ID_SINAV,SINAVAD)
+
+                var html = '';
+
+                //var ogrenciList = _.groupBy(TblNet, function (d) { return d.TCKIMLIKNO });
+                var ogrenciList = _this.distinct(TblNet, "TCKIMLIKNO");
+
+                $.each(ogrenciList, function (j, tc) {
+                    html += '<tr>';
+                    var result = $.grep(TblNet, function (el, i) {
+                        return el.TAKMAAD == 'TOPLAM' && el.TCKIMLIKNO == tc;
+                    });
+                    html += '<td>' + result[0].SUBEAD + '</td>';
+                    html += '<td>' + result[0].SINIFAD + '</td>';
+                    html += '<td>' + result[0].TCKIMLIKNO + '</td>';
+                    html += '<td>' + result[0].ADSOYAD + '</td>';
+
+
+
+                    $.each(_this.dersler, function (j, ders) {
+                        $.each(TblNetSinav, function (j, sinav) {
+                            var result = $.grep(TblNet, function (el, i) {
+                                return el.TAKMAAD == ders && el.TCKIMLIKNO == tc;
+                            });
+                            var yaz = '-'
+                            if (result.length > 0) {
+                                yaz = result[0][sinav.ID_SINAV];
+                            }
+                            html += '<td>' + yaz + '</td>';
+                        });
+                    });
+
+
+                    $.each(_this.puanTuru, function (j, pt) {
+                        $.each(TblPuanSinav, function (j, sinav) {
+                            var result = $.grep(TblPuan, function (el, i) {
+                                return el.PUANTURU == pt && el.TCKIMLIKNO == tc;
+                            });
+                            var yaz = '-'
+                            if (result.length > 0) {
+                                yaz = result[0][sinav.ID_SINAV];
+                            }
+                            html += '<td>' + yaz + '</td>';
+                        });
+                    });
+
+                    html += '</tr>';
+                });
+
+                $("#tb").html(html);
+            },
+
+        },
+    });
+</script>
+<script src="../../../Scripts/PublicMethods.js"></script>

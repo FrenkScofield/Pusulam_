@@ -1,0 +1,347 @@
+﻿<div class="row" id="app">
+    <div class="col-sm-3">
+        <div class="portlet box blue-hoki dd-item" style="border:none">
+            <div class="portlet-title dd-handle" data-toggle='collapse' data-target='#filters' style="cursor:pointer;">
+                <div class="caption">
+                    <i class="icon-magnifier"></i>
+                    <span class="caption-subject bold uppercase"> Filtreler </span>
+                    <span class="caption-helper"></span>
+                </div>
+                <div class='actions'>
+                    <a href='javascript:;' class='btn btn-default btn-sm' style='border:none;'>
+                        <i class='fa fa-chevron-down'></i>
+                    </a>
+                </div>
+            </div>
+            <!-- BEGIN PORTLET-->
+            <div class="portlet-body form" id="filters">
+                <form role="form" style="padding:12px 20px">
+                    <div class="row">
+                        <c-sube :controller="controller"
+                                @OnChange="SubeSelected">
+                        </c-sube>
+                    </div>
+                    <div class="row">
+                        <c-kullanici-tipi :controller="controller"
+                                          @OnChange="KullaniciTipSelected">
+                        </c-kullanici-tipi>
+                    </div>
+                    <div class="row" v-if="KADEME3">
+                        <c-kademe3 :controller="controller"
+                                   :idsube="ID_SUBE"
+                                   @OnChange="Kademe3Selected">
+                        </c-kademe3>
+                    </div>
+                    <div class="row" v-if="KADEME3">
+                        <c-sinif :controller="controller"
+                                 :idkademe3="ID_KADEME3"
+                                 :idsube="ID_SUBE"
+                                 @OnChange="SinifSelected">
+                        </c-sinif>
+                    </div>
+
+                    <div class="row">
+                        <label class="col-sm-3 control-label">AD:</label>
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control" v-model="AD" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <label class="col-sm-3 control-label">SOYAD:</label>
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control" v-model="SOYAD" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <label class="col-sm-3 control-label">T.C. K. NO:</label>
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control" v-model="TC_ARA" />
+                        </div>
+                    </div>
+                    <div class="row" style="margin-top:10px;">
+                        <div class="col-md-12 text-right">
+                            <button type="button" class="btn green" @click="Listele">Listele</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-9">
+
+        <div class="portlet box blue-hoki dd-item" style="border:none">
+            <div class="portlet-title " data-toggle='collapse'>
+                <div class="caption">
+                    <i class="icon-magnifier"></i>
+                    <span class="caption-subject bold uppercase"> Kullanıcı Listesi </span>
+                    <span class="caption-helper"></span>
+                </div>
+                <div class='actions'>
+                    <a href='javascript:;' class='btn btn-default btn-sm' style='border:none;'>
+                        <i class='fa fa-chevron-down'></i>
+                    </a>
+                </div>
+            </div>
+            <div class="portlet-body form">
+                <form role="form">
+                    <div class="portlet light bordered">
+                        <div class="portlet-body">
+
+                            <table class="table table-striped table-bordered table-hover table-checkable order-column" id="tblListe">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Resim</th>
+                                        <th class="col-sm-1">TC. K. NO</th>
+                                        <th class="col-sm-2">Ad Soyad</th>
+                                        <th class="col-sm-3">Kullanıcı Tipi</th>
+                                        <th class="col-sm-3">Kademe</th>
+                                        <th class="col-sm-1">Yetkiler</th>
+                                        <th class="col-sm-1">Kademeler</th>
+                                    </tr>
+                                </thead>
+                                <tbody v-show="Filtre">
+                                    <tr class="odd gradeX"  v-for="u in LISTE">
+                                        <td>{{u.ID}}</td>
+                                        <td class="text-center" style="width:80px;">
+                                            <img v-if="u.FOTOGRAF" style="width:80px;height:100px" class="img-responsive img-circle" :src="'data:image/png;base64,' + u.FOTOGRAF" />
+                                            <i v-if="!u.FOTOGRAF" class="fa fa-user fa-4x text-success" style="margin-top:15px"></i>
+                                        </td>
+                                        <td>{{u.TC}}</td>
+                                        <td>{{u.ADSOYAD}}</td>
+                                        <td>{{u.YETKI}}</td>
+                                        <td>{{u.KADEME}}</td>
+                                        <td class="text-center">
+                                            <a style="cursor:pointer;" class="text-primary" @click="YetkiDuzenle(u.TC)"><i class="fa fa-list fa-lg"></i></a>
+                                        </td>
+                                        <td class="text-center">
+                                            <a style="cursor:pointer;" class="text-success" @click="KademeDuzenle(u.TC)"><i class="fa fa-group fa-lg"></i></a>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+    </div>
+    <div id="KademeDuzenleModal" class="modal fade" tabindex="-1" data-replace="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                    <h4 class="modal-title">
+                        Kademeler
+                    </h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-body form-horizontal">
+                        <div class="portlet-body form">
+                            <div class="alert alert-danger" role="alert">
+                                <p>Pusulam üzerinden verilen yetkiler. (Xbase dahil değildir!)</p>
+                            </div>
+                            <div v-for="u in KADEMELIST" class="col-sm-3">
+                                <input type="checkbox" :id="u.ID_KADEME" :value="u.YETKI" v-model="u.YETKI" @click="KademeYetkiKaydet(u.ID_KADEME)" />
+                                <label :for="u.ID_KADEME">{{u.AD}}</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <hr />
+                    <button type="button" class="btn default" data-dismiss="modal">Kapat</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="YetkiDuzenleModal" class="modal fade" tabindex="-1" data-replace="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                    <h4 class="modal-title">
+                        Yetki Düzenleme İşlemleri
+                    </h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-body form-horizontal">
+                        <div class="portlet-body form">
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <c-kullanici-tipi :controller="controller"
+                                                      @OnChange="KullaniciTipSubeSelected">
+                                    </c-kullanici-tipi>
+                                </div>
+                                <div class="col-sm-12 margin-top-20">
+                                    <div class="form-md-line-input">
+                                        <label class="control-label col-md-3" style="vertical-align: middle;">Yetkiler </label>
+                                        <div class="col-md-9">
+                                            <select class="form-control" id="cmb_subeler" multiple="multiple" size="20">
+                                                <option v-for="u in YETKILIST" :value="u.ID_SUBE" v-if="u.YETKI" style="color:white; background:green" @click="SubeYetkiKaydet(u.ID_SUBE)">{{u.AD}}</option>
+                                                <option v-for="u in YETKILIST" :value="u.ID_SUBE" v-if="!u.YETKI" @click="SubeYetkiKaydet(u.ID_SUBE)">{{u.AD}}</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer" style="padding-top:0px!important;">
+                    <button type="button" class="btn default" data-dismiss="modal">Kapat</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../../VueComponents/Filtre.js"></script>
+<script src="scripts/Tools.js"></script>
+<script>
+    var vue = new Vue({
+        el: "#app",
+        name: "SubeYetki.html",
+
+        data: {
+            controller: "SubeYetki",
+            TCKIMLIKNO: "",
+            OTURUM: "",
+            ID_SUBE: 0,
+            KULLANICI_TIP: 0,
+            AD: "",
+            SOYAD: "",
+            TC_ARA: "",
+            LISTE: [],
+            ID_SINIF: 0,
+            BRANS: "0",
+            Filtre: false,
+            GRUP: "0",
+            ID_KADEME3: 0,
+            KADEME3: false,
+            KULLANICI_TC: '',
+            KADEMELIST: [],
+            YETKILIST: []
+        },
+
+        methods: {
+            SubeSelected(val) {
+                this.ID_SUBE = val;
+            },
+            KullaniciTipSelected(val) {
+                this.KULLANICI_TIP = val;
+
+                if (val == 4 || val == 5) {
+                    this.KADEME3 = true;
+                }
+                else {
+                    this.KADEME3 = false;
+                }
+
+            },
+            Kademe3Selected(item) {
+                this.ID_KADEME3 = item;
+                this.ID_SINIF = 0
+            },
+            SinifSelected(item) {
+                this.ID_SINIF = item
+            },
+            Listele() {
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    ID_SUBE: this.ID_SUBE,
+                    ID_KULLANICITIPI: this.KULLANICI_TIP,
+                    AD: this.AD,
+                    SOYAD: this.SOYAD,
+                    TC_KULLANICI: this.TC_ARA,
+                    BRANS: this.BRANS,
+                    ID_SINIF: this.ID_SINIF,
+                    GRUP: this.ID_KADEME3
+                };
+
+                WebPost(this, this.controller, 'OgrenciListele', p, '', '', function (data, parent) {
+                    parent.Filtre = true;
+                    parent.LISTE = JSON.parse(data);
+                    ListeOlustur('tblListe');
+                });
+            },
+            KademeDuzenle(tc) {
+                this.KULLANICI_TC = tc;
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    TC_KULLANICI: tc
+                };
+
+                WebPost(this, this.controller, 'KademeGetir', p, '', '', function (data, parent) {
+                    parent.KADEMELIST = JSON.parse(data);
+                    $('#KademeDuzenleModal').modal();
+                });
+            },
+            KademeYetkiKaydet(ID_KADEME) {
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    TC_KULLANICI: this.KULLANICI_TC,
+                    ID_KADEME: ID_KADEME
+                }
+                WebPost(this, this.controller, 'KademeKaydet', p, '', '', function (data, parent) {
+
+                });
+            },
+            YetkiDuzenle(tc) {
+                this.KULLANICI_TC = tc;
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    TC_KULLANICI: tc
+                };
+
+                WebPost(this, this.controller, 'KademeGetir', p, '', '', function (data, parent) {
+                    //parent.YETKILIST = JSON.parse(data);
+                    $('#YetkiDuzenleModal').modal();
+                });
+            },
+            KullaniciTipSubeSelected(idKullaniciTipi) {
+                if (idKullaniciTipi == 1 || idKullaniciTipi == 24549 || idKullaniciTipi == 66444) {
+                    Alert_Error("Admin yetkisi verme yetkiniz yok!")
+                    return;
+                }
+                if (idKullaniciTipi == 4 || idKullaniciTipi == 5) {
+                    Alert_Error("Bu sayfadan öğrenci, veli yetkisi verilemez!")
+                    return;
+                }
+                this.YETKILIST = [];
+                this.ID_KULLANICITIPI = idKullaniciTipi;
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    TC_KULLANICI: this.KULLANICI_TC,
+                    ID_KULLANICITIPI: idKullaniciTipi
+                };
+
+                WebPost(this, this.controller, 'KullaniciTipiSubeGetir', p, '', '', function (data, parent) {
+                    $("#cmb_subeler option").remove();
+                    parent.YETKILIST = JSON.parse(data);
+                });
+            },
+
+            SubeYetkiKaydet(ID_SUBE) {
+                this.YETKILIST = [];
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    TC_KULLANICI: this.KULLANICI_TC,
+                    ID_KULLANICITIPI: this.ID_KULLANICITIPI,
+                    ID_SUBE: ID_SUBE
+                };
+                WebPost(this, this.controller, 'KullaniciTipiSubeKaydet', p, '', '', function (data, parent) {
+                    $("#cmb_subeler option").remove();
+                    parent.YETKILIST = JSON.parse(data);
+                });
+            }
+        }
+    });
+</script>

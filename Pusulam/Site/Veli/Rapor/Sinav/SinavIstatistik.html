@@ -1,0 +1,756 @@
+﻿<head>
+    <script src="/Scripts/Rapor/amcharts.js"></script>
+    <script src="/Scripts/Rapor/jquery.easypiechart.js"></script>
+    <script src="/Scripts/Rapor/light.js"></script>
+    <script src="/Scripts/Rapor/serial.js"></script>
+</head>
+<style>
+    #chartdiv {
+        width: 100%;
+        height: 500px;
+        font-size: 11px;
+    }
+
+    #chartdiv2 {
+        width: 100%;
+        height: 500px;
+        font-size: 11px;
+    }
+
+    .chart {
+        position: relative;
+        display: inline-block;
+        width: 90px;
+        height: 90px;
+        text-align: center;
+    }
+
+        .chart canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+    .percent {
+        display: inline-block;
+        line-height: 90px;
+        z-index: 2;
+    }
+
+        .percent:after {
+            content: '%';
+            margin-left: 0.1em;
+            font-size: .8em;
+        }
+
+    .badgenew {
+        color: black !important;
+        font-size: 12px !important;
+        font-weight: bold;
+        height: 23px;
+        padding-top: 5px;
+        margin-top: 34px;
+        float: none;
+    }
+
+    .badge10 {
+        background-color: #F31D13 !important;
+    }
+
+    .badge20 {
+        background-color: #F34713 !important;
+    }
+
+    .badge30 {
+        background-color: #F37013 !important;
+    }
+
+    .badge40 {
+        background-color: #F39913 !important;
+    }
+
+    .badge50 {
+        background-color: #F1CD1C !important;
+    }
+
+    .badge60 {
+        background-color: #E4DE1C !important;
+    }
+
+    .badge70 {
+        background-color: #D6EC1B !important;
+    }
+
+    .badge80 {
+        background-color: #BDF11C !important;
+    }
+
+    .badge90 {
+        background-color: #95F11C !important;
+    }
+
+    .badge100 {
+        background-color: #1CF140 !important;
+    }
+</style>
+
+
+<div class="page-head">
+    <!-- BEGIN PAGE TITLE -->
+    <div class="page-title col-md-12">
+        <h1>
+            Sınav İstatistik <small>İstatistik Veriler</small> <span onclick="YardimGoster(ID_MENU);" class="pull-right" style="cursor:pointer;"><img src="assets/global/img/info.gif" class="info-image-icon" /> </span>
+        </h1>
+    </div>
+    <!-- END PAGE TITLE -->
+</div>
+
+<div class="row" id="app">	
+	<div class="col-md-12">
+		<div class="portlet box green-haze dd-item" style="border:none">
+			<div class="portlet-title dd-handle" data-toggle='collapse' data-target='#filters' style="cursor:pointer;">
+				<div class="caption">
+					<i class="icon-magnifier"></i>
+					<span class="caption-subject bold uppercase"> Filtreler </span>
+					<span class="caption-helper"></span>
+				</div>
+				<div class='actions'>
+					<a href='javascript:;' class='btn btn-default btn-sm' style='border:none;'>
+						<i class='fa fa-chevron-down'></i>
+					</a>
+				</div>
+			</div>
+			<div class="portlet-body form collapse in" id="filters">
+				<form role="form" style="padding:12px 20px">
+					<div class="form-body form-group-lg form-horizontal row" style="padding: 0px;margin-top: 0px !important;">
+					
+
+    <div class="portlet light col-md-12" id="FiltreDivOgretmen" style="margin:0px; border-bottom-style: solid;border-bottom-width: 3px;border-bottom-color: rgb(0, 173, 239);"
+         v-if="ListKullaniciTipi.indexOf(4)==-1 && ListKullaniciTipi.indexOf(5)==-1">
+        <div class="portlet-body">
+            <div class="form-inline">
+                <c-sube controller="VeliSinavIstatistik"
+                        @OnChange="SubeSelected">
+                </c-sube>
+                <c-kademe3 controller="VeliSinavIstatistik"
+                           :idsube="idsube"
+                           @OnChange="Kademe3Selected">
+                </c-kademe3>
+                <c-sinif controller="VeliSinavIstatistik"
+                         :idsube="idsube"
+                         :idkademe3="idkademe3"
+                         @OnChange="SinifSelected">
+                </c-sinif>
+                <c-ogrenci controller="VeliSinavIstatistik"
+                           :idsinif="idsinif"
+                           @OnChange="OgrenciSelected">
+                </c-ogrenci>
+            </div>
+        </div>
+    </div>
+    <div class="portlet light col-md-12" id="FiltreDivVeli" style="margin:0px; border-bottom-style: solid;border-bottom-width: 3px;border-bottom-color: rgb(0, 173, 239);"
+         v-if="ListKullaniciTipi.indexOf(5)>-1">
+
+        <div class="portlet-body">
+            <div class="form-inline">
+                <c-ogrenci-veli controller="VeliSinavIstatistik"
+                                :tc="TCKIMLIKNO"
+                                @OnChange="OgrenciVeliSelected">
+                </c-ogrenci-veli>
+            </div>
+        </div>
+
+    </div>
+    <div class="portlet light col-md-12" id="FiltreDivOgrenci" style="margin:0px; border-bottom-style: solid;border-bottom-width: 3px;border-bottom-color: rgb(0, 173, 239);"
+         v-if="ListKullaniciTipi.indexOf(4)>-1 || divOgrenci==1">
+        <div class="portlet-body">
+            <div class="form-inline">
+                <c-donem controller="VeliSinavIstatistik"
+                         @OnChange="DonemSelected">
+                </c-donem>
+                <!--<c-sinav-turu controller="VeliSinavIstatistik"
+                              @OnChange="SinavTuruSelected">
+                </c-sinav-turu>-->
+
+                <c-sinav-turu-tc controller="VeliSinavIstatistik"
+                                 :tc="tcogrenci"
+                                 :idkademe3="idkademe3"
+                                 :donem="DONEM"
+                                 @OnChange="SinavTuruSelected">
+                </c-sinav-turu-tc>
+
+                <!--<c-sinav controller="VeliSinavIstatistik"
+                               :idsinavturu="idsinavturu"
+                               :donem="DONEM"
+                               :tc="tcogrenci"
+                               @OnChange="SinavSelected">
+                </c-sinav>-->
+                <input style="float:right;margin: 10px;" type="button" class="btn btn-success" v-on:click="Raporla" value="Raporla">
+            </div>
+        </div>
+    </div>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+
+    <div class="col-md-12" v-show="divAc==1">
+        <div class="col-md-3">
+            <div class="portlet light" style="margin:0px; border-bottom-style: solid; border-bottom-width: 3px; border-bottom-color: rgb(0, 173, 239);">
+                <div class="portlet-body">
+                    <div class="row" style="padding-left:20px;font-weight:600;font-size:16px;color:#929191">
+                        DERS BAŞARI
+                    </div>
+                </div>
+            </div>
+            <div class="panel-group accordion" id="accordion1">
+                <table id="tablokazanimlar" class="table table-striped table-responsive table-bordered">
+                    <tbody id="tbodykazanimlar"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="portlet light" v-show="PUANYOK==false"  style="margin:0px; border-bottom-style: solid; border-bottom-width: 3px; border-bottom-color: rgb(0, 173, 239);">
+                <div class="portlet-body">
+                    <div class="row" id="SinavAdi" style="padding-left:20px;font-weight:600;font-size:16px;color:#929191">
+                        SINAV PUAN GRAFİĞİ
+                    </div>
+                </div>
+            </div>
+            <div class="portlet light" v-show="PUANYOK==false"  style="min-height: 100px;padding:0px;margin-top:1px">
+                <div id="chartdiv"></div>
+
+
+
+            </div>
+
+            <div class="portlet light" style="margin:0px; border-bottom-style: solid;
+    border-bottom-width: 3px;
+    border-bottom-color: rgb(0, 173, 239);height:60px;">
+                <div class="portlet-body">
+                    <div class="row" id="SinavAdi2" style="padding-left:20px;font-weight:600;font-size:16px;color:#929191">
+                        <div class="col-md-6">
+                            SINAV NET GRAFİĞİ
+                        </div>
+                        <div class="col-md-6">
+                            <c-sinav-ders :dersler="dersler"
+                                          ilksecenek="Toplam Net"
+                                          @OnChange="SinavDersSelected">
+                            </c-sinav-ders>
+                            <!--<select id="Dersler" class="form-control" style="margin-top: 0px;margin-bottom: 3px; border: 1px solid #EEE;" onchange="SinavDersSelected();"></select>-->
+                        </div>
+
+
+                    </div>
+                </div>
+            </div>
+            <div class="portlet light" style="min-height: 100px;padding:0px;margin-top:1px">
+                <div id="chartdiv2"></div>
+            </div>
+        </div>
+
+        <div class="col-md-3" v-show="PUANYOK==false" >
+            <div class="portlet light" style="margin:0px; border-bottom-style: solid;
+    border-bottom-width: 3px;
+    border-bottom-color: rgb(0, 173, 239);">
+                <div class="portlet-body">
+                    <div class="row" style="padding-left:20px;font-weight:600;font-size:16px;color:#929191">
+                        PUAN BAŞARI YÜZDESİ
+                    </div>
+                </div>
+            </div>
+            <div class="portlet light" style="min-height: 100px;padding:0px;margin-top:1px">
+
+                <div class="col-md-12">
+                    <c-sinav-puan-turu controller="VeliSinavIstatistik"
+                                       :idsinavturu="idsinavturu"
+                                       @OnChange="SinavPuanTuruSelected">
+                    </c-sinav-puan-turu>
+                </div>
+                <p>&nbsp;<br /></p>
+
+                <div class="col-md-12" id="snv_puanlar">
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="/VueComponents/SinavIstatistikFiltreleri.js?v=3"></script>
+<script src="../../../VueComponents/KonuAnaliziFiltreleri.js?v=3"></script>
+<script>
+    var vue = new Vue({
+        el: "#app",
+        name: "SinavIstatistik.html",
+
+        data: {
+            idsinavpuanturu: 0,
+            TCKIMLIKNO: '',      //TAHSİN
+            DONEM: '',                     //
+            LISTE: [],
+            dersler: [],
+            t1: [],
+            t2: [],
+            t3: [],
+
+            divAc: 0,
+            idsinav: 0,
+            idsube: 0,
+            idkademe3: 0,
+            idsinif: 0,
+            tcogrenci: '',
+            idsinavturu: 0,
+            idkullanicitur: 0,
+            ListKullaniciTipi: [],
+            divOgrenci: 0,
+            PUANYOK: false
+
+        },
+
+        mounted() {
+
+            var p = {
+                TCKIMLIKNO: session.TCKIMLIKNO,
+                OTURUM: session.OTURUM
+            };
+            var list = [];
+            WebPost(this, "VeliSinavIstatistik", "KullaniciTipiGetir", p, "#app", "Yükleniyor...", function (data, parent) {
+                if (data != null) {
+                    $.each(data, function (j, el) {
+                        list.push(this.ID_KULLANICITIPI)
+                    });
+                    parent.ListKullaniciTipi = list;
+                    if (list.indexOf(4) > -1)
+                        parent.tcogrenci = session.TCKIMLIKNO;
+                } else {
+                    Alert_Warning("Kullanıcı Bulunamadı..!");
+                }
+            });
+        },
+
+        methods: {
+
+            Raporla: function (event) {
+                this.Getir();
+            },
+            Getir() {
+                if (this.DONEM != "" && this.tcogrenci != "") {
+                    this.divAc = 1;
+                    var p = {
+                        TCKIMLIKNO: session.TCKIMLIKNO,
+                        OTURUM: session.OTURUM,
+                        TC_OGRENCI: this.tcogrenci,
+                        DONEM: this.DONEM,
+                        ID_SINAVTURU: this.idsinavturu
+                    };
+
+                    WebPost(this, "VeliSinavIstatistik", "SinavIstatistik", p, "#app", "Yükleniyor...", function (data, parent) {
+                        if (data != null) {
+                            parent.t1 = JSON.parse(data)[0].t1;
+                            parent.t2 = JSON.parse(data)[0].t2;
+                            parent.t3 = JSON.parse(data)[0].t3;
+
+                            parent.Listele();
+                            $('#filters').collapse('hide');
+
+                        } else {
+                            Alert_Warning("Sınav Bulunamadı..!");
+                        }
+                    });
+                }
+            },
+
+            SubeSelected(item) {
+                this.idsube = item;
+                this.idkademe3 = 0;
+                this.idsinif = 0;
+                this.divOgrenci = 0;
+                this.divAc = 0;
+            },
+            Kademe3Selected(item) {
+                this.idkademe3 = item;
+                this.idsinif = 0;
+                this.divOgrenci = 0;
+                this.divAc = 0;
+            },
+            SinifSelected(item) {
+                this.idsinif = item;
+                this.divOgrenci = 0;
+                this.divAc = 0;
+            },
+            OgrenciSelected(item) {
+                this.tcogrenci = item;
+                this.divOgrenci = 1;
+                this.divAc = 0;
+                //this.Getir();
+            },
+            OgrenciVeliSelected(item) {
+                this.tcogrenci = item;
+                this.divOgrenci = 1;
+                this.divAc = 0;
+                //this.Getir();
+            },
+            DonemSelected(item) {
+                this.DONEM = item;
+                this.divAc = 0;
+            },
+            SinavTuruSelected(item) {
+                this.idsinavturu = item;
+                this.divAc = 0;
+            },
+            SinavSelected(item) {
+                this.idsinav = item;
+                this.divAc = 0;
+                //this.Getir();
+            },
+            DersSelected(item) {
+                this.seciliDers = item;
+                if (item.length == 0)
+                    this.Listele();
+                else
+                    this.ListeleDers();
+            },
+            SinavPuanTuruSelected(item) {
+                this.idsinavpuanturu = item;
+                $("#Dersler").val(0);
+                $("#Dersler").change();
+                this.SnvPuanlari();
+            },
+
+            Listele() {
+                var _this = this;
+
+                if (this.t3 == undefined) {
+                    return;
+                }
+
+                var k = getDistinct(this.t3, "ID_SINAVPUANTURU");
+                this.PUANYOK = k.length == 1 && k.indexOf(0) > -1 ? true : false
+
+                var idSinavPuanTuru = $("#cmbPuanTuru option:selected").val();
+                idSinavPuanTuru = this.PUANYOK ? 0 : idSinavPuanTuru;
+                this.idsinavpuanturu = idSinavPuanTuru;
+                //if (idSinavPuanTuru == 0) {
+                //    Alert_Warning("Sınav Puan Türü Seçiniz..!");
+                //    return;
+                //}
+
+                var dersler = [];
+                $.each(this.t3, function (j) {
+                    if (idSinavPuanTuru == this.ID_SINAVPUANTURU) {
+                        var items = _this.getObjects(dersler, 'DERSAD', this.DERSAD);
+                        console.log(dersler);
+                        console.log(this.DERSAD + ' ' + items.length);
+                        if (items.length == 0) {
+                            dersler.push({ DERSAD: this.DERSAD })
+                        }
+                    }
+                });
+                this.dersler = dersler;
+
+                this.KonuAnaliz();
+                this.SnvPuanlari();
+            },
+
+            getObjects(obj, key, val) {
+                var objects = [];
+                for (var i in obj) {
+                    if (!obj.hasOwnProperty(i)) continue;
+                    if (typeof obj[i] == 'object') {
+                        objects = objects.concat(this.getObjects(obj[i], key, val));
+                    } else if (i == key && obj[key] == val) {
+                        objects.push(obj);
+                    }
+                }
+                return objects;
+            },
+
+            KonuAnaliz() {
+                var Sayac = 0;
+                var veri = '<div class="panel panel-default" style="margin-top:-1px;">';
+
+                var baslik = "head";
+                var toplamsoru = parseFloat(0);
+                var toplamdogru = parseFloat(0);
+                var toplamyanlis = parseFloat(0);
+                var toplambos = parseFloat(0);
+                var tt1 = this.t1;
+                $.each(this.t1, function (j, el) {
+                    //if (j == 0) {
+                    //    Dersler(t1[j].ID_SINAVBILGI);
+                    //}
+                    if (j > 0) {
+                        //console.log(t1[j - 1].DERSAD)
+                        if (tt1[j - 1].DERSAD == tt1[j].DERSAD) {
+                            baslik = "row";
+                        }
+                        else {
+                            baslik = "head";
+                            veri += '</tbody>';
+                            veri += "</table>";
+                            veri += "</div>";
+                            veri += "</div>";
+                            veri += '<div class="panel panel-default" style="margin-top:-1px;">';
+                        }
+                    }
+
+                    var stil = "";
+
+
+                    if (baslik == "head") {
+                        Sayac++;
+                        if ((Sayac % 2) == 0) {
+                            stil = "style='height:70px; background-color:#676F75; color : white;'";
+                        }
+                        else {
+                            stil = "style='height:70px; background-color:#50575D; color : white;'";
+                        }
+                        veri += '<div class="panel-heading collapsed" data-toggle="collapse" data-parent="#accordion1" href="#collapse_' + j + '" aria-expanded="false" style="cursor:pointer">';
+                        veri += "<table style='width:100%'><tbody><tr " + stil + "><td style='font-size:16px;padding-left:20px;'>";
+                        veri += '<a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion1" href="#collapse_' + j + '" aria-expanded="false" style="font-size: 700;color:#FFF">' + el.DERSAD;
+                        veri += '</td>';
+                        if (parseFloat(el.BOLUMYUZDE) >= 0 && parseFloat(el.BOLUMYUZDE) < 10) {
+
+                            veri += "<td style='width: 150px;padding-left:25px;text-align:center'><div style='font-size:xx-small' class='chart' data-percent='" + el.BOLUMYUZDE + "' ><span class='badge badgenew badge10'>" + el.BOLUMYUZDE + "%</span></div></td>";
+                        }
+                        else if (parseFloat(el.BOLUMYUZDE) >= 10 && parseFloat(el.BOLUMYUZDE) < 20) {
+
+                            veri += "<td style='width: 150px;padding-left:25px;text-align:center'><div style='font-size:xx-small' class='chart' data-percent='" + el.BOLUMYUZDE + "' ><span class='badge badgenew badge20'>" + el.BOLUMYUZDE + "%</span></div></td>";
+                        }
+                        else if (parseFloat(el.BOLUMYUZDE) >= 20 && parseFloat(el.BOLUMYUZDE) < 30) {
+
+                            veri += "<td style='width: 150px;padding-left:25px;text-align:center'><div style='font-size:xx-small' class='chart' data-percent='" + el.BOLUMYUZDE + "' ><span class='badge badgenew badge30'>" + el.BOLUMYUZDE + "%</span></div></td>";
+                        }
+                        else if (parseFloat(el.BOLUMYUZDE) >= 30 && parseFloat(el.BOLUMYUZDE) < 40) {
+
+                            veri += "<td style='width: 150px;padding-left:25px;text-align:center'><div style='font-size:xx-small' class='chart' data-percent='" + el.BOLUMYUZDE + "' ><span class='badge badgenew badge40'>" + el.BOLUMYUZDE + "%</span></div></td>";
+                        }
+                        else if (parseFloat(el.BOLUMYUZDE) >= 40 && parseFloat(el.BOLUMYUZDE) < 50) {
+
+                            veri += "<td style='width: 150px;padding-left:25px;text-align:center'><div style='font-size:xx-small' class='chart' data-percent='" + el.BOLUMYUZDE + "' ><span class='badge badgenew badge50'>" + el.BOLUMYUZDE + "%</span></div></td>";
+                        }
+                        else if (parseFloat(el.BOLUMYUZDE) >= 50 && parseFloat(el.BOLUMYUZDE) < 60) {
+
+                            veri += "<td style='width: 150px;padding-left:25px;text-align:center'><div style='font-size:xx-small' class='chart' data-percent='" + el.BOLUMYUZDE + "' ><span class='badge badgenew badge60'>" + el.BOLUMYUZDE + "%</span></div></td>";
+                        }
+                        else if (parseFloat(el.BOLUMYUZDE) >= 60 && parseFloat(el.BOLUMYUZDE) < 70) {
+                            veri += "<td style='width: 150px;padding-left:25px;text-align:center'><div style='font-size:xx-small' class='chart' data-percent='" + el.BOLUMYUZDE + "' ><span class='badge badgenew badge70'>" + el.BOLUMYUZDE + "%</span></div></td>";
+                        }
+                        else if (parseFloat(el.BOLUMYUZDE) >= 70 && parseFloat(el.BOLUMYUZDE) < 80) {
+                            veri += "<td style='width: 150px;padding-left:25px;text-align:center'><div style='font-size:xx-small' class='chart' data-percent='" + el.BOLUMYUZDE + "' ><span class='badge badgenew badge80'>" + el.BOLUMYUZDE + "%</span></div></td>";
+                        }
+                        else if (parseFloat(el.BOLUMYUZDE) >= 80 && parseFloat(el.BOLUMYUZDE) < 90) {
+                            veri += "<td style='width: 150px;padding-left:25px;text-align:center'><div style='font-size:xx-small' class='chart' data-percent='" + el.BOLUMYUZDE + "' ><span class='badge badgenew badge90'>" + el.BOLUMYUZDE + "%</span></div></td>";
+                        }
+                        else if (parseFloat(el.BOLUMYUZDE) >= 90 && parseFloat(el.BOLUMYUZDE) <= 100) {
+                            veri += "<td style='width: 150px;padding-left:25px;text-align:center'><div style='font-size:xx-small' class='chart' data-percent='" + el.BOLUMYUZDE + "' ><span class='badge badgenew badge100'>" + el.BOLUMYUZDE + "%</span></div></td>";
+                        }
+
+                        veri += "</tr></tbody></table>";
+                        veri += '</div>';
+                        veri += '<div id="collapse_' + j + '" class="panel-collapse collapse" aria-expanded="false">';
+                        veri += '<table class="table table-responsive table-bordered">';
+                        veri += '<tbody>';
+                    }
+                    else {
+                        veri += "<tr style='background-color: #F1F1F1;'>";
+                        veri += '<td>';
+                        veri += el.KONUAD;
+                        veri += '</td>';
+                        veri += "<td style='text-align:center;vertical-align:middle;'>" + el.YUZDE + "</td>";
+                        veri += "</tr>";
+                    }
+
+
+                    //if (this.t1.length == (j + 1)) {
+
+                    //}
+                });
+                veri += "</table>";
+                veri += "</div>";
+                $("#accordion1").html(veri);
+                $('.chart').easyPieChart({
+                    //your configuration goes here
+                    animate: 2000,
+                    easing: 'easeOutBounce',
+                    barColor: function (percent) {
+                        //   return (percent < 50 ? '#5cb85c' : percent < 85 ? '#f0ad4e' : '#cb3935');
+                        var Renk = '';
+
+                        if (percent >= 0 && percent < 10) {
+                            Renk = '#F31D13';
+                        }
+                        else if (percent >= 10 && percent < 20) {
+                            Renk = '#F34713';
+                        }
+                        else if (percent >= 20 && percent < 30) {
+                            Renk = '#F37013';
+                        }
+                        else if (percent >= 30 && percent < 40) {
+                            Renk = '#F39913';
+                        }
+                        else if (percent >= 40 && percent < 50) {
+                            Renk = '#F34713';
+                        }
+                        else if (percent >= 50 && percent < 60) {
+                            Renk = '#E4DE1C';
+                        }
+                        else if (percent >= 60 && percent < 70) {
+                            Renk = '#D6EC1B';
+                        }
+                        else if (percent >= 70 && percent < 80) {
+                            Renk = '#BDF11C';
+                        }
+                        else if (percent >= 80 && percent < 90) {
+                            Renk = '#95F11C';
+                        }
+                        else if (percent >= 90 && percent < 100) {
+                            Renk = '#1CF140';
+                        }
+
+                        return Renk;
+
+                    },
+                    size: 90,
+                    scaleLength: 7,
+                    trackWidth: 5,
+                    lineWidth: 5,
+                    onStep: function (from, to, percent) {
+                        $(this.el).find('.percent').text(Math.round(percent));
+                    }
+                });
+            },
+
+            SinavDersSelected() {
+                var SinavDers = $("#Dersler option:selected").text();
+
+                var idSinavPuanTuru = $("#cmbPuanTuru option:selected").val();
+                idSinavPuanTuru = this.PUANYOK ? 0 : idSinavPuanTuru;
+
+                //var idSinavPuanTuru = this.idsinavpuanturu;
+                var datapro = [];
+                var datapro2 = [];
+                var maxnet = 0;
+                var tt3 = this.t3;
+                console.log(tt3);
+                console.log(SinavDers);
+
+                if (SinavDers == "Toplam Net") {
+                    $.each(this.t2, function (j) {
+                        if (idSinavPuanTuru == this.ID_SINAVPUANTURU) {
+                            if (this.TOPLAMNET > maxnet) {
+                                maxnet = this.TOPLAMNET;
+                            }
+                            var eleman2 = { "country": this.SINAVAD, "visits": this.TOPLAMNET, "color": "#0D52D1" };
+                            datapro2.push(eleman2);
+                        }
+                    });
+                } else {
+                    $.each(tt3, function (j) {
+                        if (idSinavPuanTuru == this.ID_SINAVPUANTURU && SinavDers == this.DERSAD) {
+                            var item = this.D[0];
+                            if (j == 0) {
+                                maxnet = parseFloat(eval(item.NET));
+                            }
+                            if (j > 0) {
+                                if (parseFloat(eval(item.NET)) > maxnet) {
+                                    maxnet = eval(item.NET);
+                                }
+                            }
+                            var eleman2 = { "country": item.SINAVAD, "visits": item.NET, "color": "#0D52D1" };
+                            datapro2.push(eleman2);
+                        }
+                    })
+                }
+                AmchartOlustur("chartdiv2", datapro2, (maxnet + 5), "visits", "country", "color", SinavDers + " Net", true);
+            },
+
+            SnvPuanlari() {
+                var idSinavPuanTuru = this.idsinavpuanturu;
+                var Sayac = 0;
+                var BackColor = "#50575D";
+                $("#snv_puanlar").html("");
+
+                $.each(this.t2, function (j) {
+                    if (idSinavPuanTuru == this.ID_SINAVPUANTURU && this.PUANGIZLE == 0) {
+
+                        if (Sayac == 0) {
+                            BackColor = "#50575D";
+                            Sayac++;
+                        }
+                        else {
+                            BackColor = "#676F75";
+                            Sayac--;
+                        }
+
+                        var Snv = '<div style="font-size:small; height:70px; background-color:' + BackColor + '; color : white;"><div class="progress-info"><div class="status"><div class="status-title" style="margin-bottom:10px;">&nbsp;&nbsp;&nbsp;' + this.SINAVAD + '<div style="float:right;" class="status-number">' + this.PUAN + '</div> </div></div><div style="height:10px; margin-bottom:10px;" class="progress"> <span style="width: ' + parseFloat((this.PUAN / 5)).toFixed(2) + '%" class="progress-bar progress-bar-success green-sharp">' +
+                        '<span class="sr-only">' + this.PUAN + '% progress</span></span></div><div style="float:right" class="status-number">' + parseFloat((this.PUAN / 5)).toFixed(2) + '% </div></div></div>'
+
+                        $("#snv_puanlar").append(Snv);
+                    }
+                });
+                this.Grafikler();
+
+            },
+
+            Grafikler() {
+
+                var datapro = [];
+                var datapro2 = [];
+                var dersler = [];
+                var maxnet = 0;
+                var minnet = 0;
+                var idSinavPuanTuru = this.idsinavpuanturu == undefined ? 0 : this.idsinavpuanturu;
+                var tt2 = this.t2;
+                $.each(this.t2, function (j) {
+
+                    var puan = parseFloat(eval(this.PUAN));
+                    var eleman = "";
+                    if (idSinavPuanTuru == this.ID_SINAVPUANTURU) {
+                        if (puan > parseFloat("200,000") && puan < parseFloat("250,000")) {
+                            eleman = { "country": this.SINAVAD, "visits": puan, "color": "#FF0F00" };
+                        }
+                        else if (puan >= parseFloat("250,000") && puan < parseFloat("300,000")) {
+                            eleman = { "country": this.SINAVAD, "visits": puan, "color": "#FF6600" };
+                        }
+                        else if (puan >= parseFloat("300,000") && puan < parseFloat("350,000")) {
+                            eleman = { "country": this.SINAVAD, "visits": puan, "color": "#FF9E01" };
+                        }
+                        else if (puan >= parseFloat("350,000") && puan < parseFloat("400,000")) {
+                            eleman = { "country": this.SINAVAD, "visits": puan, "color": "#FCD202" };
+                        }
+                        else if (puan >= parseFloat("400,000") && puan < parseFloat("450,000")) {
+                            eleman = { "country": this.SINAVAD, "visits": puan, "color": "#04D215" };
+                        }
+                        else if (puan >= parseFloat("450,000")) {
+                            eleman = { "country": this.SINAVAD, "visits": puan, "color": "#B0DE09" };
+                        }
+                        else if (puan < parseFloat("200,000")) {
+                            eleman = { "country": this.SINAVAD, "visits": puan, "color": "#EC0F01" };
+                        }
+                        datapro.push(eleman);
+                        if (this.TOPLAMNET > maxnet) {
+                            maxnet = this.TOPLAMNET;
+                        }
+                        if (this.TOPLAMNET < minnet) {
+                            minnet = this.TOPLAMNET - 1;
+                        }
+                        var eleman2 = { "country": this.SINAVAD, "visits": this.TOPLAMNET, "color": "#0D52D1" };
+                        datapro2.push(eleman2);
+
+                    }
+                    if (tt2.length == (j + 1)) {
+                        AmchartOlustur("chartdiv", datapro, 560, "visits", "country", "color", "Puan", true);
+                        AmchartOlustur("chartdiv2", datapro2, (maxnet + 5), "visits", "country", "color", "Toplam Net", true, undefined, undefined, undefined, undefined, undefined, undefined, undefined, minnet);
+                    }
+
+                });
+            },
+
+        }
+
+    });
+</script>
+<script src="../../../Scripts/PublicMethods.js"></script>

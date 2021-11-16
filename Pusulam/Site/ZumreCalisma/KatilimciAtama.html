@@ -1,0 +1,697 @@
+﻿<style>
+    td {
+        vertical-align: middle !important;
+    }
+
+    .row {
+        margin-top: 10px !important;
+    }
+</style>
+<link href="assets/global/plugins/bootstrap-fileinput/bootstrap-fileinput.css" rel="stylesheet" type="text/css" />
+
+<div class="page-head">
+    <!-- BEGIN PAGE TITLE -->
+    <div class="page-title col-md-12">
+        <h1>
+            Zümre Çalışmaları - Katılımcı İşlemleri <span onclick="YardimGoster(ID_MENU);" class="pull-right" style="cursor:pointer;"><img src="assets/global/img/info.gif" class="info-image-icon" /> </span>
+        </h1>
+    </div>
+    <!-- END PAGE TITLE -->
+</div>
+
+<div class="row" id="app">
+    <div class="col-md-12">
+        <div class="portlet box blue-hoki dd-item" style="border:none">
+            <div class="portlet-title dd-handle" data-toggle='collapse' data-target='#filters' style="cursor:pointer;">
+                <div class="caption">
+                    <i class="icon-list"></i>
+                    <span class="caption-subject bold uppercase"> Filtreler </span>
+                    <span class="caption-helper"></span>
+                </div>
+                <div class='actions'>
+                    <a href='javascript:;' class='btn btn-default btn-sm' style='border:none;'>
+                        <i class='fa fa-chevron-down'></i>
+                    </a>
+                </div>
+            </div>
+            <!-- BEGIN PORTLET-->
+            <div class="portlet-body form collapse in" id="filters">
+                <form role="form" style="padding:12px 20px">
+                    <div class="row">
+                        <c-donem :controller="CONTROLLER"
+                                 @OnChange="DonemSelected" />
+                    </div>
+                    <div class="row">
+                        <c-zumre-calisma :controller="CONTROLLER"
+                                         :donem="DONEM"
+                                         @OnChange="ZumreCalismaSelected" />
+                    </div>
+                    <div class="row">
+                        <c-kullanici-tipi-multi :controller="CONTROLLER"
+                                                @OnChange="KullaniciTipiSelected">
+                        </c-kullanici-tipi-multi>
+                    </div>
+                    <div class="row">
+                        <c-sube-multi :controller="CONTROLLER"
+                                      @OnChange="SubeSelected">
+                        </c-sube-multi>
+                    </div>
+                    <div class="row">
+                        <c-brans-multi :controller="CONTROLLER"
+                                       @OnChange="BransSelected">
+                        </c-brans-multi>
+                    </div>
+                    <div class="row" style="margin-top:10px;">
+                        <div class="col-md-12 text-right">
+                            <button type="button" class="btn yellow" @click="AtananlarExcel" style="margin-right:10px;">Atama Liste Excel</button>
+                            <button type="button" class="btn green" @click="ListeGetir">Listele</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="portlet light">
+            <div class="portlet-title">
+                <div class="caption">
+                    <i class="icon-list font-green"></i>
+                    <span class="caption-subject bold font-green uppercase"> Atananlar </span>
+                    <span class="caption-helper"></span>
+                </div>
+                <div class="tools" style="color:red; line-height:34px;">
+                    <span style="cursor:pointer;float:right;" @click="TopluSil">Hepsini Sil<i class="fa fa-lg fa-minus-circle" style="margin-left:4px;" /></span>
+                </div>
+            </div>
+            <!-- BEGIN PORTLET-->
+            <div class="portlet-body form">
+                <form role="form">
+                    <table class="table table-striped table-bordered table-hover table-checkable" id="table_katilimci" v-show="KATILIMCILIST.length>0">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>TCNO</th>
+                                <th>Ad Soyad</th>
+                                <th>İşlem</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </form>
+            </div>
+            <!-- END PORTLET-->
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="portlet light">
+            <div class="portlet-title">
+                <div class="caption">
+                    <i class="icon-list font-green"></i>
+                    <span class="caption-subject bold font-green uppercase"> Filtre Kullanıcı Listesi </span>
+                    <span class="caption-helper"></span>
+                </div>
+                <div class="tools" style="color:#32c5d2!important; line-height:34px;">
+                    <span style="cursor:pointer;float:right;margin-left:5px;" @click="FiltreExcelAta">Excelden Ata<i class="fa fa-lg fa-file-excel-o" style="margin-left:4px;" /></span>
+                    <span style="cursor:pointer;float:right;" @click="TopluEkleme">Hepsini Ekle<i class="fa fa-lg fa-plus-circle" style="margin-left:4px;" /></span>
+                </div>
+            </div>
+            <!-- BEGIN PORTLET-->
+            <div class="portlet-body form">
+                <form role="form">
+                    <table class="table table-striped table-bordered table-hover table-checkable" id="table_kullanici" v-show="KULLANICILIST.length>0">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>TCNO</th>
+                                <th>Ad Soyad</th>
+                                <th>İşlem</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </form>
+            </div>
+            <!-- END PORTLET-->
+        </div>
+    </div>
+
+    <div id="KatilimciEkle_modal" class="modal fade in" tabindex="-1" data-replace="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                    <h4 class="modal-title">Excel'den Katılımcı Ekle</h4>
+                    <div class="portlet-body form collapse in" id="filters">
+                        <form role="form" style="padding:12px 20px">
+                            <div class="row">
+                                <div class="fileinput fileinput-new" data-provides="fileinput">
+                                    <span class="fileinput-preview thumbnail" style="max-width: 1000px; max-height: 1000px;"> </span>
+                                    <span>
+                                        <span class="btn default btn-file">
+                                            <span class="fileinput-new yellow"> Katılımcı Excel Yükle </span>
+                                            <span class="fileinput-exists"> Değiştir </span>
+                                            <input type="file" name="..." accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" id="dosya" @change="previewFile" data-preview-file-type="text">
+                                        </span>
+                                        <a href="javascript:;" class="btn red fileinput-exists" data-dismiss="fileinput"> Sil </a>
+                                        <a href="javascript:;" class="btn green fileinput-exists" data-dismiss="modal"> Tamam </a>
+                                    </span>
+                                </div>
+                                <button type="button" style="float:right" class="btn yellow" @click="ExcelTaslakIndir">Taslak İndir</button>
+                            </div>
+                        </form>
+                    </div>
+
+
+                </div>
+
+                <div class="modal-body" style="padding-bottom:10px;min-height:500px;">
+                    <div class="col-md-5 col-xs-12">
+                        <h5 class="bold text-center">ATANACAK KATILIMCILAR</h5>
+
+                        <table class="table table-striped table-bordered table-hover table-checkable"
+                               style="margin:0px; max-height:500px; overflow:auto;"
+                               id="KatilimciValidTable">
+                            <thead>
+                                <tr style="background: #e1e5e8;">
+                                    <th> T.C. </th>
+                                    <th> Ad Soyad </th>
+
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="u in ATANACAK_KATILIMCILAR">
+                                    <td> {{u.TCKIMLIKNO}} </td>
+                                    <td> {{u.ADSOYAD}} </td>
+
+                                </tr>
+
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="col-md-7 col-xs-12">
+                        <h5 class="bold text-center">ATANMAYACAK KATILIMCILAR</h5>
+                        <table class="table table-striped table-bordered table-hover table-checkable"
+                               style="margin:0px;max-height:500px; overflow:auto;"
+                               id="KatilimciErrTable">
+                            <thead>
+                                <tr style="background: #e1e5e8;">
+                                    <th> T.C. </th>
+                                    <th> Ad Soyad </th>
+                                    <th style="width:200px;"> Hata Detayı </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="u in ATANMAYACAK_KATILIMCILAR">
+                                    <td> {{u.TCKIMLIKNO}} </td>
+                                    <td> {{u.ADSOYAD}} </td>
+                                    <td class="text-danger" style="font-size:8px;"> {{u.ERR_MESSAGE}} </td>
+                                </tr>
+
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+                <div class="modal-footer" style="margin-top:10px;">
+                    <button type="button" class="btn green" @click="ZumreCalismaExcelYuke()" :disabled="!ATAMA_YAPILABILIR" data-dismiss="modal"> Kaydet </button>
+                    <button type="button" class="btn default" data-dismiss="modal">Vazgeç</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.9/xlsx.full.min.js" integrity="sha512-wBcFatf7yQavHQWtf4ZEjvtVz4XkYISO96hzvejfh18tn3OrJ3sPBppH0B6q/1SHB4OKHaNNUKqOmsiTGlOM/g==" crossorigin="anonymous"></script>
+<script src="VueComponents/Filtre.js"></script>
+<script src="VueComponents/FiltreEk.js?v=001"></script>
+<script src="VueComponents/ZumreCalisma/Filtreler.js"></script>
+<script>
+    var vue = new Vue({
+
+        el: "#app",
+        name: "KatilimciAtama.html",
+
+        data: {
+            CONTROLLER: 'ZumreCalismaKatilimciAtama',
+            DONEM: '',
+            ID_ZUMRECALISMA: 0,
+            ID_KULLANICITIPILIST: [],
+            ID_SUBELIST: [],
+            BRANSLIST: [],
+            KATILIMCILIST: [],
+            KULLANICILIST: [],
+            table_katilimci: null,
+            table_kullanici: null,
+            ATANACAK_KATILIMCILAR: [],
+            ATANMAYACAK_KATILIMCILAR: [],
+            EXCEL_TC_LIST: [],
+            ATAMA_YAPILABILIR: false
+
+        },
+
+        mounted() {
+        },
+
+        methods: {
+            DonemSelected(item) {
+                this.DONEM = item;
+            },
+
+            SubeSelected(item) {
+                this.ID_SUBELIST = item;
+            },
+
+            ZumreCalismaSelected(item) {
+                this.ID_ZUMRECALISMA = item;
+            },
+
+            KullaniciTipiSelected(item) {
+                this.ID_KULLANICITIPILIST = item;
+            },
+
+            BransSelected(item) {
+                this.BRANSLIST = item;
+            },
+
+            ListeGetir() {
+                if (this.ID_ZUMRECALISMA > 0) {
+                    this.Atananlar();
+                    if (this.ID_KULLANICITIPILIST.length > 0
+                        || this.BRANSLIST.length > 0
+                        || this.ID_SUBELIST.length > 0) {
+                        this.Atanacaklar();
+                    } else {
+                        Alert_Warning("Filtre kısmında en az biri seçili olmalıdır!");
+                    }
+                } else {
+                    Alert_Warning("Zümre Çalışma seçimi zorunludur!");
+                }
+            },
+
+            Atananlar() {
+                vue.KATILIMCILIST = [];
+                if (this.table_katilimci != null) {
+                    this.table_katilimci.destroy();
+                }
+
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    ID_ZUMRECALISMA: this.ID_ZUMRECALISMA
+                };
+
+                this.table_katilimci = $('#table_katilimci').DataTable(
+                    {
+                        "processing": true,
+                        "serverSide": true,
+                        "order": [[2, 'asc']],
+                        "columnDefs": [
+                            {
+                                "targets": 0,
+                                "visible": false,
+                                "searchable": false,
+                                "orderable": false
+                            },
+                            {
+                                "targets": 3,
+                                "visible": true,
+                                "searchable": false,
+                                "orderable": false
+                            }
+                        ],
+                        "ajax": {
+                            "url": "/" + this.CONTROLLER + "/ZumreCalismaKatilimciListele",
+                            "type": 'POST',
+                            "data": function (d) {
+                                vue.SEARCH = d.search.value;
+                                vue.ORDERCOL = d.order[0].column;
+                                vue.ORDERDIR = d.order[0].dir;
+                                p.SQLJSON = JSON.stringify(d);
+                                return p;
+                            },
+                            "dataFilter": function (data) {
+                                var json = JSON.parse(JSON.parse(data));
+                                json.data = JSON.parse(json.data);
+                                vue.KATILIMCILIST = json.data;
+                                return JSON.stringify(json);
+                            },
+                        },
+                        "autoWidth": false,
+                        "columns": [
+                            { "data": "RowNumber" },
+                            { "data": "TCKIMLIKNO", "width": "60px" },
+                            { "data": "ADSOYAD" },
+                            {
+                                "data": "ID_ZUMRECALISMAKATILIMCI",
+                                "render": function (data, type, row, meta) {
+                                    return type === 'display' && data != null ?
+                                        "<a style='width:70px;' onclick='KatilimciSil(" + data + ")' class='btn btn-sm red'> SİL <i class='fa fa-trash'></i></a>" :
+                                        data;
+                                },
+                                "width": "70px"
+                            }
+                        ],
+                        language: {
+                            "url": "./Utility/dil.json"
+                        }
+                    });
+            },
+
+            Atanacaklar() {
+                vue.KULLANICILIST = [];
+                if (this.table_kullanici != null) {
+                    this.table_kullanici.destroy();
+                }
+
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    ID_ZUMRECALISMA: this.ID_ZUMRECALISMA,
+                    ID_KULLANICITIPILIST: JSON.stringify(this.ID_KULLANICITIPILIST),
+                    BRANSLIST: JSON.stringify(this.BRANSLIST),
+                    ID_SUBELIST: JSON.stringify(this.ID_SUBELIST)
+                };
+
+                this.table_kullanici = $('#table_kullanici').DataTable(
+                    {
+                        "processing": true,
+                        "serverSide": true,
+                        "order": [[2, 'asc']],
+                        "columnDefs": [
+                            {
+                                "targets": 0,
+                                "visible": false,
+                                "searchable": false,
+                                "orderable": false
+                            },
+                            {
+                                "targets": 3,
+                                "visible": true,
+                                "searchable": false,
+                                "orderable": false
+                            }
+                        ],
+                        "ajax": {
+                            "url": "/" + this.CONTROLLER + "/ZumreCalismaKullaniciListele",
+                            "type": 'POST',
+                            "data": function (d) {
+                                vue.SEARCH = d.search.value;
+                                vue.ORDERCOL = d.order[0].column;
+                                vue.ORDERDIR = d.order[0].dir;
+                                p.SQLJSON = JSON.stringify(d);
+                                return p;
+                            },
+                            "dataFilter": function (data) {
+                                var json = JSON.parse(JSON.parse(data));
+                                json.data = JSON.parse(json.data);
+                                vue.KULLANICILIST = json.data;
+                                return JSON.stringify(json);
+                            },
+                        },
+                        "autoWidth": false,
+                        "columns": [
+                            { "data": "RowNumber" },
+                            { "data": "TCKIMLIKNO", "width": "60px" },
+                            { "data": "ADSOYAD" },
+                            {
+                                "data": "TCKIMLIKNO",
+                                "render": function (data, type, row, meta) {
+                                    return type === 'display' && data != null ?
+                                        "<a style='width:70px;' onclick='KatilimciAta(" + data + ")' class='btn btn-sm green'> ATA <i class='fa fa-plus'></i></a>" :
+                                        data;
+                                },
+                                "width": "70px"
+                            }
+                        ],
+                        language: {
+                            "url": "./Utility/dil.json"
+                        }
+                    });
+            },
+
+            AtananlarExcel() {
+                if (this.ID_ZUMRECALISMA > 0) {
+                    window.open("Rapor.aspx?raporTur=XLSX&rapor=ZumreCalisma.KatilimRapor&p="
+                        + session.TCKIMLIKNO + ";"
+                        + session.OTURUM + ";"
+                        + this.ID_ZUMRECALISMA + ";"
+                        + 1240);
+                } else {
+                    Alert_Warning("Zümre çalışma seçimi zorunludur!");
+                }
+            },
+
+            TopluEkleme() {
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    ID_ZUMRECALISMA: this.ID_ZUMRECALISMA,
+                    ID_KULLANICITIPILIST: JSON.stringify(this.ID_KULLANICITIPILIST),
+                    BRANSLIST: JSON.stringify(this.BRANSLIST),
+                    ID_SUBELIST: JSON.stringify(this.ID_SUBELIST)
+                };
+
+                WebPost(vue, vue.CONTROLLER, "ZumreCalismaKatilimciAtaToplu", p, '', '', function (data, parent) {
+                    if (data) {
+                        vue.ListeGetir();
+                    }
+                    else {
+                        Alert_Warning("Atama işlemi sırasında bir sorun oluştu! Daha sonra tekrar deneyiniz...");
+                    }
+                });
+            },
+            FiltreExcelAta() {
+                $('#KatilimciEkle_modal').modal();
+            },
+            TopluSil() {
+                Alert_Confirm("Emin misiniz?", "Tüm atamalar silinecek.", function () {
+                    var p = {
+                        TCKIMLIKNO: session.TCKIMLIKNO,
+                        OTURUM: session.OTURUM,
+                        ID_ZUMRECALISMA: vue.ID_ZUMRECALISMA
+                    };
+
+                    WebPost(vue, vue.CONTROLLER, "ZumreCalismaKatilimciSilToplu", p, '', '', function (data, parent) {
+                        if (data) {
+                            vue.ListeGetir();
+                        }
+                        else {
+                            Alert_Warning("Atama işlemi sırasında bir sorun oluştu! Daha sonra tekrar deneyiniz...");
+                        }
+                    });
+                });
+            },
+            ExcelTaslakIndir() {
+                window.open("Dosyalar/ExcelTaslak/ExcelZumreTopluKatilimciYukle.xlsx", "_blank");
+            },
+            ZumreCalismaExcelYuke() {
+                 
+                if (vue.ATANACAK_KATILIMCILAR.length > 0) {
+                    let TCLIST = [];
+                    vue.ATANACAK_KATILIMCILAR.forEach((item, i) => {
+                        if (item.TCKIMLIKNO) {
+                            TCLIST.push('' + item["TCKIMLIKNO"] + '');
+                        }
+                    });
+
+                    var p = {
+                        TCKIMLIKNO: session.TCKIMLIKNO,
+                        OTURUM: session.OTURUM,
+                        ID_ZUMRECALISMA: vue.ID_ZUMRECALISMA,
+                        TC_KIMLIK_LIST: JSON.stringify(TCLIST),
+                    };
+
+                    WebPost(vue, vue.CONTROLLER, "ExcelTopluZumreCalismaKatilimciEkle", p, '', '', function (data, parent) {
+                         
+                        if (data > 0) {
+                            Alert_Info("Katılımcılar başarıyla kaydedildi");
+                            vue.ATANACAK_KATILIMCILAR = [];
+                            vue.ATANMAYACAK_KATILIMCILAR = [];
+                            vue.ATAMA_YAPILABILIR = false;
+                            $('#dosya').val('');
+
+                        }
+                        else {
+                            Alert_Warning("Bir sorun oluştu! Lütfen sistem yöneticinize başvurunuz...");
+                            vue.ATANACAK_KATILIMCILAR = [];
+                            vue.ATANMAYACAK_KATILIMCILAR = [];
+                            vue.ATAMA_YAPILABILIR = false;
+                            $('#dosya').val('');
+                        }
+                    });
+
+                }
+                else {
+                    Alert_Warning("Atanacak katılımcı listesi boş olamaz!");
+                }
+
+
+
+            },
+            previewFile(e) {
+                let kota = 0;
+
+                selectedFile = document.getElementById('dosya').files[0];
+
+                if (selectedFile.length == 0) {
+                    Alert_Info('Lütfen Dosya Seçiniz.');
+                    return;
+                }
+
+                var reader = new FileReader();
+                reader.onload = function (event) {
+                    let data = event.target.result;
+                    var workbook = XLSX.read(data, {
+                        type: 'binary'
+                    });
+                    let tumData = []
+                    let hataliData = [];
+                    workbook.SheetNames.forEach(sheet => {
+                        let rowObject = XLSX.utils.sheet_to_row_object_array(workbook.Sheets[sheet]);
+                        tumData.push(rowObject);
+
+                    });
+                    let TCLIST = [];
+                    tumData[0].forEach((item, i) => {
+                        if (item.TCKIMLIKNO) {
+                            TCLIST.push('' + item["TCKIMLIKNO"] + '');
+                            // eklenecekData.push(item);
+                        } else { hataliData.push(item); }
+                    });
+                    hataliData.forEach((item, i) => {
+                        let hata = "";
+                        if (!item.TCKIMLIKNO) {
+                            hata = "(*) TC Kimlik No Boş Olamaz";
+                        }
+                        item["ERR_CODE"] = 1;
+                        item["ERR_MESSAGE"] = hata;
+                    });
+
+                    vue.EXCEL_TC_LIST = JSON.stringify(TCLIST);
+
+                    var p = {
+                        TCKIMLIKNO: session.TCKIMLIKNO,
+                        OTURUM: session.OTURUM,
+                        ID_ZUMRECALISMA: vue.ID_ZUMRECALISMA,
+                        TC_KIMLIK_LIST: vue.EXCEL_TC_LIST,
+                        ID_KULLANICITIPILIST: JSON.stringify(vue.ID_KULLANICITIPILIST),
+                        BRANSLIST: JSON.stringify(vue.BRANSLIST),
+                        ID_SUBELIST: JSON.stringify(vue.ID_SUBELIST)
+                    };
+                    if (vue.ID_ZUMRECALISMA <= 0) {
+                        Alert_Warning("Zümre çalışma seçiniz");
+                        vue.ATANACAK_KATILIMCILAR = [];
+                        vue.ATANMAYACAK_KATILIMCILAR = [];
+                        vue.ATAMA_YAPILABILIR = false;
+                        $('#dosya').val('');
+                        return false;
+                    }
+                    else if (vue.ID_KULLANICITIPILIST.length <= 0) {
+                        Alert_Warning("Kullanıcı Tipi Seçiniz");
+                        vue.ATANACAK_KATILIMCILAR = [];
+                        vue.ATANMAYACAK_KATILIMCILAR = [];
+                        vue.ATAMA_YAPILABILIR = false;
+                        $('#dosya').val('');
+                        return false;
+                    }
+                    else if (vue.ID_SUBELIST.length <= 0) {
+                        Alert_Warning("Şube seçiniz");
+                        vue.ATANACAK_KATILIMCILAR = [];
+                        vue.ATANMAYACAK_KATILIMCILAR = [];
+                        vue.ATAMA_YAPILABILIR = false;
+                        $('#dosya').val('');
+                        return false;
+                    }
+
+                    else if (vue.BRANSLIST.length <= 0) {
+                        Alert_Warning("Branş seçiniz");
+                        vue.ATANACAK_KATILIMCILAR = [];
+                        vue.ATANMAYACAK_KATILIMCILAR = [];
+                        vue.ATAMA_YAPILABILIR = false;
+                        $('#dosya').val('');
+                        return false;
+                    }
+                    else {
+                        WebPost(vue, vue.CONTROLLER, "ExcelTopluZumreCalismaKatilimciKontrol", p, '', '', function (data, parent) {
+                            
+                            if (data) {
+                                kota = JSON.parse(data).filter(x => x.KOTA)[0].KOTA
+                                vue.ATANACAK_KATILIMCILAR = JSON.parse(data).filter(x => x.ERR_CODE == 0);
+                                vue.ATANMAYACAK_KATILIMCILAR = JSON.parse(data).filter(x => x.ERR_CODE == 1);
+
+                                if (kota < vue.ATANACAK_KATILIMCILAR.length || vue.ATANACAK_KATILIMCILAR.length <= 0) {
+                                    vue.ATAMA_YAPILABILIR = false;
+                                    Alert_Error("Belirlenen katılımcı kotasından fazla katılımcı atanamaz!");
+                                    vue.ATANACAK_KATILIMCILAR = [];
+                                    vue.ATANMAYACAK_KATILIMCILAR = [];
+                                    vue.ATAMA_YAPILABILIR = false;
+                                    $('#dosya').val('');
+                                }
+                                else {
+                                    vue.ATAMA_YAPILABILIR = true;
+                                }
+
+                            }
+                            else {
+                                Alert_Warning("Bir sorun oluştu! Lütfen sistem yöneticinize başvurunuz...");
+                                vue.ATANACAK_KATILIMCILAR = [];
+                                vue.ATANMAYACAK_KATILIMCILAR = [];
+                                vue.ATAMA_YAPILABILIR = false;
+                                $('#dosya').val('');
+                            }
+                        });
+                    }
+                   
+
+                   
+
+
+                };
+
+                reader.onerror = function (event) {
+                    //console.error("Dosya Okunamadı" + event.target.error.code);
+                };
+                reader.readAsBinaryString(selectedFile);
+            }
+        }
+    });
+
+
+    function KatilimciSil(ID) {
+        var p = {
+            TCKIMLIKNO: session.TCKIMLIKNO,
+            OTURUM: session.OTURUM,
+            ID_ZUMRECALISMAKATILIMCI: ID
+        };
+
+        WebPost(vue, vue.CONTROLLER, "ZumreCalismaKatilimciSil", p, '', '', function (data, parent) {
+            if (data) {
+                vue.ListeGetir();
+            }
+            else {
+                Alert_Warning("Silme işlemi sırasında bir sorun oluştu! Daha sonra tekrar deneyiniz...");
+            }
+        });
+    }
+
+    function KatilimciAta(TCKIMLIKNO) {
+        var p = {
+            TCKIMLIKNO: session.TCKIMLIKNO,
+            OTURUM: session.OTURUM,
+            ID_ZUMRECALISMA: vue.ID_ZUMRECALISMA,
+            TCKIMLIKNO_KULLANICI: TCKIMLIKNO
+        };
+
+        WebPost(vue, vue.CONTROLLER, "ZumreCalismaKatilimciAta", p, '', '', function (data, parent) {
+            if (data) {
+                vue.ListeGetir();
+            }
+            else {
+                Alert_Warning("Atama işlemi sırasında bir sorun oluştu! Daha sonra tekrar deneyiniz...");
+            }
+        });
+    }
+</script>
+<script src="Scripts/PublicMethods.js"></script>
+<script src="assets/global/plugins/icheck/icheck.min.js"></script>

@@ -1,0 +1,490 @@
+﻿<div class="page-head">
+    <!-- BEGIN PAGE TITLE -->
+    <div class="page-title col-md-12">
+        <h1>
+            Kıyafet Listesi  <span onclick="YardimGoster(ID_MENU);" class="pull-right" style="cursor:pointer;"><img src="assets/global/img/info.gif" class="info-image-icon" /> </span>
+        </h1>
+    </div>
+    <!-- END PAGE TITLE -->
+</div>
+
+<style type="text/css">
+    h3 {
+        margin: 0;
+        padding: 7px 0 0 0;
+        font-size: 16px;
+    }
+
+    div#feature_list {
+        width: 750px;
+        height: 520px;
+        overflow: hidden;
+        position: relative;
+    }
+
+        div#feature_list ul {
+            position: absolute;
+            top: 0;
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+
+    ul#tabs {
+        left: 0;
+        z-index: 2;
+        width: 320px;
+    }
+
+
+        ul#tabs li {
+            font-size: 12px;
+            font-family: Arial;
+        }
+
+            ul#tabs li img {
+                padding: 5px;
+                border: none;
+                float: left;
+                margin: 10px 10px 0 0;
+            }
+
+            ul#tabs li a {
+                color: #222;
+                text-decoration: none;
+                display: block;
+                padding: 7px;
+                padding-left: 20px;
+                height: 40px;
+                outline: none;
+            }
+
+                ul#tabs li a:hover {
+                    text-decoration: underline;
+                }
+
+                ul#tabs li a.current {
+                    background: url('/img/Kiyafet/feature-tab-current.png');
+                    color: rgb(245, 130, 31);
+                }
+
+                    ul#tabs li a.current:hover {
+                        text-decoration: none;
+                        cursor: default;
+                    }
+
+
+    ul#output {
+        right: 0;
+        width: 463px;
+        height: 240px;
+        position: relative;
+    }
+
+        ul#output li {
+            position: absolute;
+            width: 463px;
+            height: 240px;
+        }
+
+            ul#output li img {
+                width: 360px;
+                height: 520px;
+            }
+
+            ul#output li a {
+                position: absolute;
+                bottom: 10px;
+                right: 10px;
+                padding: 8px 12px;
+                text-decoration: none;
+                font-size: 11px;
+                color: #FFF;
+                background: #000;
+                -moz-border-radius: 5px;
+            }
+
+                ul#output li a:hover {
+                    background: #D33431;
+                }
+</style>
+<div class="row" id="app">
+    <div class="col-md-12" v-show="ListKullaniciTipi.indexOf(4)==-1">
+        <div class="portlet box green-haze dd-item" style="border:none">
+            <div class="portlet-title dd-handle" data-toggle='collapse' data-target='#filters' style="cursor:pointer;">
+                <div class="caption">
+                    <i class="icon-magnifier"></i>
+                    <span class="caption-subject bold uppercase"> Filtreler </span>
+                    <span class="caption-helper"></span>
+                </div>
+                <div class='actions'>
+                    <a href='javascript:;' class='btn btn-default btn-sm' style='border:none;'>
+                        <i class='fa fa-chevron-down'></i>
+                    </a>
+                </div>
+            </div>
+            <div class="portlet-body form collapse in" id="filters">
+                <form role="form" style="padding:12px 20px">
+                    <div class="form-body form-group-lg form-horizontal row" style="padding: 0px;margin-top: 0px !important;">
+
+                        <div class="portlet light col-md-12" id="FiltreDivVeli" style="margin:0px; border-bottom-style: solid;border-bottom-width: 3px;border-bottom-color: rgb(0, 173, 239);"
+                             v-if="ListKullaniciTipi.indexOf(5)>-1">
+
+                            <div class="portlet-body">
+                                <div class="form-inline">
+                                    <c-ogrenci-veli :controller="controller"
+                                                    :tc="TCKIMLIKNO"
+                                                    @OnChange="OgrenciVeliSelected">
+                                    </c-ogrenci-veli>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-12" v-show="ID_KADEME>0">
+        <div class="tabbable tabbable-custom boxless tabbable-reversed">
+            <ul class="nav nav-tabs">
+                <li id="tabBaslik_1" class="active" v-show="ID_KADEME<4">
+                    <a href="#tab_1" data-toggle="tab">
+                        Okul Öncesi - İlkokul
+                    </a>
+                </li>
+                <li id="tabBaslik_2" v-show="ID_KADEME>=4">
+                    <a href="#tab_2" data-toggle="tab">
+                        Ortaokul
+                        - Lise
+                    </a>
+                </li>
+            </ul>
+            <div class="tab-content">
+                <div class="tab-pane active" id="tab_1" v-show="ID_KADEME<4">
+                    <h4 class="block">
+                        Okul Öncesi - İlkokul Kıyafetleri
+                    </h4>
+                    <div class="thumbnail">
+                        <div class="row ">
+                            <div id="feature_list">
+                                <ul id="tabs">
+                                    <li>
+                                        <a href="javascript:;">
+                                            <h4 style="font-weight: bold">
+                                                Okul Kıyafetleri
+                                            </h4>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="javascript:;">
+                                            <h4>
+                                                Polo Tişört ( Kısa Kol ve Uzun Kol )
+                                            </h4>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="javascript:;">
+                                            <h4>
+                                                Hırka
+                                            </h4>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="javascript:;">
+                                            <h4>
+                                                Pantolon
+                                            </h4>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="javascript:;">
+                                            <h4>
+                                                Şort Etek
+                                            </h4>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="javascript:;">
+                                            <h4>
+                                                Sweatshirt
+                                            </h4>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="javascript:;">
+                                            <h4>
+                                                Eşofman Takım
+                                            </h4>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="javascript:;">
+                                            <h4>
+                                                Bisiklet Yaka Tişört
+                                            </h4>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="javascript:;">
+                                            <h4>
+                                                Spor Tişört ( Kısa Kol ve Uzun Kol )
+                                            </h4>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="javascript:;">
+                                            <h4>
+                                                Spor Set
+                                            </h4>
+                                        </a>
+                                    </li>
+                                </ul>
+                                <ul id="output">
+                                    <li id="ai_ilk">
+                                        <img src="../../../img/Kiyafet/aa1.jpg" />
+                                    </li>
+                                    <li>
+                                        <img src="../../../img/Kiyafet/aa1.jpg" />
+                                    </li>
+                                    <li>
+                                        <img src="../../../img/Kiyafet/aa2.jpg" />
+                                    </li>
+                                    <li>
+                                        <img src="../../../img/Kiyafet/aa3.jpg" />
+                                    </li>
+                                    <li>
+                                        <img src="../../../img/Kiyafet/aa4.jpg" />
+                                    </li>
+                                    <li>
+                                        <img src="../../../img/Kiyafet/aa5.jpg" />
+                                    </li>
+                                    <li>
+                                        <img src="../../../img/Kiyafet/aa6.jpg" />
+                                    </li>
+                                    <li>
+                                        <img src="../../../img/Kiyafet/aa7.jpg" />
+                                    </li>
+                                    <li>
+                                        <img src="../../../img/Kiyafet/aa8.jpg" />
+                                    </li>
+                                    <li>
+                                        <img src="../../../img/Kiyafet/aa9.jpg" />
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="clearfix margin-bottom-20">
+                    </div>
+                </div>
+                <div class="tab-pane" id="tab_2" v-show="ID_KADEME>=4">
+                    <h4 class="block">
+                        Ortaokul - Lise Kıyafetleri
+                    </h4>
+                    <div class="thumbnail">
+                        <div class="row ">
+                            <div id="feature_list">
+                                <ul id="tabs">
+                                    <li>
+                                        <a href="javascript:;">
+                                            <h4 style="font-weight: bold">
+                                                Okul Kıyafetleri
+                                            </h4>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="javascript:;">
+                                            <h3>
+                                                Polo Tişört ( Kısa Kol ve Uzun Kol )
+                                            </h3>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="javascript:;">
+                                            <h3>
+                                                Kazak
+                                            </h3>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="javascript:;">
+                                            <h3>
+                                                Gömlek
+                                            </h3>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="javascript:;">
+                                            <h3>
+                                                Sweatshirt
+                                            </h3>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="javascript:;">
+                                            <h3>
+                                                Eşofman Takım
+                                            </h3>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="javascript:;">
+                                            <h3>
+                                                V Yaka Tişört
+                                            </h3>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="javascript:;">
+                                            <h3>
+                                                Bisiklet Yaka Tişört
+                                            </h3>
+                                        </a>
+                                    </li>
+
+                                </ul>
+                                <ul id="output">
+                                    <li id="ol_ilk">
+                                        <img src="../../../img/Kiyafet/ol1.JPG" />
+                                    </li>
+                                    <li>
+                                        <img src="../../../img/Kiyafet/ol1.JPG" />
+                                    </li>
+                                    <li>
+                                        <img src="../../../img/Kiyafet/ol2.JPG" />
+                                    </li>
+                                    <li>
+                                        <img src="../../../img/Kiyafet/ol3.JPG" />
+                                    </li>
+                                    <li>
+                                        <img src="../../../img/Kiyafet/ol4.JPG" />
+                                    </li>
+                                    <li>
+                                        <img src="../../../img/Kiyafet/ol5.JPG" />
+                                    </li>
+                                    <li>
+                                        <img src="../../../img/Kiyafet/ol6.JPG" />
+                                    </li>
+                                    <li>
+                                        <img src="../../../img/Kiyafet/ol7.JPG" />
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="clearfix margin-bottom-20">
+                    </div>
+                </div>
+                <div class="portlet-body">
+                    <ul class="nav nav-tabs">
+                        <li class="active">
+                            <a href="#tab_1_1" data-toggle="tab">Okul Kıyafet Yönetmeliği </a>
+                        </li>
+                        <li><a href="#tab_1_2" data-toggle="tab">Kıyafet Kullanım Kılavuzu </a></li>
+                    </ul>
+                    <div class="tab-content">
+                        <div class="tab-pane fade active in" id="tab_1_1">
+                            <div id="okuloncesi" v-show="ID_KADEME<4">
+                                <iframe style="height:1000px; width:100%;" src="../../../img/Kiyafet/ilkokulkiyafetyonetmelik.pdf"></iframe>
+                            </div>
+                            <div id="ortalise" v-show="ID_KADEME>=4">
+                                <iframe style="height:1000px; width:100%;" src="../../../img/Kiyafet/ortaokul_lise_kiyafet_Y.pdf"></iframe>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="tab_1_2">
+                            <p>
+                                Kıyafetlerinizin bakımı için ürün üzerindeki etikette yer alan talimatları takip
+                                ederek, çamaşır makinenizdeki uygun program ve sıcaklığı seçip, doğru bir şekilde
+                                yıkamak ve kurutmak önem taşımaktadır.
+                                <br />
+                                ÜRÜN KULLANIM KILAVUZU<br />
+                                Giysilerinize özen gösteriniz; yıkama talimatlarına dikkatle uyarak onların daha
+                                uzun süre güzel kalmasını sağlayabilirsiniz. Bu çizelge ana sembollerin manasını
+                                daha iyi anlamanızı temin edecektir.
+                            </p>
+                            <img src="../../../img/Kiyafet/talimatlar.png" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <p>
+                <br />
+                Okyanus Store Ürünlerine <a href="https://www.okyanuskoleji.k12.tr/store/" target="_blank">
+                    &nbsp; Okyanus Store&nbsp;
+                </a>sitesinden ulaşabilirsiniz.
+            </p>
+        </div>
+    </div>
+</div>
+<script src="../../../assets/global/plugins/jquery-featureList/jquery.featureList-1.0.0.js"></script>
+<script src="../../../VueComponents/SinavIstatistikFiltreleri.js?v=3"></script>
+<script>
+    var vue = new Vue({
+        el: "#app",
+        name: "OY_KiyafetListesi",
+
+        data: {
+            TCKIMLIKNO: undefined,
+            OTURUM: undefined,
+            controller: 'OY_KiyafetListesi',
+            TC_OGRENCI: undefined,
+            LISTE: [],
+            ListKullaniciTipi: [],
+            divOgrenci: 0,
+            ID_KADEME: 0
+        },
+
+        mounted() {
+            this.TCKIMLIKNO = session.TCKIMLIKNO;
+            this.OTURUM = session.OTURUM;
+            var p = {
+                TCKIMLIKNO: this.TCKIMLIKNO,
+                OTURUM: this.OTURUM
+            };
+            var list = [];
+            WebPost(this, this.controller, "KullaniciTipiGetir", p, "#app", "Yükleniyor...", function (data, parent) {
+                if (data != null) {
+                    $.each(data, function (j, el) {
+                        list.push(this.ID_KULLANICITIPI)
+                    });
+                    parent.ListKullaniciTipi = list;
+                    if (list.indexOf(4) > -1) {
+                        parent.TC_OGRENCI = session.TCKIMLIKNO;
+                        parent.OgrenciKademeGetir();
+                    }
+
+                    $.featureList(
+                        $("#tabs li a"),
+                        $("#output li"), {
+                            start_item: 1
+                        }
+                    );
+                } else {
+                    Alert_Warning("Kullanıcı Bulunamadı..!");
+                }
+            });
+        },
+
+        methods: {
+            OgrenciVeliSelected(item) {
+                this.TC_OGRENCI = item;
+                this.divOgrenci = 1;
+                this.OgrenciKademeGetir();
+            },
+
+            OgrenciKademeGetir() {
+                var p = {
+                    TCKIMLIKNO: this.TCKIMLIKNO,
+                    OTURUM: this.OTURUM,
+                    TC_OGRENCI: this.TC_OGRENCI
+                };
+                WebPost(this, this.controller, "OgrenciKademeGetir", p, "#app", "Yükleniyor...", function (data, parent) {
+                    parent.ID_KADEME = data;
+                });
+            }
+        },
+    });
+</script>
+<script src="../../../Scripts/PublicMethods.js"></script>

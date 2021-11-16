@@ -1,0 +1,485 @@
+﻿<style>
+    .table > tbody > tr > td, .table > tbody > tr > th, .table > tfoot > tr > td, .table > tfoot > tr > th, .table > thead > tr > td, .table > thead > tr > th {
+        font-size: 11px;
+    }
+
+    .table-hover > tbody > tr:hover, .table-hover > tbody > tr:hover > td {
+        color: black !important;
+    }
+
+    .custom-text {
+        font-weight: bold;
+        font-size: 1.9em;
+        border: 1px solid #cfcfcf;
+        padding-left: 10px;
+        padding-right: 10px;
+        border-radius: 5px;
+        color: #999;
+        background: #fff;
+    }
+</style>
+
+<link href="../../../assets/fixed-table/css/component.css?v=4" rel="stylesheet" />
+
+<div class="page-head">
+    <div class="page-title col-md-12">
+        <h1>
+            Yetenek Gelişim
+
+             <span onclick="YardimGoster(ID_MENU);" class="pull-right" style="cursor:pointer;"><img src="assets/global/img/info.gif" class="info-image-icon" /> </span>
+        </h1>
+    </div>
+</div>
+
+<div class="row" id="app">
+
+    <div class="form-body form-horizontal" id="tabs">
+        <ul class="nav nav-tabs">
+            <li style="display: none;" class="active"> <a href="#tab_1_1" data-toggle="tab"></a> </li>
+            <li style="display: none;"> <a href="#tab_1_2" data-toggle="tab"></a> </li>
+            <li style="display: none;"> <a href="#tab_1_3" data-toggle="tab"></a> </li>
+        </ul>
+        <div class="tab-content">
+            <div class="tab-pane fade active in" id="tab_1_1">
+
+                <div class="col-md-12">
+                    <div class="portlet box green-haze dd-item" style="border:none">
+                        <div class="portlet-title dd-handle" data-toggle='collapse' data-target='#filters' style="cursor:pointer;">
+                            <div class="caption">
+                                <i class="icon-magnifier"></i>
+                                <span class="caption-subject bold uppercase"> Filtreler </span>
+                                <span class="caption-helper"></span>
+                            </div>
+                            <div class='actions'>
+                                <a href='javascript:;' class='btn btn-default btn-sm' style='border:none;'>
+                                    <i class='fa fa-chevron-down'></i>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="portlet-body form collapse in" id="filters">
+                            <form role="form" style="padding:12px 20px">
+                                <div class="row">
+                                    <div class="portlet light col-md-12" id="FiltreDiv" style="margin:0px; border-bottom-style: solid;border-bottom-width: 3px;border-bottom-color: rgb(0, 173, 239);">
+                                        <div class="portlet-body">
+                                            <div class="form-inline">
+                                                <c-donem controller="YG_PuanGirisi"
+                                                         @OnChange="DonemSelected">
+                                                </c-donem>
+                                                <c-sube controller="YG_PuanGirisi"
+                                                        @OnChange="SubeSelected">
+                                                </c-sube>
+                                                <c-kademe3-tek-sube controller="YG_PuanGirisi"
+                                                                    :idsube="ID_SUBE"
+                                                                    @OnChange="Kademe3Selected">
+                                                </c-kademe3-tek-sube>
+                                                <c-sinif-donem controller="YG_PuanGirisi"
+                                                               :idsube="ID_SUBE"
+                                                               :idkademe3="ID_KADEME3"
+                                                               :donem="DONEM"
+                                                               @OnChange="SinifSelected">
+                                                </c-sinif-donem>
+                                                <input style="float:right;margin: 10px;" type="button" class="btn btn-success" v-on:click="Getir" value="Raporla">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="portlet light col-md-12" id="Tablodiv" style="min-height:100px;padding:0px;" v-show="divAc==1">
+
+                    <!---->
+
+
+                    <div style="overflow-x: auto">
+                        <table id="tblDers" data-height="700" class="table table-striped table-bordered table-checkable" data-width="100%" style="margin-bottom:0px; color:#111; width:100%; ">
+                            <thead>
+                                <tr>
+                                    <th>T.C. Kimlik No</th>
+                                    <th>Ad Soyad</th>
+                                    <th v-if="KATEGORILISTE == undefiend">Detay</th>
+                                    <th v-for="u in KATEGORILISTE" v-else>{{u.KATEGORI}}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="u in OGRENCILISTE">
+                                    <td>{{u.TCKIMLIKNO}}</td>
+                                    <td>{{u.ADSOYAD}}</td>
+                                    <th v-if="KATEGORILISTE == undefiend" style="text-align:center">
+                                        <input type="button" class="btn btn-success blue" v-on:click="Detay(u)" value="Detay">
+                                    </th>
+                                    <td v-for="k in u.YK" v-else>
+                                        <input type="number" v-model="k.KOY[0].PUAN" />
+                                    </td>
+
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <input style="float:right;margin: 10px;" type="button" class="btn btn-success" v-on:click="Kaydet" value="Kaydet" v-if="KATEGORILISTE != undefiend">
+                    </div>
+                </div>
+
+            </div>
+            <div class="tab-pane fade" id="tab_1_2">
+                <input style="float:right;margin: 10px;" type="button" class="btn btn-success" v-on:click="YeniPuan" value="Yeni Kayıt">
+                <input style="float:right;margin: 10px;" type="button" class="btn btn-success" v-on:click="Geri" value="Geri">
+
+                <div v-if="ilkSinif != undefiend && ilkSinif != null">
+                    <table data-height="700" class="table table-striped table-bordered table-checkable" data-width="100%" style="margin-bottom:0px; color:#111; width:100%; ">
+                        <thead>
+                            <tr>
+                                <th style="width:10% !important">Dönem</th>
+                                <th style="width:20% !important">Sınıf Düzeyi</th>
+                                <th style="width:10% !important">Öğretmen</th>
+                                <th style="width:10% !important" v-for="kl in KATEGORILISTE">{{kl.KATEGORI}}</th>
+                                <th style="width:10% !important">Karne</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>{{ilkSinif.DONEM}}</td>
+                                <td>1. Sınıf<!--{{ilkSinif.K3[0].KADEME3}}--></td>
+                                <td>{{ilkSinif.OGRETMENADSOYAD}}</td>
+                                <td v-for="Y in ilkSinif.ILKSINIF">
+                                    <label style="text-align:center; width: 100%;">{{Y.PUAN}}</label>
+                                    <br />
+                                    <img :src="yildizResmi" v-for="a in Y.DERECE" />
+                                </td>
+                                <td>
+                                    <input type="button" class="btn btn-success blue" v-on:click="Karne(ilkSinif.ID_KATEGORIOGRENCI,1)" value="Karne">
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div v-if="ustSinif != undefiend && ustSinif != null && ustSinif.length >0" style="margin-top: 15px;">
+                    <table data-height="700" class="table table-striped table-bordered table-checkable" data-width="100%" style="margin-bottom:0px; color:#111; width:100%; ">
+                        <thead>
+                            <tr>
+                                <th style="width:10% !important">Dönem</th>
+                                <th style="width:10% !important">Sınıf Düzeyi</th>
+                                <th style="width:10% !important">Yetenek</th>
+                                <th style="width:10% !important">Öğretmen</th>
+                                <th style="width:10% !important" v-for="kp in KATEGORIPUAN">{{kp.KATEGORIPUAN}}</th>
+                                <th style="width:10% !important">Karne</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="D in ustSinif">
+                                <td>{{D.DONEM}}</td>
+                                <td>{{D.K3[0].KADEME3}}</td>
+                                <td>{{D.DIGER[0].KATEGORI}}</td>
+                                <td>{{D.OGRETMENADSOYAD}}</td>
+                                <td v-for="P in D.DIGER[0].KP">
+                                    <img :src="yildizResmi" v-for="a in P.P[0].PUAN" />
+                                </td>
+                                <td>
+                                    <input type="button" class="btn btn-success blue" v-on:click="Karne(D.ID_KATEGORIOGRENCI,0)" value="Karne">
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+
+            </div>
+            <div class="tab-pane fade" id="tab_1_3">
+                <input style="float:right;margin: 10px;" type="button" class="btn btn-success" v-on:click="Geri2" value="Geri">
+
+                <div style="margin-top:50px">
+                    <div class="form-md-line-input row" style="margin-bottom:20px !important">
+                        <div class="col-md-2">
+                            <select class="selectpicker form-control" v-model="ID_YETENEKDERS" id="cmbFiltre" title="Yetenek Dersini Seçiniz..">
+                                <optgroup v-for="list in YETENEKDERSLIST" :label="list.A.length > 1 ? list.AD : '' ">
+                                    <option v-for="u in list.A" v-bind:value="u.ID_KATEGORI">{{u.AD}}</option>
+                                </optgroup>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div style="margin-top:20px !important">
+                        <table data-height="700" class="table table-striped table-bordered table-checkable" data-width="100%" style="margin-bottom:0px; margin-top:10px !important; color:#111; width:100%; ">
+                            <tr v-for="kp in KATEGORIPUAN">
+                                <td>{{kp.KATEGORIPUAN}}</td>
+                                <td>
+                                    <star-rating :show-rating="false"
+                                                 :rating="kp.PUAN"
+                                                 :id="kp.ID_KATEGORIPUAN"
+                                                 @rating-selected="setRating">
+                                    </star-rating>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <div>
+
+                        <div class="form-group form-md-radios">
+                            <div class="md-radio-list col-md-12">
+                                <div class="md-radio" v-for="u in KATEGORITAVSIYELIST">
+                                    <input type="radio" :id="'rd'+u.ID_KATEGORITAVSIYE" name="SECILEN" class="md-radiobtn" :value="u.ID_KATEGORITAVSIYE" v-model="ID_KATEGORITAVSIYE">
+                                    <label :for="'rd'+u.ID_KATEGORITAVSIYE">
+                                        <span class="inc"></span>
+                                        <span class="check"></span>
+                                        <span class="box"></span>
+                                    </label>
+                                    {{u.AD}}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="margin-top:5px !important">
+                        <input style="float:right;margin: 10px;" type="button" class="btn btn-success" v-on:click="PuanKaydet" value="Kaydet">
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script src="../../../VueComponents/GenelSinavRaporuFiltreleri.js?v=17"></script>
+<script src="../../../VueComponents/star-rating.min.js"></script>
+<script>
+    Vue.component('star-rating', VueStarRating.default);
+
+    var vue = new Vue({
+        el: "#app",
+        name: "YG_PuanGirisi.html",
+
+        data: {
+            DONEM: '',
+            ID_KADEME3: 0,
+            ID_SUBE: 0,
+            ID_SINIF: 0, //108420, //108416,
+
+            TCKIMLIKNO: '',
+            OGRENCILISTE: [],
+            KATEGORILISTE: [],
+            KATEGORIPUAN: [],
+
+            OGRENCIGECMIS: [],
+            OGRENCIYILDIZLIST: [],
+            KATEGORITAVSIYELIST: [],
+
+            YETENEKDERSLIST: [],
+            ID_YETENEKDERS: 0,
+            ID_KATEGORITAVSIYE: 0,
+
+            ilkSinif: [],
+            ustSinif: [],
+            aktifDonemOgrenci: undefined,
+
+            AKTIFDONEM: '',
+            divAc: 0,
+            tcogrenci: '',
+            ESKIDONEMSINIF: false,
+            yildizResmi: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeCAYAAAA7MK6iAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAFJSURBVEhL7ZRBTsMwEEW/CwfoDegNAAH7cpNyk3ISehPYFwTcoL0B7FHNfDNBdePEHjdigfKkke3E4+/vOIORkS78CxYMHf4d/hkbhg7NTLQ1oU7PGLWunbYm1CmFydZdY6b9YsyO99w2VLk2Oz5w22B2bXKccNtgdp107F9l918SE1xgh6m089A6nOuUNB7vMvdD5j5p+4ZTbNxl+/ZHwn4tAg6POhwWj1t3IxtSoqMOLxzudDgcsua+KEkfNb+Xx4MOj4OiV1jp6JfOWz2IeIco6f2djhLvESW9wqRKPCNKssJEiobXbhFSTLLrZgtI+KeNlOTkKxcLiZWCnJKSOdfWQjYnL+ykbLb5lK9+H4L9Q9I5EXlhHx3bj+AJZlKJlgz2WxuIc+rgjQ6xxlIuzVQft+C7MEfn6+M6eDtlkZXlZtfkjPxHgG/CgIHsl3WdtgAAAABJRU5ErkJggg==',
+
+        },
+
+        methods: {
+            setRating: function (rating, srID) {
+                this.OGRENCIYILDIZLIST = $.grep(this.OGRENCIYILDIZLIST, function (el, j) { return el.ID_KATEGORIPUAN != srID; });
+                this.OGRENCIYILDIZLIST.push({ "ID_KATEGORIPUAN": srID, "PUAN": rating });
+            },
+
+            DonemSelected(item) {
+                this.DONEM = item;
+                this.ID_SINIF = 0;
+                this.divAc = 0;
+            },
+            SubeSelected(item) {
+                this.ID_SUBE = item;
+                this.ID_KADEME3 = 0;
+                this.ID_SINIF = 0;
+                this.divAc = 0;
+            },
+            Kademe3Selected(item) {
+                this.ID_KADEME3 = item;
+                this.ID_SINIF = 0;
+                this.divAc = 0;
+            },
+            SinifSelected(item) {
+                this.ID_SINIF = item;
+                this.divAc = 0;
+            },
+
+            Getir() {
+                var _this = this;
+                if (_this.ID_SINIF != 0) {
+
+                    $("#tab_1_1").attr("class", "tab-pane fade active in");
+                    $("#tab_1_2").attr("class", "tab-pane fade");
+                    $("#tab_1_3").attr("class", "tab-pane fade");
+
+                    $('#filters').collapse('hide');
+                    var p = {
+                        TCKIMLIKNO: session.TCKIMLIKNO,
+                        OTURUM: session.OTURUM,
+                        ID_SINIF: _this.ID_SINIF,
+                    };
+
+                    WebPost(this, "YG_PuanGirisi", "YetenekGelisim", p, "", "Yükleniyor...", function (data, parent) {
+                        if (data != null) {
+                            _this.OGRENCILISTE = JSON.parse(data)[0].OGRENCILISTE;
+                            _this.KATEGORILISTE = JSON.parse(data)[0].KATEGORILISTE;
+                            _this.divAc = 1;
+                        } else {
+                            Alert_Warning("Öğrenci Bulunamadı..!");
+                        }
+                    });
+                }
+                else {
+                    Alert_Warning("Lütfen Gerekli Seçimleri Yapınız")
+                    _this.divAc = 0;
+                }
+            },
+            Kaydet() {
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    SQLJSON: JSON.stringify(this.OGRENCILISTE),
+                };
+
+                console.log(p)
+
+                WebPost(this, "YG_PuanGirisi", "YetenekGelisimIlkSinifPuanKaydet", p, "", "Yükleniyor...", function (data, parent) {
+                    console.log(data)
+                    if (data != null) {
+                        Alert_Info("Kayıt İşlemi Yapıldı")
+                    } else {
+                        Alert_Warning("Kayıt İşlemi Yapılamadı..!");
+                    }
+                });
+            },
+            Detay(u) {
+
+                var _this = this;
+                _this.divAc = 0;
+                _this.tcogrenci = u.TCKIMLIKNO;
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    ID_SINIF: u.ID_SINIF,
+                    TC_OGRENCI: u.TCKIMLIKNO,
+                };
+                _this.OGRENCIGECMIS = ListeTemizle(_this.OGRENCIGECMIS);
+
+                WebPost(this, "YG_PuanGirisi", "YetenekGelisimOgrenciGecmis", p, "", "Yükleniyor...", function (data, parent) {
+                    if (data != null) {
+                        _this.OGRENCIGECMIS = JSON.parse(data)[0].OGRENCIGECMIS[0];
+                        _this.KATEGORILISTE = JSON.parse(data)[0].KATEGORILISTE;
+                        _this.KATEGORIPUAN = JSON.parse(data)[0].KATEGORIPUAN;
+                        _this.YETENEKDERSLIST = JSON.parse(data)[0].YETENEKDERSLIST;
+                        _this.KATEGORITAVSIYELIST = JSON.parse(data)[0].KATEGORITAVSIYELIST;
+                        _this.AKTIFDONEM = JSON.parse(data)[0].AKTIFDONEM[0].AKTIFDONEM;
+                        _this.divAc = 1;
+
+                        _this.ilkSinif = $.grep(_this.OGRENCIGECMIS.KO, function (el) { return el.ILKSINIF != null })[0];
+                        _this.ustSinif = $.grep(_this.OGRENCIGECMIS.KO, function (el) { return el.ILKSINIF == null && el.DONEM != null });
+                        _this.aktifDonemOgrenci = $.grep(_this.OGRENCIGECMIS.KO, function (el) { return el.ILKSINIF == null && el.DONEM == _this.AKTIFDONEM })[0];
+
+                        $("#tab_1_1").attr("class", "tab-pane fade");
+                        $("#tab_1_2").attr("class", "tab-pane fade active in");
+                        $("#tab_1_3").attr("class", "tab-pane fade");
+
+                        _this.$nextTick(function () {
+                            $('.selectpicker').selectpicker('refresh');
+                            if (this.ilkSinif == undefined && this.ustSinif.length == 0) {
+                                Alert_OkCancelConfirm("", "Henüz hiç kayıt yapılmamış. İlk kaydını oluşturmak istiyor musunuz?", function () {
+                                    $("#tab_1_1").attr("class", "tab-pane fade");
+                                    $("#tab_1_2").attr("class", "tab-pane fade");
+                                    $("#tab_1_3").attr("class", "tab-pane fade active in");
+                                    _this.divAc = 1;
+                                }, function () {
+                                    $("#tab_1_1").attr("class", "tab-pane fade active in");
+                                    $("#tab_1_2").attr("class", "tab-pane fade");
+                                    $("#tab_1_3").attr("class", "tab-pane fade");
+                                    _this.Getir();
+                                });
+                            }
+                        })
+                    }
+                });
+
+            },
+            Karne(idKategoriOgrenci, ilkSinifMi) {
+                if (ilkSinifMi) {
+                    window.open('../Rapor.aspx?rapor=YetenekGelisim.YG_IlkSinifKarne&raporTur=pdf&p=' + session.TCKIMLIKNO + ';' + session.OTURUM + ';' + idKategoriOgrenci, '_blank');
+                }
+                else {
+                    window.open('../Rapor.aspx?rapor=YetenekGelisim.YG_UstSinifKarne&raporTur=pdf&p=' + session.TCKIMLIKNO + ';' + session.OTURUM + ';' + idKategoriOgrenci, '_blank');
+                }
+            },
+            PuanKaydet() {
+                var _this = this;
+                if (this.ID_YETENEKDERS > 0 && this.ID_KATEGORITAVSIYE > 0 && (this.OGRENCIYILDIZLIST.length == this.KATEGORIPUAN.length)) {
+
+                    var p = {
+                        TCKIMLIKNO: session.TCKIMLIKNO,
+                        OTURUM: session.OTURUM,
+                        TC_OGRENCI: this.tcogrenci,
+                        ID_KATEGORI: this.ID_YETENEKDERS,
+                        ID_KATEGORITAVSIYE: this.ID_KATEGORITAVSIYE,
+                        OGRENCIYILDIZLIST: JSON.stringify(this.OGRENCIYILDIZLIST),
+                    };
+
+
+                    WebPost(this, "YG_PuanGirisi", "YetenekGelisimUstSinifPuanKaydet", p, "", "Yükleniyor...", function (data, parent) {
+                        console.log(data)
+                        if (data != null) {
+                            Alert_OkConfirm("Yetenek Girişi", "Kayıt İşlemi Yapıldı", function () {
+                                var u = { "ID_SINIF": _this.ID_SINIF, "TCKIMLIKNO": _this.tcogrenci }
+                                _this.Detay(u);
+                            })
+                        } else {
+                            Alert_Error("Kayıt İşlemi Yapılamadı..!");
+                        }
+                    });
+                }
+                else {
+                    Alert_Warning("Gerekli seçimleri eksiksik yapınız..!");
+                }
+            },
+
+            Geri() {
+                this.Getir();
+            },
+            Geri2() {
+                $("#tab_1_1").attr("class", "tab-pane fade");
+                $("#tab_1_2").attr("class", "tab-pane fade active in");
+                $("#tab_1_3").attr("class", "tab-pane fade");
+            },
+            YeniPuan() {
+                $("#tab_1_1").attr("class", "tab-pane fade");
+                $("#tab_1_2").attr("class", "tab-pane fade");
+                $("#tab_1_3").attr("class", "tab-pane fade active in");
+                var _this = this;
+                _this.ID_YETENEKDERS = this.aktifDonemOgrenci.DIGER[0].ID_KATEGORI;
+                _this.ID_KATEGORITAVSIYE = this.aktifDonemOgrenci.ID_KATEGORITAVSIYE;
+
+                _this.OGRENCIYILDIZLIST = ListeTemizle(_this.OGRENCIYILDIZLIST);
+                $.each(_this.KATEGORIPUAN, function (j, el) {
+                    el.PUAN = $.grep(_this.aktifDonemOgrenci.DIGER[0].KP, function (sel) {
+                        return sel.ID_KATEGORIPUAN == el.ID_KATEGORIPUAN;
+                    })[0].P[0].PUAN;
+                    _this.OGRENCIYILDIZLIST.push({ "ID_KATEGORIPUAN": el.ID_KATEGORIPUAN, "PUAN": el.PUAN });
+                });
+
+                _this.$nextTick(function () {
+                    $('.selectpicker').selectpicker('refresh');
+                })
+
+            },
+        },
+    });
+</script>
+<script src="../../../Scripts/PublicMethods.js"></script>

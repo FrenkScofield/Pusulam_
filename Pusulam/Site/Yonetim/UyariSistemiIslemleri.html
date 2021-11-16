@@ -1,0 +1,210 @@
+﻿<link href="assets/global/plugins/bootstrap-fileinput/bootstrap-fileinput.css" rel="stylesheet" type="text/css" />
+<div class="page-head">
+    <div class="page-title col-md-12">
+        <h1>
+            Uyarı Sistemi  <span onclick="YardimGoster(ID_MENU);" class="pull-right" style="cursor:pointer;"><img src="assets/global/img/info.gif" class="info-image-icon" /> </span>
+        </h1>
+    </div>
+</div>
+
+<div class="row" id="app">
+    <div class="col-md-12">
+        <div class="portlet box blue-hoki dd-item" style="border:none">
+            <div class="portlet-title dd-handle" data-toggle='collapse' data-target='#filters' style="cursor:pointer;">
+                <div class="caption">
+                    <i class="icon-list"></i>
+                    <span class="caption-subject bold uppercase"> Uyarı Sistemi İşlemleri </span>
+                    <span class="caption-helper"></span>
+                </div>
+                <div class='actions'>
+                    <a href='javascript:;' class='btn btn-default btn-sm' style='border:none;'> <i class='fa fa-chevron-down'></i> </a>
+                </div>
+            </div>
+            <!-- BEGIN PORTLET-->
+            <div class="portlet-body form collapse in" id="filters">
+                <form role="form" style="padding:12px 20px">
+                    <div class="row">
+                        <div class="row">
+                            <c-kullanici-tipi-multi :controller="controller"
+                                                    :idset="UYARI.ID_KULLANICITIPILIST"
+                                                    @onchange="KullaniciTipiSelected">
+                            </c-kullanici-tipi-multi>
+                        </div>
+                        <div class="row">
+                            <div class="form-md-line-input">
+                                <label class="control-label col-md-3" style="vertical-align:middle;">Uyarı Adı </label>
+                                <div class="col-md-9">
+                                    <input type="text" class="form-control" v-model="UYARI.AD" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-md-line-input">
+                                <label class="control-label col-md-3" style="vertical-align:middle;">Uyarı Açıklama </label>
+                                <div class="col-md-9">
+                                    <input type="text" class="form-control" v-model="UYARI.ACIKLAMA" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <c-tarih label="Başlangıç Tarihi"
+                                     tarihid="btn_BasTarih"
+                                     :idset="TARIH.BASTARIH"
+                                     v-model="UYARI.BASTARIH">
+                            </c-tarih>
+                        </div>
+                        <div class="row">
+                            <c-tarih label="Bitiş Tarihi"
+                                     tarihid="btn_BitTarih"
+                                     :idset="TARIH.BITTARIH"
+                                     v-model="UYARI.BITTARIH">
+                            </c-tarih>
+                        </div>
+
+                        <div class="row">
+                            <div class="form-md-line-input">
+                                <label class="control-label col-md-3">Metin </label>
+                                <div class="col-md-9">
+                                    <textarea id="editor">{{UYARI.METIN}}</textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row" style="margin:5px;" v-if="UYARI.ID_UYARI">
+                            <button type="button" style="float:right" class="btn blue" @click="Kaydet">Düzenle</button>
+                        </div>
+                        <div class="row" style="margin:5px;" v-else>
+                            <button type="button" style="float:right" class="btn blue" @click="Kaydet">Kaydet</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+</div>
+<script src="assets/global/plugins/ckeditor/ckeditor.js"></script>
+<script src="VueComponents/Genel.js"></script>
+<script src="VueComponents/Filtre.js"></script>
+<script src="VueComponents/FiltreEk.js"></script>
+<script>
+    var vue = new Vue({
+
+        el: "#app",
+        name: "UyariSistemiIslemleri",
+
+        data: {
+            TCKIMLIKNO: undefined,
+            OTURUM: undefined,
+            controller: 'UyariSistemiIslemleri',
+
+            UYARI: {
+                ID_UYARI: undefined,
+                AD: undefined,
+                ACIKLAMA: undefined,
+                METIN: undefined,
+                BASTARIH: undefined,
+                BITTARIH: undefined,
+
+                ID_KULLANICITIPILIST: [],
+
+            },
+            TARIH: {
+                BASTARIH: undefined,
+                BITTARIH: undefined,
+            },
+        },
+
+        mounted() {
+            this.TCKIMLIKNO = session.TCKIMLIKNO;
+            this.OTURUM = session.OTURUM;
+
+            this.$nextTick(function () {
+                CKEDITOR.replace('editor');
+                CKEDITOR.instances['editor'].on('change', function () {
+                    vue.UYARI.METIN = CKEDITOR.instances['editor'].getData();
+                });
+            })
+            this.$nextTick(function () {
+                if (parseInt(getParameterByName("ID_UYARI")) > 0) {
+                    let idUyari = parseInt(getParameterByName("ID_UYARI"));
+                    let p = {
+                        TCKIMLIKNO: session.TCKIMLIKNO,
+                        OTURUM: session.OTURUM,
+                        ID_UYARI: idUyari,
+                    };
+
+                    WebPost(vue, vue.controller, "UyariDetay", p, '', '', function (data, parent) {
+                        if (data != null) {
+                            let jObj = JSON.parse(data)[0];
+                            console.log(jObj)
+                            parent.UYARI.ID_UYARI = jObj.ID_UYARI;
+                            parent.UYARI.AD = jObj.AD;
+                            parent.UYARI.ACIKLAMA = jObj.ACIKLAMA;
+                            parent.UYARI.METIN = jObj.METIN;
+                            parent.UYARI.BASTARIH = jObj.BASTARIH;
+                            parent.UYARI.BITTARIH = jObj.BITTARIH;
+
+                            vue.$nextTick(() => {
+                                $.each(jObj.UKT, function (j, el) {
+                                    parent.UYARI.ID_KULLANICITIPILIST.push(el.ID_KULLANICITIPI);
+                                });
+
+                                parent.UYARI.METIN = jObj.METIN;
+
+                                vue.TARIH = {
+                                    BASTARIH: jObj.BASTARIH,
+                                    BITTARIH: jObj.BITTARIH,
+                                }
+                            });
+                        }
+                    });
+                }
+            });
+        },
+
+        methods: {
+
+            KullaniciTipiSelected(val) { this.UYARI.ID_KULLANICITIPILIST = val; },
+
+            Kaydet() {
+
+                if (this.UYARI.AD == undefined || this.UYARI.AD == "") {
+                    Alert_Warning("Uyarı Adını Giriniz");
+                    return;
+                }
+                else if (this.UYARI.METIN == undefined || this.UYARI.METIN == "") {
+                    Alert_Warning("Uyarı Metni Giriniz");
+                    return;
+                }
+                else if (this.UYARI.ID_KULLANICITIPILIST.length == 0) {
+                    Alert_Warning("Uyarı Yetkileri için Kullanıcı Tipini/Tiplerini Seçiniz");
+                    return;
+                }
+
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    SQLJSON: JSON.stringify(this.UYARI),
+                };
+
+
+                WebPost(this, this.controller, "UyariEkle", p, '', '', function (data, parent) {
+                    if (data) {
+                        Alert_OkConfirm("Uyarı İşlemleri"
+                            , vue.UYARI.ID_UYARI != undefined ? "Uyarı Eklenmiştir.." : "Uyarı Düzenlendi.."
+                            , () => {
+                                window.location.replace('/anasayfa.html#Yonetim/UyariSistemiIslemleri');
+                            }
+                        );
+                    } else {
+                        Alert_Warning("Uyarı Eklenirken Hata Oluştu..!");
+                    }
+                });
+            },
+
+        }
+    });
+</script>
+<script src="Scripts/PublicMethods.js"></script>
+<script src="assets/global/plugins/bootstrap-fileinput/bootstrap-fileinput.js" type="text/javascript"></script>

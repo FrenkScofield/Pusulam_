@@ -1,0 +1,814 @@
+﻿<style>
+    input[type=number]::-webkit-inner-spin-button,
+    input[type=number]::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+
+
+    #popup {
+        display: none;
+        position: fixed;
+        top: 12%;
+        left: 15%;
+        width: 70%;
+        height: 70%;
+        background-color: white;
+        z-index: 1000;
+    }
+
+        #popup iframe {
+            width: 100%;
+            height: 100%;
+            border: 0;
+        }
+
+    #popupdarkbg {
+        position: fixed;
+        z-index: 999;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background-color: rgba(0,0,0,.75);
+        display: none;
+    }
+
+    hr {
+        margin: 10px !important;
+    }
+</style>
+<div class="page-head">
+    <div class="page-title col-md-12">
+        <h1>
+            Öğrenci Harcamaları <small> Kantin </small> <span onclick="YardimGoster(ID_MENU);" class="pull-right" style="cursor:pointer;"><img src="assets/global/img/info.gif" class="info-image-icon" /> </span>
+        </h1>
+    </div>
+</div>
+<div class="row " id="app">
+
+    <div class="mt-element-card mt-element-overlay">
+
+        <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12" v-for="u in LISTE">
+            <div class="mt-card-item" style="background: white;">
+                <div class="mt-card-content clearfix">
+                    <div class="row">
+                        <div class="col-xs-8">
+                            <div class="font-grey-mint mt-card-desc">
+                                <h3 class="mt-card-name" style="text-align: left; padding-left: 15px; margin-top: 14px;">{{u.ADSOYAD}}</h3>
+
+
+                            </div>
+                        </div>
+                        <div class="col-xs-4">
+                            <div class="font-grey-mint mt-card-desc">
+                                <button class="btn blue btn-xs" style="width:100px; float: right; margin-right: 15px; " @click="YasakList(u.TCKIMLIKNO)">
+                                    <i class="icon-lock"></i> YASAKLI <br />ÜRÜNLER
+                                </button>
+                            </div>
+                        </div>
+
+
+
+
+                    </div>
+                    <hr />
+                    <div class="row">
+                        <div class="col-xs-8">
+
+                            <label style=" text-align: left; float: left; margin-left: 15px; "><b>Bakiye : </b>{{u.BAKIYE}} TL </label>
+                        </div>
+                        <div class="col-xs-4">
+                            <a href="javascript:;" class="btn btn-xs yellow" style="width: 100px; float: right; margin-right: 15px; " @click="OgrenciHarcamaListesi(u.TCKIMLIKNO)">
+                                <i class="icon-magnifier"></i>
+                                İncele
+                            </a>
+                            <a href="javascript:;" class="btn btn-xs yellow" style="width: 100px; float: right; margin-right: 15px; margin-top: 5px;" @click="OgrenciYuklemeListesi(u.TCKIMLIKNO)">
+                                <i class="icon-credit-card"></i>
+                                Yüklemeler İncele
+                            </a>
+                        </div>
+
+                    </div>
+
+                    <hr />
+                    <div class="row">
+
+
+                        <div class="col-xs-12 font-grey-mint mt-card-desc" style="padding-top:5px">
+                            <div class="col-xs-12">
+                                <label style="float: left; width: 100%; text-align: left;"> Günlük Harcama Limiti</label>
+                            </div>
+                            <div class="col-xs-12">
+                                <div class="input-group">
+                                    <div class="input-group-control">
+                                        <input type="number" class="form-control" max="1000" min="0" v-model="u.GUNLUKLIMITDEGIS" />
+                                    </div>
+                                    <span class="input-group-btn btn-right">
+                                        <button class="btn green" type="button" @click="GunlukLimitDuzenle(u)"> <i class="icon-note"></i> Güncelle</button>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr />
+
+                        <div class="col-xs-12 font-grey-mint mt-card-desc" style="        padding-top: 5px;        padding-bottom: 15px">
+
+                            <div class="col-md-12">
+                                <label style="float: left"> Para Yükle</label>
+                            </div>
+                            <div class="col-md-12">
+                                <input type="number" class="form-control" max="1000" min="0" v-model="u.YUKLEME_FIYAT" @keyup=" FiyatDegistir(u)" />
+                            </div>
+
+                        </div>
+                    </div>
+
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <div class="mt-element-card mt-element-overlay" v-if="TOPLAMYUKLEME>0">
+
+        <div :class="'col-xs-12 col-md-'+ (LISTE.length * 4) + ' col-sm-'+ (LISTE.length * 6)" style="padding-bottom:10px">
+            <div class="mt-card-item" style="background: white;padding-top: 10px;">
+                <div class="mt-card-content">
+                    <div class="mt-card-desc font-grey-mint">
+                        <label style="padding-right:15px">
+                            {{ TOPLAMYUKLEME }} TL
+                        </label>
+                        <button class="btn green" @click="ParaYukle">
+                            <i class="icon-basket-loaded"></i> PARA YÜKLE
+                        </button>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-12">
+
+
+        <div class="portlet light col-md-12" v-show="!divParaYukle && OGRENCIDETAY != undefined">
+
+            <div class="form-group" style="text-align: center;" v-if="OGRENCIDETAY != undefined">
+                <table class="table-bordered table-striped table-condensed cf display col-md-12">
+                    <tbody>
+                        <tr>
+                            <td rowspan="4">
+                                <img src="../../../img/okyanus_logoyeni.png" height="150" style="border-color: #CCC; border-width: 1px; border-style: solid;" v-if="OGRENCIDETAY.FOTOGRAF==''" />
+                                <img :src="'data:image/ png;base64,'+ OGRENCIDETAY.FOTOGRAF" height="150" style="border-color: #CCC; border-width: 1px; border-style: solid;" v-else />
+                            </td>
+                            <td>AD SOYAD</td>
+                            <td>{{OGRENCIDETAY.ADSOYAD}}</td>
+                        </tr>
+
+                        <tr>
+                            <td>KAMPÜS</td>
+                            <td>{{OGRENCIDETAY.SUBEAD}}</td>
+                        </tr>
+
+                        <tr>
+                            <td>SINIF DÜZEY</td>
+                            <td>{{OGRENCIDETAY.KADEME3}}</td>
+                        </tr>
+
+                        <tr>
+                            <td>SINIF</td>
+                            <td>{{OGRENCIDETAY.SINIFAD}}</td>
+                        </tr>
+
+                    </tbody>
+                </table>
+            </div>
+
+            <div v-show="divKantin">
+
+
+                <div class="form-group col-md-12">
+                    <div class="col-md-8"></div>
+
+                    <div style="margin-top:25px;" class="col-md-4">
+                        <div style="margin-top:10px;" class="col-md-12">
+                            <div class="form-md-line-input">
+                                <label class="control-label col-md-3" style="vertical-align:middle;">Harcama Türü </label>
+                                <div class="col-md-9">
+                                    <select class="selectpicker form-control" v-model="ID_KANTIN" title="Seçiniz...">
+                                        <option value="3" selected> Kantin </option>
+                                        <option value="4"> Okyanus Store</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="margin-top:10px;" class="col-md-12">
+                            <c-tarih label="Başlangıç Tarihi"
+                                     tarihid="BasTarih"
+                                     :idset="BASTARIH"
+                                     @change-date="BasTarihSelected">
+                            </c-tarih>
+                        </div>
+                        <div style="margin-top:10px;" class="col-md-12">
+                            <c-tarih label="Bitiş Tarihi"
+                                     tarihid="BitTarih"
+                                     :idset="BITTARIH"
+                                     @change-date="BitTarihSelected">
+                            </c-tarih>
+                        </div>
+                        <div style="margin-top:10px;" class="col-md-12">
+                            <button class="btn blue" style="margin-top:10px;" @click="OgrenciHarcamaListesi(OGRENCIDETAY.TCKIMLIKNO)"> LİSTELE </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group" style="text-align: center;" v-if="HARCAMALIST.length>0">
+                    <table class="table-bordered table-striped table-condensed col-md-12">
+                        <thead>
+                            <tr>
+                                <th> TARIH </th>
+                                <th> MİKTAR </th>
+                                <th> ÜRÜN </th>
+                                <th> TUTAR </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="u in HARCAMALIST">
+                                <td>{{u.TARIH}}</td>
+                                <td>{{u.MIKTAR}}</td>
+                                <td>{{u.URUNADI}}</td>
+                                <td>{{u.TUTAR}} TL</td>
+                            </tr>
+                            <tr style="background: rosybrown; color: white;">
+                                <td> {{BASTARIH}} - {{BITTARIH}} </td>
+                                <td colspan="2"> TOPLAM HARCAMA</td>
+                                <td> {{TOPLAMTUTAR}} TL </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div v-if="HARCAMALIST.length == 0" class="col-md-12" style="margin-top:25px;">
+                    <span style="text-align:center" class="red col-md-12">
+                        Belirtilen Tarihler Arasında Ürün Almamıştır
+                    </span>
+                </div>
+
+
+
+            </div>
+
+            <div v-if="!divKantin">
+
+                <div class="form-group col-md-6" style="margin-top:30px;">
+
+                    <c-urun-grup :link="link"
+                                 @onchange="UrunGrupSelected">
+                    </c-urun-grup>
+
+                </div>
+
+                <div class="form-group col-md-12">
+
+                    <div class="form-group col-md-6">
+                        <table class="table-bordered table-striped table-condensed col-md-12" id="UrunListesi">
+                            <thead>
+                                <tr>
+                                    <th> ÜRÜN </th>
+                                    <th> EKLE </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="u in URUNLIST">
+                                    <td>{{u.AD}}</td>
+                                    <td style="text-align: center;">
+                                        <a href="javascript:;" class="btn btn-xs red" @click="YasakUrunEkle(u)">
+                                            <i class="icon-lock"></i>
+                                        </a>
+
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="form-group col-md-6">
+
+                        <table class="table-bordered table-striped table-condensed col-md-12" id="YasakliUrunListesi">
+                            <thead>
+                                <tr>
+                                    <th> ÜRÜN GRUP </th>
+                                    <th> ÜRÜN </th>
+                                    <th> SİL </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="u in YASAKLIST">
+                                    <td>{{u.URUNGRUP}}</td>
+                                    <td>{{u.AD}}</td>
+                                    <td style="text-align: center;">
+                                        <a href="javascript:;" class="btn btn-xs green" @click="YasakUrunSil(u)">
+                                            <i class="icon-lock-open"></i>
+                                        </a>
+
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <span style="text-align:center" v-if="YASAKLIST.length==0">
+                            Yasaklı Ürün Yok..
+                        </span>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+
+
+
+
+
+
+
+
+    <div id="popup" v-show="popupAc">
+        <!--https://allwebco-templates.com/support/-->
+        <iframe id="popupiframe" name="Framename" src="" width="550" height="550" frameborder="0" scrolling="yes" style="width: 100%;"></iframe>
+    </div>
+    <div id="popupdarkbg" v-show="popupAc"></div>
+
+    <div id="modalOdeme" class="modal fade" tabindex="-1" data-replace="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header" style="background-color:#67809F;color:#fff;">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true" style="margin-top:8px!important;"></button>
+                    <h4 class="modal-title bold">Ödeme</h4>
+                </div>
+                <div class="modal-body" style="padding:0px;">
+                    <div class="form-body form-horizontal">
+                        <div class="row" style="margin:0px!important; display:flex;">
+
+
+                            <iframe name="Framename" width="550" height="550" frameborder="0" scrolling="yes" style="width: 100%;"></iframe>
+
+
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn default" data-dismiss="modal">Ödeme İptal</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div id="modalYuklemeListesi" class="modal fade" tabindex="-1" data-replace="true">
+        <div class="modal-dialog modal-lg" v-if="OGRENCIYUKLEME!=undefined">
+            <div class="modal-content">
+                <div class="modal-header" style="background-color:#67809F;color:#fff;">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true" style="margin-top:8px!important;"></button>
+                    <h4 class="modal-title bold">
+                        {{OGRENCIYUKLEME.ADSOYAD}}
+                        <small style="color:white">
+                            Kantin Kart Yükleme Listesi
+                        </small>
+                    </h4>
+                </div>
+                <div class="modal-body" style="padding:0px;">
+                    <div class="form-body form-horizontal">
+                        <div class="row" style="margin:10px!important; overflow: auto;">
+
+                            <table v-if="OGRENCIYUKLEME.YUKLEMELIST.length>0" id="YuklemeTablo">
+                                <thead>
+                                    <tr>
+                                        <th> Yükleme Tarihi</th>
+                                        <th> Yüklenen Tutar</th>
+                                        <th> Yükleme Türü</th>
+                                        <th> Yükleme Yapan</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="u in OGRENCIYUKLEME.YUKLEMELIST">
+                                        <th> {{u.TARIH}} </th>
+                                        <th> {{u.TUTAR}} </th>
+                                        <th> {{u.ODEMETUR}} </th>
+                                        <th> {{u.YUKLEYEN}} </th>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn default" data-dismiss="modal">Kapat</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+<script src="../../../VueComponents/FiltreEk.js"></script>
+<script src="../../../VueComponents/OgrenciHarcama.js?v=1.0.0"></script>
+<script src="../../../assets/global/plugins/jquery-inputmask/jquery.inputmask.bundle.min.js"></script>
+
+<script>
+    var vue = new Vue({
+        el: "#app",
+        name: "OgrenciHarcamalari",
+
+        data: {
+            controller: 'OgrenciHarcamalari',
+            TCKIMLIKNO: '',
+            OTURUM: '',
+            OGRENCILIST: [],
+            LISTE: [{ YUKLEME_FIYAT: 0 }],
+            HARCAMALIST: [],
+            TOPLAMTUTAR: 0,
+            ID_KANTIN: 3,
+            ID_URUNGRUP: 0,
+            TOPLAMYUKLEME: 0,
+
+            YIL: [],
+
+            KART: {
+                ADSOYAD: "",
+                KARTNO: "",
+                SONKULLANIM: "",
+                SONKULLANIMAY: "",
+                SONKULLANIMYIL: "",
+                CCV2: ""
+            },
+
+            YASAKLIST: [],
+            URUNLIST: [],
+            OGRENCIYUKLEME: undefined,
+
+            divParaYukle: false,
+
+            divKantin: true,
+
+            tclist: [],
+
+            link: 'https://kantin.okyanuskoleji.k12.tr/API/EskiKantin/CariIslemler',
+
+            OGRENCIDETAY: undefined,
+            BASTARIH: undefined,
+            BITTARIH: undefined,
+            popupAc: false,
+            ID_OGRENCIHARCAMA: undefined,
+        },
+
+        mounted() {
+
+            this.TCKIMLIKNO = session.TCKIMLIKNO;
+            this.OTURUM = session.OTURUM;
+
+            var p = {
+                TCKIMLIKNO: this.TCKIMLIKNO,
+                OTURUM: this.OTURUM
+            };
+            WebPost(this, this.controller, "OgrenciListelebyVeli", p, "#app", "Yükleniyor...", function (data, parent) {
+                vue.OGRENCILIST = data;
+                vue.OGRENCILIST = $.grep(vue.OGRENCILIST, function (el, i) { return el.ID_KADEME != 2; })     // ANAOKUL ÖĞRENCİ KADEMESİ DIŞINDAKİLERİ GÖSTER
+                $.each(vue.OGRENCILIST, (j, el) => {
+                    vue.tclist.push(el.TCKIMLIKNO);
+                });
+
+
+                vue.$nextTick(() => {
+
+
+
+                    vue.OgrenciListele();
+
+                    $(".inputmask").inputmask();
+                    //$("#intKartNo").mask("9999 9999 9999 9999" );
+                    //$("#intKartNo").inputmask({ "mask": "9999 9999 9999 9999" });
+                    //$("#intCcv2").inputmask({ "mask": "999" });
+
+
+                    var bugun = new Date();
+                    var ayBasi = new Date(bugun.getFullYear(), 8, 1);
+                    if (bugun.getMonth() < 7) {
+                        ayBasi = new Date(bugun.getFullYear() - 1, 8, 1);
+                    }
+
+                    vue.BASTARIH = dateToStr(ayBasi, "yyyy-mm-dd");
+                    vue.BITTARIH = dateToStr(bugun, "yyyy-mm-dd");
+
+
+                    for (var i = bugun.getFullYear(); i < bugun.getFullYear() + 5; i++) {
+                        vue.YIL.push(i);
+
+                    }
+                    //vue.$nextTick(() => {
+                    //    vue.KART.SONKULLANIMYIL = bugun.getFullYear();
+                    //
+                    //    $('.selectpicker').selectpicker('refresh');
+                    //
+                    //});
+                });
+            });
+
+
+
+        },
+
+        methods: {
+            BasTarihSelected(item) {
+                this.BASTARIH = item;
+            },
+            BitTarihSelected(item) {
+                this.BITTARIH = item;
+            },
+            UrunGrupSelected(item) {
+                this.ID_URUNGRUP = item;
+                this.UrunListele();
+            },
+
+            OgrenciListele() {
+                var p = {
+                    ISLEM: 2,
+                    TCKIMLIKNOLIST: JSON.stringify(this.tclist)
+                };
+                ListeTemizle(this.LISTE);
+                ListeTemizle(this.HARCAMALIST);
+                this.OGRENCIDETAY = undefined;
+                WebPostLink(vue, vue.link, p, '', '', function (data) {
+                    if (data.DURUM && data.NESNE != null) {
+                        vue.LISTE = JSON.parse(data.NESNE).map(x => { x.YUKLEME_FIYAT = 0; return x });
+                        $.each(vue.LISTE, (j, item) => {
+                            var result = $.grep(vue.OGRENCILIST, function (el, i) { return el.TCKIMLIKNO == item.TCKIMLIKNO; })[0];
+                            item.ADSOYAD = result.AD + ' ' + result.SOYAD;
+                            item.GUNLUKLIMITDEGIS = parseFloat(item.GUNLUKLIMIT.toString());
+                        });
+                    }
+                });
+            },
+
+            OgrenciDetay(tc) {
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    TC_OGRENCI: tc,
+                }
+                WebPost(this, this.controller, "OgrenciDonemDetay", p, "#app", "Yükleniyor...", function (data, parent) {
+                    parent.OGRENCIDETAY = JSON.parse(data)[0];
+                });
+            },
+
+            OgrenciHarcamaListesi(tc) {
+
+                if (!this.OGRENCIDETAY || this.OGRENCIDETAY.TCKIMLIKNO != tc) {
+                    this.ID_KANTIN = 3; // Kantin
+                    this.$nextTick(() => {
+                        $('.selectpicker').selectpicker('refresh');
+                    });
+                    this.OgrenciDetay(tc);
+                }
+
+                //this.ParaYukleIptal();
+                this.divKantin = true;
+                this.ID_URUNGRUP = 0;
+                ListeTemizle(this.URUNLIST);
+
+                var p = {
+                    ISLEM: this.ID_KANTIN,
+                    BASTAR: this.BASTARIH,
+                    BITTAR: this.BITTARIH,
+                    TCKIMLIKNOLIST: '[' + tc + ']'
+                };
+                ListeTemizle(vue.HARCAMALIST);
+                this.TOPLAMTUTAR = 0;
+                WebPostLink(vue, vue.link, p, '', '', function (data) {
+                    if (data.DURUM && data.NESNE != null) {
+                        vue.HARCAMALIST = JSON.parse(data.NESNE);
+
+                        vue.HARCAMALIST.forEach(function (num) { vue.TOPLAMTUTAR += parseFloat(num.TUTAR) || 0; });
+                    }
+                });
+
+            },
+
+            GunlukLimitDuzenle(item) {
+
+                var p = {
+                    ISLEM: 5,
+                    TCKIMLIKNO: item.TCKIMLIKNO,
+                    GUNLUKLIMIT: item.GUNLUKLIMITDEGIS,
+                };
+                WebPostLink(vue, vue.link, p, '', '', function (data) {
+                    if (data.DURUM) {
+                        vue.OgrenciListele();
+                    }
+                    else {
+                        Alert_Info("Günlük Limit Değiştirilemedi");
+                    }
+                });
+
+            },
+
+
+            UrunListele() {
+
+                var p = {
+                    ISLEM: 14,
+                    ID_URUNGRUP: this.ID_URUNGRUP
+                };
+                ListeTemizle(this.URUNLIST);
+                $('#UrunListesi').dataTable().fnClearTable(0);
+                $('#UrunListesi').dataTable().fnDraw();
+                WebPostLink(vue, vue.link, p, '', '', function (data) {
+                    if (data.DURUM && data.NESNE != null) {
+                        vue.URUNLIST = JSON.parse(data.NESNE);
+                        //vue.$forceUpdate();
+                        //vue.$nextTick(function () {
+                        ListeOlustur("UrunListesi");
+                        //});
+                    }
+                });
+
+            },
+
+            YasakList(tc) {
+
+                if (!this.OGRENCIDETAY || this.OGRENCIDETAY.TCKIMLIKNO != tc) {
+                    this.OgrenciDetay(tc);
+                }
+
+                //this.ParaYukleIptal();
+                this.divKantin = false;
+
+                var p = {
+                    ISLEM: 10,
+                    TCKIMLIKNO: tc
+                };
+
+
+                ListeTemizle(vue.YASAKLIST);
+                $('#YasakliUrunListesi').dataTable().fnClearTable(0);
+                $('#YasakliUrunListesi').dataTable().fnDraw();
+                WebPostLink(vue, vue.link, p, '', '', function (data) {
+                    if (data.DURUM && data.NESNE != null) {
+                        vue.YASAKLIST = JSON.parse(data.NESNE);
+                        ListeOlustur("YasakliUrunListesi");
+                    }
+                });
+
+            },
+
+            YasakUrunEkle(item) {
+                var tc = this.OGRENCIDETAY.TCKIMLIKNO;
+                var p = {
+                    ISLEM: 8,
+                    TCKIMLIKNO: tc,
+                    ID_STOKKART: item.ID_STOKKART
+                };
+
+                WebPostLink(vue, vue.link, p, '', '', function (data) {
+                    if (data.DURUM) {
+                        vue.YasakList(tc);
+                        //vue.UrunListele();
+                    }
+                });
+
+            },
+
+            YasakUrunSil(item) {
+                var tc = this.OGRENCIDETAY.TCKIMLIKNO;
+                var p = {
+                    ISLEM: 9,
+                    TCKIMLIKNO: tc,
+                    ID_STOKKART: item.ID_STOKKART
+                };
+
+                WebPostLink(vue, vue.link, p, '', '', function (data) {
+                    if (data.DURUM) {
+                        vue.YasakList(tc);
+                        //vue.UrunListele();
+                    }
+                });
+
+            },
+
+
+            getObjectsBuyuk(obj, key, val) {
+                var objects = [];
+                for (var i in obj) {
+                    if (!obj.hasOwnProperty(i)) continue;
+                    if (typeof obj[i] == 'object') {
+                        objects = objects.concat(this.getObjectsBuyuk(obj[i], key, val));
+                    } else if (i == key && obj[key] > val) {
+                        objects.push(obj);
+                    }
+                }
+                return objects;
+            },
+
+            FiyatDegistir(u) {
+                u.YUKLEME_FIYAT = u.YUKLEME_FIYAT < 0 ? 0 : u.YUKLEME_FIYAT;
+
+                this.TOPLAMYUKLEME = 0;
+                $.each(this.LISTE, (j, el) => {
+                    vue.TOPLAMYUKLEME += parseFloat(el.YUKLEME_FIYAT);
+                });
+
+                //
+            },
+
+
+            ParaYukle() {
+                if (vue.TOPLAMYUKLEME < 1) {
+                    Alert_Warning("En az 1 TL yüklemeniz gerekmektedir.")
+                    return;
+                }
+                var p = {
+                    TCKIMLIKNO: vue.TCKIMLIKNO,
+                    OTURUM: vue.OTURUM,
+                    SQLJSON: JSON.stringify(vue.LISTE)
+                }
+
+                WebPost(vue, vue.controller, "ParaYukle", p, "", "", function (data, parent) {
+                    OGRENCIHARCAMA = JSON.parse(data).OgrenciHarcama[0];
+                    vue.ID_OGRENCIHARCAMA = OGRENCIHARCAMA.ID_OGRENCIHARCAMA;
+                    vue.popupAc = true;
+                    var orderId = 'KANT' + OGRENCIHARCAMA.ID_OGRENCIHARCAMA + '_' + vue.TCKIMLIKNO;
+                    vue.$nextTick(() => {
+                        document.getElementById("popupdarkbg").style.display = "block";
+                        document.getElementById("popup").style.display = "block";
+                        document.getElementById('popupiframe').src = "https://bankatech.techlife.com.tr/pages/odemeal.aspx?Profil_GUID=E39DB4FD-6D7D-4ACD-B653-D8AC6B0BCB45&EmailAddress=&OrderID=" + orderId + "&Amount=" + OGRENCIHARCAMA.TUTAR_KR + "&ReturnURL=https://pusulam.okyanuskoleji.k12.tr/OgrenciHarcamalari/ParaYukleCevap";
+                        vue.time = setInterval(vue.ParaYukleKontrol, 5000);
+                    });
+                });
+            },
+
+            ParaYukleKontrol() {
+
+                var p = {
+                    TCKIMLIKNO: this.TCKIMLIKNO,
+                    OTURUM: this.OTURUM,
+                    ID_OGRENCIHARCAMA: this.ID_OGRENCIHARCAMA,
+                };
+                WebPost(this, this.controller, "ParaYukleCevapKontrol", p, "", "", function (data, parent) {
+
+                    if (JSON.parse(data)[0].CEVAP === null)
+                        return;
+
+                    if (JSON.parse(data)[0].CEVAP) {
+                        //Alert_Basic("Fatura Ödeme İşlemi", "Fatura Ödeme İşleminiz Tamamlanmıştır.")
+                        vue.OgrenciListele();
+                        vue.TOPLAMYUKLEME = 0;
+                    }
+                    //else {
+                    //    Alert_Error("Fatura Ödeme İşlemi Sırasında Bir Hata Oluştu");
+                    //}
+
+
+                    vue.popupAc = false;
+                    clearInterval(vue.time);
+
+                });
+            },
+
+            OgrenciYuklemeListesi(tcOgrenci) {
+
+
+                var p = {
+                    "TCLIST": [
+                        {
+                            "TCNO": tcOgrenci
+                        }
+                    ]
+                };
+                ListeTemizle(vue.HARCAMALIST);
+                this.TOPLAMTUTAR = 0;
+                WebPostLink(vue, 'https://kantin.okyanuskoleji.k12.tr/API/EskiKantin/CariYuklemelerListesi', p, '', '', function (data) {
+                    if (data.DURUM && data.NESNE != null) {
+                        vue.OGRENCIYUKLEME = JSON.parse(data.NESNE)[0];//.YUKLEMELIST;
+                        $("#modalYuklemeListesi").modal();
+                        ListeOlustur("YuklemeTablo");
+                    }
+                });
+
+            }
+
+        },
+
+        watch: {},
+    });
+
+</script>
+<script src="../../../Scripts/PublicMethods.js"></script>
+

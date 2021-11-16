@@ -1,0 +1,185 @@
+﻿<head>
+    <script src="/Scripts/Tools.js"></script>
+    <script src="../../../assets/global/plugins/nouislider/jquery.nouislider.js"></script>
+</head>
+
+<div class="page-head">
+    <div class="page-title col-md-12">
+        <h1>
+            Dış Kaynak <small>Proje Tanımları</small>
+            <span onclick="YardimGoster(ID_MENU);" class="pull-right" style="cursor:pointer;"><img src="assets/global/img/info.gif" class="info-image-icon" /> </span>
+        </h1>
+    </div>
+</div>
+
+<div class="row" id="app" style="margin-top:0px!important;">
+    <div class="col-md-12">
+        <div class="portlet light">
+            <div class="portlet-title">
+                <div class="caption">
+                    <i class="icon-list font-green"></i>
+                    <span class="caption-subject bold font-green uppercase"> Dış Kaynak Grup Eşleştir </span>
+                    <span class="caption-helper"></span>
+                </div>
+            </div>
+            <div class="portlet-body form-inline">
+                <div class="row">
+                    <div class="col-sm-12 text-right">
+                        <button type="button" class="btn btn-primary" @click="YeniProje()"><i class="fa fa-plus"></i>&nbsp;Yeni Proje</button>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <table class="table table-striped table-bordered table-hover table-checkable order-column" id="tblListe">
+                            <thead>
+                                <tr>
+                                    <th style="text-align:left!important;">Proje</th>
+                                    <th>Url</th>
+                                    <th>Api Key</th>
+                                    <th class="text-center">Aktif</th>
+                                    <th class="text-center">Düzenle</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="u in LISTE">
+                                    <td class="col-sm-2" style="text-align:left!important;">{{u.PROJE}}</td>
+                                    <td>{{u.URL}}</td>
+                                    <td class="col-sm-2">{{u.APIKEY}}</td>
+                                    <td class="col-sm-1 text-center"><i v-if="u.AKTIF" class="fa fa-check text-success"></i><i v-if="!u.AKTIF" class="fa fa-times text-danger"></i></td>
+                                    <td class="col-sm-1 text-center"><a class="text-success" @click="DuzenleProje(u.ID_DISKAYNAK, u.PROJE, u.URL, u.AKTIF)"><i class="fa fa-edit"></i></a></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="modalProje" class="modal fade" tabindex="-1" data-replace="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title bold">Proje Yönet</h4>
+                </div>
+                <div class="modal-body">
+                    <form class="form-horizontal">
+                        <div class="form-group">
+                            <label for="Proje" class="col-sm-2 control-label">Proje</label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" id="Proje" placeholder="Proje" v-model="DISKAYNAK.PROJE">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">URL</label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" id="url" placeholder="URL" v-model="DISKAYNAK.URL">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-offset-2 col-sm-9">
+                                <div class="checkbox">
+                                    <label>
+                                        <input type="checkbox" id="aktif" v-model="DISKAYNAK.AKTIF"> Aktif
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Kapat</button>
+                    <button type="button" class="btn btn-primary" @click="Kaydet()">Kaydet</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="VueComponents/KulupFiltreleri.js?v=4"></script>
+<script src="VueComponents/Genel.js?v=3"></script>
+<script>
+    var vue = new Vue({
+        el: "#app",
+        name: "PeriyotBelirle",
+
+        data: {
+            controller: 'DisKaynakTanim',
+            LISTE: [],
+            DISKAYNAK: {ID_DISKAYNAK:0, PROJE: '', URL: '', AKTIF: true }
+        },
+
+        mounted() {
+            this.Listele();
+        },
+
+        methods: {
+            Listele() {
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                };
+
+                WebPost(this, this.controller, "Liste", p, '', '', function (data, parent) {
+                    parent.LISTE = JSON.parse(data);
+                    ListeOlustur('tblListe');
+                })
+            },
+            YeniProje() {
+                this.DISKAYNAK.ID_DISKAYNAK = 0;
+                this.DISKAYNAK.PROJE = '';
+                this.DISKAYNAK.URL = '';
+                this.DISKAYNAK.AKTIF = true;
+
+                $('#modalProje').modal();
+
+            },
+            DuzenleProje(id, proje, url, aktif) {
+                this.ID_DISKAYNAK = id;
+                $('#modalProje').modal();
+                this.DISKAYNAK.ID_DISKAYNAK = id;
+                this.DISKAYNAK.PROJE = proje;
+                this.DISKAYNAK.URL = url;
+                this.DISKAYNAK.AKTIF = aktif;
+
+            },
+            Kaydet() {
+                if (this.DISKAYNAK.PROJE == '') {
+                    Alert_Warning("Proje boş geçilemez.");
+                    return;
+                }
+
+                if (this.DISKAYNAK.URL == '') {
+                    Alert_Warning("URL boş geçilemez.");
+                    return;
+                }
+
+            
+
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    ID_DISKAYNAK : this.DISKAYNAK.ID_DISKAYNAK,
+                    PROJE: this.DISKAYNAK.PROJE,
+                    URL: this.DISKAYNAK.URL,
+                    AKTIF: this.DISKAYNAK.AKTIF
+                };
+
+                if (this.DISKAYNAK.ID_DISKAYNAK == 0) {
+                    WebPost(this, this.controller, "Ekle", p, '', '', function (data, parent) {
+                        parent.Listele();
+                        $('#modalProje').modal("hide");
+                        Alert_Info("Başarıyla kaydedildi.");
+                    })
+                } else {
+                    WebPost(this, this.controller, "Duzenle", p, '', '', function (data, parent) {
+                        parent.Listele();
+                        $('#modalProje').modal("hide");
+                        Alert_Info("Başarıyla düzenlendi.");
+                    })
+                }
+            }
+        },
+    });
+</script>
+<script src="Scripts/PublicMethods.js"></script>

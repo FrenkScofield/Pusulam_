@@ -1,0 +1,262 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{5698C870-11BC-461A-BB84-639D87DE0E8C}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>PusulamBusiness</RootNamespace>
+    <AssemblyName>PusulamBusiness</AssemblyName>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="AWSSDK.Chime, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
+      <HintPath>..\packages\AWSSDK.Chime.3.5.3.18\lib\net45\AWSSDK.Chime.dll</HintPath>
+    </Reference>
+    <Reference Include="AWSSDK.Core, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
+      <HintPath>..\packages\AWSSDK.Core.3.5.3.8\lib\net45\AWSSDK.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="AWSSDK.S3, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
+      <HintPath>..\packages\AWSSDK.S3.3.5.10\lib\net45\AWSSDK.S3.dll</HintPath>
+    </Reference>
+    <Reference Include="Dapper, Version=1.50.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Dapper.1.50.2\lib\net451\Dapper.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.13.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="RestSharp, Version=106.12.0.0, Culture=neutral, PublicKeyToken=598062e77f915f75, processorArchitecture=MSIL">
+      <HintPath>..\packages\RestSharp.106.12.0\lib\net452\RestSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Web.Helpers">
+      <HintPath>..\Pusulam\bin\System.Web.Helpers.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Abide\DAbide.cs" />
+    <Compile Include="AkilliOgretimBarkod\DAkilliOgretimBarkod.cs" />
+    <Compile Include="Assessment\DAssessment.cs" />
+    <Compile Include="BildirimApi\DBildirimApi.cs" />
+    <Compile Include="Bultenler\DBulten.cs" />
+    <Compile Include="Channel.cs" />
+    <Compile Include="Channel2.cs" />
+    <Compile Include="CurpusStudy\DCurpusStudy.cs" />
+    <Compile Include="DAnasayfa.cs" />
+    <Compile Include="DisKaynak\DDisKaynak.cs" />
+    <Compile Include="DisKaynak\DDisKaynakKademe.cs" />
+    <Compile Include="DisKaynak\DDisKaynakTanim.cs" />
+    <Compile Include="DisOgrenciApi\DDisOgrenciApi.cs" />
+    <Compile Include="Enums\MobileMenu.cs" />
+    <Compile Include="Enums\MobileStoredProcedureIslem.cs" />
+    <Compile Include="Eogrenme\DEogrenme.cs" />
+    <Compile Include="GenelKurul\DGenelKurul.cs" />
+    <Compile Include="IdariIsler\DKullaniciYetkiIslemleri.cs" />
+    <Compile Include="IdariIsler\DSubeYetki.cs" />
+    <Compile Include="Mobile\MAuth.cs" />
+    <Compile Include="Mobile\MBulten.cs" />
+    <Compile Include="Mobile\MDersProgram.cs" />
+    <Compile Include="Mobile\MHedef.cs" />
+    <Compile Include="Mobile\MMenu.cs" />
+    <Compile Include="Mobile\MMorpa.cs" />
+    <Compile Include="Mobile\MOBS.cs" />
+    <Compile Include="Mobile\MOdev.cs" />
+    <Compile Include="Mobile\MOgrenciProje.cs" />
+    <Compile Include="Mobile\MSinavSonuc.cs" />
+    <Compile Include="Mobile\MTakvim.cs" />
+    <Compile Include="Models\DisKaynak\MKampus.cs" />
+    <Compile Include="Models\DisKaynak\MOgrenci.cs" />
+    <Compile Include="Models\DisKaynak\MOgretmen.cs" />
+    <Compile Include="Models\DisKaynak\MSinif.cs" />
+    <Compile Include="Models\OgretmenPerformans\MOgretmen.cs" />
+    <Compile Include="Models\OgretmenPerformans\MOgretmenKategori.cs" />
+    <Compile Include="Models\OgretmenPerformans\MPeriyotTarih.cs" />
+    <Compile Include="Models\Ortak\MPeriyot.cs" />
+    <Compile Include="Models\Ortak\MKulup.cs" />
+    <Compile Include="OgrenciBilgiPaylasimi\DOgrenciBilgiPaylasimi.cs" />
+    <Compile Include="Ogretmen\DOgretmen.cs" />
+    <Compile Include="Ortak\DMobilBirimYetki.cs" />
+    <Compile Include="Performans\DPerformans.cs" />
+    <Compile Include="SportifKulupler\DOgrenciKulupler.cs" />
+    <Compile Include="SportifKulupler\DKulupBelirle.cs" />
+    <Compile Include="SportifKulupler\DKotaBelirle.cs" />
+    <Compile Include="SportifKulupler\DPeriyotBelirle.cs" />
+    <Compile Include="Tanimlar\DDersEkleme.cs" />
+    <Compile Include="Utiliy\DBase.cs" />
+    <Compile Include="Degerlendirme\DDegerlendirme.cs" />
+    <Compile Include="DersCalismaProgrami\DDersCalismaProgrami.cs" />
+    <Compile Include="DFiltre.cs" />
+    <Compile Include="DFiltreEk.cs" />
+    <Compile Include="Enums\Menu.cs" />
+    <Compile Include="Enums\StoredProcedureIslem.cs" />
+    <Compile Include="Enums\Varlik.cs" />
+    <Compile Include="Etut\DEtut.cs" />
+    <Compile Include="Frekans\DFrekans.cs" />
+    <Compile Include="Frekans\DFrekansV2.cs" />
+    <Compile Include="GenelListeler\DGenelListeler.cs" />
+    <Compile Include="MentulUp\DMentalUp.cs" />
+    <Compile Include="Models\MBase.cs" />
+    <Compile Include="Models\Ogrenci\MOgrenci.cs" />
+    <Compile Include="Models\Ogrenci\MTakvim.cs" />
+    <Compile Include="Models\Ortak\MHataLog.cs" />
+    <Compile Include="Models\Ortak\MKullanici.cs" />
+    <Compile Include="Models\Ortak\MKullaniciYetki.cs" />
+    <Compile Include="Models\Ortak\MMenu.cs" />
+    <Compile Include="Models\Ortak\MSinavGrup.cs" />
+    <Compile Include="Models\Ortak\MSinif.cs" />
+    <Compile Include="Models\Ortak\MSube.cs" />
+    <Compile Include="Models\Ortak\MVarlik.cs" />
+    <Compile Include="Models\Ortak\MZekaTuru.cs" />
+    <Compile Include="Models\Sinav\MDers.cs" />
+    <Compile Include="Models\Sinav\MDersUnite.cs" />
+    <Compile Include="Models\Sinav\MDonem.cs" />
+    <Compile Include="Models\Sinav\MDosya.cs" />
+    <Compile Include="Models\Sinav\MKatsayi.cs" />
+    <Compile Include="Models\Sinav\MOptikKoordinat.cs" />
+    <Compile Include="Models\Sinav\MSinav.cs" />
+    <Compile Include="Models\Sinav\MSinavGrup.cs" />
+    <Compile Include="Models\Sinav\MSinavIstatistik.cs" />
+    <Compile Include="Models\Sinav\MSinavKatsayi.cs" />
+    <Compile Include="Models\Sinav\MSinavKonu.cs" />
+    <Compile Include="Models\Sinav\MSinavPuanTuru.cs" />
+    <Compile Include="Models\Sinav\MSinavTabanPuan.cs" />
+    <Compile Include="Models\Sinav\MSinavTuru.cs" />
+    <Compile Include="Models\Tatil\MTatil.cs" />
+    <Compile Include="Models\Tkt\MTKTKategori.cs" />
+    <Compile Include="Models\Tkt\MTKTOgreciSonuc.cs" />
+    <Compile Include="Models\Tkt\MTKTOgrenci.cs" />
+    <Compile Include="Models\Tkt\MTKTOgrenciCevap.cs" />
+    <Compile Include="Models\Tkt\MTKTOgrenciZekaPuan.cs" />
+    <Compile Include="Models\Tkt\MTKTTest.cs" />
+    <Compile Include="Models\Upgrade\MUpgradeDonem.cs" />
+    <Compile Include="Models\Upgrade\MUpgradeGrup.cs" />
+    <Compile Include="Models\Upgrade\MUpgradeIslemRapor.cs" />
+    <Compile Include="Models\Upgrade\MUpgradeKategori.cs" />
+    <Compile Include="Models\Upgrade\MUpgradeOgrenci.cs" />
+    <Compile Include="Models\Upgrade\MUpgradePuan.cs" />
+    <Compile Include="Models\Upgrade\MUpgradeSinav.cs" />
+    <Compile Include="Models\Upgrade\MUpgradeSoru.cs" />
+    <Compile Include="Models\Upgrade\MUpgradeYasAraligi.cs" />
+    <Compile Include="Models\ViuKullaniciYetkilendirme\MViuKullanici.cs" />
+    <Compile Include="Models\Yetkilendirme\MKademe.cs" />
+    <Compile Include="Models\Yetkilendirme\MKullaniciTipi.cs" />
+    <Compile Include="Morpa\DMorpa.cs" />
+    <Compile Include="Odev\DOdev.cs" />
+    <Compile Include="Ogrenci\DAkademikTakvim.cs" />
+    <Compile Include="Ogrenci\DDemoOgrenci.cs" />
+    <Compile Include="Ogrenci\DHedef.cs" />
+    <Compile Include="Ogrenci\DOdevTakibi.cs" />
+    <Compile Include="Ogrenci\DOgrenci.cs" />
+    <Compile Include="Ogrenci\DOgrenciDegerlendirme.cs" />
+    <Compile Include="Ogrenci\DOgrenciIsleri.cs" />
+    <Compile Include="Ogrenci\DOnlineSinav.cs" />
+    <Compile Include="Ogrenci\DSorunBildir.cs" />
+    <Compile Include="Ogrenci\DYetenekGelisim.cs" />
+    <Compile Include="Ogrenci\DYillik.cs" />
+    <Compile Include="OnlineDers\DOnlineDers.cs" />
+    <Compile Include="Ortak\DBirimYetki.cs" />
+    <Compile Include="Ortak\DDonem.cs" />
+    <Compile Include="Ortak\DGrup.cs" />
+    <Compile Include="Ortak\DHataLog.cs" />
+    <Compile Include="Ortak\DKullanici.cs" />
+    <Compile Include="Ortak\DKullaniciYetki.cs" />
+    <Compile Include="Ortak\DLogin.cs" />
+    <Compile Include="Ortak\DMenu.cs" />
+    <Compile Include="Ortak\DSinif.cs" />
+    <Compile Include="Ortak\DSube.cs" />
+    <Compile Include="Ortak\DZekaTuru.cs" />
+    <Compile Include="OSYM\DOSYM.cs" />
+    <Compile Include="OutSide\DOSOdev.cs" />
+    <Compile Include="Personel\DProjeDonem.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Rapor\Analiz\DSinavAnalizi.cs" />
+    <Compile Include="Rapor\DDenemeSinavRaporlari.cs" />
+    <Compile Include="Rapor\DOkulNetPuanOrtalamalari.cs" />
+    <Compile Include="Rapor\DOnlineTestRaporlari.cs" />
+    <Compile Include="Rapor\Viu\DViu.cs" />
+    <Compile Include="Rapor\Yazili\DGenelKazanimAnalizi.cs" />
+    <Compile Include="Rapor\Yazili\DKazanimAnalizi.cs" />
+    <Compile Include="Rapor\Yazili\DKazanimAnaliziOO.cs" />
+    <Compile Include="Rapor\Yazili\DOrtalamaListesi.cs" />
+    <Compile Include="Rapor\Yazili\DPuanaGoreYaziliSonuclari.cs" />
+    <Compile Include="Rapor\Yazili\DSinavaKatilmayanOgrenciler.cs" />
+    <Compile Include="Rapor\Yazili\DSinavAnaliz.cs" />
+    <Compile Include="Rapor\Yazili\DSinifBazindaKazanimAnalizi.cs" />
+    <Compile Include="Rapor\Yazili\DTopluYaziliYoklamaSonuclari.cs" />
+    <Compile Include="RehberlikEnvanter\DRehberlikEnvanter.cs" />
+    <Compile Include="Rehberlik\RehberlikOnline\DRehberlikOnlineYukle.cs" />
+    <Compile Include="Sinav\CevapAnahtari.cs" />
+    <Compile Include="Sinav\DBursluluk.cs" />
+    <Compile Include="Sinav\DDersUnite.cs" />
+    <Compile Include="Sinav\DKarmaListe.cs" />
+    <Compile Include="Sinav\DSinav.cs" />
+    <Compile Include="Sinav\DSinavIstatistik.cs" />
+    <Compile Include="SinifListeRaporu\DSinifListeRaporu.cs" />
+    <Compile Include="Takvim\DTakvim.cs" />
+    <Compile Include="Tatil\DTatil.cs" />
+    <Compile Include="Tkt\DTKTTest.cs" />
+    <Compile Include="UniteTarama\DbUniteTarama.cs" />
+    <Compile Include="Upgrade\DUpgradeSoru.cs" />
+    <Compile Include="Utiliy\AmazonDosyaYukle.cs" />
+    <Compile Include="Utiliy\GetIp.cs" />
+    <Compile Include="Utiliy\JObjectExtensions.cs" />
+    <Compile Include="Veli\DFatura.cs" />
+    <Compile Include="Veli\DOgrenciHarcama.cs" />
+    <Compile Include="Yardim\DYardimHazirla.cs" />
+    <Compile Include="Yazili\DYaziliYoklama.cs" />
+    <Compile Include="Yonetim\DOzelSayfa.cs" />
+    <Compile Include="Yonetim\DDuyuruYonetimi.cs" />
+    <Compile Include="Yonetim\DParametre.cs" />
+    <Compile Include="Yonetim\DUyari.cs" />
+    <Compile Include="YYS\DYys.cs" />
+    <Compile Include="ZekaTest\DZekaTest.cs" />
+    <Compile Include="ZumreCalisma\DZumreCalisma.cs" />
+    <Compile Include="Zumre\DZumre.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Analyzer Include="..\packages\AWSSDK.Chime.3.5.3.18\analyzers\dotnet\cs\AWSSDK.Chime.CodeAnalysis.dll" />
+    <Analyzer Include="..\packages\AWSSDK.S3.3.5.10\analyzers\dotnet\cs\AWSSDK.S3.CodeAnalysis.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Connected Services\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

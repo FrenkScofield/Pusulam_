@@ -1,0 +1,1159 @@
+﻿<head>
+    <script src="../../../Scripts/Rapor/amcharts.js"></script>
+    <script src="../../../Scripts/Rapor/jquery.easypiechart.js"></script>
+    <script src="../../../Scripts/Rapor/light.js"></script>
+    <script src="../../../Scripts/Rapor/serial.js"></script>
+    <script src="../../../assets/global/plugins/nouislider/jquery.nouislider.js"></script>
+    <link href="../../../assets/global/plugins/nouislider/jquery.nouislider.css" rel="stylesheet" type="text/css" />
+</head>
+
+<style>
+    /*.table-bordered, .table-bordered > tbody > tr > td, .table-bordered > tbody > tr > th, .table-bordered > tfoot > tr > td, .table-bordered > tfoot > tr > th, .table-bordered > thead > tr > td, .table-bordered > thead > tr > th {
+        border: 1px solid #8A9198;
+    }*/
+
+
+
+    table {
+        font-family: 'Open Sans', sans-serif;
+        width: 98%;
+        border-collapse: collapse;
+        border: 1px solid #8A9198 !important;
+        margin: 10px 10px 0 10px;
+        background-color: transparent;
+        background-color: transparent;
+    }
+
+        table th {
+            text-transform: uppercase;
+            text-align: left;
+            background: #FFF;
+            color: #000000;
+            padding: 8px;
+            border-color: grey;
+            border: 1px solid #8A9198 !important;
+            padding: 8px;
+            line-height: 24px;
+            vertical-align: top;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            /*white-space: nowrap;*/
+            font-size: 12px !important;
+            font-weight: 600;
+        }
+
+        table td {
+            font-size: 12px !important;
+            background-color: #676F75 !important;
+            color: #EEE;
+            border: 1px solid #8A9198 !important;
+            height: 40px !important;
+            padding: 8px;
+        }
+
+            table td:last-child {
+                border-right: none;
+            }
+
+        table tbody tr:nth-child(2n) td {
+            /*background: #D4D8F9;*/
+            font-size: 12px !important;
+            background-color: #50575D !important;
+            color: #EEE;
+            border: 1px solid #8A9198 !important;
+            padding: 8px;
+        }
+
+    .satir1 {
+        background-color: #676F75 !important;
+        color: #EEE;
+        border: 1px solid #8A9198 !important;
+    }
+
+    .badge-danger {
+        background-color: #F34C59;
+        font-size: 9px !important;
+    }
+
+    .fixed-table-container #tabloanaliz tbody tr {
+        cursor: pointer;
+    }
+
+
+    .fixed-table-container #tabloogretmensiralamalar tbody tr {
+        cursor: pointer;
+    }
+
+
+    .fixed-table-container #tabloogretmensiniffrekans tbody tr {
+        cursor: pointer;
+    }
+
+    .fixed-table-container #tabloogrencifrekans tbody tr {
+        cursor: pointer;
+    }
+
+    #SinavSiralama .fixed-table-container tbody tr {
+        white-space: nowrap;
+    }
+
+    #Tablodiv .fixed-table-container tbody tr td:nth-child(2) {
+        text-align: left !important;
+    }
+
+    #Tablodiv .fixed-table-container tbody tr td:nth-child(3) {
+        text-align: left !important;
+    }
+
+    #Tablodiv .fixed-table-container tbody tr td:nth-child(4) {
+        text-align: left !important;
+    }
+
+    #OgretmenSinifFrekans .fixed-table-container tbody tr td:nth-child(2) {
+        text-align: left !important;
+    }
+
+    #OgretmenSinifFrekans .fixed-table-container tbody tr td:nth-child(3) {
+        text-align: left !important;
+    }
+
+    #OgretmenSinifFrekans .fixed-table-container tbody tr td:nth-child(4) {
+        text-align: left !important;
+    }
+
+    #OgretmenSinifFrekans .fixed-table-container tbody tr td:nth-child(5) {
+        text-align: left !important;
+    }
+
+    #OgretmenSinifFrekans .fixed-table-container tbody tr td:nth-child(6) {
+        text-align: left !important;
+    }
+
+    #OgrenciFrekans .fixed-table-container tbody tr td:nth-child(2) {
+        text-align: left !important;
+    }
+
+    #OgrenciFrekans .fixed-table-container tbody tr td:nth-child(3) {
+        text-align: left !important;
+    }
+
+    #OgrenciFrekans .fixed-table-container tbody tr td:nth-child(4) {
+        text-align: left !important;
+    }
+
+    #OgrenciFrekans .fixed-table-container tbody tr td:nth-child(5) {
+        text-align: left !important;
+    }
+
+    #OgretmenEksikKazanim .fixed-table-container tbody tr td:nth-child(1) {
+        text-align: left !important;
+    }
+
+    #OgretmenEksikKazanim .fixed-table-container tbody tr td:nth-child(2) {
+        text-align: left !important;
+    }
+
+    #accordions .fixed-table-container tbody tr td:nth-child(1) {
+        text-align: left !important;
+    }
+
+    #accordions .fixed-table-container tbody tr td:nth-child(2) {
+        text-align: left !important;
+    }
+
+    #accordionsinif .fixed-table-container tbody tr td:nth-child(1) {
+        text-align: left !important;
+    }
+
+    #accordionsinif .fixed-table-container tbody tr td:nth-child(2) {
+        text-align: left !important;
+    }
+
+    #accordion3 .fixed-table-container tbody tr td:nth-child(1) {
+        text-align: left !important;
+    }
+
+    #accordion3 .fixed-table-container tbody tr td:nth-child(2) {
+        text-align: left !important;
+    }
+
+
+
+    .fixed-table-container tbody tr td:nth-child(1) {
+        text-align: center !important;
+    }
+
+
+    .fixed-table-container tbody tr td:nth-child(5) {
+        text-align: center !important;
+    }
+
+    .fixed-table-container tbody tr td:nth-child(6) {
+        text-align: center !important;
+    }
+
+
+    .fixed-table-container tbody tr td:nth-child(7) {
+        text-align: center !important;
+    }
+
+    .fixed-table-container tbody tr td:nth-child(8) {
+        text-align: center !important;
+    }
+
+    .fixed-table-container tbody tr td:nth-child(9) {
+        text-align: center !important;
+    }
+
+    .fixed-table-container tbody tr td:nth-child(10) {
+        text-align: center !important;
+    }
+
+    .fixed-table-container tbody tr td:nth-child(11) {
+        text-align: center !important;
+    }
+
+    #tabloogretmensiralamalar tbody tr td {
+        text-align: center !important;
+    }
+
+
+
+
+    #tab_1_2 .fixed-table-container tbody tr td:nth-child(6) {
+        text-align: center !important;
+    }
+
+    #tab_1_1 .fixed-table-container tbody tr td:nth-child(6) {
+        text-align: center !important;
+    }
+
+    .bootstrap-table .table thead > tr > th {
+        vertical-align: middle !important;
+    }
+
+    #SiralamaTablo .bootstrap-table .table tbody > tr {
+        height: 40px !important;
+    }
+</style>
+
+
+<div class="page-head">
+    <div class="page-title col-md-12">
+        <h1>
+            Ünite Tarama Eksik Çalışma Programı
+
+             <span onclick="YardimGoster(ID_MENU);" class="pull-right" style="cursor:pointer;"><img src="assets/global/img/info.gif" class="info-image-icon" /> </span>
+        </h1>
+    </div>
+</div>
+
+<div class="row" id="app">
+
+    <div class="col-md-12">
+        <div class="portlet box green-haze dd-item" style="border:none">
+            <div class="portlet-title dd-handle" data-toggle='collapse' data-target='#filters' style="cursor:pointer;">
+                <div class="caption">
+                    <i class="icon-magnifier"></i>
+                    <span class="caption-subject bold uppercase"> Filtreler </span>
+                    <span class="caption-helper"></span>
+                </div>
+                <div class='actions'>
+                    <a href='javascript:;' class='btn btn-default btn-sm' style='border:none;'>
+                        <i class='fa fa-chevron-down'></i>
+                    </a>
+                </div>
+            </div>
+            <div class="portlet-body form collapse in" id="filters">
+                <form role="form" style="padding:12px 20px">
+                    <div class="form-body form-group-lg form-horizontal row" style="padding: 0px;margin-top: 0px !important;">
+
+                        <div class="portlet light col-md-12" id="FiltreDiv" style="margin:0px; border-bottom-style: solid;border-bottom-width: 3px;border-bottom-color: rgb(0, 173, 239);">
+                            <div class="portlet-body">
+                                <div class="form-inline">
+                                    <c-donem controller="UniteTaramaEksikKazanimCalismaProgrami"
+                                             @OnChange="DonemSelected">
+                                    </c-donem>
+                                    <c-sube-multi controller="UniteTaramaEksikKazanimCalismaProgrami"
+                                                  @OnChange="SubeSelected">
+                                    </c-sube-multi>
+                                    <c-kademe3 controller="UniteTaramaEksikKazanimCalismaProgrami"
+                                               :idsubelist="idsubelist"
+                                               @OnChange="Kademe3Selected">
+                                    </c-kademe3>
+
+
+                                    <c-unite-tarama-sinav2 controller="UniteTaramaSinavPuanGiris"
+                                                           :donem="donem"
+                                                           :idkademe3="idkademe3"
+                                                           :idset="ID_UNITETARAMASINAV"
+                                                           @OnChange="SinavSelected">
+                                    </c-unite-tarama-sinav2>
+
+                                    <c-sinif-multi-donem controller="UniteTaramaEksikKazanimCalismaProgrami"
+                                                         :idsubelist="idsubelist"
+                                                         :idkademe3="idkademe3"
+                                                         :donem="donem"
+                                                         @OnChange="SinifSelected">
+                                    </c-sinif-multi-donem>
+
+                                    <input style="float:right;margin: 10px;" type="button" class="btn btn-success" v-on:click="Getir" value="Raporla">
+
+
+                                </div>
+                            </div>
+                        </div>
+
+
+
+                    </div>
+                </form>
+            </div>
+            <div class="col-md-12" v-if="EXCELDATA!=null && EXCELDATA.length>0">
+                <div class="portlet light">
+                    <div class="portlet-title">
+                        <div class="caption">
+                            <i class="icon-list font-green"></i>
+                            <span class="caption-subject bold font-green uppercase"> Ders Kazanım Listesi</span>
+                            <span class="caption-helper"></span>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="portlet light col-md-12" id="Tablodiv" style="min-height:100px;padding:0px;" v-if="divAc==1">
+        <div class="col-md-12 form-group">
+            <c-tablo-etut tabloadi="EtutTablo"
+                          :gelendata="TblListe"
+                          :istisna="TblListeIstisna"
+                          @OnChangeTd="EtutTabloTdClick">
+            </c-tablo-etut>
+        </div>
+
+    </div>
+
+    <div class="modal draggable fade" id="ModalEtut" tabindex="-1" role="dialog" aria-hidden="true"
+         style="display: none;">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header" v-show="tab==1">
+                    <div class="col-md-12" id="RaporTool">
+                        <div class="col-md-6">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                            <h4 class="modal-title" id="ModalBaslik">Öğrenci Listesi</h4>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group" id="RaporTool" style="padding-left:10px; padding-right:10px;">
+                                <div id="slider-range">
+                                </div>
+                                <div id="value" class="col-md-12" value="100.00" style="text-align:center; height:30px; margin-top:10px;">
+                                    %100.00 Altındakileri Raporla
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="ModalBody" class="modal-body" style="background-color:#eff3f8;">
+
+                    <ul class="nav nav-tabs">
+                        <li class="active" style="display: none;">
+                            <a href="#tab_1_1" data-toggle="tab"></a>
+                        </li>
+                        <li style="display: none;"><a href="#tab_1_2" data-toggle="tab"></a></li>
+                    </ul>
+                    <div class="tab-content">
+
+                        <div class="tab-pane fade active in" id="tab_1_1">
+                            <div class="form-group">
+                                <!--<div class="row">
+                                    <div class="col-md-12">
+                                        <c-sinif-multi-col12 controller="Etut"
+                                                             :idsubelist="idsubelist"
+                                                             :idkademe3="idkademe3"
+                                                             @OnChange="EtutSinifSelected">
+                                        </c-sinif-multi-col12>
+                                    </div>
+                                </div>-->
+                            </div>
+                            <div class="form-group" id="UniteKazanimDiv" style="max-height:500px; overflow-y:auto;">
+                                <div class="col-md-12 form-group">
+                                    <c-tablo tabloadi="OgrTablo"
+                                             :gelendata="TblListeOgr"
+                                             :istisna="TblListeOgrIstisna">
+                                    </c-tablo>
+                                </div>
+                            </div>
+
+                            <div class="form-group" style="padding: 15px;" v-if="TblListeOgr.length>0">
+                                <div class="pull-right">
+                                    Seçilen Öğrenci Sayısı : <label style="color:darkred; font-weight: bold;">{{TblListeOgr.length}}</label>
+                                </div>
+
+                                <button class="btn green" onclick="tableToExcel('OgrTablo', 'Etüt Öğrenci Listesi')">Öğrenci Listesini Excel'e Aktar</button>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="tab_1_2">
+                            <div class="form-body form-horizontal form-bordered">
+                                <div class="form-group">
+                                    <div class="col-md-12" style="text-align:right;"><button class="btn yellow" v-on:click="Geri">Geri</button></div>
+                                </div>
+                                <!--<div class="form-group">
+
+                                    <c-sube-yan12 controller="Etut"
+                                                  :ilksecenek="undefined"
+                                                  @OnChange="IdSubeSelected">
+                                    </c-sube-yan12>
+                                </div>-->
+
+                                <div class="row">
+                                    <c-tarih tarihid="t_verilis"
+                                             label="Veriliş Tarihi"
+                                             gun="0"
+                                             @change-date="VerilisTarihiSelected">
+                                    </c-tarih>
+                                </div>
+                                <div class="row">
+                                    <c-tarih tarihid="t_teslim"
+                                             label="Teslim Tarihi"
+                                             gun="7"
+                                             @change-date="TeslimTarihiSelected">
+                                    </c-tarih>
+                                </div>
+                                <div class="row">
+                                    <div class="form-md-line-input">
+                                        <label class="control-label col-md-3">Başlık </label>
+                                        <div class="col-md-9">
+                                            <input type="text" v-model="ODEV.BASLIK" class="form-control" placeholder="Başlık" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="form-md-line-input">
+                                        <label class="control-label col-md-3">Açıklama </label>
+                                        <div class="col-md-9">
+                                            <textarea id="editor">{{ODEV.ACIKLAMA}}</textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="form-md-line-input">
+                                        <label class="control-label col-md-3">Linkler </label>
+                                        <div class="col-md-9">
+                                            <div class="row" v-for="ITEM in ODEV.LINKLIST" style="padding-bottom:8px; margin-left:0px; margin-right:0px; border-bottom:1px solid gray; margin-top:0px!important;">
+                                                <input type="text" v-model="ITEM.AD" class="form-control col-md-12" @change="LinkControl(ITEM)" placeholder="Link Açıklama" />
+                                                <input type="text" v-model="ITEM.LINK" class="form-control col-md-12" @change="LinkControl(ITEM)" placeholder="Link" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="form-md-line-input">
+                                        <label class="control-label col-md-3">Dosyalar </label>
+                                        <div class="col-md-9">
+                                            <div class="fileinput fileinput-new" data-provides="fileinput">
+                                                <div class="input-group" style="width:100%!important;">
+                                                    <div class="form-control uneditable-input input-fixed input-medium" data-trigger="fileinput" style="width:100%!important;">
+                                                        <i class="fa fa-file fileinput-exists"></i>&nbsp;
+                                                        <span class="fileinput-filename"> </span>
+                                                    </div>
+                                                    <div>
+                                                        <span class="input-group-addon btn default btn-file">
+                                                            <span class="fileinput-new"> Dosya Seç </span>
+                                                            <span class="fileinput-exists"> Değiştir </span>
+                                                            <input multiple="multiple" type="file" name="..." id="Dosya">
+                                                        </span>
+                                                    </div>
+                                                    <a href="javascript:;" class="input-group-addon btn red fileinput-exists" data-dismiss="fileinput"> Sil </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <!--<div class="row">
+                                        <c-morpa-ders :controller="controller"
+                                                      :idset ="ODEV.ID_MORPADERS"
+                                                      :idkademe3="idkademe3"
+                                                      @OnChange="MorpaDersSelected">
+                                        </c-morpa-ders>
+                                    </div>
+
+
+                                    <div class="row">
+                                        <c-morpa-materyal-multi :controller="controller"
+                                                                :idset ="ODEV.ID_MORPAMATERYALLIST"
+                                                                :idmorpaders="ODEV.ID_MORPADERS"
+                                                                @OnChange="MorpaMateryalSelected">
+                                        </c-morpa-materyal-multi>
+                                    </div>
+                                    <div class="row">
+                                        <c-morpa-kazanim-multi :controller="controller"
+                                                                :idset ="ODEV.ID_MORPAKAZANIMLIST"
+                                                               :idmorpaders="ODEV.ID_MORPADERS"
+                                                               @OnChange="MorpaKazanimSelected">
+                                        </c-morpa-kazanim-multi>
+                                    </div>-->
+                                    <div class="row">
+                                        <label class="control-label col-md-3">Morpa Ders</label>
+                                        <div class="col-md-9">
+                                            <input type="text" class="form-control" disabled v-bind:value="MORPA.DERSAD" />
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <label class="control-label col-md-3">Morpa Materyal</label>
+                                        <div class="col-md-9">
+                                            <textarea rows="2" class="form-control" disabled v-bind:value="MORPA.MATERYAL"></textarea>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <label class="control-label col-md-3">Morpa Kazanım</label>
+                                        <div class="col-md-9">
+                                            <textarea rows="2" class="form-control" disabled v-bind:value="MORPA.KAZANIM"></textarea>
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <div class="row">
+                                    <div class="form-group" style="margin-top:10px;">
+                                        <div class="col-md-12 text-right">
+                                            <button type="button" class="btn green" @click="Kaydet">Kaydet</button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="tab_1_3">
+                            <div class="form-body form-horizontal form-bordered">
+                                <div class="form-group">
+                                    <div class="col-md-9"></div>
+                                    <div class="col-md-3" style="text-align:right;"><button class="btn yellow" style="float:right" v-on:click="EtuteGec">Geri</button></div>
+                                </div>
+                                <div class="form-group" style="max-height:500px; overflow-y:auto;">
+                                    <div class="col-md-12">
+                                        <c-checkbox :degisken="TblListeKonu"
+                                                    @OnChange="KonuSelected">
+                                        </c-checkbox>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <!--     <button type="button" class="btn btn-primary" id="DuyuruSilButton" onclick="DuyuruSil();">
+                    Arşivle</button>-->
+                    <button type="button" class="btn btn-default" style="float:right" data-dismiss="modal"> Kapat </button>
+
+                    <button type="button" id="EtutTab" class="btn blue" style="float:right" v-on:click="EtuteGec" v-if="tab==1"> Morpa Ödev Oluştur </button>
+
+                    <!--<button class="btn green" id="EtutKayit" idetut="0" style="float:right" v-on:click="EtutOlustur" v-if="tab==2">Kaydet</button>-->
+
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+
+</div>
+<script src="../../VueComponents/Genel.js?v=3"></script>
+<script src="../../VueComponents/SubeGrupSinif.js?v=3"></script>
+<script src="../../VueComponents/SinavFiltreleri.js?v=4"></script>
+<script src="../../../VueComponents/GenelSinavRaporuFiltreleri.js?v=17"></script>
+<script src="/VueComponents/UniteTarama/Filtreler.js?v=4"></script>
+<script src="VueComponents/FiltreEk.js?v=001"></script>
+<script src="assets/global/plugins/ckeditor/ckeditor.js"></script>
+<script>
+
+
+
+    var vue = new Vue({
+        el: "#app",
+        name: "UniteTaramaEksikKazanimCalismaProgrami.html",
+
+        data: {
+            controller: 'UniteTaramaEksikKazanimCalismaProgrami',
+            tab: 1,
+            donem: '',//'2017',//
+            ID_UNITETARAMASINAV: 0,
+            donemSinav: '',
+            idkademe3: 0,//18,//
+            idsinavturu: -1,//2,//
+            idsinavlist: [],//[0,164,162,159,152,146,127,116,98,87,74,72,63,103],//
+            idsubelist: [],//[11],//
+            idsiniflist: [],//[0,101677,101671,101679,101672,101676,101680],//
+            idderslist: [],//[849],//
+            dersad: '',
+            konuad: '',
+
+            TblListe: [],
+            TblListeIstisna: ["ID_DERS", "SORUNO", "KOD"],
+            TblSinav: [],
+            TblOgr: [],
+            TblListeKonu: [],
+
+            TblListeOgr: [],
+            TblListeOgrIstisna: ["ID_DERS", "ID_SINAVBILGI", "ID_SINIF", "PUAN"],
+
+            idetutsiniflist: [],
+            idsube: 0,
+            idders: 0,
+            tcogretmen: '',
+            TARIH: '',
+            VERILIS_TARIHI: '',
+            TESLIM_TARIHI: '',
+            TblPuan: [],
+            TblPuanSinav: [],
+            TblBaslik: [],
+
+            dersler: [],
+            puanTuru: [],
+
+
+            dersGenel: [],
+            puanGenel: [],
+            subeler: [],
+            sinavlar: [],
+
+            tcGorunsun: false,
+            toplamSoru: 0,
+            dID_SINAVPUANTURU: 0,
+            TCKIMLIKNO: '',
+            LISTE: [],
+
+            divAc: 1, // 0 olacak
+            tcogrenci: '',
+            idkullanicitur: 0,
+            ListKullaniciTipi: [],
+            divOgrenci: 1,
+            kurGorunsun: false,
+
+            limit: ["0.00", "100.00"],
+            AkademiOgrt: false,
+            EXCELDATA: null,
+            BASLIK: '',
+            ACIKLAMA: '',
+            LINKLIST: [{ AD: '', LINK: '' }],
+            DOSYALIST: [{ AD: '', GUID: '', UZANTI: '' }],
+            ID_ODEVTUR: 0,
+            TC_OGRENCILIST: [],
+            ID_KADEME3: 0,
+            ID_KADEME: 0,
+            ODEV: {
+                ID_SUBE: 0,
+                ID_KADEME: 0,
+                ID_KADEME3: 0,
+                ID_ODEVTUR: 5,
+                ID_DERS: 0,
+                ID_SINIFLIST: [],
+                TC_OGRENCILIST: [],
+                VERILIS_TARIHI: '',
+                TESLIM_TARIHI: '',
+                BASLIK: '',
+                ACIKLAMA: '',
+                LINKLIST: [{ AD: '', LINK: '' }],
+                DOSYALIST: [{ AD: '', GUID: '', UZANTI: '' }],
+                ID_MORPADERS: 0,
+                ID_MORPAMATERYALLIST: [],
+                ID_MORPAKAZANIMLIST: [],
+                KAZANIMKOD: '',
+
+            },
+
+            MORPA: {
+                DERSAD: undefined,
+                ID_MORPAKAZANIM: undefined,
+                KAZANIM: undefined,
+                MATERYAL: undefined,
+            },
+
+        },
+
+        mounted() {
+            var _this = this;
+            var rangeSlider = document.getElementById('slider-range');
+
+            noUiSlider.create(rangeSlider, {
+                start: [0, 100],
+                //behaviour: 'snap',
+                //connect: 'lower',
+                range: {
+                    'min': 0,
+                    'max': 100
+                }
+            });
+
+            rangeSlider.noUiSlider.on('slide', function (value) {
+                $("#value").html("%" + value + " Arasındakileri Raporla");
+                $("#value").attr("value", value);
+                _this.limit = value;
+                _this.Limitle();
+            });
+
+            this.$nextTick(function () {
+                CKEDITOR.replace('editor');
+                //Editor değiştiğinde model güncellensin
+                CKEDITOR.instances['editor'].on('change', function () {
+                    vue.ODEV.ACIKLAMA = CKEDITOR.instances['editor'].getData();
+                });
+            });
+
+
+        },
+
+        methods: {
+            DonemSelected(item) {
+                this.donem = item;
+                this.divAc = 0;
+                this.divOgrenci = 0;
+            },
+            SinavDonemSelected(item) {
+                this.donemSinav = item;
+                this.divOgrenci = 0;
+            },
+            SubeSelected(item) {
+                this.idsubelist = item;
+                this.ID_UNITETARAMASINAV = 0;
+                this.idsinif = 0;
+                this.divAc = 0;
+                this.divOgrenci = 0;
+            },
+            KademeSelected(val) {
+                this.ID_KADEME = val;
+                this.ODEV.ID_KADEME = val;
+            },
+            Kademe3Selected(item) {
+                this.idkademe3 = item;
+                this.ID_UNITETARAMASINAV = 0;
+                this.divAc = 0;
+                this.ODEV.ID_KADEME3 = item;
+            },
+            SinifSelected(item) {
+                this.idsiniflist = item;
+                this.ODEV.ID_SINIFLIST = item;
+                this.divAc = 0;
+            },
+            EtutSinifSelected(item) {
+
+                this.idetutsiniflist = item;
+                this.Limitle();
+            },
+            SinavTuruSelected(item) {
+                this.idsinavturu = item;
+                this.idsinav = 0;
+                this.divAc = 0;
+            },
+            SinavSelected(item) {
+                this.idsinavlist = item;
+                this.divAc = 0;
+                this.ID_UNITETARAMASINAV = item;
+                this.ID_SINIF = 0;
+                ListeTemizle(this.OGRENCILIST);
+            },
+            DersSelected(item) {
+                this.idderslist = item;
+                this.ODEV.ID_DERS = item;
+                this.divAc = 0;
+            },
+            IdSubeSelected(item) {
+                this.idsube = item;
+                this.ODEV.ID_SUBE = item;
+            },
+
+
+            TarihSelected(TARIH) {
+                this.TARIH = TARIH;
+            },
+
+            VerilisTarihiSelected(val) {
+                this.ODEV.VERILIS_TARIHI = val;
+
+            },
+
+            TeslimTarihiSelected(val) {
+                this.ODEV.TESLIM_TARIHI = val;
+            },
+            SubeOgretmenSelected(item) {
+                this.tcogretmen = item;
+            },
+            MorpaDersSelected(item) {
+                this.ODEV.ID_MORPADERS = item;
+            },
+            MorpaMateryalSelected(val) {
+                this.ODEV.ID_MORPAMATERYALLIST = val;
+            },
+            MorpaKazanimSelected(val) {
+                this.ODEV.ID_MORPAKAZANIMLIST = val;
+            },
+            KademeSelectedMorpa(val) {
+                this.ODEV.ID_KADEME = val;
+            },
+
+            Kademe3SelectedMorpa(val) {
+                this.ODEV.ID_KADEME3 = val;
+            },
+            OgrenciSelected(val) {
+                this.ODEV.TC_OGRENCILIST = val;
+            },
+            LinkControl(ITEM) {
+                var NEWS = [];
+                for (var i = 0; i < this.LINKLIST.length; i++) {
+                    if (this.LINKLIST[i].LINK.length > 0 || this.LINKLIST[i].AD.length > 0) {
+                        NEWS.push(this.LINKLIST[i])
+                    }
+                }
+                NEWS.push({ AD: '', LINK: '' });
+                this.LINKLIST = NEWS;
+            },
+
+
+            Kaydet() {
+                var _this = this;
+                var VERILIS_TARIHI = (strToDate(this.ODEV.VERILIS_TARIHI));
+                var TESLIM_TARIHI = (strToDate(this.ODEV.TESLIM_TARIHI));
+                var ID_SINIFLIST = JSON.stringify(this.idsiniflist);
+                var idderslist = JSON.stringify(this.idderslist);
+                var ogrenciList = getDistinct(_this.TblListeOgr, "TCKIMLIKNO");
+                this.ODEV.TC_OGRENCILIST = ogrenciList;
+
+
+
+
+                if (VERILIS_TARIHI > TESLIM_TARIHI) {
+                    Alert_Info("Tarih Seçimini Kontrol Ediniz...");
+                    return;
+                }
+
+
+                else if (this.ODEV.BASLIK.length == 0) {
+                    Alert_Info('Lütfen Ödev Konusu Giriniz.');
+                    return;
+                }
+                else if (this.ODEV.VERILIS_TARIHI.length == 0) {
+                    Alert_Info('Lütfen Ödev Veriliş Tarihi Seçiniz.');
+                    return;
+                }
+                else if (this.ODEV.TESLIM_TARIHI.length == 0) {
+                    Alert_Info('Lütfen Ödev Teslim Tarihi Seçiniz.');
+                    return;
+                }
+                else if (this.ODEV.ID_ODEVTUR == 5 && (this.ODEV.ID_MORPADERS == 0 || this.ODEV.ID_MORPAMATERYALLIST.length == 0 || this.ODEV.ID_MORPAKAZANIMLIST.length == 0)) {
+                    Alert_Info('Morpa ödevleri için "Morpa Ders, Morpa Materyal, Morpa Kazanım" seçimleri zorunludur.');
+                    return;
+                }
+                else {
+                    this.ODEV.DOSYALIST = [];
+                    var x = document.getElementById("Dosya");
+                    if ('files' in x) {
+                        if (x.files.length > 0) {
+                            var counter = 0;
+                            var control = true;
+                            for (var i = 0; i < x.files.length; i++) {
+                                var file = x.files[i];
+                                DosyaYukleOdev(file, 'Odev', function (data) {
+                                    counter++;
+                                    var RESULT = JSON.parse(data);
+                                    if (RESULT.success) {
+                                        var DOSYA = new Object();
+                                        DOSYA.AD = RESULT.ad;
+                                        DOSYA.GUID = RESULT.guid;
+                                        DOSYA.UZANTI = RESULT.uzanti;
+                                        vue.ODEV.DOSYALIST.push(DOSYA);
+                                    } else {
+                                        control = false;
+                                    }
+                                    if (x.files.length == counter) {
+                                        if (!control) {
+                                            Alert_Warning("Dosyalar Kaydedilirken Sorun Oluştu!");
+                                        } else {
+                                            var p = {TCKIMLIKNO: session.TCKIMLIKNO, OTURUM: session.OTURUM, SQLJSON: JSON.stringify(vue.ODEV)};
+                                            WebPost(vue, vue.controller, "Kaydet", p, '', '', function (data, parent) {
+                                                if (data > 0) {
+                                                    vue.Kaydedildi();
+                                                }
+                                                else {
+                                                    Alert_Warning("Kaydedilirken Sorun Oluştu!");
+                                                }
+                                            })
+                                        }
+                                    }
+                                });
+                            }
+                        } else {
+                            var p = { TCKIMLIKNO: session.TCKIMLIKNO, OTURUM: session.OTURUM, SQLJSON: JSON.stringify(vue.ODEV) };
+                            WebPost(vue, vue.controller, "Kaydet", p, '', '', function (data, parent) {
+                                if (data > 0) {
+                                    vue.Kaydedildi();
+                                }
+                                else {
+                                    Alert_Warning("Kaydedilirken Sorun Oluştu!");
+                                }
+                            })
+                        }
+                    } else {
+                        var p = { TCKIMLIKNO: session.TCKIMLIKNO, OTURUM: session.OTURUM, SQLJSON: JSON.stringify(vue.ODEV) };
+                        WebPost(vue, vue.controller, "Kaydet", p, '', '', function (data, parent) {
+                            if (data > 0) {
+                                vue.Kaydedildi();
+                            }
+                            else {
+                                Alert_Warning("Kaydedilirken Sorun Oluştu!");
+                            }
+                        })
+                    }
+                }
+            },
+            Kaydedildi() {
+                bootbox.dialog({
+                    message: "<font color='green'>Ödev Kaydedildi.</font>",
+                    title: "<font color='green'>İşlem Tamam</font>",
+                    buttons: {
+                        success: {
+                            label: "Tamam!",
+                            className: "btn-success",
+                            callback: function () {
+                                location.reload();
+                            }
+                        },
+                    }
+                });
+            },
+
+
+            MorpaKazanimBul() {
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    KOD: vue.ODEV.KAZANIMKOD,
+                };
+
+                ListeTemizle(vue.MORPA)
+                ListeTemizle(vue.ODEV.ID_MORPAMATERYALLIST)
+                ListeTemizle(vue.ODEV.ID_MORPAKAZANIMLIST)
+                WebPost(this, "UniteTaramaEksikKazanimCalismaProgrami", "MorpaKazanimBul", p, "#app", "Yükleniyor...", function (data, parent) {
+                    var k = JSON.parse(data)[0];
+                    vue.$nextTick(() => {
+                        vue.ODEV.ID_MORPADERS = k.ID_MORPADERS;
+                        vue.ODEV.ID_MORPAKAZANIMLIST.push(k.ID_MORPAKAZANIM);
+                        //vue.ODEV.ID_MORPAMATERYALLIST = [0, 3, 2, 999];
+                        $.each(k.ID_MATERYALLIST, (j, x) => {
+                            vue.ODEV.ID_MORPAMATERYALLIST.push(parseInt(x.ID_MORPAMATERYAL));
+                        })
+                        
+                        
+
+                        vue.MORPA.DERSAD = k.MORPADERS;
+                        vue.MORPA.KAZANIM = k.AD;
+                        vue.MORPA.KOD = k.KOD;
+                        vue.MORPA.MATERYAL = k.MATERYALLIST;
+
+                    });
+                });
+            },
+
+            Getir() {
+
+                var _this = this;
+                if (this.idsubelist.length == 0 || this.idsubelist == undefined) {
+                    Alert_Warning("Şube Seçimini Yapınız...")
+                    this.divAc = 0;
+                    return;
+                }
+                else if (this.idkademe3 == 0 || this.idkademe3 == undefined) {
+                    Alert_Warning("Sınıf Kademesi Seçimini Yapınız...")
+                    this.divAc = 0;
+                    return;
+                }
+
+                else {
+
+                    this.divAc = 1;
+                    var idsubelist = JSON.stringify(this.idsubelist);
+                    var idsiniflist = JSON.stringify(this.idsiniflist);
+                    //var idsinavlist = JSON.stringify(this.idsinavlist);
+                    var idderslist = JSON.stringify(this.idderslist);
+
+
+                    var p = {
+                        TCKIMLIKNO: session.TCKIMLIKNO,
+                        OTURUM: session.OTURUM,
+                        DONEM: this.donem,
+                        ID_KADEME3: this.idkademe3,
+                        ID_SINAVTURU: this.idsinavturu,
+                        ID_SUBEs: idsubelist,
+                        ID_SINIFs: idsiniflist,
+                        //ID_SINAVs: idsinavlist,
+                        ID_DERSs: idderslist,
+                        OGRENCIDONEM: this.donem,
+                        ID_UNITETARAMASINAV: this.ID_UNITETARAMASINAV
+
+                    };
+
+                    var sp = "EksikKazanimListesi";
+
+
+                    _this.TblListe = [];
+                    WebPost(this, "UniteTaramaEksikKazanimCalismaProgrami", sp, p, "#app", "Yükleniyor...", function (data, parent) {
+
+                        if (data != null) {
+                            $('#filters').collapse('hide');
+
+                            _this.TblListe = JSON.parse(data)[0].TblListe;
+                            vue.EXCELDATA = new Object();
+                            vue.EXCELDATA = JSON.parse(data);
+                            _this.TblListe = JSON.parse(data);
+
+
+
+                        } else {
+                            Alert_Warning("Sınav Bulunamadı..!");
+                        }
+                    });
+                }
+                //this.$nextTick(() => { });
+            },
+
+            EtutTabloTdClick(item) {
+
+                var _this = this;
+                //if (item[0][item[1]].indexOf("%") != 0) {
+                //    return;
+
+                //}
+
+                $("#ModalEtut").modal();
+                _this.Geri();
+
+                var idsubelist = JSON.stringify(this.idsubelist);
+                var idsiniflist = JSON.stringify(this.idsiniflist);
+                var idderslist = item[0].DERSAD;
+                var idders = item[0].ID_DERS;
+                var ID_DERS = idders;
+                this.ODEV.ID_DERS = ID_DERS;
+
+                // this.ODEV.ID_MORPADERS = ID_DERS;
+
+
+
+                var sinavAd = item[1];
+
+                var result = $.grep(this.TblSinav, function (n, i) {
+                    return n.SINAVAD == sinavAd;
+                });
+
+
+                var kod = item[0]["KOD"];
+
+                this.ODEV.KAZANIMKOD = kod;
+
+                _this.dersad = item[0].DERSAD;
+
+
+
+
+
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    DONEM: this.donem,//'2017',//
+                    ID_KADEME3: this.idkademe3,//17,//
+                    ID_SINAVTURU: this.idsinavturu,//2,//
+                    ID_SUBEs: idsubelist,//'[11]',//
+                    ID_SINIFs: idsiniflist,//'[0,101684,101674,101675,101673,101681,102311]',//
+                    //ID_DERSs: idderslist,//'[914]'//
+                    ID_DERS: idders,
+                    //ID_SINAVs: JSON.stringify(idsinavlist),
+                    ID_UNITETARAMASINAV: this.ID_UNITETARAMASINAV,
+                    KOD: kod
+                };
+
+                var sp = "EksikKazanimTabloSinavOgrenci";
+
+
+                _this.TblListeOgr = [];
+                WebPost(this, "UniteTaramaEksikKazanimCalismaProgrami", sp, p, "#ModalBody", "Yükleniyor...", function (data, parent) {
+
+                    if (data != null) {
+
+                        _this.TblOgr = JSON.parse(data);
+                        _this.TblListeOgr = JSON.parse(data);
+                        _this.TblListeKonu = [];
+
+                        $.each(_this.TblListe, function (j, el) {
+                            if (el.DERSAD == _this.idders) {
+                                var uniteAd = el.UNITE == undefined ? el.KOD : el.UNITE
+                                _this.TblListeKonu.push({ "AD": "(" + uniteAd + ") " + el.DERSAD, VALUE: el.KOD, id: el.KOD, KONU: el.KONU, SELECTED: el.KOD != kod ? false : true });
+                            }
+                        });
+                        _this.Limitle();
+                    } else {
+                        Alert_Warning("Sınav Bulunamadı..!");
+                    }
+                });
+
+            },
+
+            Limitle() {
+
+                var _this = this;
+                var idetutsiniflist = _this.idetutsiniflist;
+
+                _this.TblListeOgr = $.grep(_this.TblOgr, function (n, i) {
+
+                    return n.PUAN <= _this.limit[1]
+                        && n.PUAN >= _this.limit[0]
+                        && (
+                            (idetutsiniflist.length == 0 || idetutsiniflist == undefined)
+                            || ((idetutsiniflist.length > 0 || idetutsiniflist != undefined) && idetutsiniflist.indexOf(n.ID_SINIF) > -1)
+                        );
+                });
+            },
+
+            Geri() {
+
+                $("#tab_1_1").attr("class", "tab-pane fade active in");
+                $("#tab_1_2").attr("class", "tab-pane");
+                $("#tab_1_3").attr("class", "tab-pane");
+
+                this.tab = 1;
+
+
+            },
+            EtuteGec() {
+
+                vue.MorpaKazanimBul();
+
+                $("#tab_1_1").attr("class", "tab-pane");
+                $("#tab_1_2").attr("class", "tab-pane fade active in");
+                $("#tab_1_3").attr("class", "tab-pane");
+
+                this.tab = 2;
+
+
+            },
+            EtutKonulari() {
+
+                $("#tab_1_1").attr("class", "tab-pane");
+                $("#tab_1_2").attr("class", "tab-pane");
+                $("#tab_1_3").attr("class", "tab-pane fade active in");
+
+                this.tab = 3;
+
+
+            },
+            KonuSelected(item) {
+                this.TblListeKonu = item;
+            },
+
+        },
+    });
+
+</script>
+
+<script src="../../../Scripts/PublicMethods.js"></script>
+
+<script src="assets/global/plugins/bootstrap-fileinput/bootstrap-fileinput.js" type="text/javascript"></script>

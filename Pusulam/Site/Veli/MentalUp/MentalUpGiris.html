@@ -1,0 +1,102 @@
+﻿<link href="assets/global/plugins/bootstrap-fileinput/bootstrap-fileinput.css" rel="stylesheet" type="text/css" />
+<style>
+    td {
+        vertical-align: middle !important;
+    }
+
+    .row {
+        margin-top: 10px !important;
+    }
+</style>
+<div class="page-head">
+    <!-- BEGIN PAGE TITLE -->
+    <div class="page-title col-md-12">
+        <h1>
+            MentalUp Yönlendirme <span onclick="YardimGoster(ID_MENU);" class="pull-right" style="cursor:pointer;"><img src="assets/global/img/info.gif" class="info-image-icon" /> </span>
+        </h1>
+    </div>
+    <!-- END PAGE TITLE -->
+</div>
+
+<div class="row" id="app">
+
+    <div class="col-md-12">
+        <div class="portlet box green-haze dd-item" style="border:none">
+            <div class="portlet-title dd-handle" data-toggle='collapse' data-target='#filters' style="cursor:pointer;">
+                <div class="caption">
+                    <i class="icon-magnifier"></i>
+                    <span class="caption-subject bold uppercase"> Filtreler </span>
+                    <span class="caption-helper"></span>
+                </div>
+                <div class='actions'>
+                    <a href='javascript:;' class='btn btn-default btn-sm' style='border:none;'>
+                        <i class='fa fa-chevron-down'></i>
+                    </a>
+                </div>
+            </div>
+            <div class="portlet-body form collapse in" id="filters">
+                <form role="form" style="padding:12px 20px">
+                    <div class="form-body form-horizontal row">
+
+                        <c-ogrenci-veli :controller="controller"
+                                        :tc="TCKIMLIKNO"
+                                        @OnChange="OgrenciVeliSelected">
+                        </c-ogrenci-veli>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-12" v-if="TC_OGRENCI != undefined">
+        <div class="portlet light">
+            <div class="portlet-body">
+                <div class="row">
+                    <div class="pull-right" style="margin: 20px;">
+                        <a :href="yol" class="btn blue" target="_blank">MentalUp GİRİŞ</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../../../VueComponents/OgrenciRaporlariFiltreleri.js"></script>
+<script>
+    var vue = new Vue({
+
+        el: "#app",
+        name: "VeliMentalUpGiris",
+
+        data: {
+            controller: 'VeliMentalUpGiris',
+            yol: "",
+            TCKIMLIKNO: undefined,
+            TC_OGRENCI: undefined,
+        },
+
+        mounted() {
+            this.TCKIMLIKNO = session.TCKIMLIKNO;
+        },
+
+        methods: {
+
+            OgrenciVeliSelected(item) {
+                this.TC_OGRENCI = item;
+
+
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    TC_OGRENCI: this.TC_OGRENCI,
+                };
+                WebPost(this, this.controller, "VeliMentalUp", p, "", "", function (data, parent) {
+                    vue.yol = JSON.parse(data)[0].URL;
+                });
+
+            }
+        },
+
+    });
+</script>
+<script src="Scripts/PublicMethods.js"></script>
+<script src="assets/global/plugins/bootstrap-fileinput/bootstrap-fileinput.js" type="text/javascript"></script>

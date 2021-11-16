@@ -1,0 +1,279 @@
+﻿<style>
+    .textarea {
+        margin-top: 10px;
+        width: 100%;
+        height: 40px;
+        border-radius: 8px;
+    }
+</style>
+
+<div class="page-head">
+    <!-- BEGIN PAGE TITLE -->
+    <div class="page-title col-md-12">
+        <h1>
+            Toplu Mesajlar <span onclick="YardimGoster(ID_MENU);" class="pull-right" style="cursor:pointer;"><img src="assets/global/img/info.gif" class="info-image-icon" /> </span>
+        </h1>
+    </div>
+    <!-- END PAGE TITLE -->
+</div>
+
+<div class="row" id="app">
+    <div class="col-md-12">
+        <div class="portlet box blue-hoki dd-item" style="border:none">
+            <div class="portlet-title dd-handle" data-toggle='collapse' data-target='#filters' style="cursor:pointer;">
+                <div class="caption">
+                    <i class="icon-list"></i>
+                    <span class="caption-subject bold uppercase"> Filtreler </span>
+                    <span class="caption-helper"></span>
+                </div>
+                <div class='actions'>
+                    <a href='javascript:;' class='btn btn-default btn-sm' style='border:none;'>
+                        <i class='fa fa-chevron-down'></i>
+                    </a>
+                </div>
+            </div>
+            <!-- BEGIN PORTLET-->
+            <div class="portlet-body form collapse in" id="filters">
+                <form role="form" style="padding:12px 20px">
+                    <div class="row">
+                        <c-sube-tumu :controller="CONTROLLER"
+                                     @OnChange="SubeSelected" />
+                    </div>
+                    <!--<div class="row">
+                        <c-kademe3-tumu :controller="CONTROLLER"
+                                        :idsube="ID_SUBE"
+                                        @OnChange="Kademe3Selected" />
+                    </div>-->
+                    <div class="row">
+                        <c-sinif-multi :controller="CONTROLLER"
+                                       :idsube="ID_SUBE"
+                                       :idkademe3="ID_KADEME3"
+                                       @OnChange="SinifSelected" />
+                    </div>
+                    <div class="row">
+                        <c-ogrenci-multi :controller="CONTROLLER"
+                                         :idsube="ID_SUBE"
+                                         :idsiniflist="ID_SINIFLIST"
+                                         @OnChange="OgrenciSelected" />
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="input-icon right">
+                                <input type="file" name="..." id="dosya" data-preview-file-type="text" style="display:none;" @change="DosyaGonder">
+                                <i class="fa fa-3x fa-send-o font-green" @click="MesajGonder" style="cursor:pointer; line-height:18px; margin-right:8px;"></i>
+                                <i class="fa fa-3x fa-plus font-green" @click="DosyaSec" style="cursor:pointer; line-height:18px; margin-right:32px;"></i>
+                                <input type="text" class="textarea form-control" id="mesaj" placeholder="Mesaj" style="background-color:#fff;" @keyup.enter="MesajGonder">
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="/VueComponents/Viu/Filtreler.js"></script>
+<script>
+    var vue = new Vue({
+
+        el: "#app",
+        name: "TopluMesajlar.html",
+
+        data: {
+            CONTROLLER: 'https://okyanusiletisim.okyanuskoleji.k12.tr/OkyanusApi/OgretmenMesaj/',
+            ID_SUBE: 0,
+            ID_KADEME3: 0,
+            ID_SINIFLIST: [],
+            OGRENCILIST: []
+        },
+
+        mounted() {
+        },
+
+        methods: {
+            SubeSelected(item) {
+                this.ID_SUBE = item;
+            },
+
+            Kademe3Selected(item) {
+                this.ID_KADEME3 = item;
+            },
+
+            SinifSelected(item) {
+                this.ID_SINIFLIST = item;
+            },
+
+            OgrenciSelected(item) {
+                this.OGRENCILIST = item;
+            },
+
+            MesajGonder() {
+                if ($('#mesaj').val() != '') {
+                    if (this.OGRENCILIST.length == 0) {
+                        var SINIFLIST = [];
+
+                        for (var i = 0; i < this.ID_SINIFLIST.length; i++) {
+                            SINIFLIST.push({ ID_SINIF: this.ID_SINIFLIST[i] });
+                        }
+
+                        var p = {
+                            TCKIMLIKNO: session.TCKIMLIKNO,
+                            OTURUM: session.OTURUM,
+                            SQLJSON: { AD: $('#mesaj').val(), SINIFLISTE: SINIFLIST }
+                        };
+
+                        WebPostLink(this, 'https://okyanusiletisim.okyanuskoleji.k12.tr/OkyanusApi/OgretmenMesaj/BilgiNotEkle', p, '', '', function (data, parent) {
+                            $('#mesaj').val('');
+                        });
+                    } else {
+                        var p = {
+                            TCKIMLIKNO: session.TCKIMLIKNO,
+                            OTURUM: session.OTURUM,
+                            SQLJSON: { AD: $('#mesaj').val(), KULLANICILISTE: this.OGRENCILIST }
+                        };
+
+                        WebPostLink(this, 'https://okyanusiletisim.okyanuskoleji.k12.tr/OkyanusApi/OgretmenMesaj/BilgiNotEkle', p, '', '', function (data, parent) {
+                            $('#mesaj').val('');
+                        });
+                    }
+                }
+            },
+
+            DosyaSec() {
+                $('#dosya').click();
+            },
+
+            DosyaGonder(e) {
+                var input = document.getElementById('dosya');
+                if (input.files.length) {
+                    App.blockUI({
+                        target: '#app',
+                        boxed: true,
+                        message: 'Yükleniyor...'
+                    });
+
+                    if (e.target.files[0].type.indexOf('image') > -1) {
+                        vue.compress(e);
+                    } else {
+                        this.FormGonder(e.target.files[0])
+                    }
+                } else {
+                    alert('Please upload a file before continuing')
+                }
+            },
+
+            FormGonder(file) {
+                var formData = new FormData();
+                formData.append("TCKIMLIKNO", session.TCKIMLIKNO);
+                formData.append("OTURUM", session.OTURUM);
+
+                if (this.OGRENCILIST.length == 0) {
+                    formData.append("SINIFLIST", JSON.stringify({ SINIFLIST: this.ID_SINIFLIST }));
+                } else {
+                    formData.append("KULLANICILIST", JSON.stringify({ KULLANICILIST: this.OGRENCILIST }));
+                }
+
+                formData.append("ID_MEDYATUR", file.type.indexOf('image') > -1 ? 2 : file.type.indexOf('video') > -1 ? 3 : 4);
+                formData.append("AD", $('#mesaj').val());
+
+                // HTML file input, chosen by user
+                formData.append("file", file);
+
+                $.ajax({
+                    url: 'https://okyanusiletisim.okyanuskoleji.k12.tr/OkyanusApi/OgretmenMesaj/BilgiNotDokumanEkle',
+                    processData: false,
+                    contentType: false,
+                    data: formData,
+                    type: 'POST'
+                }).done(function (result) {
+                    App.unblockUI('#app');
+                    $('#mesaj').val('');
+                    Alert_Info("Mesaj gönderildi.");
+                }).fail(function (a, b, c) {
+                    App.unblockUI('#app');
+                });
+            },
+
+            resize(img) {
+                var actualHeight = img.height
+                var actualWidth = img.width
+                let maxHeight = 900.0
+                let maxWidth = 1600.0
+                var imgRatio = actualWidth / actualHeight
+                let maxRatio = maxWidth / maxHeight
+                var compressionQuality = 0.5
+
+                if (actualHeight > maxHeight || actualWidth > maxWidth) {
+                    if (imgRatio < maxRatio) {
+                        //adjust width according to maxHeight
+                        imgRatio = maxHeight / actualHeight
+                        actualWidth = imgRatio * actualWidth
+                        actualHeight = maxHeight
+                    } else if (imgRatio > maxRatio) {
+                        //adjust height according to maxWidth
+                        imgRatio = maxWidth / actualWidth
+                        actualHeight = imgRatio * actualHeight
+                        actualWidth = maxWidth
+                    } else {
+                        actualHeight = maxHeight
+                        actualWidth = maxWidth
+                        compressionQuality = 1
+                    }
+                }
+
+                return { width: actualWidth, height: actualHeight }
+            },
+
+            compress(e) {
+                const fileName = e.target.files[0].name;
+                const reader = new FileReader();
+                reader.readAsDataURL(e.target.files[0]);
+                reader.onload = event => {
+                    const img = new Image();
+                    img.src = event.target.result;
+                    img.onload = () => {
+                        var size = vue.resize(img);
+                        const width = size.width;
+                        const height = size.height;
+
+                        const elem = document.createElement('canvas');
+
+                        elem.width = width;
+                        elem.height = height;
+                        const ctx = elem.getContext('2d');
+                        // img.width and img.height will contain the original dimensions
+                        ctx.drawImage(img, 0, 0, width, height);
+                        //toBlob polyfill
+                        if (!HTMLCanvasElement.prototype.toBlob) {
+                            Object.defineProperty(HTMLCanvasElement.prototype, 'toBlob', {
+                                value: function (callback, type, quality) {
+                                    var dataURL = this.toDataURL(type, quality).split(',')[1];
+                                    setTimeout(function () {
+                                        var binStr = atob(dataURL),
+                                            len = binStr.length,
+                                            arr = new Uint8Array(len);
+                                        for (var i = 0; i < len; i++) {
+                                            arr[i] = binStr.charCodeAt(i);
+                                        }
+                                        callback(new Blob([arr], { type: type || 'image/png' }));
+                                    });
+                                }
+                            });
+                        }
+
+                        // toBlob usage
+                        ctx.canvas.toBlob(function (blob) {
+                            const file = new File([blob], fileName, {
+                                type: 'image/jpeg',
+                                lastModified: Date.now()
+                            });
+
+                            vue.FormGonder(file);
+                        }, 'image/jpeg', 0.85);
+                    },
+                        reader.onerror = error => console.log(error);
+                };
+            }
+        }
+    });
+</script>

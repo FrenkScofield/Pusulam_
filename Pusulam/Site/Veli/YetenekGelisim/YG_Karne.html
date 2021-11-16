@@ -1,0 +1,155 @@
+﻿<style>
+    .table > tbody > tr > td, .table > tbody > tr > th, .table > tfoot > tr > td, .table > tfoot > tr > th, .table > thead > tr > td, .table > thead > tr > th {
+        font-size: 11px;
+    }
+
+    .table-hover > tbody > tr:hover, .table-hover > tbody > tr:hover > td {
+        color: black !important;
+    }
+
+    .custom-text {
+        font-weight: bold;
+        font-size: 1.9em;
+        border: 1px solid #cfcfcf;
+        padding-left: 10px;
+        padding-right: 10px;
+        border-radius: 5px;
+        color: #999;
+        background: #fff;
+    }
+</style>
+
+<link href="../../../assets/fixed-table/css/component.css?v=4" rel="stylesheet" />
+
+<div class="page-head">
+    <div class="page-title col-md-12">
+        <h1>
+            Yetenek Gelişim Karne
+
+             <span onclick="YardimGoster(ID_MENU);" class="pull-right" style="cursor:pointer;"><img src="assets/global/img/info.gif" class="info-image-icon" /> </span>
+        </h1>
+    </div>
+</div>
+
+<div class="row" id="app">
+    <div class="col-md-12">
+        <div class="portlet box green-haze dd-item" style="border:none">
+            <div class="portlet-title dd-handle" data-toggle='collapse' data-target='#filters' style="cursor:pointer;">
+                <div class="caption">
+                    <i class="icon-magnifier"></i>
+                    <span class="caption-subject bold uppercase"> Filtreler </span>
+                    <span class="caption-helper"></span>
+                </div>
+                <div class='actions'>
+                    <a href='javascript:;' class='btn btn-default btn-sm' style='border:none;'>
+                        <i class='fa fa-chevron-down'></i>
+                    </a>
+                </div>
+            </div>
+            <div class="portlet-body form collapse in" id="filters">
+                <form role="form" style="padding:12px 20px">
+                    <div class="form-body form-horizontal row">
+
+                        <c-ogrenci-veli :controller="controller"
+                                        :tc="TCKIMLIKNO"
+                                        @OnChange="OgrenciVeliSelected">
+                        </c-ogrenci-veli>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="col-md-12"  v-show="LISTE.length>0">
+        <div class="portlet box green-haze dd-item" style="border:none">
+          
+            <div class="portlet-body form collapse in" id="filters">
+                <div style="overflow-x: auto">
+            <table id="tblDers" data-height="700" class="table table-striped table-bordered table-checkable" data-width="100%" style="margin-bottom:0px; color:#111; width:100%; ">
+                <thead>
+                    <tr>
+                        <th>Dönem</th>
+                        <th>Şube</th>
+                        <th>Sınıf</th>
+                        <th>T.C. Kimlik No</th>
+                        <th>Ad Soyad</th>
+                        <th>Karne</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="u in LISTE">
+                        <td>{{u.DONEM}}</td>
+                        <td>{{u.SUBEAD}}</td>
+                        <td>{{u.SINIFAD}}</td>
+                        <td>{{u.TCKIMLIKNO}}</td>
+                        <td>{{u.ADSOYAD}}</td>
+                        <td>
+                            <input type="button" class="btn btn-success blue" v-bind:disabled="u.ID_KATEGORIOGRENCI == 0" v-on:click="Karne(u.ID_KATEGORIOGRENCI,u.ID_KADEME3==7)" value="Karne">
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script src="../../../VueComponents/OgrenciRaporlariFiltreleri.js"></script>
+<script>
+
+    var vue = new Vue({
+        el: "#app",
+        name: "VeliYGKarne",
+
+        data: {
+            TCKIMLIKNO: '',
+            OTURUM: '',
+            controller: 'VeliYGKarne',
+
+            TC_OGRENCI: '',
+            LISTE: [],
+        },
+
+        mounted() {
+            this.TCKIMLIKNO = session.TCKIMLIKNO;
+            this.OTURUM = session.OTURUM;
+        },
+
+        methods: {
+
+            OgrenciVeliSelected(item) {
+                this.TC_OGRENCI = item;
+
+                $('#filters').collapse('hide');
+                var p = {
+                    TCKIMLIKNO: this.TCKIMLIKNO,
+                    OTURUM: this.OTURUM,
+                    TC_OGRENCI: this.TC_OGRENCI,
+                };
+
+                WebPost(this, this.controller, "OgrenciKarneListele", p, "", "Yükleniyor...", function (data, parent) {
+                    if (data != null) {
+                        vue.LISTE = JSON.parse(data);
+                    } else {
+                        Alert_Warning("Öğrenci Bulunamadı..!");
+                    }
+                });
+
+            },
+
+            Karne(idKategoriOgrenci, ilkSinifMi) {
+                if (ilkSinifMi) {
+                    window.open('../Rapor.aspx?rapor=YetenekGelisim.YG_IlkSinifKarne&raporTur=pdf&p=' + session.TCKIMLIKNO + ';' + session.OTURUM + ';' + idKategoriOgrenci, '_blank');
+                }
+                else {
+                    window.open('../Rapor.aspx?rapor=YetenekGelisim.YG_UstSinifKarne&raporTur=pdf&p=' + session.TCKIMLIKNO + ';' + session.OTURUM + ';' + idKategoriOgrenci, '_blank');
+                }
+            },
+
+        },
+    });
+</script>
+<script src="../../../Scripts/PublicMethods.js"></script>

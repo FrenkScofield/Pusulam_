@@ -1,0 +1,1320 @@
+﻿<style>
+
+
+    #Table1 td.Konular:hover {
+        background-color: #B2D4F0;
+    }
+
+    #Table2 td.Kontroller:hover {
+        background-color: #B2D4F0;
+    }
+
+    #Table2 td.Notlar:hover {
+        background-color: #B4F0B2;
+    }
+
+    #Table3 td.Tarihler:hover {
+        background-color: #B4F0B2;
+    }
+
+    #Table3 td.Kontroller:hover {
+        background-color: #B2D4F0;
+    }
+
+    #Table4 td.NotCell1:hover {
+        background-color: #B2D4F0;
+    }
+
+    #Table4 td.NotCell2:hover {
+        background-color: #B2D4F0;
+    }
+
+    #Table4 td.NotCell3:hover {
+        background-color: #B2D4F0;
+    }
+
+    #Table4 td.NotCell4:hover {
+        background-color: #B2D4F0;
+    }
+
+    #Table4 td.NotCell5:hover {
+        background-color: #B2D4F0;
+    }
+
+    .secili {
+        background-color: #d9edf7 !important;
+    }
+
+    #chartdiv {
+        width: 100%;
+        height: 500px;
+        font-size: 11px;
+    }
+
+    #chartdiv2 {
+        width: 100%;
+        height: 500px;
+        font-size: 11px;
+    }
+
+    .table > tbody > tr > td, .table > tbody > tr > th, .table > tfoot > tr > td, .table > tfoot > tr > th, .table > thead > tr > td, .table > thead > tr > th {
+        font-size: 11px;
+    }
+
+
+    .table-hover > tbody > tr:hover, .table-hover > tbody > tr:hover > td {
+        color: black !important;
+    }
+
+    .turuncu {
+        background-color: #EA5702 !important;
+        color: white !important;
+        font-size: 12px !important;
+    }
+
+    .fontsize12 {
+        font-size: 12px !important;
+    }
+
+    .koyumavi {
+        background-color: #0E3170;
+        color: white;
+    }
+
+    .acikmavi {
+        background-color: #2786C3;
+        color: white;
+    }
+
+    .bordermavi {
+        border: #2786C3 1px solid;
+        text-align: center;
+        color: black;
+    }
+
+    .bordersag {
+        border-right: #b4d2e6 1px solid;
+        text-align: center;
+    }
+
+    .analizbaslik {
+        background-color: #FFA500 !important;
+    }
+
+    .fixed-table-body {
+        overflow-x: hidden !important;
+    }
+
+    .red {
+        color: red;
+    }
+</style>
+
+<link href="assets/global/plugins/bootstrap-fileinput/bootstrap-fileinput.css" rel="stylesheet" type="text/css" />
+
+<div class="page-head">
+    <div class="page-title col-md-12">
+        <h1>
+            Proje / Dönem Ödevi
+             <span onclick="YardimGoster(ID_MENU);" class="pull-right" style="cursor:pointer;"><img src="assets/global/img/info.gif" class="info-image-icon" /> </span>
+        </h1>
+    </div>
+</div>
+
+<div class="row" id="app">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="form-body form-horizontal" id="tabs">
+                <ul class="nav nav-tabs">
+                    <li @click="tabid=1">                            <a data-id="1" href="#tab_1_1" data-toggle="tab">Talep Listesi                      </a></li>
+                    <li @click="tabid=2" class="active">             <a data-id="2" href="#tab_1_2" data-toggle="tab">Branş Öğretmen Kontrol Formu       </a></li>
+                    <li @click="tabid=3" v-if="tabDanisman==true">   <a data-id="3" href="#tab_1_3" data-toggle="tab">Danışman Öğretmen Kontrol Formu    </a></li>
+                    <li @click="tabid=4">                            <a data-id="4" href="#tab_1_4" data-toggle="tab">Proje Dönem Ödevi Puanlama         </a></li>
+                </ul>
+                <div class="tab-content">
+                    <div class="tab-pane fade" id="tab_1_1">
+                        <div class="form-group" style="display: contents;">
+                            <c-ogretmen-sinif controller="ProjeDonem"
+                                              :idsinif="idsinif"
+                                              @OnChange="SinifSelected">
+                            </c-ogretmen-sinif>
+                            <div class="form-md-line-input" v-if="ortaOkul==true">
+                                <div class="col-md-2">
+                                    <select class="selectpicker form-control" v-model="yariYil" title="YarıYıl Seçiniz">
+                                        <option value="1" selected>1. Dönem</option>
+                                        <option value="2">2. Dönem</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <hr />
+                        <div v-show="TalepListe.length > 0">
+                            <table class="table-bordered table-striped table-condensed cf display col-md-12" id="Table1" style="padding-bottom:80px;">
+                                <thead class="cf">
+                                    <tr>
+                                        <th style="width: 100px; text-align: center;"> FOTO </th>
+                                        <th style="width: 80px; text-align: center;"> NO </th>
+                                        <th style="width: 120px; text-align: center;"> AD SOYAD </th>
+                                        <th style="text-align: center;"> KONU </th>
+                                        <th style="text-align: center;"> DERS </th>
+                                        <th style="width: 140px; text-align: center;"> İŞLEM </th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tbody1">
+                                    <tr v-for="item in TalepListe">
+                                        <td style='text-align:center'>
+                                            <img src="../../img/okyanus_image.jpg" v-if="item.FOTO == undefiend || item.FOTO == null" width='80' />
+                                            <img :id='"Foto"+ item.ID_OGRENCI' :src="'data:image/  png;base64,'+item.FOTO" width='80' v-else />
+                                        </td>
+                                        <td style='text-align:center'>{{item.OGRNO}}</td>
+                                        <td style='text-align:center'>{{item.ADSOYAD}}</td>
+
+                                        <td style='text-align:center;cursor:pointer;' v-if="item.DURUM==3" :id="'Konu' + item.ID_OGRENCI">{{item.KONU}}</td>
+                                        <td style='text-align:center;cursor:pointer;' v-else :id="'Konu' + item.ID_OGRENCI" @click='DKontrol(0, item.ID_PROJETALEP ,item.ID_OGRENCI,true);' class='Konular'>{{item.KONU}}</td>
+
+                                        <td style='text-align:center;' :id='"Ders" + item.ID_OGRENCI'>{{item.DERSAD}}</td>
+
+
+                                        <td style='text-align:center' :id='"Islem" + item.ID_OGRENCI'>
+                                            <select v-model="item.DURUM" @change="DurumDegistir(item)" :id='"selIslem" + item.ID_PROJETALEP' class="selectpicker form-control" title="Proje Durumunu Seçiniz..">
+                                                <option value=1> Onayda Bekleyen</option>
+                                                <option value=2> Onaylandı</option>
+                                                <option value=3> Reddedildi</option>
+                                            </select>
+                                        </td>
+
+
+
+                                        <!--<td style='text-align:center' v-if="item.DURUM==2 || item.DURUM==3" :id='"Islem" + item.ID_OGRENCI'>{{item.DURUMACIKLAMA}}</td>
+                                        <td style='text-align:center' v-else :id='"Islem" + item.ID_OGRENCI'>
+                                            <button class='btn blue' @click='DurumDegistir(item.ID_PROJETALEP,2)'>Onay</button>
+                                            <button class='btn red' @click='DurumDegistir(item.ID_PROJETALEP,3)'>Red</button>
+                                        </td>-->
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade active in" id="tab_1_2">
+                        <div class="form-group" style="display: contents;">
+                            <c-ogretmen-sinif controller="ProjeDonem"
+                                              :idsinif="idsinif"
+                                              @OnChange="SinifSelected">
+                            </c-ogretmen-sinif>
+
+                            <div class="form-md-line-input" v-if="ortaOkul==true">
+                                <div class="col-md-2">
+                                    <select class="selectpicker form-control" v-model="yariYil" title="YarıYıl Seçiniz">
+                                        <option value="1" selected>1. Dönem</option>
+                                        <option value="2">2. Dönem</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <hr />
+                        <div class="form-group" style="display: contents;">
+                            <div class="form-body form">
+                                <table class="table-bordered table-striped table-condensed cf display col-md-12" id="Table2" v-if="BOOgrenciListe.length>0">
+                                    <thead class="cf" id="thead">
+                                        <tr>
+                                            <th rowspan="2" style='text-align:center;'>NO</th>
+                                            <th rowspan="2" style='text-align:center;'>AD SOYAD</th>
+                                            <th rowspan="2" style='text-align:center;'>DERS</th>
+                                            <th v-if="ortaOkul==true" style='text-align:center;'>Proje Dönem Ödevi Kontrol Çizelgesi</th>
+                                            <th v-else colspan='4' style='text-align:center;'>Proje Dönem Ödevi Kontrol Çizelgesi</th>
+                                            <th rowspan='2' style='text-align:center;'>Öğretmen Değerlendirmesi</th>
+                                        </tr>
+                                        <tr>
+                                            <th v-if="ortaOkul==true" style='text-align:center;'>Kontrol</th>
+                                            <th v-if="ortaOkul==false" style='text-align:center;'>1.Kontrol</th>
+                                            <th v-if="ortaOkul==false" style='text-align:center;'>2.Kontrol</th>
+                                            <th v-if="ortaOkul==false" style='text-align:center;'>3.Kontrol</th>
+                                            <th v-if="ortaOkul==false" style='text-align:center;'>4.Kontrol</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tbody">
+                                        <tr v-for="item in BOOgrenciListe">
+                                            <td style='text-align:center'>{{item.OGRNO}}</td>
+                                            <td style='text-align:center'>{{item.ADSOYAD}}</td>
+                                            <td style='text-align:center'>{{item.DERSAD}}</td>
+
+                                            <td v-if="ortaOkul==true" style='text-align:center; cursor:pointer;' class='Kontroller' @click="Kontrol(1,item.ID_PROJETALEP)">{{item.KONTROLBIRTARIH}}  -  {{item.KONTROLBIR}} </td>
+
+                                            <td v-if="ortaOkul==false" style='text-align:center; cursor:pointer;' class='Kontroller' @click="Kontrol(1,item.ID_PROJETALEP)">{{item.KONTROLBIRTARIH}}  -  {{item.KONTROLBIR}} </td>
+                                            <td v-if="ortaOkul==false" style='text-align:center; cursor:pointer;' class='Kontroller' @click="Kontrol(2,item.ID_PROJETALEP)">{{item.KONTROLIKITARIH}}  -  {{item.KONTROLIKI}} </td>
+                                            <td v-if="ortaOkul==false" style='text-align:center; cursor:pointer;' class='Kontroller' @click="Kontrol(3,item.ID_PROJETALEP)">{{item.KONTROLUCTARIH}}  -  {{item.KONTROLUC}} </td>
+                                            <td v-if="ortaOkul==false" style='text-align:center; cursor:pointer;' class='Kontroller' @click="Kontrol(4,item.ID_PROJETALEP)">{{item.KONTROLDORTTARIH}}  -  {{item.KONTROLDORT}} </td>
+
+                                            <td style='text-align:center; cursor:pointer;' class='Notlar' @click="Kontrol(5,item.ID_PROJETALEP)">{{item.PROJEDEGERLENDIRME}}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="tab_1_3">
+                        <div class="form-group" style="display: contents;">
+                            <c-danisman-ogretmen-sinif controller="ProjeDonem"
+                                                       :idsinif="idsinif"
+                                                       @OnChange="SinifSelected">
+                            </c-danisman-ogretmen-sinif>
+
+                            <div class="form-md-line-input" v-if="ortaOkul==true">
+                                <div class="col-md-2">
+                                    <select class="selectpicker form-control" v-model="yariYil" title="YarıYıl Seçiniz">
+                                        <option value="1" selected>1. Dönem</option>
+                                        <option value="2">2. Dönem</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div id="Div4" class="form-group" v-if="DOOgrenciListe.length>0">
+                                <div class="col-md-1" style="float:right;" id="ExcelButon">
+                                    <input style="float:right;height:34px;" type="button" class="btn btn-success" onclick="tableToExcel('Table3', 'Sınıf Proje Dönem Ödevi')" value="Excel">
+                                </div>
+                            </div>
+                        </div>
+                        <hr />
+                        <div class="form-horizontal">
+                            <div class="form-group">
+                                <div class="form-body form-horizontal">
+                                    <div class="col-md-12">
+                                        <table class="table-bordered table-striped table-condensed cf display col-md-12" id="Table3" v-if="DOOgrenciListe.length>0">
+                                            <thead class="cf" id="thead1">
+                                                <tr>
+                                                    <th rowspan="2" style='width:50px;text-align:center;'>NO</th>
+                                                    <th rowspan="2" style='width:130px;text-align:center;'>AD SOYAD</th>
+                                                    <th style='text-align:center;' colspan='10'>Proje Dönem Ödevleri</th>
+                                                </tr>
+                                                <tr>
+                                                    <th colspan='2'>1.Ders-Konu</th>
+                                                    <th colspan='2'>2.Ders-Konu</th>
+                                                    <th colspan='2'>3.Ders-Konu</th>
+                                                    <th colspan='2'>4.Ders-Konu</th>
+                                                    <th colspan='2'>5.Ders-Konu</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="tbody2">
+                                                <tr v-for="item in DOOgrenciListe">
+                                                    <td style='text-align:center'>{{item.OGRNO}}</td>
+                                                    <td style='text-align:center'>{{item.ADSOYAD}}</td>
+
+                                                    <td>{{item.DERSAD1}}</td>
+                                                    <td style='text-align:center;' class='Kontroller' @click='DKontrol(0, item.ID_PROJETALEP1 ,  item.ID_OGRENCI)'>
+                                                        <div v-if="item.DURUM1==3">Reddedildi</div>
+                                                        <div v-else style="cursor:pointer;">
+                                                            <div v-if="item.KONU1.length==0">
+                                                                <span class='badge badge-danger'>Konu</span>
+                                                            </div>
+                                                            <div v-else>
+                                                                <span class='badge badge-success' data-uk-tooltip='{pos:\"bottom\"}' :title='item.KONU1'>Konu<label style='display:none;'> - {{item.KONU1}}</label></span>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+
+                                                    <td>{{item.DERSAD2}}</td>
+                                                    <td style='text-align:center;' class='Kontroller' @click='DKontrol(1, item.ID_PROJETALEP2 ,  item.ID_OGRENCI)'>
+                                                        <div v-if="item.DURUM2==3">Reddedildi</div>
+                                                        <div v-else style="cursor:pointer;">
+                                                            <div v-if="item.KONU2.length==0">
+                                                                <span class='badge badge-danger'>Konu</span>
+                                                            </div>
+                                                            <div v-else>
+                                                                <span class='badge badge-success' data-uk-tooltip='{pos:\"bottom\"}' :title='item.KONU2'>Konu<label style='display:none;'> - {{item.KONU2}}</label></span>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+
+                                                    <td>{{item.DERSAD3}}</td>
+                                                    <td style='text-align:center;' class='Kontroller' @click='DKontrol(2, item.ID_PROJETALEP3 ,  item.ID_OGRENCI)'>
+                                                        <div v-if="item.DURUM3==3">Reddedildi</div>
+                                                        <div v-else style="cursor:pointer;">
+                                                            <div v-if="item.KONU3.length==0">
+                                                                <span class='badge badge-danger'>Konu</span>
+                                                            </div>
+                                                            <div v-else>
+                                                                <span class='badge badge-success' data-uk-tooltip='{pos:\"bottom\"}' :title='item.KONU3'>Konu<label style='display:none;'> - {{item.KONU3}}</label></span>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+
+                                                    <td>{{item.DERSAD4}}</td>
+                                                    <td style='text-align:center;' class='Kontroller' @click='DKontrol(3, item.ID_PROJETALEP4 ,  item.ID_OGRENCI)'>
+                                                        <div v-if="item.DURUM4==3">Reddedildi</div>
+                                                        <div v-else style="cursor:pointer;">
+                                                            <div v-if="item.KONU4.length==0">
+                                                                <span class='badge badge-danger'>Konu</span>
+                                                            </div>
+                                                            <div v-else>
+                                                                <span class='badge badge-success' data-uk-tooltip='{pos:\"bottom\"}' :title='item.KONU4'>Konu<label style='display:none;'> - {{item.KONU4}}</label></span>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+
+                                                    <td>{{item.DERSAD5}}</td>
+                                                    <td style='text-align:center;' class='Kontroller' @click='DKontrol(4, item.ID_PROJETALEP5 ,  item.ID_OGRENCI)'>
+                                                        <div v-if="item.DURUM5==3">Reddedildi</div>
+                                                        <div v-else style="cursor:pointer;">
+                                                            <div v-if="item.KONU5.length==0">
+                                                                <span class='badge badge-danger'>Konu</span>
+                                                            </div>
+                                                            <div v-else>
+                                                                <span class='badge badge-success' data-uk-tooltip='{pos:\"bottom\"}' :title='item.KONU5'>Konu<label style='display:none;'> - {{item.KONU5}}</label></span>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            <!--<div class="form-group" style="text-align: center; display:none" >
+                                <a class="btn btn-lg blue hidden-print margin-bottom-5" onclick="printDiv();"> Yazdır <i class="fa fa-print"></i> </a>
+                            </div>-->
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="tab_1_4">
+                        <div class="form-group" style="display: contents;">
+                            <c-ogretmen-sinif controller="ProjeDonem"
+                                              :idsinif="idsinif"
+                                              @OnChange="SinifSelected">
+                            </c-ogretmen-sinif>
+
+                            <div class="form-md-line-input" v-if="ortaOkul==true">
+                                <div class="col-md-2">
+                                    <select class="selectpicker form-control" v-model="yariYil" title="YarıYıl Seçiniz">
+                                        <option value="1" selected>1. Dönem</option>
+                                        <option value="2">2. Dönem</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="col-md-1" style="float:right;" id="ExcelButon" v-if="NotOgrenciListe.length>0">
+                                <input style="float:right;height:34px" type="button" class="btn btn-success" onclick='tableToExcel("Table4", "Proje Dönem Ödevi Puanlama");' value="Excel">
+                            </div>
+                        </div>
+
+                        <hr />
+                        <div class="col-md-12 alert alert-info">
+                            <span>
+                                Tablodaki 1,2,3,4 kolonlarının altında bulunan hücrelere tıklayarak puanlama yapabilirsiniz. Puanlama kriterlerine bakmak için
+                                <a href="#tab_1_9" data-toggle="tab" style="color:red">
+                                    <strong>buraya</strong>
+                                </a>
+                                tıklayabilirsiniz.
+                            </span>
+                        </div>
+                        <table class="table-bordered table-striped table-condensed cf display col-md-12" id="Table4" style="font-size: 9px;" v-if="NotOgrenciListe.length>0">
+                            <thead class="cf" id="theads">
+                                <tr>
+                                    <th style='text-align:center;' colspan='6'>Proje Dönem Ödevi Puanlama Çizelgesi</th>
+                                    <th style='text-align:center;' colspan='4'>Plan Oluşturma ve Uygulama</th>
+                                    <th style='text-align:center;' colspan='4'>Kaynak Kullanımı</th>
+                                    <th style='text-align:center;' colspan='4'>İşbirliği Yapma</th>
+                                    <th style='text-align:center;' colspan='4'>Dil Kullanımı</th>
+                                    <th style='text-align:center;' colspan='4'>Kavrama</th>
+                                    <th style='width:110px;text-align:center;' colspan='2'>Değerlendirme</th>
+                                </tr>
+
+                                <tr>
+                                    <th style='text-align:center;'>Öğretmen</th>
+                                    <th style='text-align:center;'>No</th>
+                                    <th style='text-align:center;'>Sınıf</th>
+                                    <th style='text-align:center;'>Ad Soyad</th>
+                                    <th style='text-align:center;'>Ders</th>
+                                    <th style='text-align:center;'>Konu</th>
+                                    <th style='text-align:center; width: 20px;'>1</th>
+                                    <th style='text-align:center; width: 20px;'>2</th>
+                                    <th style='text-align:center; width: 20px;'>3</th>
+                                    <th style='text-align:center; width: 20px;'>4</th>
+
+                                    <th style='text-align:center; width: 20px;'>1</th>
+                                    <th style='text-align:center; width: 20px;'>2</th>
+                                    <th style='text-align:center; width: 20px;'>3</th>
+                                    <th style='text-align:center; width: 20px;'>4</th>
+
+                                    <th style='text-align:center; width: 20px;'>1</th>
+                                    <th style='text-align:center; width: 20px;'>2</th>
+                                    <th style='text-align:center; width: 20px;'>3</th>
+                                    <th style='text-align:center; width: 20px;'>4</th>
+
+                                    <th style='text-align:center; width: 20px;'>1</th>
+                                    <th style='text-align:center; width: 20px;'>2</th>
+                                    <th style='text-align:center; width: 20px;'>3</th>
+                                    <th style='text-align:center; width: 20px;'>4</th>
+
+                                    <th style='text-align:center; width: 20px;'>1</th>
+                                    <th style='text-align:center; width: 20px;'>2</th>
+                                    <th style='text-align:center; width: 20px;'>3</th>
+                                    <th style='text-align:center; width: 20px;'>4</th>
+                                    <th style='text-align:center; width: 50px;'>Yüzdelik Puan</th>
+                                    <th style='text-align:center; width: 50px;'>Derecesi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbodys">
+                                <tr v-for="item in NotOgrenciListe">
+                                    <td style='text-align:center'>{{ogretmenAdSoyad}} </td>
+                                    <td style='text-align:center'>{{item.OGRNO}}</td>
+                                    <td style='text-align:center'>{{item.SINIFAD}}</td>
+                                    <td style='text-align:center'>{{item.ADSOYAD }}</td>
+                                    <td style='text-align:center'>{{item.DERSAD }}</td>
+                                    <td style='text-align:center'>{{item.KONU }}</td>
+
+                                    <td style='text-align:center; cursor:pointer;' class="NotCell1" :class="{ 'secili': item.PLANOLUSTURMA == 1}" @click='NotVer(item.ID_PROJETALEP,1,1)'> <div v-if="item.PLANOLUSTURMA == 1">x</div> </td>
+                                    <td style='text-align:center; cursor:pointer;' class="NotCell1" :class="{ 'secili': item.PLANOLUSTURMA == 2}" @click='NotVer(item.ID_PROJETALEP,1,2)'> <div v-if="item.PLANOLUSTURMA == 2">x</div> </td>
+                                    <td style='text-align:center; cursor:pointer;' class="NotCell1" :class="{ 'secili': item.PLANOLUSTURMA == 3}" @click='NotVer(item.ID_PROJETALEP,1,3)'> <div v-if="item.PLANOLUSTURMA == 3">x</div> </td>
+                                    <td style='text-align:center; cursor:pointer;' class="NotCell1" :class="{ 'secili': item.PLANOLUSTURMA == 4}" @click='NotVer(item.ID_PROJETALEP,1,4)'> <div v-if="item.PLANOLUSTURMA == 4">x</div> </td>
+
+                                    <td style='text-align:center; cursor:pointer;' class="NotCell2" :class="{ 'secili': item.KAYNAKKULLANIM == 1 }" @click='NotVer(item.ID_PROJETALEP,2,1)'> <div v-if="item.KAYNAKKULLANIM == 1">x</div> </td>
+                                    <td style='text-align:center; cursor:pointer;' class="NotCell2" :class="{ 'secili': item.KAYNAKKULLANIM == 2 }" @click='NotVer(item.ID_PROJETALEP,2,2)'> <div v-if="item.KAYNAKKULLANIM == 2">x</div> </td>
+                                    <td style='text-align:center; cursor:pointer;' class="NotCell2" :class="{ 'secili': item.KAYNAKKULLANIM == 3 }" @click='NotVer(item.ID_PROJETALEP,2,3)'> <div v-if="item.KAYNAKKULLANIM == 3">x</div> </td>
+                                    <td style='text-align:center; cursor:pointer;' class="NotCell2" :class="{ 'secili': item.KAYNAKKULLANIM == 4 }" @click='NotVer(item.ID_PROJETALEP,2,4)'> <div v-if="item.KAYNAKKULLANIM == 4">x</div> </td>
+
+                                    <td style='text-align:center; cursor:pointer;' class="NotCell3" :class="{ 'secili': item.ISBIRLIGI == 1 }" @click='NotVer(item.ID_PROJETALEP,3,1)'> <div v-if="item.ISBIRLIGI == 1">x</div> </td>
+                                    <td style='text-align:center; cursor:pointer;' class="NotCell3" :class="{ 'secili': item.ISBIRLIGI == 2 }" @click='NotVer(item.ID_PROJETALEP,3,2)'> <div v-if="item.ISBIRLIGI == 2">x</div> </td>
+                                    <td style='text-align:center; cursor:pointer;' class="NotCell3" :class="{ 'secili': item.ISBIRLIGI == 3 }" @click='NotVer(item.ID_PROJETALEP,3,3)'> <div v-if="item.ISBIRLIGI == 3">x</div> </td>
+                                    <td style='text-align:center; cursor:pointer;' class="NotCell3" :class="{ 'secili': item.ISBIRLIGI == 4 }" @click='NotVer(item.ID_PROJETALEP,3,4)'> <div v-if="item.ISBIRLIGI == 4">x</div> </td>
+
+                                    <td style='text-align:center; cursor:pointer;' class="NotCell4" :class="{ 'secili': item.DILKULLANIM == 1 }" @click='NotVer(item.ID_PROJETALEP,4,1)'> <div v-if="item.DILKULLANIM == 1">x</div> </td>
+                                    <td style='text-align:center; cursor:pointer;' class="NotCell4" :class="{ 'secili': item.DILKULLANIM == 2 }" @click='NotVer(item.ID_PROJETALEP,4,2)'> <div v-if="item.DILKULLANIM == 2">x</div> </td>
+                                    <td style='text-align:center; cursor:pointer;' class="NotCell4" :class="{ 'secili': item.DILKULLANIM == 3 }" @click='NotVer(item.ID_PROJETALEP,4,3)'> <div v-if="item.DILKULLANIM == 3">x</div> </td>
+                                    <td style='text-align:center; cursor:pointer;' class="NotCell4" :class="{ 'secili': item.DILKULLANIM == 4 }" @click='NotVer(item.ID_PROJETALEP,4,4)'> <div v-if="item.DILKULLANIM == 4">x</div> </td>
+
+                                    <td style='text-align:center; cursor:pointer;' class="NotCell5" :class="{ 'secili': item.KAVRAMA == 1 }" @click='NotVer(item.ID_PROJETALEP,5,1)'> <div v-if="item.KAVRAMA == 1">x</div> </td>
+                                    <td style='text-align:center; cursor:pointer;' class="NotCell5" :class="{ 'secili': item.KAVRAMA == 2 }" @click='NotVer(item.ID_PROJETALEP,5,2)'> <div v-if="item.KAVRAMA == 2">x</div> </td>
+                                    <td style='text-align:center; cursor:pointer;' class="NotCell5" :class="{ 'secili': item.KAVRAMA == 3 }" @click='NotVer(item.ID_PROJETALEP,5,3)'> <div v-if="item.KAVRAMA == 3">x</div> </td>
+                                    <td style='text-align:center; cursor:pointer;' class="NotCell5" :class="{ 'secili': item.KAVRAMA == 4 }" @click='NotVer(item.ID_PROJETALEP,5,4)'> <div v-if="item.KAVRAMA == 4">x</div> </td>
+
+                                    <td style='text-align:center;'><div v-if="item.PROJENOT>0">{{item.PROJENOT}}</div></td>
+                                    <td style='text-align:center;'>{{item.DERECE }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                    </div>
+                    <!--Açıklama metni-->
+                    <div class="tab-pane fade" id="tab_1_9">
+                        <div class="row form-body form-horizontal">
+                            <div class="col-md-12">
+                                <table class="table table-bordered col-md-12" id="KriterTable">
+                                    <thead>
+                                        <tr>
+                                            <th></th>
+                                            <th></th>
+                                            <th><a class="btn blue" data-toggle="tab" href="#tab_1_4">Puanlama Ekranına Dön</a><input style="float:right;" type="button" class="btn btn-success" onclick="tableToExcel('KriterTable', 'W3C Example Table')" value="Excel"></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td style="text-align:center; vertical-align:middle;" rowspan="4">
+                                                Plan oluşturma ve Uygulama
+                                            </td>
+                                            <td style="text-align:center; vertical-align:middle;">1</td>
+                                            <td style="background-color:antiquewhite;">Araştırma süreci öncesinde bir plan yapmadı. Araştırma raporunu oldukça geç teslim etti.</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="text-align:center; vertical-align:middle; ">2</td>
+                                            <td style="background-color:antiquewhite;">Araştırma sürecine ilişkin planlama yaptı, ancak plana tam anlamıyla uymadı. Araştırma raporunu teslim tarihinden bir – iki gün sonra teslim etti.</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="text-align:center; vertical-align:middle;">3</td>
+                                            <td style="background-color:antiquewhite;">Araştırma öncesinde araştırma sürecine ilişkin plan yaptı. Yapmış olduğu plana çoğunlukla uydu. Araştırma raporunu zamanında teslim etti.</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="text-align:center; vertical-align:middle;">4</td>
+                                            <td style="background-color:antiquewhite;">Araştırma öncesinde araştırma sürecini etkili şekilde planladı ve planını öğretmeniyle paylaştı. Yapmış olduğu plana tam anlamıyla uydu. Araştırma raporunu tam zamanında teslim etti.</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="text-align:center; vertical-align:middle;" rowspan="4">
+                                                Kaynak Kullanımı
+                                            </td>
+                                            <td style="text-align:center; vertical-align:middle;">1</td>
+                                            <td style="background-color:aliceblue;">Konuyla ilgili olarak yeteri kadar kaynak kullanmadı. Kullandığı kaynaklar ders kitabı ile sınırlıydı.</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="text-align:center; vertical-align:middle;">2</td>
+                                            <td style="background-color:aliceblue;">Konuya ilişkin kaynak kullandı, ancak kaynaklardan bir kısmı konuyla tam anlamıyla ilişkili değildi.</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="text-align:center; vertical-align:middle;">3</td>
+                                            <td style="background-color:aliceblue;">Konuya ilişkin yeterli sayıda kaynak kullandı. Kaynakların çoğunluğu konuyla ilişkiliydi. Kaynaklarını düzenledi.</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="text-align:center; vertical-align:middle;">4</td>
+                                            <td style="background-color:aliceblue;">Konuya ilişkin çok fazla ve çeşitli kaynaklar kullandı. Toplamış olduğu kaynakları pratik bir şekilde düzenledi. Kullandığı kaynaklar konuyla ilişkiliydi.</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="text-align:center; vertical-align:middle;" rowspan="4">
+                                                İşbirliği Yapma
+                                            </td>
+                                            <td style="text-align:center; vertical-align:middle;">1</td>
+                                            <td style="background-color:lightpink;">Araştırma sürecinde ihtiyaç duyduğu konularda hiç kimseden yardım istemedi ve arkadaşlarıyla gerekli durumlarda iş birliğinde bulunmadı.</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="text-align:center; vertical-align:middle;">2</td>
+                                            <td style="background-color:lightpink;">Araştırma sürecinde, ihtiyaç duyduğu hâlde, sadece bir iki kez öğretmeninden yardım istedi. Arkadaşlarıyla pek fazla iş birliği yapmadı.</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="text-align:center; vertical-align:middle;">3</td>
+                                            <td style="background-color:lightpink;">Araştırma sürecinde ihtiyaç duyduğu yerlerde öğretmeninden yardım istedi. Gerekli durumlarda arkadaşlarıyla iş birliği yaptı.</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="text-align:center; vertical-align:middle;">4</td>
+                                            <td style="background-color:lightpink;">Araştırma sürecinde ihtiyaç duyduğu yerlerde öğretmeninden, arkadaşlarından ve etrafındaki ilgili kişilerden yardım istedi. Gerekli olduğunda arkadaşlarıyla iş irliği yaptı. Arkadaşlarını kendi araştırmaları konusunda teşvik etti.</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="text-align:center; vertical-align:middle;" rowspan="4">
+
+                                                Dil Kullanımı
+                                            </td>
+                                            <td style="text-align:center; vertical-align:middle;">1</td>
+                                            <td style="background-color:lightgreen;">Ciddi ve çok sayıda dil  bilgisi ve yazım kuralı hatası yaptı.</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="text-align:center; vertical-align:middle;">2</td>
+                                            <td style="background-color:lightgreen;">Dil bilgisi ve yazım kurallarını kullanırken bazı ciddi hatalar yaptı.</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="text-align:center; vertical-align:middle;">3</td>
+                                            <td style="background-color:lightgreen;">Dil bilgisi ve yazım kurallarını kullanırken az sayıda önemsiz hata yaptı.</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="text-align:center; vertical-align:middle;">4</td>
+                                            <td style="background-color:lightgreen;">Dil bilgisi ve yazım kurallarını doğru ve tam olarak kullandı.</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="text-align:center; vertical-align:middle;" rowspan="4">
+                                                Kavrama
+                                            </td>
+                                            <td style="text-align:center; vertical-align:middle;">1</td>
+                                            <td style="background-color:lavender;">Konuya ilişkin kavram, olgu ve prensipleri kullanırken ciddi hatalar yaptı. Tamamen kitaptan aldıklarını aktardı.</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="text-align:center; vertical-align:middle;">2</td>
+                                            <td style="background-color:lavender;">
+                                                Konuya ilişkin kavram, olgu ve prensipleri kullanırken bazı hatalar yaptı.  Pek fazla yorum yapmadı.
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="text-align:center; vertical-align:middle;">3</td>
+                                            <td style="background-color:lavender;">
+                                                Konuya ilişkin kavram, olgu ve prensipleri doğru şekilde kullandı. Bazı yerlerde kendi yorumlarını kattı.
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="text-align:center; vertical-align:middle;">4</td>
+                                            <td style="background-color:lavender;">
+                                                Konuya ilişkin kavram, olgu ve prensipleri doğru ve yerinde kullandı. Konuya kendi yorumlarını da kattı.
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- modal-content -->
+    <div class="modal fade" id="Kontrolmodal" tabindex="-1" role="dialog" aria-hidden="true" style="display: none;">
+        <div class="modal-dialog">
+            <div class="modal-content form-horizontal">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                    <h4 class="modal-title" v-if="kontrolSira!=5"> Kontrol </h4>
+                    <h4 class="modal-title" v-else> Proje Değerlendirme </h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label class="control-label col-md-3"> Konu </label>
+                        <div class="col-md-9"> <label class="control-label">{{kontrolOgrenci.KONU}}</label> </div>
+                    </div>
+                    <div class="form-group" v-if="kontrolSira!=5">
+                        <c-tarih controller="SinavTanimla"
+                                 :tarih="kontrolOgrenci.KONTROLTARIH"
+                                 @change-date="TarihSelected">
+                        </c-tarih>
+                        <!--<label class="control-label col-md-3"> Kontrol Tarihi </label>
+                        <div class="col-md-9">
+                            <input type="text" id="datepicker" v-model="kontrolOgrenci.KONTROLTARIH" data-date-format="dd.mm.yyyy" class="form-control form-control-inline input-medium date-picker" :value="kontrolOgrenci.KONTROLTARIH" />
+                        </div>-->
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-md-3"> Açıklama </label>
+                        <div class="col-md-9">
+                            <textarea id="Degerlendirme" v-model="kontrolOgrenci.KONTROL" placeholder="Bir değerlendirme giriniz." class="form-control" rows="2">{{kontrolOgrenci.KONTROL}}</textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn default" data-dismiss="modal"> Kapat </button>
+                    <button type="button" class="btn green" @click="KontrolKayit()"> Kaydet </button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+    <div class="modal fade" id="DanismanProjeler" tabindex="-1" role="dialog" aria-hidden="true" style="display: none;">
+        <div class="modal-dialog">
+            <div class="modal-content form-horizontal">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                    <h4 class="modal-title" id="H3"> Proje / Dönem Ödevi  </h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group col-md-12" v-show="konuDegistir==false">
+
+                        <label class="control-label col-md-3" style="text-align: right"> Ders </label>
+                        <c-sinif-ders controller="ProjeDonem"
+                                      :idsinif="idsinif"
+                                      :idders="idders"
+                                      @OnChange="SinifDersSelected">
+                        </c-sinif-ders>
+                        <!--<label class="control-label col-md-3" style="text-align: right"> Dersler </label>
+                        <div class="col-md-6">
+                            <select id="cmb_dersler" class="form-control">
+                                <option idders="0">Lütfen Seçiniz</option>
+                            </select>
+                        </div>-->
+                    </div>
+                    <div class="form-group  col-md-12">
+                        <label class="control-label col-md-3" style="text-align: right"> Konu </label>
+                        <div class="col-md-9">
+                            <textarea id="DanismanProjeKonu" v-model="kontrolOgrenci.KONU" rows="3" class="form-control" style="resize: none;">{{kontrolOgrenci.KONU}}</textarea>
+                        </div>
+                    </div>
+
+                    <div class="col-md-12">
+                        <div class="fileinput fileinput-new" data-provides="fileinput">
+                            <div class="input-group" style="width:100%!important;">
+                                <div class="form-control uneditable-input input-fixed input-medium" data-trigger="fileinput" style="width:100%!important;">
+                                    <i class="fa fa-file fileinput-exists"></i>&nbsp;
+                                    <span class="fileinput-filename" style="width: 300px;" title=".pdf,.txt,.doc,.docx,.rar,.zip,.jpg,.jpeg,.png"> </span>
+                                </div>
+                                <span class="input-group-addon btn default btn-file">
+                                    <span class="fileinput-new"> Dosya Seç </span>
+                                    <span class="fileinput-exists"> Değiştir </span>
+                                    <!--<input multiple="multiple" type="file" name="..."  accept="image/*" id="Dosya">-->
+                                    <input multiple="multiple" type="file" name="..." accept=".pdf,.txt,.doc,.docx,.rar,.zip,.jpg,.jpeg,.png" id="Dosya">
+                                </span>
+                                <a href="javascript:;" class="input-group-addon btn red fileinput-exists" data-dismiss="fileinput" id="dosyaKaldir"> Sil </a>
+                            </div>
+                            <span class="badge badge-default col-lg-12">*.pdf, *.txt, *.doc, *.docx, *.rar, *.zip, *.jpg, *.jpeg, *.png </span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-3 control-label">
+                        </label>
+                        <div class="col-md-9">
+                            <table role="presentation" class="table table-striped margin-top-10">
+                                <tbody class="files" id="Dosyalar2">
+                                    <tr v-for="item in DosyaListe.PD">
+                                        <td>
+                                            <div class="col-md-9">
+                                                <a :href="'Dosyalar/ProjeDonem/'+item.DOSYA" target="_blank" download>{{item.DOSYA}}</a>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <button type="button" class="btn red" @click="DosyaSil(item.ID_PROJETALEP,item.ID_PROJEDOSYA)"> Sil </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn red pull-left" @click="ProjeDonemSil" v-if="kontrolOgrenci.ID_PROJETALEP>0 && konuDegistir==false"> Proje Dönem Ödevini Sil </button>
+                    <button type="button" class="btn default" data-dismiss="modal"> Kapat </button>
+                    <button type="button" class="btn green" @click="ProjeDonemKayit()"> Kaydet </button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+</div>
+
+
+
+<script src="../../../VueComponents/Genel.js?v=3"></script>
+<script src="../../VueComponents/SubeGrupSinif.js"></script>
+<script src="VueComponents/SinavFiltreleri.js"></script>
+<script>
+    var vue = new Vue({
+        el: "#app",
+        name: "ProjeDonem.html",
+        data: {
+            TCKIMLIKNO: '',
+            ID_KADEME3: 0,
+            TalepListe: [],
+            BOOgrenciListe: [],
+            DOOgrenciListe: [],
+            NotOgrenciListe: [],
+            DosyaListe: [],
+            idsinif: 0,
+            tabDanisman: false,
+            ortaOkul: false,
+            kontrolSira: 0,
+            kontrolOgrenci: {},
+            idders: 0,
+            yariYil: 1,
+            DOSYAGUID: "",
+            ID_OGRENCI: 0,
+            konuDegistir: false,
+            tabid: 2,
+            ogretmenAdSoyad: "",
+        },
+        mounted() {
+            this.ogretmenAdSoyad = session.AD + " " + session.SOYAD;
+        },
+        watch: {
+            tabid() {
+                this.idsinif = 0;
+                this.yariYil = 1;
+                this.ortaOkul = false;
+                this.TabloBosalt();
+            },
+            yariYil() {
+                if (this.idsinif > 0) {
+                    this.SinifSelected(this.idsinif);
+                }
+            }
+        },
+        methods: {
+            SinifDersSelected(item) {
+                this.idders = item;
+            },
+            TarihSelected(item) {
+                this.kontrolOgrenci.KONTROLTARIH = item.replace("/", ".").replace("/", ".");
+            },
+            SinifSelected(item) {
+                this.idsinif = item;
+
+                this.TabloBosalt();
+
+                //var id = $('.nav-tabs .active a').data("id");
+                if (this.tabid == 1) { // Talep Listesi
+                    this.TalepListesi();
+                }
+                if (this.tabid == 2) { // BO Kontrol Formu
+                    this.BOKontrolFormu();
+                }
+                if (this.tabid == 3) { // DO Kontrol Formu
+                    this.DOKontrolFormu();
+                }
+                if (this.tabid == 4) { // Not
+                    this.NotVermeFormu();
+                }
+
+            },
+
+            TabloBosalt() {
+
+                ListeTemizle(this.BOOgrenciListe);
+                ListeTemizle(this.DOOgrenciListe);
+                ListeTemizle(this.TalepListe);
+                ListeTemizle(this.NotOgrenciListe);
+                ListeTemizle(this.DosyaListe);
+            },
+
+            TalepListesi() {
+                var _this = this;
+
+                $('#Table1').dataTable().fnClearTable(0);
+                $('#Table1').dataTable().fnDraw();
+
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    ID_SINIF: this.idsinif,
+                    YARIYIL: _this.ortaOkul == false ? 1 : _this.yariYil,
+                }
+
+                WebPost(this, "ProjeDonem", "OgretmenProjeTalepleri", p, "#app", "Yükleniyor...", function (data, parent) {
+                    let dt = JSON.parse(data)[0].LISTE;
+                    _this.TalepListe = dt == null || dt == undefined ? [] : dt;
+
+                    $('.selectpicker').selectpicker('refresh');
+                    if (_this.TalepListe.length>0) {
+                        $("#Table1").DataTable().destroy();
+                        _this.$nextTick(() => {
+                            _this.ListeOlustur('Table1', 2);
+
+                            $('.selectpicker').selectpicker('refresh');
+                            $.each(_this.TalepListe, function (j, el) {
+                                $('#selIslem' + el.ID_PROJETALEP).val(el.DURUM);
+                                $('#selIslem' + el.ID_PROJETALEP).change();
+                            });
+
+                        });
+                    } else {
+                        Alert_Warning("Öğrenci Bulunamadı..!");
+                    }
+                });
+            },
+            BOKontrolFormu() {
+                var _this = this;
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    ID_SINIF: this.idsinif,
+                    YARIYIL: _this.ortaOkul == false ? 1 : _this.yariYil,
+                }
+                WebPost(this, "ProjeDonem", "OgretmenProjeTalepleri", p, "#app", "Yükleniyor...", function (data, parent) {
+                    _this.BOOgrenciListe = $.grep(JSON.parse(data)[0].LISTE, function (el, j) { return el.DURUM == 2 });
+                    try {
+                        if (_this.BOOgrenciListe.length > 0) {
+
+                        }
+                    } catch (e) {
+                        Alert_Warning("Öğrenci Bulunamadı..!");
+                    }
+                });
+            },
+
+            Kontrol(kSira, idprojetalep) {
+                var _this = this;
+                this.kontrolSira = kSira;
+
+                var result = $.grep(_this.BOOgrenciListe, function (el, j) {
+                    return el.ID_PROJETALEP == idprojetalep;
+                });
+
+                var sayi = ["SIFIR", "BIR", "IKI", "UC", "DORT"]
+
+                _this.kontrolOgrenci = {
+                    ID_PROJETALEP: result[0].ID_PROJETALEP,
+                    KONU: result[0].KONU,
+                    KONTROLTARIH: result[0]["KONTROL" + sayi[kSira] + "TARIH"],
+                    KONTROL: result[0]["KONTROL" + sayi[kSira]]
+                }
+                if (kSira == 5) {
+                    _this.kontrolOgrenci.KONTROL = result[0]["PROJEDEGERLENDIRME"];
+                }
+
+                $("#Kontrolmodal").modal("show");
+            },
+            KontrolKayit() {
+                var _this = this;
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    ID_PROJETALEP: _this.kontrolOgrenci.ID_PROJETALEP,
+                    KONTROLTARIH: _this.kontrolOgrenci.KONTROLTARIH,
+                    KONTROL: _this.kontrolOgrenci.KONTROL,
+                    SIRA: _this.kontrolSira
+                }
+                WebPost(this, "ProjeDonem", "KontrolKayit", p, "#app", "Yükleniyor...", function (data, parent) {
+                    if (data) {
+                        Alert_Info("Kontrol Başarıyla Kaydedildi...");
+                        $("#Kontrolmodal").modal("hide");
+                        _this.BOKontrolFormu();
+                    }
+                    else {
+                        Alert_Error("Kontrol Kaydedilirken Hata Oluştu...");
+                        $("#Kontrolmodal").modal("hide");
+                    }
+                });
+            },
+
+            DOKontrolFormu() {
+                var _this = this;
+
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    ID_SINIF: this.idsinif,
+                    YARIYIL: _this.ortaOkul == false ? 1 : _this.yariYil,
+                }
+                WebPost(this, "ProjeDonem", "DanismanOgretmenSinifProje", p, "#app", "Yükleniyor...", function (data, parent) {
+                    _this.DOOgrenciListe = JSON.parse(data)[0].LISTE;
+                    try {
+                        if (_this.DOOgrenciListe.length > 0) { }
+                    }
+                    catch (e) { Alert_Warning("Öğrenci Bulunamadı..!"); }
+                });
+            },
+            DKontrol(kSira, idprojetalep, idOgrenci, konuDegis) {
+                var _this = this;
+                this.kontrolSira = kSira;
+                this.idders = 0;
+                this.ID_OGRENCI = idOgrenci;
+                this.konuDegistir = konuDegis == true ? true : false;
+
+                var konu = "";
+                var result = [];
+
+                if (this.konuDegistir) {
+                    result = $.grep(_this.TalepListe, function (el, j) {
+                        return el.ID_PROJETALEP == idprojetalep;
+                    });
+                    konu = result[0]["KONU"];
+                    _this.idders = result[0]["ID_DERS"];
+                    _this.kontrolSira = result[0]["SIRA"];
+
+                }
+                else if (idprojetalep > 0) {
+                    result = $.grep(_this.DOOgrenciListe, function (el, j) {
+                        return el.ID_PROJETALEP1 == idprojetalep
+                            || el.ID_PROJETALEP2 == idprojetalep
+                            || el.ID_PROJETALEP3 == idprojetalep
+                            || el.ID_PROJETALEP4 == idprojetalep
+                            || el.ID_PROJETALEP5 == idprojetalep
+                    });
+
+                    for (var i = 1; i < 6; i++) {
+                        if (result[0]["ID_PROJETALEP" + i] == idprojetalep) {
+                            konu = result[0]["KONU" + i];
+                            _this.idders = result[0]["ID_DERS" + i];
+                            _this.kontrolSira = (i - 1);
+                        }
+                    }
+                }
+                console.log(result)
+
+                try {
+                    if (result.length > 0) {
+                        _this.kontrolOgrenci = {
+                            ID_PROJETALEP: idprojetalep,
+                            KONU: konu,
+                            ID_DERS: _this.idders,
+                        }
+                    }
+                    else {
+                        _this.kontrolOgrenci = {
+                            ID_PROJETALEP: 0,
+                            KONU: "",
+                            ID_DERS: 0,
+                        }
+                        vue.DosyaListe = { KONU: "", PD: [] };
+                    }
+
+                }
+                catch (e) {
+                    _this.kontrolOgrenci = {
+                        ID_PROJETALEP: 0,
+                        KONU: "",
+                        ID_DERS: 0,
+                    }
+                    vue.DosyaListe = { KONU: "", PD: [] };
+                }
+
+                if (idprojetalep > 0) {
+                    vue.DosyaListele(idprojetalep);
+                }
+                $("#dosyaKaldir").trigger('click'); // dosya upload içini boşalt
+                $("#DanismanProjeler").modal("show");
+            },
+
+            ProjeDonemKayit() {
+                var _this = this;
+                if (this.idders == 0 || this.idders == undefined) {
+                    Alert_Error("Ders Seçiniz.")
+                    return;
+                }
+                //else if (this.kontrolOgrenci.KONU == "" || this.kontrolOgrenci.KONU == undefined) {
+                //    Alert_Error("Konu Giriniz.")
+                //    return;
+                //}
+                else if (this.ID_OGRENCI == "" || this.ID_OGRENCI == undefined) {
+                    Alert_Error("Öğrenci Seçilemedi.")
+                    return;
+                }
+
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    ID_PROJETALEP: _this.kontrolOgrenci.ID_PROJETALEP == undefined ? 0 : _this.kontrolOgrenci.ID_PROJETALEP,
+                    ID_DERS: _this.idders,
+                    SIRA: _this.kontrolSira,
+                    KONU: _this.kontrolOgrenci.KONU,
+                    DOSYAGUID: _this.DOSYAGUID,
+                    ID_OGRENCI: _this.ID_OGRENCI,
+                    ID_SINIF: _this.idsinif,
+                    YARIYIL: _this.ortaOkul == false ? 1 : _this.yariYil,
+                }
+
+                //console.log(p)
+                //return;
+                //_this.kontrolOgrenci = undefined;
+
+                WebPost(this, "ProjeDonem", "ProjeDonemKayit", p, "#app", "Yükleniyor...", function (data, parent) {
+                    if (data > 0) {
+                        vue.DosyaKaydet(data)
+                        Alert_Info("Proje/Dönem Ödevi Başarıyla Kaydedildi...");
+
+                        $("#dosyaKaldir").trigger('click'); // dosya upload içini boşalt
+                        $("#DanismanProjeler").modal("hide");
+                        //_this.DOKontrolFormu();
+                        _this.SinifSelected(_this.idsinif);
+                    }
+                    else {
+                        Alert_Error("Proje/Dönem Ödevi Kaydedilirken Hata Oluştu...");
+                        $("#dosyaKaldir").trigger('click'); // dosya upload içini boşalt
+                        $("#DanismanProjeler").modal("hide");
+                    }
+                });
+            },
+            ProjeDonemSil() {
+                var _this = this;
+                if (this.kontrolOgrenci.ID_PROJETALEP == 0 || this.kontrolOgrenci.ID_PROJETALEP == undefined) {
+                    Alert_Warning("Proje/Dönem Ödevi Bulunamadı...");
+                    return;
+                }
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    ID_PROJETALEP: _this.kontrolOgrenci.ID_PROJETALEP == undefined ? 0 : _this.kontrolOgrenci.ID_PROJETALEP,
+                }
+
+                WebPost(this, "ProjeDonem", "ProjeDonemSil", p, "#app", "Yükleniyor...", function (data, parent) {
+                    if (data) {
+                        Alert_Info("Proje/Dönem Ödevi Başarıyla Silindi...");
+                        $("#DanismanProjeler").modal("hide");
+                        _this.DOKontrolFormu();
+                    }
+                    else {
+                        Alert_Error("Proje/Dönem Ödevi Silinirken Hata Oluştu...");
+                        $("#DanismanProjeler").modal("hide");
+                    }
+                });
+            },
+
+            DurumDegistir(item) {
+                var _this = this;
+                if (item.ID_PROJETALEP > 0) {
+
+                    var durumYazi = "";//item.DURUM == 2 ? "Kabul" : "Red";
+
+                    switch (item.DURUM) {
+                        case 2: durumYazi = "Kabul"; break;
+                        case 2: durumYazi = "Red"; break;
+                    }
+
+                    var p = {
+                        TCKIMLIKNO: session.TCKIMLIKNO,
+                        OTURUM: session.OTURUM,
+                        ID_PROJETALEP: item.ID_PROJETALEP,
+                        DURUM: parseInt(item.DURUM),
+                    }
+
+                    WebPost(this, "ProjeDonem", "ProjeDonemDurumDegistir", p, "#app", "Yükleniyor...", function (data, parent) {
+                        if (data) {
+                            durumYazi == ""
+                                ? Alert_Info("Proje/Dönem Ödevi Beklemeye Alındı...")
+                                : Alert_Info("Proje/Dönem Ödevi " + durumYazi + " Edildi...");
+                            $("#Kontrolmodal").modal("hide");
+                            _this.SinifSelected(_this.idsinif);
+                        }
+                        else {
+
+                            durumYazi == ""
+                                ? Alert_Error("Proje/Dönem Ödevi Beklemeye Alınırken Hata Oluştu...")
+                                : Alert_Error("Proje/Dönem Ödevi " + durumYazi + " Edildirken Hata Oluştu...");
+                            $("#Kontrolmodal").modal("hide");
+                        }
+                    });
+                }
+                else {
+                    Alert_Warning("Proje Seçiniz.");
+                    return;
+                }
+            },
+
+
+            //DurumDegistir(idprojetalep, durum) {
+            //    var _this = this;
+            //    if (idprojetalep == 0 || idprojetalep == undefined) {
+            //        Alert_Warning("Proje Seçiniz.");
+            //        return;
+            //    } else if (durum != 2 && durum != 3) {
+            //        Alert_Warning("Durum Seçiniz.");
+            //        return;
+            //    }
+            //    var durumYazi = durum == 2 ? "Kabul" : "Red";
+            //    var p = {
+            //        TCKIMLIKNO: session.TCKIMLIKNO,
+            //        OTURUM: session.OTURUM,
+            //        ID_PROJETALEP: idprojetalep,
+            //        DURUM: durum,
+            //    }
+            //    WebPost(this, "ProjeDonem", "ProjeDonemDurumDegistir", p, "#app", "Yükleniyor...", function (data, parent) {
+            //        if (data) {
+            //            Alert_Info("Proje/Dönem Ödevi " + durumYazi + " Edildi...");
+            //            $("#Kontrolmodal").modal("hide");
+            //            _this.SinifSelected(_this.idsinif);
+            //        }
+            //        else {
+            //            Alert_Error("Proje/Dönem Ödevi " + durumYazi + " Edildirken Hata Oluştu...");
+            //            $("#Kontrolmodal").modal("hide");
+            //        }
+            //    });
+            //},
+
+            DosyaKaydet(idprojetalep) {
+                var dosya = document.getElementById('Dosya').files;
+                var uzantilar = ["pdf", "doc", "docx", "rar", "zip", "jpg", "jpeg", "png", "txt"];
+                var hatalilar = [];
+                var buyukdosya = [];
+
+                if (dosya.length == 0) {
+                    return;
+                } else {
+                    var x = document.getElementById("Dosya");
+                    $.each(x.files, function (j, el) {
+                        var file = this; //x.files[0];
+                        var uzanti = file.name.substring(file.name.lastIndexOf('.') + 1);
+                        if (file.size > 10 * 1024 * 1024) { // 10 MB dan büyükse
+                            buyukdosya.push(file.name);
+                        }
+                        else if (uzantilar.indexOf(uzanti) > -1) {
+                            DosyaYukle(file, idprojetalep, 'ProjeDonem', function (sonuc) {
+                                if (!sonuc) {
+                                    Alert_Warning("Dosya Yüklenirken hata oluştu !!")
+                                }
+                            });
+                        }
+                        else {
+                            hatalilar.push(file.name);
+                        }
+
+
+                        if (x.files.length == (j + 1) && hatalilar.length > 0) {
+                            var hataMesaj = 'Geçersiz Dosya Türüleri Nedeniyle Aşağıdaki Dosya/Dosyalar Yüklenemedi.';
+                            $.each(hatalilar, function (i, item) {
+                                hataMesaj += "<br> >" + item;
+                            });
+
+                            if (buyukdosya.length > 0) {
+                                hataMesaj += '<br><br>Dosya Boyutunun 10 MB dan Fazla  Olmasnı Nedeniyle Aşağıdaki Dosya/Dosyalar Yüklenemedi.';
+                                $.each(buyukdosya, function (i, item) {
+                                    hataMesaj += "<br> >" + item;
+                                });
+                            }
+                            Alert_Warning(hataMesaj);
+                        }
+                    });
+
+                }
+            },
+            DosyaListele(idprojetalep) {
+
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    ID_PROJETALEP: idprojetalep,
+                }
+                WebPost(this, "ProjeDonem", "ProjeDonemDosyaListele", p, "#app", "Yükleniyor...", function (data, parent) {
+                    if (JSON.parse(data)[0].LISTE == null) {
+                        vue.DosyaListe = [];
+                    } else {
+                        vue.DosyaListe = JSON.parse(data)[0].LISTE[0];
+                    }
+
+                });
+            },
+            DosyaSil(idprojetalep, idprojedosya) {
+                var _this = this;
+                if (idprojetalep == 0 || idprojetalep == undefined) {
+                    Alert_Warning("Proje Seçiniz.");
+                    return;
+                } else if (idprojedosya == 0 || idprojedosya == undefined) {
+                    Alert_Warning("Dosya Seçiniz.");
+                    return;
+                }
+
+
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    ID_PROJETALEP: idprojetalep,
+                    ID_PROJEDOSYA: idprojedosya,
+                }
+
+                WebPost(this, "ProjeDonem", "ProjeDonemDosyaSil", p, "#app", "Yükleniyor...", function (data, parent) {
+                    if (data) {
+                        _this.DosyaListele(idprojetalep);
+                    }
+                });
+            },
+
+            ListeOlustur(tabloAdi, idSorting) {
+                idSorting = (idSorting == undefined) ? 0 : idSorting;
+
+                this.tblSorular = $('#' + tabloAdi).DataTable(
+                    {
+                        "search": {
+                            "caseInsensitive": false
+                        },
+                        "aaSorting": [[idSorting, 'asc']],
+                        language: {
+                            "url": "./Utility/dil.json"
+
+                        },
+                    });
+            },
+
+
+            NotVermeFormu() {
+                var _this = this;
+
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    ID_SINIF: this.idsinif,
+                    YARIYIL: _this.ortaOkul == false ? 1 : _this.yariYil,
+                }
+                WebPost(this, "ProjeDonem", "OgretmenProjeTalepleri", p, "#app", "Yükleniyor...", function (data, parent) {
+                    _this.NotOgrenciListe = $.grep(JSON.parse(data)[0].LISTE, function (el, j) { return el.DURUM == 2 });
+
+                    try {
+                        if (_this.NotOgrenciListe.length > 0) { }
+                    }
+                    catch (e) { Alert_Warning("Öğrenci Bulunamadı..!"); }
+                });
+            },
+            NotVer(idprojetalep, kriter, deger) {
+
+                //item.ID_PROJETALEP, 5, 4
+
+                var _this = this;
+                if (idprojetalep == 0 || idprojetalep == undefined) {
+                    Alert_Warning("Proje Seçiniz.");
+                    return;
+                } else if (kriter < 1 || kriter > 5) {
+                    Alert_Warning("kriter Seçiniz.");
+                    return;
+                } else if (deger < 1 || deger > 4) {
+                    Alert_Warning("deger Seçiniz.");
+                    return;
+                }
+
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    ID_PROJETALEP: idprojetalep,
+                    KRITER: kriter,
+                    DEGER: deger,
+                }
+                WebPost(this, "ProjeDonem", "ProjeDonemNotEkle", p, "#app", "Yükleniyor...", function (data, parent) {
+                    if (data) {
+                        _this.NotVermeFormu();
+                    }
+                    else {
+                        Alert_Error("Not verme işlemi sırasında hata oluştu...");
+                    }
+                });
+            },
+
+        },
+    });
+</script>
+<script src="Scripts/PublicMethods.js"></script>
+<script src="assets/global/plugins/bootstrap-fileinput/bootstrap-fileinput.js?v=3" type="text/javascript"></script>

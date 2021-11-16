@@ -1,0 +1,463 @@
+﻿<style>
+    td {
+        vertical-align: middle !important;
+    }
+
+    .row {
+        margin-top: 10px !important;
+    }
+
+    #OdevAciklama p {
+        margin: 0px !important;
+    }
+</style>
+<div class="page-head">
+    <div class="page-title col-md-12">
+        <h1>
+            Ödev Liste <span onclick="YardimGoster(ID_MENU);" class="pull-right" style="cursor:pointer;"><img src="assets/global/img/info.gif" class="info-image-icon" /> </span>
+        </h1>
+    </div>
+</div>
+
+<div class="row" id="app">
+    <div class="col-md-12">
+        <div class="portlet box blue-hoki dd-item" style="border:none">
+            <div class="portlet-body form">
+                <form role="form" style="padding:12px 20px">
+                    <div class="row">
+                        <c-sube :controller="controller"
+                                @OnChange="SubeSelected">
+                        </c-sube>
+                    </div>
+
+                    <div class="row">
+                        <c-kademe3 :controller="controller"
+                                   :idsube="ID_SUBE"
+                                   @OnChange="Kademe3Selected">
+                        </c-kademe3>
+                    </div>
+
+                    <div class="row">
+                        <c-sinif :controller="controller"
+                                 :idsube="ID_SUBE"
+                                 :idkademe3="ID_KADEME3"
+                                 @OnChange="SinifSelected">
+                        </c-sinif>
+                    </div>
+
+                    <div class="row">
+                        <c-sinif-odev-veren :controller="controller"
+                                            :idsinif="ID_SINIF"
+                                            @OnChange="OdevVerenSelected">
+                        </c-sinif-odev-veren>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="portlet light" v-if="LISTE.length>0">
+            <div class="portlet-title">
+                <div class="caption">
+                    <i class="icon-list font-green"></i>
+                    <span class="caption-subject bold font-green uppercase"> Ödev Listesi </span>
+                    <span class="caption-helper"></span>
+                </div>
+            </div>
+            <div class="portlet-body form">
+                <form role="form">
+                    <div class="portlet light bordered">
+                        <div class="portlet-body">
+                            <table class="table table-striped table-bordered table-hover table-checkable">
+                                <thead>
+                                    <tr>
+                                        <th>Ders</th>
+                                        <th>Başlık</th>
+                                        <th>Veriliş T.</th>
+                                        <th>Teslim T.</th>
+                                        <th>Ödev Veren</th>
+                                        <th>İşlem</th>
+                                        <th>Durum</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="odd gradeX" v-for="(u, index) in LISTE">
+                                        <td>
+                                            {{u.DERSAD}}
+                                        </td>
+                                        <td>
+                                            {{u.BASLIK}}
+                                        </td>
+                                        <td>
+                                            {{u.VERILIS_TARIHI}}
+                                        </td>
+                                        <td>
+                                            {{u.TESLIM_TARIHI}}
+                                        </td>
+                                        <td>
+                                            {{u.ADSOYAD}}
+                                        </td>
+                                        <td>
+                                            <button type="button" class="btn green" @click="DetayGor(u.ID_ODEV)">DETAY</button>
+                                            <button type="button" class="btn btn-info" @click="Tamamlandi(u.ID_ODEV)">Tamamlandı</button>
+                                            <button type="button" class="btn btn-info" @click="DosyaGor(u)">
+                                                {{u.DOSYASAYISI > 0 || u.DOSYASAYISI==undefined ? 'Dosya Düzenle (' + u.DOSYASAYISI + ')' : 'Dosya Yükle'}}
+                                            </button>
+                                        </td>
+                                        <td>
+                                            <button type="button" :class="'btn btn-' + (u.DURUM == 1?'success':u.DURUM == 2?'info':'danger')" disabled>{{u.DURUM == 1?'KONTROL EDİLDİ':u.DURUM == 2?'KONTROLE AÇIK':'KONTROL EDİLMEDİ' }}</button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>        
+    </div>
+
+    <div id="MODAL_DETAY" class="modal fade in" tabindex="-1" data-replace="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body" style="padding-bottom:0px;" id="modal-body">
+                    <div class="row">
+                        <div class="col-md-12"><h4><strong>Açıklama</strong></h4></div>
+                        <div class="col-md-12" v-html="ODEVDETAY.ACIKLAMA" id="OdevAciklama">
+                        </div>
+                    </div>
+                    <div class="row" v-if="ODEVDETAY.LINKLIST!=undefined && ODEVDETAY.LINKLIST.length>0">
+                        <div class="col-md-12"><h4><strong>Linkler</strong></h4></div>
+                        <div class="col-md-12" v-for="(ITEM, index) in ODEVDETAY.LINKLIST">
+                            <span>{{(index + 1) + '. '}}</span><a :href="ITEM.LINK" target="_blank">{{ITEM.AD}}</a>
+                        </div>
+                    </div>
+                    <div class="row" v-if="ODEVDETAY.DOSYALIST!=undefined && ODEVDETAY.DOSYALIST.length>0">
+                        <div class="col-md-12"><h4><strong>Dosyalar</strong></h4></div>
+                        <div class="col-md-12" v-for="(ITEM, index) in ODEVDETAY.DOSYALIST">
+                            <span>{{(index + 1) + '. '}}</span><a :href="'https://okyanusdata.s3-eu-west-1.amazonaws.com/pusulam/odev/ogretmen/' + ITEM.GUID"  target="_blank">{{ITEM.AD}}</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn default" data-dismiss="modal">Kapat</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="MODAL_DOSYA" class="modal fade in" tabindex="-1" data-replace="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body" style="padding-bottom:0px;" id="modal-body">
+                    <div class="row">
+                        <div class="col-md-12"><h4><strong v-html="ODEVDETAY.DERSAD"></strong></h4> <span v-html="ODEVDETAY.BASLIK"></span></div>
+                    </div>
+
+                    <div class="margin-bottom-25">
+                        <div class="input-icon" style=" float: right; padding-right: 30px; ">
+                            <input type="file" name="..." id="dosya" data-preview-file-type="text" style="display:none;" @change="DosyaGonder" multiple>
+                            <i class="fa fa-3x fa-plus font-green" @click="DosyaSec" style="cursor:pointer; line-height:18px; margin-right:32px;"></i>
+                            <!--<i class="fa fa-3x fa-send-o font-green" @click="MesajGonder" style="cursor:pointer; line-height:18px; margin-right:8px;"></i>
+                            <input type="text" class="textarea form-control" id="mesaj" placeholder="Mesaj" style="background-color:#fff;" @keyup.enter="MesajGonder">-->
+                        </div>
+                    </div>
+
+                    <div class="row" v-if="ODEVDETAY.OGRENCIDOSYALIST != undefined && ODEVDETAY.OGRENCIDOSYALIST.length > 0">
+                        <div class="col-md-12"><h4><strong>Dosyalar</strong></h4></div>
+                        <div class="col-md-12" v-for="(ITEM, index) in ODEVDETAY.OGRENCIDOSYALIST" style="cursor:pointer">
+                            <span class="fa fa-trash" style="margin-right:5px" @click="DosyaSil(ITEM.ID_ODEVSINIFOGRENCIDOSYA,index)"></span>
+                            <a :href="'https://okyanusdata.s3-eu-west-1.amazonaws.com/pusulam/odev/ogrenci/' + ITEM.GUID" target="_blank">{{index + 1}}. Dosya</a>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn default" data-dismiss="modal">Kapat</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="VueComponents/Filtre.js"></script>
+<script src="VueComponents/FiltreEk.js"></script>
+
+<script>
+    var vue = new Vue({
+        el: "#app",
+        name: "OdevListesi",
+
+        data: {
+            controller: 'OdevListesi',
+            ID_SUBE: 0,
+            ID_KADEME3: 0,
+            ID_SINIF: 0,
+            TC_ODEVVEREN: '',
+            LISTE: [],
+            ODEVDETAY: {},
+        },
+
+        mounted() {
+        },
+
+        methods: {
+            SubeSelected(val) {
+                this.ID_SUBE = val;
+                this.ID_KADEME3 = 0;
+                this.ID_SINIF = 0;
+            },
+
+            Kademe3Selected(val) {
+                this.ID_KADEME3 = val;
+                this.ID_SINIF = 0;
+            },
+
+            SinifSelected(val) {
+                this.ID_SINIF = val;
+                this.Listele();
+            },
+
+            OdevVerenSelected(val) {
+                if (val != undefined) {
+                    this.TC_ODEVVEREN = val;
+                    this.Listele();
+                }
+            },
+            OdevIptal(ID_ODEV) {
+                var p = { TCKIMLIKNO: session.TCKIMLIKNO, OTURUM: session.OTURUM, ID_ODEV: ID_ODEV };
+                WebPost(vue, vue.controller, "OdevIptal", p, '', '', function (data, parent) {
+                    if (data) {
+                        Alert_Info("Ödev İptal Edildi")
+                        parent.Listele();
+                    }
+                    else
+                        Alert_Error("Bir Hata Oluşu")
+                })
+
+            },
+            LinkControl(ITEM) {
+                var NEWS = [];
+                for (var i = 0; i < this.ODEVDETAY.LINKLIST.length; i++) {
+                    if (this.ODEVDETAY.LINKLIST[i].LINK.length > 0 || this.ODEVDETAY.LINKLIST[i].AD.length > 0) {
+                        NEWS.push(this.ODEVDETAY.LINKLIST[i])
+                    }
+                }
+                NEWS.push({ AD: '', LINK: '' });
+                this.ODEVDETAY.LINKLIST = NEWS;
+            },
+
+            DetayGor(ID_ODEV) {
+
+                var p = { TCKIMLIKNO: session.TCKIMLIKNO, OTURUM: session.OTURUM, ID_ODEV: ID_ODEV };
+                WebPost(vue, vue.controller, "OdevDetayGetir", p, '', '', function (data, parent) {
+                    if (data != null) {
+                        parent.ODEVDETAY = JSON.parse(data);
+                        $('#MODAL_DETAY').modal();
+                    }
+                    else {
+                        Alert_Warning("Bir Hata Oluştu!");
+                    }
+                })
+            },
+
+            Listele() {
+                this.LISTE = [];
+                var p = { TCKIMLIKNO: session.TCKIMLIKNO, OTURUM: session.OTURUM, TC_ODEVVEREN: this.TC_ODEVVEREN, ID_SINIF: this.ID_SINIF };
+                WebPost(vue, vue.controller, "OdevVerenOdevListele", p, '', '', function (data, parent) {
+                    if (data != '[]') {
+                        parent.LISTE = JSON.parse(data);
+                    }
+                })
+            },
+
+            Tamamlandi(ID_ODEV) {
+                var p = { TCKIMLIKNO: session.TCKIMLIKNO, OTURUM: session.OTURUM, ID_ODEV: ID_ODEV };
+                WebPost(vue, vue.controller, "OdevTamamla", p, '', '', function (data, parent) {
+                    if (data) {
+                        parent.Listele();
+                    }
+                })
+            },
+
+            DosyaSil(ID_ODEVSINIFOGRENCIDOSYA, index) {
+
+                Alert_Confirm("Dosya Silme", "Dosyayı silmek istediğinizden emin misiniz ?", () => {
+                    var p = { TCKIMLIKNO: session.TCKIMLIKNO, OTURUM: session.OTURUM, ID_ODEVSINIFOGRENCIDOSYA: ID_ODEVSINIFOGRENCIDOSYA };
+                    WebPost(vue, vue.controller, "OdevDosyaSil", p, '', '', function (data, parent) {
+                        if (data) {
+                            vue.ODEVDETAY.OGRENCIDOSYALIST.splice(index, 1);
+                            let tempOdev = $.grep(vue.LISTE, (el) => { return el.ID_ODEV == vue.ODEVDETAY.ID_ODEV })[0];
+                            tempOdev.DOSYASAYISI--;
+                        }
+                        else {
+                            Alert_Warning("Bir Hata Oluştu!");
+                        }
+                    });
+                });
+
+            },
+
+            DosyaGor(item) {
+
+                var p = { TCKIMLIKNO: session.TCKIMLIKNO, OTURUM: session.OTURUM, ID_ODEV: item.ID_ODEV, TC_OGRENCI: session.TCKIMLIKNO };
+                WebPost(vue, vue.controller, "OdevDetayGetir", p, '', '', function (data, parent) {
+                    if (data != null) {
+                        parent.ODEVDETAY = JSON.parse(data);
+                        $('#MODAL_DOSYA').modal();
+                        console.log(parent.ODEVDETAY)
+                    }
+                    else {
+                        Alert_Warning("Bir Hata Oluştu!");
+                    }
+                })
+
+            },
+
+            DosyaSec() {
+                $('#dosya').click();
+            },
+
+            DosyaGonder(e) {
+                var input = document.getElementById('dosya');
+                if (input.files.length) {
+                    for (var i = 0; i < input.files.length; i++) {
+                        App.blockUI({
+                            target: '#app',
+                            boxed: true,
+                            message: 'Yükleniyor...'
+                        });
+                        if (e.target.files[i].type.indexOf('image') > -1)
+                            vue.compress(e.target.files[i]);
+                        else
+                            vue.FormGonder(e.target.files[i]);
+                    }
+
+
+                    //this.ODEVDETAY.OGRENCIDOSYALIST.push({ GUID: "" });
+
+
+                } else {
+                    alert('Please upload a file before continuing')
+                }
+            },
+
+
+            FormGonder(file) {
+                var formData = new FormData();
+                formData.append("TCKIMLIKNO", session.TCKIMLIKNO);
+                formData.append("TC_OGRENCI", session.TC_OGRENCI);
+                formData.append("OTURUM", session.OTURUM);
+                formData.append("ID_ODEV", vue.ODEVDETAY.ID_ODEV);
+                formData.append("ID_MEDYATUR", file.type.indexOf('image') > -1 ? 2 : file.type.indexOf('video') > -1 ? 3 : 4);
+
+                // HTML file input, chosen by user
+                formData.append("file", file);
+                $.ajax({
+                    url: vue.controller + '/OdevDosyaYukle',
+                    processData: false,
+                    contentType: false,
+                    data: formData,
+                    type: 'POST'
+                }).done(function (result) {
+                    App.unblockUI('#app');
+                    if (result != null) {
+                        vue.ODEVDETAY.OGRENCIDOSYALIST.push(JSON.parse(result)[0]);
+                        var tempOdev = $.grep(vue.LISTE, (el) => { return el.ID_ODEV == vue.ODEVDETAY.ID_ODEV })[0];
+                        tempOdev.DOSYASAYISI++;
+                    }
+                    else
+                        Alert_Error("Dosya Yüklenirken Hata Oluştu")
+                    //$('#MODAL_DOSYA').modal("hide");
+
+                    $("#dosya").val(null);
+                }).fail(function (a, b, c) {
+                    App.unblockUI('#app');
+
+                });
+            },
+
+
+            resize(img) {
+                var actualHeight = img.height
+                var actualWidth = img.width
+                let maxHeight = 900.0
+                let maxWidth = 1600.0
+                var imgRatio = actualWidth / actualHeight
+                let maxRatio = maxWidth / maxHeight
+                var compressionQuality = 0.5
+
+                if (actualHeight > maxHeight || actualWidth > maxWidth) {
+                    if (imgRatio < maxRatio) {
+                        //adjust width according to maxHeight
+                        imgRatio = maxHeight / actualHeight
+                        actualWidth = imgRatio * actualWidth
+                        actualHeight = maxHeight
+                    } else if (imgRatio > maxRatio) {
+                        //adjust height according to maxWidth
+                        imgRatio = maxWidth / actualWidth
+                        actualHeight = imgRatio * actualHeight
+                        actualWidth = maxWidth
+                    } else {
+                        actualHeight = maxHeight
+                        actualWidth = maxWidth
+                        compressionQuality = 1
+                    }
+                }
+
+                return { width: actualWidth, height: actualHeight }
+            },
+
+            compress(e) {
+
+                const fileName = e.name;
+                const reader = new FileReader();
+                reader.readAsDataURL(e);
+                reader.onload = event => {
+                    const img = new Image();
+                    img.src = event.target.result;
+                    img.onload = () => {
+                        var size = vue.resize(img);
+                        const width = size.width;
+                        const height = size.height;
+
+                        const elem = document.createElement('canvas');
+
+                        elem.width = width;
+                        elem.height = height;
+                        const ctx = elem.getContext('2d');
+                        // img.width and img.height will contain the original dimensions
+                        ctx.drawImage(img, 0, 0, width, height);
+                        //toBlob polyfill
+                        if (!HTMLCanvasElement.prototype.toBlob) {
+                            Object.defineProperty(HTMLCanvasElement.prototype, 'toBlob', {
+                                value: function (callback, type, quality) {
+                                    var dataURL = this.toDataURL(type, quality).split(',')[1];
+                                    setTimeout(function () {
+                                        var binStr = atob(dataURL),
+                                            len = binStr.length,
+                                            arr = new Uint8Array(len);
+                                        for (var i = 0; i < len; i++) {
+                                            arr[i] = binStr.charCodeAt(i);
+                                        }
+                                        callback(new Blob([arr], { type: type || 'image/png' }));
+                                    });
+                                }
+                            });
+                        }
+
+                        // toBlob usage
+                        ctx.canvas.toBlob(function (blob) {
+                            const file = new File([blob], fileName, {
+                                type: 'image/jpeg',
+                                lastModified: Date.now()
+                            });
+
+                            vue.FormGonder(file);
+                        }, 'image/jpeg', 0.85);
+                    },
+                        reader.onerror = error => console.log(error);
+                };
+            },
+        },
+    });
+</script>
+<script src="Scripts/PublicMethods.js"></script>

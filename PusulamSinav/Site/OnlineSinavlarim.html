@@ -1,0 +1,297 @@
+﻿<head>
+    <script src="/Scripts/Tools.js"></script>
+    <script src="/Scripts/Rapor/amcharts.js"></script>
+    <script src="/Scripts/Rapor/jquery.easypiechart.js"></script>
+    <script src="/Scripts/Rapor/light.js"></script>
+    <script src="/Scripts/Rapor/serial.js"></script>
+    <script src="/Scripts/Rapor/pie.js"></script>
+</head>
+<style>
+    #chartdiv {
+        width: 100%;
+        height: 200px;
+        font-size: 11px;
+    }
+</style>
+<div class="page-head">
+    <div class="page-title col-md-12">
+        <h1>
+            Online Sınav
+            <small>Sınavlarım</small>
+             <span onclick="YardimGoster(ID_MENU);" class="pull-right" style="cursor:pointer;"><img src="assets/global/img/info.gif" class="info-image-icon" /> </span>
+        </h1>
+    </div>
+</div>
+<div class="row" id="app" style="margin-top:0px!important;">
+    <div class="col-md-12">
+        <div class="portlet light">
+            <div class="portlet-title">
+                <div class="caption">
+                    <i class="icon-list font-green"></i>
+                    <span class="caption-subject bold font-green uppercase"> Sınavlarım </span>
+                    <span class="caption-helper"></span>
+                </div>
+            </div>
+            <div class="portlet-body form">
+                <table class="table table-striped table-bordered table-checkable" id="tblListe">
+                    <thead>
+                        <tr>
+                            <th>Sınav Türü</th>
+                            <th>Sınav Adı</th>
+                             <th>Başlangıç Tarihi</th>
+                            <th>Bitiş Tarihi</th>
+                            <th>Süresi</th>
+                            <th>Çözülme Durumu</th>
+                            <th>İşlemler</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="u in LISTE">
+                            <td>{{u.SINAVTURU}}</td>
+                            <td>
+                                {{u.SINAVAD}}
+                                {{ u.OTURUM + '. Oturum'}}
+                            </td>
+                             <td>{{u.BASTARIH}}</td>
+                            <td>{{u.BITTARIH}}</td>
+                            <td>{{u.SURE}}</td>
+                            <td>{{u.COZULDU == true ? ( u.DEVAM ? 'Sınav Devam Ediyor' : 'Çözüldü') : 'Çözülmedi'}}</td>
+                            <td>
+                                <button type="button" class="btn blue" @click="SonucBelgesi(u)" v-if="u.ACIKLANDI && u.COZULDU && u.DEGERLENDIRME">Sonuç Belgesi</button>
+                                <button type="button" class="btn yellow" @click="SinavAc(u)" v-if="u.DEVAM">Sınava Başla</button>
+                                <button type="button" class="btn green" @click="SinavPerformans(u)" v-if="u.ACIKLANDI && u.COZULDU  && u.DEGERLENDIRME">Detay Gör</button>
+                                <button type="button" class="btn yellow" @click="SinavAc(u)" v-if="!u.DEVAM && u.COZULDU ">Sınav İncele</button>
+                                <button type="button" class="btn grey-cascade" @click="SinavCikti(u.ID_SINAV)" v-if="u.ACIKLANDI" style="display: none;">Sınav Çıktısı</button>
+                                <label v-if="!u.DEVAM && !u.COZULDU "> -- </label>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div id="detay_modal" class="modal fade" tabindex="-1" data-replace="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content" v-if="SINAVPERFORMANS!=null">
+                <div class="modal-header" style="background-color: #67809F; color: #fff;">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true" style="margin-top:8px!important;"></button>
+                    <h4 class="modal-title bold">Sınav Bilgileri</h4>
+                </div>
+                <div class="modal-body" style="padding:0px;">
+                    <div class="form-body form-horizontal">
+                        <div class="row" style="margin:0px!important; display:flex;">
+
+                            <div style="flex:5; padding:8px;">
+                                <table class="table" style="width:100%; margin:0px;">
+                                    <tr>
+                                        <th style="text-align:right;">SINAV TÜRÜ: </th>
+                                        <td style="text-align:left;">{{SINAVPERFORMANS.SINAVTURU}}</td>
+                                    </tr>
+                                    <tr>
+                                        <th style="text-align:right;">SINAV ADI: </th>
+                                        <td style="text-align:left;">{{SINAVPERFORMANS.SINAVAD}}</td>
+                                    </tr>
+                                    <tr>
+                                        <th style="text-align:right;">SON GİRİŞ: </th>
+                                        <td style="text-align:left;">{{SINAVPERFORMANS.SONGIRIS}}</td>
+                                    </tr>
+
+                                    <tr>
+                                        <th style="text-align:right;">DOĞRU: </th>
+                                        <td style="text-align:left;">{{SINAVPERFORMANS.DOGRU}}</td>
+                                    </tr>
+                                    <tr>
+                                        <th style="text-align:right;">YANLIŞ: </th>
+                                        <td style="text-align:left;">{{SINAVPERFORMANS.YANLIS}}</td>
+                                    </tr>
+                                    <tr>
+                                        <th style="text-align:right;">BOŞ: </th>
+                                        <td style="text-align:left;">{{SINAVPERFORMANS.BOS}}</td>
+                                    </tr>
+                                    <tr>
+                                        <th style="text-align:right;">PERFORMANS (%): </th>
+                                        <td style="text-align:left;">{{SINAVPERFORMANS.NETPERFORMANS}}</td>
+                                    </tr>
+                                </table>
+
+                                <div class="col-md-12 form-group" style="overflow:auto">
+                                    <div id="chartdiv"></div>
+                                </div>
+
+
+                                <div class="col-md-6 form-group"
+                                     style="overflow:auto;"
+                                     v-if="SINAVPERFORMANS.DERSPERFORMANS.length > 1"
+                                     v-for="u in SINAVPERFORMANS.DERSPERFORMANS">
+
+                                    <div :id="'chartdivDers'+u.BOLUMNO" style=" width: 100%; height: 200px; font-size: 11px;"></div>
+                                </div>
+                            </div>
+
+                            <div style="flex:3; text-align:center;  padding:8px;">
+
+                                <div class="col-md-12">
+                                    <small>
+                                        {{SINAV.SD[SECILIDERS].TAKMAAD}}
+                                    </small>
+                                </div>
+
+                                <div class="col-md-12" style="text-align:center;line-height:42px; margin-top:5px; margin-bottom: 15px; padding:0px;">
+                                    <i style="vertical-align:middle; cursor:pointer;" class="fa fa-3x fa-angle-left"
+                                       @click="SECILIDERS = (SECILIDERS == 0 ? 0 : (SECILIDERS - 1))"></i>
+                                    <h3 style="display:inline; vertical-align:middle; font-weight:600; margin-left:5px; margin-right:5px;">{{SINAV.SD[SECILIDERS].BOLUMNO +' / '+ SINAV.SD.length}}</h3>
+                                    <i style="vertical-align:middle; cursor:pointer;" class="fa fa-3x fa-angle-right"
+                                       @click="SECILIDERS = (SECILIDERS == (SINAV.SD.length - 1) ? (SINAV.SD.length - 1) : (SECILIDERS + 1)) "></i>
+                                </div>
+
+                                <div class="col-md-12" id="table_soru">
+                                    <label>SORU LİSTESİ</label>
+                                    <div style="width:100%; overflow-y:auto;">
+                                        <table class="table" style="width:100%; margin:0px;">
+                                            <tr v-for="(soru,index) in SINAV.SD[SECILIDERS].SA" style="cursor:pointer;">
+                                                <td style="width:30px !important;">
+                                                    <i v-if="soru.OGRENCICEVAP == soru.DOGRUCEVAP" class="fa fa-lg fa-check"></i>
+                                                    <i v-else-if="soru.OGRENCICEVAP == null" class="fa fa-lg fa-circle-o"></i>
+                                                    <i v-else class="fa fa-lg fa-close"></i>
+                                                </td>
+                                                <td style="width:10px !important;">{{soru.SORUNO}}</td>
+                                                <td style="width:100px !important">
+                                                    <label style="border: solid; border-radius: 50%; margin-right:5px; border-width: 1px;"
+                                                           v-for="c in soru.SBC"
+                                                           :style=" (soru.DOGRUCEVAP == c.ID_CEVAP &&  soru.OGRENCICEVAP != null
+                                                                    ? 'background-color:green; color:white'
+                                                                    : ((soru.DOGRUCEVAP != c.ID_CEVAP && soru.OGRENCICEVAP == c.ID_CEVAP)
+                                                                        ? 'background-color:red !important ; color:white'
+                                                                        : ( soru.DOGRUCEVAP == c.ID_CEVAP && soru.OGRENCICEVAP == null
+                                                                            ? 'background-color:blue ; color:white'
+                                                                            : ''
+                                                                        )
+                                                                    ))">
+                                                        &nbsp; {{String.fromCharCode(64 + c.CEVAPNO)}} &nbsp;
+                                                    </label>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    var vue = new Vue({
+        el: "#app",
+        name: "OnlineSinavlarim",
+
+        data: {
+            TCKIMLIKNO: '',
+            OTURUM: '',
+            controller: 'OnlineSinavlarim',
+
+            LISTE: [],
+
+
+            SINAV: null,
+            SINAVPERFORMANS: null,
+            SECILIDERS: 0,
+            YONERGE:0
+        },
+
+        mounted() {
+            this.TCKIMLIKNO = session.TCKIMLIKNO;
+            this.OTURUM = session.OTURUM;
+            this.SinavListele();
+        },
+
+        methods: {
+
+            SinavListele() {
+                var p = {
+                    TCKIMLIKNO: this.TCKIMLIKNO,
+                    OTURUM: this.OTURUM,
+                };
+                WebPost(this, this.controller, "OnlineSinavlarimListele", p, '', '', function (data, parent) {
+                    vue.LISTE = JSON.parse(data);
+                    vue.$nextTick(function () {
+                        ListeOlustur('tblListe');
+                    });
+                })
+                
+            },
+
+            SinavAc(item) {
+              
+                    window.location.replace('/AnaSayfa.html#OnlineSinav/Ogrenci/Sinav?ID_SINAV=' + item.ID_SINAV + '&OTURUM=' + item.OTURUM);
+            },
+            
+            SonucBelgesi(item) {
+                window.open('../Rapor.aspx?rapor=Sinav.SinavSonuclari&raporTur=pdf&p='
+                    + this.TCKIMLIKNO
+                    + ';' + this.OTURUM
+                    + ';' + this.TCKIMLIKNO
+                    + ';' + item.ID_SINAV
+                    + ";"
+                    + 0, '_blank');
+            },
+            SinavCikti(item) {
+                
+                window.open('/AnaSayfa.html#OnlineSinav/OnlineSinavCikti?ID_SINAV=' + item + '&CEVAPANAHTARI=true', '_blank');
+                //window.open("Rapor.aspx?raporTur=pdf&rapor=Sinav.Online.Sinav&p="
+                //    + session.TCKIMLIKNO + ";"
+                //    + session.OTURUM + ";"
+                //    + item + ";"
+                //    + true
+                //    , '_blank');
+            },
+            SinavPerformans(item) {
+                $("#detay_modal").modal();
+
+                this.SINAV = null;
+                this.SINAVPERFORMANS = null;
+
+                this.SECILIDERS = 0;
+
+                var p = { TCKIMLIKNO: this.TCKIMLIKNO, OTURUM: this.OTURUM, ID_SINAV: item.ID_SINAV };
+
+                WebPost(this, vue.controller, "OnlineSinavPerformans", p, '', '', function (data, parent) {
+                    if (data != '[]' ) {
+                        vue.SINAV = JSON.parse(data)[0].SINAV[0];
+                        vue.SINAVPERFORMANS = JSON.parse(data)[0].PERFORMANS[0];
+
+                        var datapro = [];
+                        datapro.push({ "durum": "Net", "yuzde": vue.SINAVPERFORMANS.NETPERFORMANS.toFixed(2), "color": "#DDD" });
+                        datapro.push({ "durum": "", "yuzde": 100 - vue.SINAVPERFORMANS.NETPERFORMANS.toFixed(2), "color": "#DDD" });
+                        vue.$nextTick(function () {
+                            AmChartPieOlustur("chartdiv", datapro, "yuzde", "durum", false, "Performans Grafiği", false);
+                        });
+                        vue.$forceUpdate();
+                        vue.$nextTick(() => {
+                            $.each(vue.SINAVPERFORMANS.DERSPERFORMANS, (j, el) => {
+                                var dataproDers = [];
+                                dataproDers.push({ "durum": "Net", "yuzde": el.YUZDENET.toFixed(2), "color": "#DDD" });
+                                dataproDers.push({ "durum": "", "yuzde": 100 - el.YUZDENET.toFixed(2), "color": "#DDD" });
+                                vue.$nextTick(function () {
+                                    AmChartPieOlustur("chartdivDers" + (j + 1), dataproDers, "yuzde", "durum", false, el.TAKMAAD + " Performans Grafiği", false);
+                                });
+                            });
+                        });
+                        //datapro.push({ "durum": "Doğru", "yuzde": vue.SINAVPERFORMANS.DOGRUPERFORMANS.toFixed(2), "color": "#DDD" });
+                        //datapro.push({ "durum": "Yanlış", "yuzde": vue.SINAVPERFORMANS.YANLISPERFORMANS.toFixed(2), "color": "#DDD" });
+                        //datapro.push({ "durum": "Boş", "yuzde": vue.SINAVPERFORMANS.BOSPERFORMANS.toFixed(2), "color": "#DDD" });
+                        //vue.$nextTick(function () {
+                        //    AmChartPieOlustur("chartdiv", datapro, "yuzde", "durum", false, "Performans Grafiği", false);
+                        //});
+                    }
+                });
+
+            }
+        },
+    });
+</script>
+<script src="Scripts/PublicMethods.js"></script>

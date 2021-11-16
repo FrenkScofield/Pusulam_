@@ -1,0 +1,319 @@
+﻿<head>
+    <script src="../../../Scripts/Rapor/amcharts.js"></script>
+    <script src="../../../Scripts/Rapor/jquery.easypiechart.js"></script>
+    <script src="../../../Scripts/Rapor/light.js"></script>
+    <script src="../../../Scripts/Rapor/serial.js"></script>
+</head>
+
+<style>
+    #chartdiv {
+        width: 100%;
+        height: 500px;
+        font-size: 11px;
+    }
+    
+    #chartdiv2 {
+        width: 100%;
+        height: 500px;
+        font-size: 11px;
+    }
+
+    .table > tbody > tr > td, .table > tbody > tr > th, .table > tfoot > tr > td, .table > tfoot > tr > th, .table > thead > tr > td, .table > thead > tr > th {
+        font-size: 11px;
+    }
+
+    
+    .table-hover>tbody>tr:hover, .table-hover>tbody>tr:hover>td {color: black !important; }
+
+    .turuncu {
+        background-color: #EA5702 !important;
+        color: white !important;
+        font-size: 12px !important;
+    }
+
+    .fontsize12 {
+        font-size: 12px !important;
+    }
+
+    .koyumavi {
+        background-color: #0E3170;
+        color: white;
+    }
+
+    .acikmavi {
+        background-color: #2786C3;
+        color: white;
+    }
+
+    .bordermavi {
+        border: #2786C3 1px solid;
+        text-align: center;
+        color: black;
+    }
+
+    .bordersag {
+        border-right: #b4d2e6 1px solid;
+        text-align: center;
+    }
+
+    .analizbaslik {
+        background-color: #FFA500 !important;
+    }
+
+    .fixed-table-body {
+        overflow-x: hidden !important;
+    }
+
+    .red {
+        color: red;
+    }
+</style>
+
+<link href="../../../assets/fixed-table/css/component.css?v=4" rel="stylesheet" />
+
+<div class="page-head">
+    <div class="page-title col-md-12">
+        <h1>
+            Rehberlik Envanter Sonuç Gör
+             <span onclick="YardimGoster(ID_MENU);" class="pull-right" style="cursor:pointer;"><img src="assets/global/img/info.gif" class="info-image-icon" /> </span>
+        </h1>
+    </div>
+</div>
+
+<div class="row" id="app">
+    <div class="col-md-12">
+	    <div class="portlet box green-haze dd-item" style="border:none">
+		    <div class="portlet-title dd-handle" data-toggle='collapse' data-target='#filters' style="cursor:pointer;">
+			    <div class="caption">
+				    <i class="icon-magnifier"></i>
+				    <span class="caption-subject bold uppercase"> Filtreler </span>
+				    <span class="caption-helper"></span>
+			    </div>
+			    <div class='actions'>
+				    <a href='javascript:;' class='btn btn-default btn-sm' style='border:none;'>
+					    <i class='fa fa-chevron-down'></i>
+				    </a>
+			    </div>
+		    </div>
+		    <div class="portlet-body form collapse in" id="filters">
+				<div class="form-body form-group-lg form-horizontal">				
+                    <div id="FiltreDiv">
+                        <div class="portlet-body">
+                            <div class="form-inline list-group-item row">
+
+                                
+                                <div class="portlet light col-md-12" id="FiltreDivVeli" style="margin:0px; border-bottom-style: solid;border-bottom-width: 3px;border-bottom-color: rgb(0, 173, 239);"
+                                     v-if="ListKullaniciTipi.indexOf(5)>-1">
+
+                                    <div class="portlet-body">
+                                        <div class="form-inline">
+                                            <c-ogrenci-veli controller="RehberlikEnvanterOV"
+                                                            :tc="TCKIMLIKNO"
+                                                            @OnChange="OgrenciVeliSelected">
+                                            </c-ogrenci-veli>
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <div class="portlet light col-md-12" id="FiltreDivOgrenci" style="margin:0px; border-bottom-style: solid;border-bottom-width: 3px;border-bottom-color: rgb(0, 173, 239);"
+                                     v-show="ListKullaniciTipi.indexOf(4)>-1 || divOgrenci==1">
+                                    <div class="portlet-body">
+                                        <div class="form-inline">
+                                            <c-donem controller="RehberlikEnvanterOV"
+                                                     @OnChange="DonemSelected">
+                                            </c-donem>
+                                            <!--<c-rehberlik-envanter controller="RehberlikEnvanterOV"
+                                                                  :tcogrenci="tcogrenci"
+                                                                  :donem="donem"
+                                                                  @OnChange="DersSelected">
+                                            </c-rehberlik-envanter>-->                                           
+                                            
+                                            <input style="float:right;margin: 10px;" type="button" class="btn btn-success" v-on:click="Getir" value="Raporla">
+                                        </div>
+                                    </div>
+                                </div>
+                                                                    
+                            </div>
+                        </div>
+                    </div>
+    	        </div>
+		    </div>
+	    </div>
+    </div>
+
+    <div class="portlet light col-md-12" id="Tablodiv" style="min-height:100px;padding:0px;" v-if="divAc==1">
+        <div class="comp-table" id="divFixedTable2">
+	        <table id="tablobaslik" class="overflow-y fixed-table2">
+		        <thead id="thead">
+                    <tr>
+                        <th>Dönem</th>
+                        <th>Sınıf Düzeyi</th>
+                        <th>Test Adı</th>
+                        <th>İşlemler</th>
+                    </tr>
+                </thead>
+		        <tbody id="tbody">
+                    <tr v-for="item in LISTE">
+                        <td>{{item.DONEM}}</td>
+                        <td>{{item.KADEME3}}</td>
+                        <td>{{item.TESTADI}}</td>
+                        <td :id='"td-"+item.ID_REHBERLIKENVANTER'>
+
+                        </td>
+                    </tr>
+                </tbody>
+	        </table>
+        </div>
+                
+            
+    </div>
+
+
+</div>
+
+    <script src="../../../VueComponents/SinavIstatistikFiltreleri.js?v=3"></script>
+<script src="../../../VueComponents/KonuAnaliziFiltreleri.js?v=3"></script>
+<script>
+
+
+    var vue = new Vue({
+        el: "#app",
+        name: "RehberlikEnvanterOV.html",
+
+        data: {
+            testAdi:'',
+            donem: '',
+            idRehberlikEnvanter: 0,
+            idkademe3: 0,
+            idsube: 0,
+            kademe3Text: '',
+            LISTE: [],
+
+            divAc: 1, // 0 olacak
+            divOgrenci: 0,
+            idkullanicitur: 0,
+            ListKullaniciTipi: [],
+            ilk: false,
+            tcogrenci: '',
+            TCKIMLIKNO:''
+
+        },
+        mounted() {
+
+            var p = {
+                TCKIMLIKNO: session.TCKIMLIKNO,
+                OTURUM: session.OTURUM
+            };
+            var list = [];
+            WebPost(this, "RehberlikEnvanterOV", "KullaniciTipiGetir", p, "#app", "Yükleniyor...", function (data, parent) {
+                if (data != null) {
+                    $.each(data, function (j, el) {
+                        list.push(this.ID_KULLANICITIPI)
+                    });
+                    parent.ListKullaniciTipi = list;
+                    if (list.indexOf(4) > -1)
+                        parent.tcogrenci = session.TCKIMLIKNO;
+                } else {
+                    Alert_Warning("Kullanıcı Bulunamadı..!");
+                }
+            });
+        },
+
+        methods: {
+
+
+            distinct(data, key) {
+                var distList = [];
+                $.each(data, function (j, item) {
+                    if (distList.indexOf(item[key]) == -1) {
+                        distList.push(item[key]);
+                    }
+                });
+                return distList;
+            },
+            DonemSelected(item) {
+                this.donem = item;
+                this.Getir();
+            },
+
+            SubeSelected(item) {
+                this.idsube = item;
+                this.idkademe3 = 0;
+                this.idsinif = 0;
+                this.divOgrenci = 0;
+                this.divAc = 0;
+            },
+            Kademe3Selected(item) {
+                this.idkademe3 = item;
+                this.idsinif = 0;
+                this.divOgrenci = 0;
+                this.divAc = 0;
+            },
+            SinifSelected(item) {
+                this.idsinif = item;
+                this.divOgrenci = 0;
+                this.divAc = 0;
+            },
+            OgrenciSelected(item) {
+                this.tcogrenci = item;
+                this.divOgrenci = 1;
+                this.divAc = 0;
+                //this.Getir();
+            },
+            OgrenciVeliSelected(item) {
+                this.tcogrenci = item;
+                this.divOgrenci = 1;
+                this.divAc = 0;
+                this.Getir();
+            },
+
+            Getir() {
+                var _this = this;
+                this.divAc = 1;
+
+                //$('#filters').collapse('hide');
+                _this.LISTE = [];
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    DONEM: this.donem,
+                    TC_OGRENCI:this.tcogrenci,
+                };
+                WebPost(this, "RehberlikEnvanterOV", "RehberlikEnvanterleriGetir", p, "#app", "Yükleniyor...", function (data, parent) {
+                    if (data != null) {
+                        _this.LISTE = JSON.parse(data)[0].LISTE;
+
+                        ////divFixedTableClear();
+                        //if (_this.ilk == false) {
+                        //    _this.ilk = true;
+                        //    _this.$nextTick(() => {
+                        //        //fixedTableCreate();
+                        //    });
+                        //}
+                        _this.$nextTick(() => {
+                            $.each(JSON.parse(data)[0].LISTE, function (j, el) {
+
+                                var link = "https://pusulam.okyanuskoleji.k12.tr/img/RehberlikEnvanter_Raporlar" + el.KLASOR + "/" + _this.tcogrenci + ".pdf";//.okyanuskoleji.k12.tr
+
+                                $.get(link).done(function () {
+                                    var buton = "<a class='btn btn-success'  id='btn-" + j + "' href='" + link + "' target='_blank'>Rapor Görüntüle</a>";
+                                    $("#td-" + el.ID_REHBERLIKENVANTER).html(buton);
+
+                                    //$("#btn-" + el.ID_REHBERLIKENVANTER).show();
+                                    //$("#div-" + el.ID_REHBERLIKENVANTER).hide();
+                                }).fail(function () {
+                                    var buton = "<div>KATILMADI</div>";
+                                    $("#td-" + el.ID_REHBERLIKENVANTER).html(buton);
+                                });
+                            });
+                        });
+                    } else {
+                        Alert_Warning("Sınav Bulunamadı..!");
+                    }
+                });                   
+            },
+        },
+    });
+</script>
+<script src="../../../Scripts/PublicMethods.js"></script>
+<script src="../../../assets/fixed-table/js/jquery.stickyheader.js?v=4"></script>

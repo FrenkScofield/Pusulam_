@@ -1,0 +1,90 @@
+﻿<link href="assets/global/plugins/bootstrap-fileinput/bootstrap-fileinput.css" rel="stylesheet" type="text/css" />
+<style>
+    td {
+        vertical-align: middle !important;
+    }
+
+    .row {
+        margin-top: 10px !important;
+    }
+</style>
+<div class="page-head">
+    <!-- BEGIN PAGE TITLE -->
+    <div class="page-title col-md-12">
+        <h1>
+            Morpa Yönlendirme <span onclick="YardimGoster(ID_MENU);" class="pull-right" style="cursor:pointer;"><img src="assets/global/img/info.gif" class="info-image-icon" /> </span>
+        </h1>
+    </div>
+    <!-- END PAGE TITLE -->
+</div>
+
+<div class="row" id="app">
+    <div class="col-md-12">
+        <div class="portlet light">
+            <!--<div class="portlet-title">
+                <div class="caption">
+                    <i class="icon-plus font-green"></i>
+                    <span class="caption-subject bold font-green uppercase"> Morpa Giriş</span>
+                    <span class="caption-helper"></span>
+                </div>
+            </div>-->
+            <div class="portlet-body">
+                <div class="row">
+                    <div class="pull-right" style="margin: 20px;">
+                        <a :href="yol" class="btn blue" target="_blank">MORPA GİRİŞ</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    var vue = new Vue({
+
+        el: "#app",
+        name: "MorpaGiris",
+
+        data: {
+            controller: 'MorpaGiris',
+            yol: "",
+        },
+
+        mounted() {
+
+            if (window.XMLHttpRequest) xmlhttp = new XMLHttpRequest();
+            else xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+
+            xmlhttp.open("GET", "https://api.ipify.org?format=jsonp&callback=data", false);
+            xmlhttp.send();
+            var ip = xmlhttp.responseText.toString().substring(12, xmlhttp.responseText.length - 4);
+
+            var p = {
+                TCKIMLIKNO: session.TCKIMLIKNO,
+                OTURUM: session.OTURUM,
+                IP: ip,
+            };
+
+            WebPost(this, this.controller, "MorpaLink", p, '', '', function (data, parent) {
+                var truefalse = data.toString().split('-')[0];
+                var yol = data.toString().split('-')[1];
+                if (truefalse === "1") {
+                    //document.getElementById('MorpaLink').removeAttribute("onclick");
+                    //$("#MorpaLink").attr("href", "http://" + yol);
+                    //document.getElementById('MorpaLink').click();
+                    parent.yol = "https://" + yol;
+                }
+                else {
+                    alert(yol.split('.')[0] + '.');
+                }
+
+            });
+
+
+        },
+
+        methods: {},
+
+    });
+</script>
+<script src="Scripts/PublicMethods.js"></script>
+<script src="assets/global/plugins/bootstrap-fileinput/bootstrap-fileinput.js" type="text/javascript"></script>

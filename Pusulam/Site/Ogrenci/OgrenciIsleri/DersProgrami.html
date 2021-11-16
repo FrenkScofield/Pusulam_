@@ -1,0 +1,207 @@
+﻿
+<div class="page-head">
+    <!-- BEGIN PAGE TITLE -->
+    <div class="page-title col-md-12">
+        <h1>
+            Ders Programı <small> Öğrenci Ders Programı </small> <span onclick="YardimGoster(ID_MENU);" class="pull-right" style="cursor:pointer;"><img src="assets/global/img/info.gif" class="info-image-icon" /> </span>
+        </h1>
+    </div>
+    <!-- END PAGE TITLE -->
+</div>
+
+<div class="row" id="app">
+    <div class="col-md-12">
+        <div class="portlet box green-haze dd-item" style="border:none">
+            <div class="portlet-title dd-handle" data-toggle='collapse' data-target='#filters' style="cursor:pointer;">
+                <div class="caption">
+                    <i class="icon-magnifier"></i>
+                    <span class="caption-subject bold uppercase"> Filtreler </span>
+                    <span class="caption-helper"></span>
+                </div>
+                <div class='actions'>
+                    <a href='javascript:;' class='btn btn-default btn-sm' style='border:none;'>
+                        <i class='fa fa-chevron-down'></i>
+                    </a>
+                </div>
+            </div>
+            <div class="portlet-body form collapse in" id="filters">
+                <form role="form" style="padding:12px 20px">
+                    <div class="form-body form-group-lg form-horizontal row" style="padding: 0px;margin-top: 0px !important;">
+
+                        <div class="portlet light col-md-12" id="FiltreDivVeli" style="margin:0px; border-bottom-style: solid;border-bottom-width: 3px;border-bottom-color: rgb(0, 173, 239);"
+                             v-if="ListKullaniciTipi.indexOf(5)>-1">
+
+                            <div class="portlet-body">
+                                <div class="form-inline">
+                                    <c-ogrenci-veli :controller="controller"
+                                                    :tc="TCKIMLIKNO"
+                                                    @OnChange="OgrenciVeliSelected">
+                                    </c-ogrenci-veli>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="col-md-12" v-if="LISTE.length>0">
+        <div class="portlet light">
+            <div class="portlet-title">
+                <div class="caption">
+                    <i class="icon-list font-green"></i>
+                    <span class="caption-subject bold font-green uppercase"> Ders Programı </span>
+                    <span class="caption-helper"></span>
+                </div>
+            </div>
+            <!-- BEGIN PORTLET-->
+            <div class="portlet-body form">
+                <form role="form">
+                    <div class="portlet light bordered">
+                        <div class="portlet-body">
+
+                            <table class="table table-striped table-bordered table-hover table-checkable">
+                                <tbody>
+                                    <tr>
+                                        <td>Kampüs</td>
+                                        <td>{{ OGRENCI.SUBEAD }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Sınıf Düzey</td>
+                                        <td>{{ OGRENCI.KADEME3 }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Sınıf</td>
+                                        <td>{{ OGRENCI.SINIFAD }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Öğrenci</td>
+                                        <td>{{ OGRENCI.ADSOYAD }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <p>
+                                <br />
+                            </p>
+
+                            <div style="overflow:auto">
+
+                                <table class="table table-striped table-bordered table-hover table-checkable">
+                                    <thead>
+                                        <tr>
+                                            <th> SAAT </th>
+                                            <th> PAZARTESİ </th>
+                                            <th> SALI </th>
+                                            <th> ÇARŞAMBA </th>
+                                            <th> PERŞEMBE </th>
+                                            <th> CUMA </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr v-for="u in LISTE">
+                                            <td style="color: indianred;">{{u.SAAT}}
+                                                <!--{{u.DERSSAAT}}
+                                                <br />
+                                                <small style="float: right; color: indianred;">
+                                                    {{u.SAAT}}
+                                                </small>-->
+                                            </td>
+                                            <td> <div v-html="u.PAZARTESİ"></div></td>
+                                            <td> <div v-html="u.SALI     "></div></td>
+                                            <td> <div v-html="u.ÇARŞAMBA "></div></td>
+                                            <td> <div v-html="u.PERŞEMBE "></div></td>
+                                            <td> <div v-html="u.CUMA     "></div></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <!-- END PORTLET-->
+        </div>
+    </div>
+
+
+
+</div>
+<script src="../../../VueComponents/SinavIstatistikFiltreleri.js?v=3"></script>
+<script>
+    var vue = new Vue({
+        el: "#app",
+        name: "OI_DersProgrami",
+
+        data: {
+            TCKIMLIKNO: undefined,
+            OTURUM: undefined,
+            controller: 'OI_DersProgrami',
+            TC_OGRENCI: undefined,
+            LISTE: [],
+            OGRENCI: [],
+            ListKullaniciTipi: [],
+            divOgrenci: 0,
+        },
+
+        mounted() {
+
+            this.TCKIMLIKNO = session.TCKIMLIKNO;
+            this.OTURUM = session.OTURUM;
+
+            var p = {
+                TCKIMLIKNO: this.TCKIMLIKNO,
+                OTURUM: this.OTURUM
+            };
+            var list = [];
+            WebPost(this, this.controller, "KullaniciTipiGetir", p, "#app", "Yükleniyor...", function (data, parent) {
+                if (data != null) {
+                    $.each(data, function (j, el) {
+                        list.push(this.ID_KULLANICITIPI)
+                    });
+                    parent.ListKullaniciTipi = list;
+                    if (list.indexOf(4) > -1)
+                        parent.TC_OGRENCI = session.TCKIMLIKNO;
+                } else {
+                    Alert_Warning("Kullanıcı Bulunamadı..!");
+                }
+            });
+        },
+
+        methods: {
+            OgrenciVeliSelected(item) {
+                this.TC_OGRENCI = item;
+                this.divOgrenci = 1;
+            },
+
+            Listele() {
+
+                if (this.TC_OGRENCI != undefined && this.TC_OGRENCI != "") {
+
+
+                    var p = {
+                        TCKIMLIKNO: this.TCKIMLIKNO,
+                        OTURUM: this.OTURUM,
+                        TC_OGRENCI: this.TC_OGRENCI,
+                    };
+                    ListeTemizle(this.LISTE);
+                    WebPost(this, this.controller, "DersProgramiGetir", p, "", "", function (data, parent) {
+                        if (data != null) {
+                            parent.LISTE = JSON.parse(data)[0].DERSPROGRAM;
+                            parent.OGRENCI = JSON.parse(data)[0].OGRENCIDETAY[0];
+                        } else {
+                            Alert_Warning("Ders Programı Bulunamadı..!");
+                        }
+                    });
+                }
+            },
+        },
+        watch: {
+            TC_OGRENCI() {
+                this.Listele();
+            },
+        }
+    });
+</script>
+<script src="../../../Scripts/PublicMethods.js"></script>

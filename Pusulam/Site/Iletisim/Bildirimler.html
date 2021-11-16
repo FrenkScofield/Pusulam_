@@ -1,0 +1,183 @@
+﻿<div class="page-head">
+    <!-- BEGIN PAGE TITLE -->
+    <div class="page-title col-md-12">
+        <h1>
+            Bildirimlerim  <span onclick="YardimGoster(ID_MENU);" class="pull-right" style="cursor:pointer;"><img src="assets/global/img/info.gif" class="info-image-icon" /> </span>
+        </h1>
+    </div>
+    <!-- END PAGE TITLE -->
+</div>
+
+<div class="row chat" id="app">
+    <div class="col-md-4 users">
+        <div class="portlet light" style="padding:20px;">
+            <!-- BEGIN PORTLET-->
+            <div class="portlet-body" style="padding:0px;">
+                <div class="input-icon" style="margin-bottom:10px;">
+                    <i class="fa fa-search font-green"></i>
+                    <input type="text" class="form-control" placeholder="Kişi Arama" style="background-color:#f2f3f7; border:none;" v-model="FILTERVALUE" @keyup="filter()">
+                </div>
+                <div id="chat-users" class="scrollable" style="overflow-y:auto; height:calc(75vh - 80px);">
+                    <div class="classes dd-item">
+                        <div class="'message-users collapse in">
+                            <div class="message-user" v-for="bildirim in BILDIRIMLISTFILTRED" @click="BildirimGetir(bildirim)">
+                                <div class="message-user-image">
+                                    <img src="../../img/okyanus_image.jpg" />
+                                </div>
+                                <div class="message-user-info">
+                                    <div href="#"><b>{{bildirim.GONDERENAD + ' ' + bildirim.GONDERENSOYAD}}</b></div>
+                                    <div href="#" class="font-green">-> {{bildirim.HEADER}}</div>
+                                    <div class="message-user-last" :title="bildirim.MESAJ">
+                                        {{bildirim.MESAJ}}
+                                    </div>
+                                </div>
+                                <div class="message-user-info-right">
+                                    <span class="message-user-info-right-date">
+                                        {{bildirim.TARIH}}
+                                        <br />
+                                        {{bildirim.SAAT}}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <hr />
+                    </div>
+                </div>
+            </div>
+            <!-- END PORTLET-->
+        </div>
+    </div>
+
+
+    <div class="col-md-8 messages" v-show="DIVAC">
+        <div class="portlet light" style="padding:20px;">
+            <!-- BEGIN PORTLET-->
+            <div class="portlet-title">
+                <div class="caption">
+                    <i class="icon-list font-green"></i>
+                    <span class="caption-subject bold font-green uppercase" v-if="BILDIRIM!=undefined"> {{BILDIRIM.GONDERENAD + ' ' + BILDIRIM.GONDERENSOYAD}}</span>
+                    <span class="caption-helper"></span>
+                </div>
+                <div class="tools" style="color:#32c5d2!important; line-height:34px;">
+                </div>
+            </div>
+            <div class="portlet-body" style="padding:0px;">
+                <div id="chat-messages" class="scrollable" style="overflow-y:auto; height:calc(75vh - 145px);">
+                    <div class="chat-messages">
+                        <div class="chat-message">
+                            <span>
+                                <div class="chat-message-user-info chat-message-user-info-right">
+                                    <b>{{BILDIRIM.GONDERENAD + ' ' + BILDIRIM.GONDERENSOYAD}}</b>
+                                </div>
+                                <span class="chat-message-message chat-message-message-right" style="background-color:transparent;padding:0px;">
+                                    <span v-if="BILDIRIM.MESAJTAM!= ''">
+                                        {{BILDIRIM.MESAJTAM}}
+                                    </span>
+                                    <span v-else>
+                                        {{BILDIRIM.MESAJ}}
+                                    </span>
+                                    <div v-if="BILDIRIM.LINK_ETIKET!= ''">
+                                        <span>
+                                            <a :href="BILDIRIM.LINK" target="_blank">{{BILDIRIM.LINK_ETIKET}}</a>
+                                        </span>
+                                    </div>
+                                </span>
+                                <div>
+                                    <div class="chat-message-user-info chat-message-user-info-right">
+                                        <small>{{BILDIRIM.TARIH}} - {{BILDIRIM.SAAT}}</small>
+                                    </div>
+                                </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- END PORTLET-->
+    </div>
+</div>
+
+</div>
+
+<script>
+    var vueBildirimler = new Vue({
+        el: "#app",
+        name: "Bildirimler.html",
+
+        data: {
+            BILDIRIMLIST: [],
+            FILTERVALUE: '',
+            BILDIRIMLISTFILTRED: [],
+            MESAJLISTE: [],
+            KULLANICI: null,
+            TCKIMLIKNO: session.TCKIMLIKNO,
+            HEIGHT: 0,
+            CONTROL: true,
+            DIVAC: false,
+            BILDIRIM: [],
+        },
+
+        mounted() {
+            this.BildirimKontrol();
+            $('.scrollable').on('mousewheel DOMMouseScroll', function (e) {
+                var e0 = e.originalEvent,
+                    delta = e0.wheelDelta || -e0.detail;
+
+                this.scrollTop += (delta < 0 ? 1 : -1) * 30;
+                e.preventDefault();
+            });
+        },
+
+        methods: {
+            filter() {
+                var BILDIRIMLISTTEMP = JSON.parse(JSON.stringify(vueBildirimler.BILDIRIMLIST));
+                vueBildirimler.BILDIRIMLISTFILTRED = BILDIRIMLISTTEMP.filter(function (BILDIRIM) {
+                    return (BILDIRIM.GONDERENAD).toUpperCase().indexOf(vueBildirimler.FILTERVALUE.toUpperCase()) == 0
+                        || (BILDIRIM.GONDERENSOYAD).toUpperCase().indexOf(vueBildirimler.FILTERVALUE.toUpperCase()) == 0;
+                });
+            },
+
+            BildirimKontrol() {
+
+                //Yeni mesaj var ise MainPage.js den timer ile çağrılıyor.
+                WebPostLink(this, 'https://okyanusiletisim.okyanuskoleji.k12.tr/OkyanusApi/ViuBildirim/BildirimListe', { TCKIMLIKNO: session.TCKIMLIKNO, OTURUM: session.OTURUM }, '-', '-', function (data) {
+                    vueBildirimler.BILDIRIMLIST = data.Bildirim;
+                    vueBildirimler.BILDIRIMLISTFILTRED = data.Bildirim;
+
+                    if (vueanasayfa.bildirim != null) {
+                        vueBildirimler.BildirimGetir(vueanasayfa.bildirim);
+                    }
+
+                    $('#chat-users').slimScroll({
+                        height: 'calc(75vh - 80px)',
+                        animate: false
+                    });
+                    
+                    clearTimeout(vueBildirimler.BildirimListesiTimeOut);
+                    parent.BildirimListesiTimeOut = setTimeout(function () { vueBildirimler.BildirimKontrol() }, 100000);
+                });
+            },
+
+            BildirimGetir(BILDIRIM) {
+                this.BILDIRIM = BILDIRIM;
+                vueBildirimler.DIVAC = true;
+                vueBildirimler.scrollTo();
+            },
+
+            scrollTo() {
+                vueBildirimler.$nextTick(function () {
+                    if (vueBildirimler.HEIGHT != $('.chat-messages').height() && vueBildirimler.DIVAC) {
+                        $('#chat-messages').slimScroll({
+                            height: 'calc(75vh - 145px)',
+                            scrollTo: ($('.chat-messages').height() - vueBildirimler.HEIGHT) + 'px',
+                            animate: false
+                        });
+
+                        vueBildirimler.HEIGHT = $('.chat-messages').height() > 0 ? $('.chat-messages').height() : vueBildirimler.HEIGHT;
+                        vueBildirimler.CONTROL = true;
+                    }
+                });
+            }
+        }
+    });
+</script>
+<script src="Scripts/PublicMethods.js"></script>

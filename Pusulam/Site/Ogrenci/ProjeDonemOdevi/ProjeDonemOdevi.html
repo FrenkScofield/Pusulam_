@@ -1,0 +1,278 @@
+﻿
+<div class="page-head">
+    <div class="page-title col-md-12">
+        <h1> Proje / Dönem Ödevi  <span onclick="YardimGoster(ID_MENU);" class="pull-right" style="cursor:pointer;"><img src="assets/global/img/info.gif" class="info-image-icon" /> </span> </h1>
+    </div>
+</div>
+
+<div class="col-md-12 row" id="app">
+    <div class="row">
+        <div class="portlet box green-haze dd-item " style="border:none; padding:10px;" v-if="ListKullaniciTipi.indexOf(5)>-1">
+            <div class="portlet-title dd-handle" data-toggle='collapse' data-target='#filters' style="cursor:pointer;">
+                <div class="caption">
+                    <i class="icon-magnifier"></i>
+                    <span class="caption-subject bold uppercase"> Filtreler </span>
+                    <span class="caption-helper"></span>
+                </div>
+                <div class='actions'>
+                    <a href='javascript:;' class='btn btn-default btn-sm' style='border:none;'>
+                        <i class='fa fa-chevron-down'></i>
+                    </a>
+                </div>
+            </div>
+            <div class="portlet-body form collapse in" id="filters">
+                <form role="form" style="padding:12px 20px">
+                    <div class="form-body form-group-lg form-horizontal row" style="padding: 0px;margin-top: 0px !important;">
+
+                        <div class="portlet light  col-md-12" id="FiltreDivVeli" style="margin:0px; border-bottom-style: solid;border-bottom-width: 3px;border-bottom-color: rgb(0, 173, 239);">
+                            <div class="portlet-body">
+                                <div class="form-inline">
+                                    <c-ogrenci-veli controller="VeliAraKarne"
+                                                    :tc="TCKIMLIKNO"
+                                                    @OnChange="OgrenciVeliSelected">
+                                    </c-ogrenci-veli>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="form-body form-horizontal  col-md-12">
+            <div class="form-group" style="display: contents;">
+                <div class="form-md-line-input" v-show="ortaOkul==true">
+                    <div class="col-md-2">
+                        <select class="selectpicker form-control" v-model="yariYil" @change="OgrenciProjeListesi()" title="YarıYıl Seçiniz">
+                            <option value="1" selected>1. Dönem</option>
+                            <option value="2">2. Dönem</option>
+                        </select>
+                    </div>
+                </div>
+
+            </div>
+
+            <hr />
+            <div class="form-group" style="display: contents;" v-if="ProjeListe != undefined">
+                <table class="table-bordered table-striped table-condensed cf display col-md-12" id="Table2">
+                    <thead class="cf" id="thead1">
+                        <tr>
+                            <th>DERS</th>
+                            <th>ÖĞRETMEN <br /> AD SOYAD</th>
+                            <th>KONU</th>
+                            <th v-if="ortaOkul==true"> KONTROL </th>
+                            <th v-if="ortaOkul==false">1. KONTROL</th>
+                            <th v-if="ortaOkul==false">2. KONTROL</th>
+                            <th v-if="ortaOkul==false">3. KONTROL</th>
+                            <th v-if="ortaOkul==false">4. KONTROL</th>
+                            <th>ÖĞRETMEN <br /> DEĞERLENDİRMESİ</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbody2">
+                        <tr v-for="item in ProjeListe">
+                            <td>
+                                {{item.DERSAD}}
+                                <div v-if="item.DOSYADURUM==true">
+                                    <a href='javascript:;' @click='ProjeDonemDosyaListele(item.ID_PROJETALEP);'>Dosyalar</a>
+                                </div>
+                            </td>
+                            <td>{{item.OGRETMENADSOYAD}}</td>
+                            <td>{{item.KONU}}</td>
+                            <td>{{item.KONTROLBIRTARIH}} <BR /> {{item.KONTROLBIR}}</td>
+                            <td v-if="ortaOkul==false">{{item.KONTROLIKITARIH}} - {{item.KONTROLIKI}}</td>
+                            <td v-if="ortaOkul==false">{{item.KONTROLUCTARIH}} - {{item.KONTROLUC}}</td>
+                            <td v-if="ortaOkul==false">{{item.KONTROLDORTTARIH}} - {{item.KONTROLDORT}}</td>
+                            <td>{{item.PROJEDEGERLENDIRME}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <hr />
+            <div class="row note note-success" style="border-left: 5px solid #bbdba1; margin-top:2em !important;">
+                <h4>
+                    PROJE-DÖNEM ÖDEVİ ÇALIŞMALARI NASIL YAPILIR?
+                </h4>
+                <p style="margin:1em">
+                    Öğrenciler, bir ders yılında istedikleri ders veya derslerden bireysel ya da grup
+                    çalışması şeklinde ve öğretmen rehberliğinde en az bir proje hazırlar. Öğrencilerin
+                    başarılarının belirlenmesinde ders ve etkinliklere katılımı ve performans görevleri
+                    de dikkate alınır.
+                </p>
+                <p style="margin:1em">
+                    Not çizelgesinde projeye ait sütun sayıları üç olarak belirtilmesine rağmen, öğrenciler
+                    bir yıl içerisinde istedikleri sayıda proje alabilirler. Aynı dersten birden fazla
+                    proje alan öğrencilerin proje notu, projelerden aldıkları puanların aritmetik ortalaması
+                    alınarak belirlenir.
+                </p>
+                <p style="margin:1em">
+                    Proje konuları zümre öğretmenleri tarafından belirlenebileceği gibi öğrenciler de
+                    kendi ilgi duydukları alanlara göre bireysel ya da grup olarak proje konusu belirleyebilirler.
+                </p>
+                <p style="margin:1em">
+                    Grup çalışmalarında grup üyelerinin görev dağılımı projenin her aşaması için net
+                    olarak yapılmalıdır. Görev dağılımı grup üyeleri tarafından yapılarak öğretmenin
+                    onayı alınır.
+                </p>
+                <p style="margin:1em">
+                    Projenin her aşamasında görevlerin yapılıp yapılmadığı, aşamanın bitiminde öğretmen
+                    tarafından kontrol edilir ve grup üyelerine geri bildirim verilir. Görevini yeterince
+                    yerine getirmeyen öğrencilerin bireysel özelliklerine de dikkat edilerek gerekli
+                    önlemler alınır.
+                </p>
+                <p style="margin:1em">
+                    Projeler ve performans görevleri, önceden belirlenen ölçütlere göre hazırlanan değerlendirme
+                    ölçeği veya dereceli puanlama anahtarına göre değerlendirilir. Öğrenciler, çalışmalarında
+                    yararlandıkları kaynak veya kişileri de belirterek öğretmenin belirleyeceği süre içinde çalışmalarını teslim ederler.
+                </p>
+                <p style="margin:1em">
+                    Öğrenciler farklı derslerden proje almışlarsa,
+                    aldıkları puanlar o derslerin projeyi teslim ettikleri yarıyıl notuna dâhil edilir.
+                    Projeler,  verildikleri dönemde değerlendirilir.
+                </p>
+                <p style="margin:1em">
+                    Öğrencilere, her dönemde bütün derslerden en az bir ders ve etkinliklere katılım puanı verilir.
+                </p>
+                <p style="margin:1em">
+                    Öğrencilerin başarısı; sınavlar, varsa proje ve öğrencilerin performanslarını belirlemeye yönelik çalışmalardan alınan
+                    puanlara göre tespit edilir.
+                </p>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- modal-content -->
+    <div class="modal fade" id="ProjeDosyalari" tabindex="-1" role="dialog" aria-hidden="true" style="display: none;">
+        <div class="modal-dialog">
+            <div class="modal-content form-horizontal">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true"> </button>
+                    <h4 class="modal-title"> Dosya Listesi </h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label class="col-md-2 control-label"> Konu</label>
+                        <div class="col-md-10"> <label id="ProjeKonu" class="control-label">{{DosyaListe.KONU}} </label> </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-2 control-label"> Dosyalar </label>
+                        <div class="col-md-10">
+                            <table role="presentation" class="table table-striped margin-top-10">
+                                <tbody class="files" id="Dosyalar">
+                                    <tr v-for="item in DosyaListe.PD">
+                                        <td>
+                                            <a :href="'Dosyalar/ProjeDonem/'+item.DOSYA" target="_blank" download>{{item.DOSYA}}</a>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn default" data-dismiss="modal"> Kapat</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script src="/VueComponents/SinavIstatistikFiltreleri.js?v=3"></script>
+<script>
+    var vue = new Vue({
+        el: "#app",
+        name: "ProjeDonemOdevi.html",
+        data: {
+            TCKIMLIKNO: '',
+            ID_KADEME3: 0,
+            ProjeListe: [],
+            DosyaListe: [],
+            ortaOkul: false,
+            yariYil: 1,
+            TC_OGRENCI: '',
+            ListKullaniciTipi: []
+        },
+        mounted() {
+
+
+            var p = {
+                TCKIMLIKNO: session.TCKIMLIKNO,
+                OTURUM: session.OTURUM
+            };
+            WebPost(this, "ProjeDonemOdevi", "OgrenciKademeGetir", p, "#app", "Yükleniyor...", function (data, parent) {
+                if (JSON.parse(data)[0].ID_KADEME == 4) {
+                    vue.ortaOkul = true;
+                }
+            });
+
+            var list = [];
+            WebPost(this, "ProjeDonemOdevi", "KullaniciTipiGetir", p, "#app", "Yükleniyor...", function (data, parent) {
+                if (data != null) {
+                    $.each(data, function (j, el) {
+                        list.push(this.ID_KULLANICITIPI)
+                    });
+                    parent.ListKullaniciTipi = list;
+                    if (list.indexOf(4) > -1) {
+                        parent.TC_OGRENCI = session.TCKIMLIKNO;
+                        parent.OgrenciProjeListesi();
+                    }
+                } else {
+                    Alert_Warning("Kullanıcı Bulunamadı..!");
+                }
+            });
+
+        },
+        methods: {
+            OgrenciVeliSelected(item) {
+                this.TC_OGRENCI = item;
+                this.OgrenciProjeListesi();
+            },
+            OgrenciProjeListesi() {
+                var _this = this;
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    YARIYIL: this.yariYil,
+                    TC_OGRENCI: this.TC_OGRENCI,
+                }
+
+                WebPost(this, "ProjeDonemOdevi", "OgrenciProjeListesi", p, "#app", "Yükleniyor...", function (data, parent) {
+                    _this.ProjeListe = JSON.parse(data)[0].LISTE;
+                    if (_this.ProjeListe == undefined || _this.ProjeListe == null) {
+                        Alert_Warning("Onaylanmış Proje / Dönem Ödeviniz Yoktur..!");
+                    }
+                });
+            },
+            ProjeDonemDosyaListele(idprojetalep) {
+                var _this = this;
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    ID_PROJETALEP: idprojetalep,
+                    TC_OGRENCI: this.TC_OGRENCI,
+                }
+
+
+                WebPost(this, "ProjeDonemOdevi", "ProjeDonemDosyaListele", p, "#app", "Yükleniyor...", function (data, parent) {
+                    _this.DosyaListe = JSON.parse(data)[0].LISTE[0];
+                    if (_this.DosyaListe == undefined || _this.DosyaListe == null) {
+                        Alert_Warning("Proje / Dönem Ödevinize Ait Dosya Yoktur..!");
+                    }
+                    else {
+                        $("#ProjeDosyalari").modal("show");
+                    }
+                });
+            },
+
+        },
+        watch: {
+            ProjeListe() {
+                this.ProjeListe = this.ProjeListe
+            }
+        }
+    });
+</script>
+<script src="Scripts/PublicMethods.js"></script>
+<script src="assets/global/plugins/bootstrap-fileinput/bootstrap-fileinput.js?v=3" type="text/javascript"></script>

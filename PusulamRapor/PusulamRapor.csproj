@@ -1,0 +1,1699 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{0DB154D0-94E8-4D14-BFF1-A2F1555B6269}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>PusulamRapor</RootNamespace>
+    <AssemblyName>PusulamRapor</AssemblyName>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="DevExpress.Charts.v15.1.Core, Version=15.1.8.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.Data.v15.1, Version=15.1.8.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.Docs.v15.1, Version=15.1.8.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.Office.v15.1.Core, Version=15.1.8.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.PivotGrid.v15.1.Core, Version=15.1.8.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.Printing.v15.1.Core, Version=15.1.8.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.RichEdit.v15.1.Core, Version=15.1.8.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.Sparkline.v15.1.Core, Version=15.1.8.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.XtraCharts.v15.1, Version=15.1.8.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.XtraGauges.v15.1.Core, Version=15.1.8.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.XtraPrinting.v15.1, Version=15.1.8.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.XtraReports.v15.1, Version=15.1.8.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.13.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Abide\AbidePuanaGoreGenelSonucListe.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Abide\AbidePuanaGoreGenelSonucListe.Designer.cs">
+      <DependentUpon>AbidePuanaGoreGenelSonucListe.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Abide\AbidePuanaGoreGenelSonucListeSub.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Abide\AbidePuanaGoreGenelSonucListeSub.Designer.cs">
+      <DependentUpon>AbidePuanaGoreGenelSonucListeSub.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Abide\AbidePuanRapor.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Abide\AbidePuanRapor.Designer.cs">
+      <DependentUpon>AbidePuanRapor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Abide\AbideRapor.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Abide\AbideRapor.Designer.cs">
+      <DependentUpon>AbideRapor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Abide\AbideRaporBeceriAdiAciklama.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Abide\AbideRaporBeceriAdiAciklama.Designer.cs">
+      <DependentUpon>AbideRaporBeceriAdiAciklama.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Abide\AbideSiniflaraGoreSorularinCozulmeOranlari.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Abide\AbideSiniflaraGoreSorularinCozulmeOranlari.Designer.cs">
+      <DependentUpon>AbideSiniflaraGoreSorularinCozulmeOranlari.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Abide\AbideSiniflaraGoreSorularinCozulmeOranlariSub.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Abide\AbideSiniflaraGoreSorularinCozulmeOranlariSub.Designer.cs">
+      <DependentUpon>AbideSiniflaraGoreSorularinCozulmeOranlariSub.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Abide\AbideYeterlilikDuzeylerineGoreKampusOgrenciSayilari.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Abide\AbideYeterlilikDuzeylerineGoreKampusOgrenciSayilari.Designer.cs">
+      <DependentUpon>AbideYeterlilikDuzeylerineGoreKampusOgrenciSayilari.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Abide\AbideYeterlilikDuzeylerineGoreKampusOgrenciSayilariSub.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Abide\AbideYeterlilikDuzeylerineGoreKampusOgrenciSayilariSub.Designer.cs">
+      <DependentUpon>AbideYeterlilikDuzeylerineGoreKampusOgrenciSayilariSub.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Baglanti.cs" />
+    <Compile Include="DersCalismaProgrami\OgretmenRapor.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="DersCalismaProgrami\OgretmenRapor.Designer.cs">
+      <DependentUpon>OgretmenRapor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DersCalismaProgrami\OgrenciRapor.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="DersCalismaProgrami\OgrenciRapor.Designer.cs">
+      <DependentUpon>OgrenciRapor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FillReportDataFields.cs" />
+    <Compile Include="Frekans\FrekansSistemYeni.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Frekans\FrekansSistemYeni.Designer.cs">
+      <DependentUpon>FrekansSistemYeni.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Frekans\SinavOgrenciFrekansRapor.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Frekans\SinavOgrenciFrekansRapor.Designer.cs">
+      <DependentUpon>SinavOgrenciFrekansRapor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Hedef\HedefBelirlemeRapor.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Hedef\HedefBelirlemeRapor.Designer.cs">
+      <DependentUpon>HedefBelirlemeRapor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Hedef\HedefBelirlemeRaporDetayli.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Hedef\HedefBelirlemeRaporDetayli.Designer.cs">
+      <DependentUpon>HedefBelirlemeRaporDetayli.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Mete\IbanListesi.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Mete\IbanListesi.Designer.cs">
+      <DependentUpon>IbanListesi.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Odev\MorpaOdevListesiMete.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Odev\MorpaOdevListesiMete.Designer.cs">
+      <DependentUpon>MorpaOdevListesiMete.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Odev\OdevOgrenciRapor.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Odev\OdevOgrenciRapor.Designer.cs">
+      <DependentUpon>OdevOgrenciRapor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Odev\OdevOzetRapor.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Odev\OdevOzetRapor.Designer.cs">
+      <DependentUpon>OdevOzetRapor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Odev\OdevVeliRapor.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Odev\OdevVeliRapor.Designer.cs">
+      <DependentUpon>OdevVeliRapor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Ogretmen\OgretmenBilgileri.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Ogretmen\OgretmenBilgileri.Designer.cs">
+      <DependentUpon>OgretmenBilgileri.cs</DependentUpon>
+    </Compile>
+    <Compile Include="OnlineDers\DersProgrami.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="OnlineDers\DersProgrami.Designer.cs">
+      <DependentUpon>DersProgrami.cs</DependentUpon>
+    </Compile>
+    <Compile Include="OSYM\TercihListeRapor.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="OSYM\TercihListeRapor.Designer.cs">
+      <DependentUpon>TercihListeRapor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="PerformansDegerlendirmeSonuclari\DegerlendirmeYapmayanlar.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="PerformansDegerlendirmeSonuclari\DegerlendirmeYapmayanlar.Designer.cs">
+      <DependentUpon>DegerlendirmeYapmayanlar.cs</DependentUpon>
+    </Compile>
+    <Compile Include="PerformansDegerlendirmeSonuclari\Excel.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="PerformansDegerlendirmeSonuclari\Excel.Designer.cs">
+      <DependentUpon>Excel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="PerformansDegerlendirmeSonuclari\Personel.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="PerformansDegerlendirmeSonuclari\Personel.Designer.cs">
+      <DependentUpon>Personel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Performans\Degerlendirilmeyenler.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Performans\Degerlendirilmeyenler.Designer.cs">
+      <DependentUpon>Degerlendirilmeyenler.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Performans\Degerlendirilenler.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Performans\Degerlendirilenler.Designer.cs">
+      <DependentUpon>Degerlendirilenler.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ProjeDonem\ProjeDonemRapor.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ProjeDonem\ProjeDonemRapor.Designer.cs">
+      <DependentUpon>ProjeDonemRapor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+    <Compile Include="PublicMetods.cs" />
+    <Compile Include="Sinav\akDers.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Sinav\akDers.Designer.cs">
+      <DependentUpon>akDers.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Sinav\akPuan.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Sinav\akPuan.Designer.cs">
+      <DependentUpon>akPuan.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Sinav\akYaziliCoklu.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Sinav\akYaziliCoklu.Designer.cs">
+      <DependentUpon>akYaziliCoklu.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Sinav\akYazili.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Sinav\akYazili.Designer.cs">
+      <DependentUpon>akYazili.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Sinav\Analiz\GenelSoruAnalizi.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Sinav\Analiz\GenelSoruAnalizi.Designer.cs">
+      <DependentUpon>GenelSoruAnalizi.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Sinav\Analiz\MaddeFrekansAnalizi.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Sinav\Analiz\MaddeFrekansAnalizi.Designer.cs">
+      <DependentUpon>MaddeFrekansAnalizi.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Sinav\Analiz\MFADersSoru.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Sinav\Analiz\MFADersSoru.Designer.cs">
+      <DependentUpon>MFADersSoru.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Sinav\Analiz\OgrenciMaddeAnalizi.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Sinav\Analiz\OgrenciMaddeAnalizi.Designer.cs">
+      <DependentUpon>OgrenciMaddeAnalizi.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Sinav\Analiz\sdaSinav.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Sinav\Analiz\sdaSinav.Designer.cs">
+      <DependentUpon>sdaSinav.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Sinav\Analiz\sdaSinifKazanim.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Sinav\Analiz\sdaSinifKazanim.Designer.cs">
+      <DependentUpon>sdaSinifKazanim.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Sinav\Analiz\SinavKonuAnalizi.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Sinav\Analiz\SinavKonuAnalizi.Designer.cs">
+      <DependentUpon>SinavKonuAnalizi.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Sinav\Analiz\SinifDersAnalizi.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Sinav\Analiz\SinifDersAnalizi.Designer.cs">
+      <DependentUpon>SinifDersAnalizi.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Sinav\Analiz\SinifMaddeAnalizi.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Sinav\Analiz\SinifMaddeAnalizi.Designer.cs">
+      <DependentUpon>SinifMaddeAnalizi.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Sinav\Analiz\skaSinav.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Sinav\Analiz\skaSinav.Designer.cs">
+      <DependentUpon>skaSinav.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Sinav\Analiz\TestMaddeAnalizi.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Sinav\Analiz\TestMaddeAnalizi.Designer.cs">
+      <DependentUpon>TestMaddeAnalizi.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Sinav\AraKarne.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Sinav\AraKarne.Designer.cs">
+      <DependentUpon>AraKarne.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Sinav\AraKarneCoklu.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Sinav\AraKarneCoklu.Designer.cs">
+      <DependentUpon>AraKarneCoklu.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Sinav\AraKarneMain.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Sinav\AraKarneMain.Designer.cs">
+      <DependentUpon>AraKarneMain.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Sinav\Assessment\OgrenciSinavRaporu.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Sinav\Assessment\OgrenciSinavRaporu.Designer.cs">
+      <DependentUpon>OgrenciSinavRaporu.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Sinav\Assessment\SinavaKatilmayanlar.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Sinav\Assessment\SinavaKatilmayanlar.Designer.cs">
+      <DependentUpon>SinavaKatilmayanlar.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Sinav\Assessment\SinavOgrenciRaporu.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Sinav\Assessment\SinavOgrenciRaporu.Designer.cs">
+      <DependentUpon>SinavOgrenciRaporu.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Sinav\Assessment\SinavSoruAnalizi.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Sinav\Assessment\SinavSoruAnalizi.Designer.cs">
+      <DependentUpon>SinavSoruAnalizi.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Sinav\Assessment\SinifSinavRaporu.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Sinav\Assessment\SinifSinavRaporu.Designer.cs">
+      <DependentUpon>SinifSinavRaporu.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Sinav\Bursluluk\KatilimRaporu.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Sinav\Bursluluk\KatilimRaporu.Designer.cs">
+      <DependentUpon>KatilimRaporu.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Sinav\Bursluluk\OgrenciListesi.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Sinav\Bursluluk\OgrenciListesi.Designer.cs">
+      <DependentUpon>OgrenciListesi.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Sinav\CevapAnahtari.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Sinav\CevapAnahtari.Designer.cs">
+      <DependentUpon>CevapAnahtari.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Sinav\DenemeSinaviSinifNetPuanOrt.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Sinav\DenemeSinaviSinifNetPuanOrt.Designer.cs">
+      <DependentUpon>DenemeSinaviSinifNetPuanOrt.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Sinav\OgrenciOturumSifirla.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Sinav\OgrenciOturumSifirla.Designer.cs">
+      <DependentUpon>OgrenciOturumSifirla.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Sinav\DenemeSinavOSRaporu.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Sinav\DenemeSinavOSRaporu.Designer.cs">
+      <DependentUpon>DenemeSinavOSRaporu.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Sinav\DenemeSinavRaporBaraj.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Sinav\DenemeSinavRaporBaraj.Designer.cs">
+      <DependentUpon>DenemeSinavRaporBaraj.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Sinav\DenemeSinavRaporKatilmayanlar.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Sinav\DenemeSinavRaporKatilmayanlar.Designer.cs">
+      <DependentUpon>DenemeSinavRaporKatilmayanlar.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Sinav\DenemeSinavRaporNetOrtalamaGrafik.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Sinav\DenemeSinavRaporNetOrtalamaGrafik.Designer.cs">
+      <DependentUpon>DenemeSinavRaporNetOrtalamaGrafik.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Sinav\DenemeSinavRaporSoruAnaliz.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Sinav\DenemeSinavRaporSoruAnaliz.Designer.cs">
+      <DependentUpon>DenemeSinavRaporSoruAnaliz.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Sinav\DenemeSinavRaporuOkulNetPuanOrt.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Sinav\DenemeSinavRaporuOkulNetPuanOrt.Designer.cs">
+      <DependentUpon>DenemeSinavRaporuOkulNetPuanOrt.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Sinav\DersUniteListe.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Sinav\DersUniteListe.Designer.cs">
+      <DependentUpon>DersUniteListe.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Sinav\GelisimRaporOOYazili.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Sinav\GelisimRaporOOYazili.Designer.cs">
+      <DependentUpon>GelisimRaporOOYazili.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Sinav\GelisimRaporu.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Sinav\GelisimRaporu.Designer.cs">
+      <DependentUpon>GelisimRaporu.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Sinav\GelisimRaporuOB.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Sinav\GelisimRaporuOB.Designer.cs">
+      <DependentUpon>GelisimRaporuOB.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Sinav\GelisimRaporuLS.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Sinav\GelisimRaporuLS.Designer.cs">
+      <DependentUpon>GelisimRaporuLS.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Sinav\GelisimRaporuOO.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Sinav\GelisimRaporuOO.Designer.cs">
+      <DependentUpon>GelisimRaporuOO.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Sinav\GelisimRaporuOOAbideDerslerGrafik.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Sinav\GelisimRaporuOOAbideDerslerGrafik.Designer.cs">
+      <DependentUpon>GelisimRaporuOOAbideDerslerGrafik.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Sinav\GelisimRaporuOODersSinav.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Sinav\GelisimRaporuOODersSinav.Designer.cs">
+      <DependentUpon>GelisimRaporuOODersSinav.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Sinav\GelisimRaporuOODersSinavGrafikli.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Sinav\GelisimRaporuOODersSinavGrafikli.Designer.cs">
+      <DependentUpon>GelisimRaporuOODersSinavGrafikli.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Sinav\GelisimRaporuOOEtutRaporu.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Sinav\GelisimRaporuOOEtutRaporu.Designer.cs">
+      <DependentUpon>GelisimRaporuOOEtutRaporu.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Sinav\GelisimRaporuOOKonuAnaliz.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Sinav\GelisimRaporuOOKonuAnaliz.Designer.cs">
+      <DependentUpon>GelisimRaporuOOKonuAnaliz.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Sinav\GelisimRaporuOOKOSRaporu.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Sinav\GelisimRaporuOOKOSRaporu.Designer.cs">
+      <DependentUpon>GelisimRaporuOOKOSRaporu.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Sinav\GelisimRaporuOOLUSRaporu.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Sinav\GelisimRaporuOOLUSRaporu.Designer.cs">
+      <DependentUpon>GelisimRaporuOOLUSRaporu.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Sinav\GelisimRaporuLSMain.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Sinav\GelisimRaporuLSMain.Designer.cs">
+      <DependentUpon>GelisimRaporuLSMain.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Sinav\GelisimRaporuOOMain.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Sinav\GelisimRaporuOOMain.Designer.cs">
+      <DependentUpon>GelisimRaporuOOMain.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Sinav\GelisimRaporuOONetOrtalamaTablosu.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Sinav\GelisimRaporuOONetOrtalamaTablosu.Designer.cs">
+      <DependentUpon>GelisimRaporuOONetOrtalamaTablosu.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Sinav\GelisimRaporuOOOgretmenDegerlendirme.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Sinav\GelisimRaporuOOOgretmenDegerlendirme.Designer.cs">
+      <DependentUpon>GelisimRaporuOOOgretmenDegerlendirme.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Sinav\GelisimRaporuOOOgretmenYorum.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Sinav\GelisimRaporuOOOgretmenYorum.Designer.cs">
+      <DependentUpon>GelisimRaporuOOOgretmenYorum.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Sinav\GelisimRaporuOOPuanSinav.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Sinav\GelisimRaporuOOPuanSinav.Designer.cs">
+      <DependentUpon>GelisimRaporuOOPuanSinav.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Sinav\grDersSinav.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Sinav\grDersSinav.Designer.cs">
+      <DependentUpon>grDersSinav.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Sinav\grEtutRaporu.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Sinav\grEtutRaporu.Designer.cs">
+      <DependentUpon>grEtutRaporu.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Sinav\grOgretmenDegerlendirme.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Sinav\grOgretmenDegerlendirme.Designer.cs">
+      <DependentUpon>grOgretmenDegerlendirme.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Sinav\grOgretmenYorum.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Sinav\grOgretmenYorum.Designer.cs">
+      <DependentUpon>grOgretmenYorum.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Sinav\grPuanSinav.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Sinav\grPuanSinav.Designer.cs">
+      <DependentUpon>grPuanSinav.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Sinav\HariciPuanSiraTaslak.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Sinav\HariciPuanSiraTaslak.Designer.cs">
+      <DependentUpon>HariciPuanSiraTaslak.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Sinav\KarmaListe.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Sinav\KarmaListe.Designer.cs">
+      <DependentUpon>KarmaListe.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Sinav\KarmaListeBilgi.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Sinav\KarmaListeBilgi.Designer.cs">
+      <DependentUpon>KarmaListeBilgi.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Sinav\KonuAnaliz.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Sinav\KonuAnaliz.Designer.cs">
+      <DependentUpon>KonuAnaliz.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Sinav\Mobil\SinavKarne.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Sinav\Mobil\SinavKarne.Designer.cs">
+      <DependentUpon>SinavKarne.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Sinav\Mobil\SinavKarneDers.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Sinav\Mobil\SinavKarneDers.Designer.cs">
+      <DependentUpon>SinavKarneDers.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Sinav\Mobil\SinavKarnePuan.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Sinav\Mobil\SinavKarnePuan.Designer.cs">
+      <DependentUpon>SinavKarnePuan.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Sinav\Mobil\SinavKarneYY.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Sinav\Mobil\SinavKarneYY.Designer.cs">
+      <DependentUpon>SinavKarneYY.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Sinav\Online\OnlineSinavDetay.cs" />
+    <Compile Include="Sinav\Online\Sinav.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Sinav\Online\Sinav.Designer.cs">
+      <DependentUpon>Sinav.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Sinav\UniteTaramaTopluKarne.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Sinav\UniteTaramaTopluKarne.Designer.cs">
+      <DependentUpon>UniteTaramaTopluKarne.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Sinav\UniteTaramaKarne.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Sinav\UniteTaramaKarne.Designer.cs">
+      <DependentUpon>UniteTaramaKarne.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Sinav\OdulListesi.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Sinav\OdulListesi.Designer.cs">
+      <DependentUpon>OdulListesi.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Sinav\OgrenciDersMuafiyet.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Sinav\OgrenciDersMuafiyet.Designer.cs">
+      <DependentUpon>OgrenciDersMuafiyet.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Sinav\OgrenciFrekansMuafiyet.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Sinav\OgrenciFrekansMuafiyet.Designer.cs">
+      <DependentUpon>OgrenciFrekansMuafiyet.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Sinav\OgrenciIzlemePivot.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Sinav\OgrenciIzlemePivot.Designer.cs">
+      <DependentUpon>OgrenciIzlemePivot.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Sinav\OkulRapor\OkulRapor.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Sinav\OkulRapor\OkulRapor.Designer.cs">
+      <DependentUpon>OkulRapor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Sinav\OkulRapor\OR_Katilmayanlar.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Sinav\OkulRapor\OR_Katilmayanlar.Designer.cs">
+      <DependentUpon>OR_Katilmayanlar.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Sinav\OkulRapor\OR_NetPuanOrtalamalari.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Sinav\OkulRapor\OR_NetPuanOrtalamalari.Designer.cs">
+      <DependentUpon>OR_NetPuanOrtalamalari.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Sinav\OkulRapor\OR_OkulBasariGrafik.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Sinav\OkulRapor\OR_OkulBasariGrafik.Designer.cs">
+      <DependentUpon>OR_OkulBasariGrafik.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Sinav\OkulRapor\OR_OkulDersBasariSirali.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Sinav\OkulRapor\OR_OkulDersBasariSirali.Designer.cs">
+      <DependentUpon>OR_OkulDersBasariSirali.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Sinav\OkulRapor\OR_OkulKonuAnalizi.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Sinav\OkulRapor\OR_OkulKonuAnalizi.Designer.cs">
+      <DependentUpon>OR_OkulKonuAnalizi.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Sinav\OkulRapor\OR_OkulSinavKarsilastirma.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Sinav\OkulRapor\OR_OkulSinavKarsilastirma.Designer.cs">
+      <DependentUpon>OR_OkulSinavKarsilastirma.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Sinav\OkulRapor\OR_OkulSoruFrekans.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Sinav\OkulRapor\OR_OkulSoruFrekans.Designer.cs">
+      <DependentUpon>OR_OkulSoruFrekans.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Sinav\OkulRapor\OR_PuanBaraj.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Sinav\OkulRapor\OR_PuanBaraj.Designer.cs">
+      <DependentUpon>OR_PuanBaraj.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Sinav\OkulRapor\OR_SinifKonuAnalizi.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Sinav\OkulRapor\OR_SinifKonuAnalizi.Designer.cs">
+      <DependentUpon>OR_SinifKonuAnalizi.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Sinav\OkulRapor\OR_OkulNetPuanOrt.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Sinav\OkulRapor\OR_OkulNetPuanOrt.Designer.cs">
+      <DependentUpon>OR_OkulNetPuanOrt.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Sinav\OkulRapor\OR_OkulPuanListesi.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Sinav\OkulRapor\OR_OkulPuanListesi.Designer.cs">
+      <DependentUpon>OR_OkulPuanListesi.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Sinav\OkulRapor\OR_SinifNetListesi.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Sinav\OkulRapor\OR_SinifNetListesi.Designer.cs">
+      <DependentUpon>OR_SinifNetListesi.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Sinav\OkulRapor\OR_SinifNetPuanGenel.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Sinav\OkulRapor\OR_SinifNetPuanGenel.Designer.cs">
+      <DependentUpon>OR_SinifNetPuanGenel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Sinav\OkulRapor\OR_SinifNetPuanOrt.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Sinav\OkulRapor\OR_SinifNetPuanOrt.Designer.cs">
+      <DependentUpon>OR_SinifNetPuanOrt.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Sinav\OkulRapor\OR_SinifPuanListesi.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Sinav\OkulRapor\OR_SinifPuanListesi.Designer.cs">
+      <DependentUpon>OR_SinifPuanListesi.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Sinav\SinavCevapAnahtariTaslak.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Sinav\SinavCevapAnahtariTaslak.Designer.cs">
+      <DependentUpon>SinavCevapAnahtariTaslak.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Sinav\SinavKatilim.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Sinav\SinavKatilim.Designer.cs">
+      <DependentUpon>SinavKatilim.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Sinav\SinavOzellikleri.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Sinav\SinavOzellikleri.Designer.cs">
+      <DependentUpon>SinavOzellikleri.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Sinav\SinavSonuclari.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Sinav\SinavSonuclari.Designer.cs">
+      <DependentUpon>SinavSonuclari.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Sinav\skKatilmayanYuzde.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Sinav\skKatilmayanYuzde.Designer.cs">
+      <DependentUpon>skKatilmayanYuzde.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Sinav\skOkulKatilim.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Sinav\skOkulKatilim.Designer.cs">
+      <DependentUpon>skOkulKatilim.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Sinav\SoruMaddeAnaliziOS.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Sinav\SoruMaddeAnaliziOS.Designer.cs">
+      <DependentUpon>SoruMaddeAnaliziOS.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Sinav\ssCevapAnahtari.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Sinav\ssCevapAnahtari.Designer.cs">
+      <DependentUpon>ssCevapAnahtari.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Sinav\ssOgrenciAnalizi.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Sinav\ssOgrenciAnalizi.Designer.cs">
+      <DependentUpon>ssOgrenciAnalizi.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Sinav\ssPuanSirala.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Sinav\ssPuanSirala.Designer.cs">
+      <DependentUpon>ssPuanSirala.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Sinav\TopluSinavSonuclari.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Sinav\TopluSinavSonuclari.Designer.cs">
+      <DependentUpon>TopluSinavSonuclari.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SinifListeleri\SinifListeRaporu.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="SinifListeleri\SinifListeRaporu.Designer.cs">
+      <DependentUpon>SinifListeRaporu.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SportifKulupler\OgrenciKulupler.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="SportifKulupler\OgrenciKulupler.Designer.cs">
+      <DependentUpon>OgrenciKulupler.cs</DependentUpon>
+    </Compile>
+    <Compile Include="TKT\KazanimAnalizi.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="TKT\KazanimAnalizi.Designer.cs">
+      <DependentUpon>KazanimAnalizi.cs</DependentUpon>
+    </Compile>
+    <Compile Include="TKT\OgrenciSonuc.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="TKT\OgrenciSonuc.Designer.cs">
+      <DependentUpon>OgrenciSonuc.cs</DependentUpon>
+    </Compile>
+    <Compile Include="TKT\TopluSonuc.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="TKT\TopluSonuc.Designer.cs">
+      <DependentUpon>TopluSonuc.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UniteTarama\SinavSonucListesi.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="UniteTarama\SinavSonucListesi.Designer.cs">
+      <DependentUpon>SinavSonucListesi.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UniteTarama\UniteTaramaSinifMaddeAnalizi.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="UniteTarama\UniteTaramaSinifMaddeAnalizi.Designer.cs">
+      <DependentUpon>UniteTaramaSinifMaddeAnalizi.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UniteTarama\UniteTaramaPuanRapor.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="UniteTarama\UniteTaramaPuanRapor.Designer.cs">
+      <DependentUpon>UniteTaramaPuanRapor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Upgrade\SinavKagidi.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Upgrade\SinavKagidi.Designer.cs">
+      <DependentUpon>SinavKagidi.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Upgrade\TopluSonuc.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Upgrade\TopluSonuc.Designer.cs">
+      <DependentUpon>TopluSonuc.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UyariSistemi\UyariSistemiKullanici.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="UyariSistemi\UyariSistemiKullanici.Designer.cs">
+      <DependentUpon>UyariSistemiKullanici.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Viu\Bildirim.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Viu\Bildirim.Designer.cs">
+      <DependentUpon>Bildirim.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Viu\MenuLog.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Viu\MenuLog.Designer.cs">
+      <DependentUpon>MenuLog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Viu\Yoklama.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Viu\Yoklama.Designer.cs">
+      <DependentUpon>Yoklama.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Viu\Mesaj.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Viu\Mesaj.Designer.cs">
+      <DependentUpon>Mesaj.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Viu\Kullanmayanlar.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Viu\Kullanmayanlar.Designer.cs">
+      <DependentUpon>Kullanmayanlar.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Viu\Arama.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Viu\Arama.Designer.cs">
+      <DependentUpon>Arama.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Yazili\GenelKazanimAnalizi.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Yazili\GenelKazanimAnalizi.Designer.cs">
+      <DependentUpon>GenelKazanimAnalizi.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Yazili\GenelYaziliYoklamaSonuclari.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Yazili\GenelYaziliYoklamaSonuclari.Designer.cs">
+      <DependentUpon>GenelYaziliYoklamaSonuclari.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Yazili\KazanimAnalizi.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Yazili\KazanimAnalizi.Designer.cs">
+      <DependentUpon>KazanimAnalizi.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Yazili\KazanimAnaliziOO.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Yazili\KazanimAnaliziOO.Designer.cs">
+      <DependentUpon>KazanimAnaliziOO.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Yazili\KOSRapor.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Yazili\KOSRapor.Designer.cs">
+      <DependentUpon>KOSRapor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Yazili\LUSRapor.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Yazili\LUSRapor.Designer.cs">
+      <DependentUpon>LUSRapor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Yazili\Ozellikler.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Yazili\Ozellikler.Designer.cs">
+      <DependentUpon>Ozellikler.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Yazili\OrtalamaListesi.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Yazili\OrtalamaListesi.Designer.cs">
+      <DependentUpon>OrtalamaListesi.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Yazili\PuanaGoreYaziliSonuclari.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Yazili\PuanaGoreYaziliSonuclari.Designer.cs">
+      <DependentUpon>PuanaGoreYaziliSonuclari.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Yazili\SinavaKatilmayanOgrenciler.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Yazili\SinavaKatilmayanOgrenciler.Designer.cs">
+      <DependentUpon>SinavaKatilmayanOgrenciler.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Yazili\SinavAnaliz.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Yazili\SinavAnaliz.Designer.cs">
+      <DependentUpon>SinavAnaliz.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Yazili\SinifBazindaKazanimAnalizi.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Yazili\SinifBazindaKazanimAnalizi.Designer.cs">
+      <DependentUpon>SinifBazindaKazanimAnalizi.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Yazili\TopluYaziliYoklamaSonuclari.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Yazili\TopluYaziliYoklamaSonuclari.Designer.cs">
+      <DependentUpon>TopluYaziliYoklamaSonuclari.cs</DependentUpon>
+    </Compile>
+    <Compile Include="YetenekGelisim\YG_SecimYapmayanlar.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="YetenekGelisim\YG_SecimYapmayanlar.Designer.cs">
+      <DependentUpon>YG_SecimYapmayanlar.cs</DependentUpon>
+    </Compile>
+    <Compile Include="YetenekGelisim\YG_IlkSinifKarne.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="YetenekGelisim\YG_IlkSinifKarne.Designer.cs">
+      <DependentUpon>YG_IlkSinifKarne.cs</DependentUpon>
+    </Compile>
+    <Compile Include="YetenekGelisim\YG_MevcutDagilim.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="YetenekGelisim\YG_MevcutDagilim.Designer.cs">
+      <DependentUpon>YG_MevcutDagilim.cs</DependentUpon>
+    </Compile>
+    <Compile Include="YetenekGelisim\YG_OgrenciSecimleri.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="YetenekGelisim\YG_OgrenciSecimleri.Designer.cs">
+      <DependentUpon>YG_OgrenciSecimleri.cs</DependentUpon>
+    </Compile>
+    <Compile Include="YetenekGelisim\YG_TopluKarne.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="YetenekGelisim\YG_TopluKarne.Designer.cs">
+      <DependentUpon>YG_TopluKarne.cs</DependentUpon>
+    </Compile>
+    <Compile Include="YetenekGelisim\YG_UstSinifKarne.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="YetenekGelisim\YG_UstSinifKarne.Designer.cs">
+      <DependentUpon>YG_UstSinifKarne.cs</DependentUpon>
+    </Compile>
+    <Compile Include="YYS\YYSTopluKarne.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="YYS\YYSTopluKarne.Designer.cs">
+      <DependentUpon>YYSTopluKarne.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ZekaTest\ZekaTestRapor.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ZekaTest\ZekaTestRapor.Designer.cs">
+      <DependentUpon>ZekaTestRapor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ZumreCalisma\KatilimBelgesi.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ZumreCalisma\KatilimBelgesi.Designer.cs">
+      <DependentUpon>KatilimBelgesi.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ZumreCalisma\KatilimRapor.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ZumreCalisma\KatilimRapor.Designer.cs">
+      <DependentUpon>KatilimRapor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ZumreCalisma\YaziliRapor.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ZumreCalisma\YaziliRapor.Designer.cs">
+      <DependentUpon>YaziliRapor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ZumreCalisma\YoklamaRapor.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ZumreCalisma\YoklamaRapor.Designer.cs">
+      <DependentUpon>YoklamaRapor.cs</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Abide\AbidePuanaGoreGenelSonucListe.resx">
+      <DependentUpon>AbidePuanaGoreGenelSonucListe.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Abide\AbidePuanaGoreGenelSonucListeSub.resx">
+      <DependentUpon>AbidePuanaGoreGenelSonucListeSub.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Abide\AbidePuanRapor.resx">
+      <DependentUpon>AbidePuanRapor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Abide\AbideRapor.resx">
+      <DependentUpon>AbideRapor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Abide\AbideRaporBeceriAdiAciklama.resx">
+      <DependentUpon>AbideRaporBeceriAdiAciklama.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Abide\AbideSiniflaraGoreSorularinCozulmeOranlari.resx">
+      <DependentUpon>AbideSiniflaraGoreSorularinCozulmeOranlari.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Abide\AbideSiniflaraGoreSorularinCozulmeOranlariSub.resx">
+      <DependentUpon>AbideSiniflaraGoreSorularinCozulmeOranlariSub.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Abide\AbideYeterlilikDuzeylerineGoreKampusOgrenciSayilari.resx">
+      <DependentUpon>AbideYeterlilikDuzeylerineGoreKampusOgrenciSayilari.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Abide\AbideYeterlilikDuzeylerineGoreKampusOgrenciSayilariSub.resx">
+      <DependentUpon>AbideYeterlilikDuzeylerineGoreKampusOgrenciSayilariSub.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DersCalismaProgrami\OgretmenRapor.resx">
+      <DependentUpon>OgretmenRapor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DersCalismaProgrami\OgrenciRapor.resx">
+      <DependentUpon>OgrenciRapor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Frekans\FrekansSistemYeni.resx">
+      <DependentUpon>FrekansSistemYeni.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Frekans\SinavOgrenciFrekansRapor.resx">
+      <DependentUpon>SinavOgrenciFrekansRapor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Hedef\HedefBelirlemeRaporDetayli.resx">
+      <DependentUpon>HedefBelirlemeRaporDetayli.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Mete\IbanListesi.resx">
+      <DependentUpon>IbanListesi.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Odev\MorpaOdevListesiMete.resx">
+      <DependentUpon>MorpaOdevListesiMete.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Odev\OdevOgrenciRapor.resx">
+      <DependentUpon>OdevOgrenciRapor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Odev\OdevOzetRapor.resx">
+      <DependentUpon>OdevOzetRapor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Odev\OdevVeliRapor.resx">
+      <DependentUpon>OdevVeliRapor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Ogretmen\OgretmenBilgileri.resx">
+      <DependentUpon>OgretmenBilgileri.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="OnlineDers\DersProgrami.resx">
+      <DependentUpon>DersProgrami.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="OSYM\TercihListeRapor.resx">
+      <DependentUpon>TercihListeRapor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="PerformansDegerlendirmeSonuclari\DegerlendirmeYapmayanlar.resx">
+      <DependentUpon>DegerlendirmeYapmayanlar.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Hedef\HedefBelirlemeRapor.resx">
+      <DependentUpon>HedefBelirlemeRapor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="PerformansDegerlendirmeSonuclari\Excel.resx">
+      <DependentUpon>Excel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="PerformansDegerlendirmeSonuclari\Personel.resx">
+      <DependentUpon>Personel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Performans\Degerlendirilmeyenler.resx">
+      <DependentUpon>Degerlendirilmeyenler.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Performans\Degerlendirilenler.resx">
+      <DependentUpon>Degerlendirilenler.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ProjeDonem\ProjeDonemRapor.resx">
+      <DependentUpon>ProjeDonemRapor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\licenses.licx" />
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Sinav\akDers.resx">
+      <DependentUpon>akDers.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Sinav\akPuan.resx">
+      <DependentUpon>akPuan.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Sinav\akYaziliCoklu.resx">
+      <DependentUpon>akYaziliCoklu.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Sinav\akYazili.resx">
+      <DependentUpon>akYazili.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Sinav\Analiz\GenelSoruAnalizi.resx">
+      <DependentUpon>GenelSoruAnalizi.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Sinav\Analiz\MaddeFrekansAnalizi.resx">
+      <DependentUpon>MaddeFrekansAnalizi.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Sinav\Analiz\MFADersSoru.resx">
+      <DependentUpon>MFADersSoru.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Sinav\Analiz\OgrenciMaddeAnalizi.resx">
+      <DependentUpon>OgrenciMaddeAnalizi.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Sinav\Analiz\sdaSinav.resx">
+      <DependentUpon>sdaSinav.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Sinav\Analiz\sdaSinifKazanim.resx">
+      <DependentUpon>sdaSinifKazanim.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Sinav\Analiz\SinavKonuAnalizi.resx">
+      <DependentUpon>SinavKonuAnalizi.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Sinav\Analiz\SinifDersAnalizi.resx">
+      <DependentUpon>SinifDersAnalizi.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Sinav\Analiz\SinifMaddeAnalizi.resx">
+      <DependentUpon>SinifMaddeAnalizi.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Sinav\Analiz\skaSinav.resx">
+      <DependentUpon>skaSinav.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Sinav\Analiz\TestMaddeAnalizi.resx">
+      <DependentUpon>TestMaddeAnalizi.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Sinav\AraKarne.resx">
+      <DependentUpon>AraKarne.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Sinav\AraKarneCoklu.resx">
+      <DependentUpon>AraKarneCoklu.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Sinav\AraKarneMain.resx">
+      <DependentUpon>AraKarneMain.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Sinav\Assessment\OgrenciSinavRaporu.resx">
+      <DependentUpon>OgrenciSinavRaporu.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Sinav\Assessment\SinavaKatilmayanlar.resx">
+      <DependentUpon>SinavaKatilmayanlar.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Sinav\Assessment\SinavOgrenciRaporu.resx">
+      <DependentUpon>SinavOgrenciRaporu.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Sinav\Assessment\SinavSoruAnalizi.resx">
+      <DependentUpon>SinavSoruAnalizi.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Sinav\Assessment\SinifSinavRaporu.resx">
+      <DependentUpon>SinifSinavRaporu.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Sinav\Bursluluk\KatilimRaporu.resx">
+      <DependentUpon>KatilimRaporu.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Sinav\Bursluluk\OgrenciListesi.resx">
+      <DependentUpon>OgrenciListesi.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Sinav\CevapAnahtari.resx">
+      <DependentUpon>CevapAnahtari.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Sinav\DenemeSinaviSinifNetPuanOrt.resx">
+      <DependentUpon>DenemeSinaviSinifNetPuanOrt.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Sinav\OgrenciOturumSifirla.resx">
+      <DependentUpon>OgrenciOturumSifirla.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Sinav\DenemeSinavOSRaporu.resx">
+      <DependentUpon>DenemeSinavOSRaporu.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Sinav\DenemeSinavRaporBaraj.resx">
+      <DependentUpon>DenemeSinavRaporBaraj.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Sinav\DenemeSinavRaporKatilmayanlar.resx">
+      <DependentUpon>DenemeSinavRaporKatilmayanlar.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Sinav\DenemeSinavRaporNetOrtalamaGrafik.resx">
+      <DependentUpon>DenemeSinavRaporNetOrtalamaGrafik.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Sinav\DenemeSinavRaporSoruAnaliz.resx">
+      <DependentUpon>DenemeSinavRaporSoruAnaliz.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Sinav\DenemeSinavRaporuOkulNetPuanOrt.resx">
+      <DependentUpon>DenemeSinavRaporuOkulNetPuanOrt.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Sinav\DersUniteListe.resx">
+      <DependentUpon>DersUniteListe.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Sinav\GelisimRaporOOYazili.resx">
+      <DependentUpon>GelisimRaporOOYazili.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Sinav\GelisimRaporu.resx">
+      <DependentUpon>GelisimRaporu.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Sinav\GelisimRaporuOB.resx">
+      <DependentUpon>GelisimRaporuOB.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Sinav\GelisimRaporuLS.resx">
+      <DependentUpon>GelisimRaporuLS.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Sinav\GelisimRaporuOO.resx">
+      <DependentUpon>GelisimRaporuOO.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Sinav\GelisimRaporuOOAbideDerslerGrafik.resx">
+      <DependentUpon>GelisimRaporuOOAbideDerslerGrafik.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Sinav\GelisimRaporuOODersSinav.resx">
+      <DependentUpon>GelisimRaporuOODersSinav.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Sinav\GelisimRaporuOODersSinavGrafikli.resx">
+      <DependentUpon>GelisimRaporuOODersSinavGrafikli.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Sinav\GelisimRaporuOOEtutRaporu.resx">
+      <DependentUpon>GelisimRaporuOOEtutRaporu.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Sinav\GelisimRaporuOOKonuAnaliz.resx">
+      <DependentUpon>GelisimRaporuOOKonuAnaliz.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Sinav\GelisimRaporuOOKOSRaporu.resx">
+      <DependentUpon>GelisimRaporuOOKOSRaporu.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Sinav\GelisimRaporuOOLUSRaporu.resx">
+      <DependentUpon>GelisimRaporuOOLUSRaporu.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Sinav\GelisimRaporuLSMain.resx">
+      <DependentUpon>GelisimRaporuLSMain.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Sinav\GelisimRaporuOOMain.resx">
+      <DependentUpon>GelisimRaporuOOMain.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Sinav\GelisimRaporuOONetOrtalamaTablosu.resx">
+      <DependentUpon>GelisimRaporuOONetOrtalamaTablosu.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Sinav\GelisimRaporuOOOgretmenDegerlendirme.resx">
+      <DependentUpon>GelisimRaporuOOOgretmenDegerlendirme.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Sinav\GelisimRaporuOOOgretmenYorum.resx">
+      <DependentUpon>GelisimRaporuOOOgretmenYorum.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Sinav\GelisimRaporuOOPuanSinav.resx">
+      <DependentUpon>GelisimRaporuOOPuanSinav.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Sinav\grDersSinav.resx">
+      <DependentUpon>grDersSinav.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Sinav\grEtutRaporu.resx">
+      <DependentUpon>grEtutRaporu.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Sinav\grOgretmenDegerlendirme.resx">
+      <DependentUpon>grOgretmenDegerlendirme.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Sinav\grOgretmenYorum.resx">
+      <DependentUpon>grOgretmenYorum.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Sinav\grPuanSinav.resx">
+      <DependentUpon>grPuanSinav.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Sinav\HariciPuanSiraTaslak.resx">
+      <DependentUpon>HariciPuanSiraTaslak.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Sinav\KarmaListe.resx">
+      <DependentUpon>KarmaListe.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Sinav\KarmaListeBilgi.resx">
+      <DependentUpon>KarmaListeBilgi.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Sinav\KonuAnaliz.resx">
+      <DependentUpon>KonuAnaliz.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Sinav\Mobil\SinavKarne.resx">
+      <DependentUpon>SinavKarne.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Sinav\Mobil\SinavKarneDers.resx">
+      <DependentUpon>SinavKarneDers.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Sinav\Mobil\SinavKarnePuan.resx">
+      <DependentUpon>SinavKarnePuan.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Sinav\Mobil\SinavKarneYY.resx">
+      <DependentUpon>SinavKarneYY.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Sinav\Online\Sinav.resx">
+      <DependentUpon>Sinav.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Sinav\UniteTaramaTopluKarne.resx">
+      <DependentUpon>UniteTaramaTopluKarne.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Sinav\UniteTaramaKarne.resx">
+      <DependentUpon>UniteTaramaKarne.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Sinav\OdulListesi.resx">
+      <DependentUpon>OdulListesi.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Sinav\OgrenciDersMuafiyet.resx">
+      <DependentUpon>OgrenciDersMuafiyet.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Sinav\OgrenciFrekansMuafiyet.resx">
+      <DependentUpon>OgrenciFrekansMuafiyet.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Sinav\OgrenciIzlemePivot.resx">
+      <DependentUpon>OgrenciIzlemePivot.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Sinav\OkulRapor\OkulRapor.resx">
+      <DependentUpon>OkulRapor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Sinav\OkulRapor\OR_Katilmayanlar.resx">
+      <DependentUpon>OR_Katilmayanlar.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Sinav\OkulRapor\OR_NetPuanOrtalamalari.resx">
+      <DependentUpon>OR_NetPuanOrtalamalari.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Sinav\OkulRapor\OR_OkulBasariGrafik.resx">
+      <DependentUpon>OR_OkulBasariGrafik.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Sinav\OkulRapor\OR_OkulDersBasariSirali.resx">
+      <DependentUpon>OR_OkulDersBasariSirali.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Sinav\OkulRapor\OR_OkulKonuAnalizi.resx">
+      <DependentUpon>OR_OkulKonuAnalizi.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Sinav\OkulRapor\OR_OkulSinavKarsilastirma.resx">
+      <DependentUpon>OR_OkulSinavKarsilastirma.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Sinav\OkulRapor\OR_OkulSoruFrekans.resx">
+      <DependentUpon>OR_OkulSoruFrekans.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Sinav\OkulRapor\OR_PuanBaraj.resx">
+      <DependentUpon>OR_PuanBaraj.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Sinav\OkulRapor\OR_SinifKonuAnalizi.resx">
+      <DependentUpon>OR_SinifKonuAnalizi.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Sinav\OkulRapor\OR_OkulNetPuanOrt.resx">
+      <DependentUpon>OR_OkulNetPuanOrt.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Sinav\OkulRapor\OR_OkulPuanListesi.resx">
+      <DependentUpon>OR_OkulPuanListesi.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Sinav\OkulRapor\OR_SinifNetListesi.resx">
+      <DependentUpon>OR_SinifNetListesi.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Sinav\OkulRapor\OR_SinifNetPuanGenel.resx">
+      <DependentUpon>OR_SinifNetPuanGenel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Sinav\OkulRapor\OR_SinifNetPuanOrt.resx">
+      <DependentUpon>OR_SinifNetPuanOrt.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Sinav\OkulRapor\OR_SinifPuanListesi.resx">
+      <DependentUpon>OR_SinifPuanListesi.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Sinav\SinavCevapAnahtariTaslak.resx">
+      <DependentUpon>SinavCevapAnahtariTaslak.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Sinav\SinavKatilim.resx">
+      <DependentUpon>SinavKatilim.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Sinav\SinavOzellikleri.resx">
+      <DependentUpon>SinavOzellikleri.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Sinav\SinavSonuclari.resx">
+      <DependentUpon>SinavSonuclari.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Sinav\skKatilmayanYuzde.resx">
+      <DependentUpon>skKatilmayanYuzde.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Sinav\skOkulKatilim.resx">
+      <DependentUpon>skOkulKatilim.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Sinav\SoruMaddeAnaliziOS.resx">
+      <DependentUpon>SoruMaddeAnaliziOS.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Sinav\ssCevapAnahtari.resx">
+      <DependentUpon>ssCevapAnahtari.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Sinav\ssOgrenciAnalizi.resx">
+      <DependentUpon>ssOgrenciAnalizi.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Sinav\ssPuanSirala.resx">
+      <DependentUpon>ssPuanSirala.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Sinav\TopluSinavSonuclari.resx">
+      <DependentUpon>TopluSinavSonuclari.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SinifListeleri\SinifListeRaporu.resx">
+      <DependentUpon>SinifListeRaporu.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SportifKulupler\OgrenciKulupler.resx">
+      <DependentUpon>OgrenciKulupler.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="TKT\KazanimAnalizi.resx">
+      <DependentUpon>KazanimAnalizi.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="TKT\OgrenciSonuc.resx">
+      <DependentUpon>OgrenciSonuc.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="TKT\TopluSonuc.resx">
+      <DependentUpon>TopluSonuc.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UniteTarama\SinavSonucListesi.resx">
+      <DependentUpon>SinavSonucListesi.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UniteTarama\UniteTaramaSinifMaddeAnalizi.resx">
+      <DependentUpon>UniteTaramaSinifMaddeAnalizi.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UniteTarama\UniteTaramaPuanRapor.resx">
+      <DependentUpon>UniteTaramaPuanRapor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Upgrade\SinavKagidi.resx">
+      <DependentUpon>SinavKagidi.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Upgrade\TopluSonuc.resx">
+      <DependentUpon>TopluSonuc.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UyariSistemi\UyariSistemiKullanici.resx">
+      <DependentUpon>UyariSistemiKullanici.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Viu\Bildirim.resx">
+      <DependentUpon>Bildirim.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Viu\MenuLog.resx">
+      <DependentUpon>MenuLog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Viu\Yoklama.resx">
+      <DependentUpon>Yoklama.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Viu\Mesaj.resx">
+      <DependentUpon>Mesaj.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Viu\Kullanmayanlar.resx">
+      <DependentUpon>Kullanmayanlar.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Viu\Arama.resx">
+      <DependentUpon>Arama.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Yazili\GenelKazanimAnalizi.resx">
+      <DependentUpon>GenelKazanimAnalizi.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Yazili\GenelYaziliYoklamaSonuclari.resx">
+      <DependentUpon>GenelYaziliYoklamaSonuclari.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Yazili\KazanimAnalizi.resx">
+      <DependentUpon>KazanimAnalizi.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Yazili\KazanimAnaliziOO.resx">
+      <DependentUpon>KazanimAnaliziOO.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Yazili\KOSRapor.resx">
+      <DependentUpon>KOSRapor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Yazili\LUSRapor.resx">
+      <DependentUpon>LUSRapor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Yazili\Ozellikler.resx">
+      <DependentUpon>Ozellikler.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Yazili\OrtalamaListesi.resx">
+      <DependentUpon>OrtalamaListesi.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Yazili\PuanaGoreYaziliSonuclari.resx">
+      <DependentUpon>PuanaGoreYaziliSonuclari.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Yazili\SinavaKatilmayanOgrenciler.resx">
+      <DependentUpon>SinavaKatilmayanOgrenciler.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Yazili\SinavAnaliz.resx">
+      <DependentUpon>SinavAnaliz.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Yazili\SinifBazindaKazanimAnalizi.resx">
+      <DependentUpon>SinifBazindaKazanimAnalizi.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Yazili\TopluYaziliYoklamaSonuclari.resx">
+      <DependentUpon>TopluYaziliYoklamaSonuclari.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="YetenekGelisim\YG_SecimYapmayanlar.resx">
+      <DependentUpon>YG_SecimYapmayanlar.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="YetenekGelisim\YG_IlkSinifKarne.resx">
+      <DependentUpon>YG_IlkSinifKarne.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="YetenekGelisim\YG_MevcutDagilim.resx">
+      <DependentUpon>YG_MevcutDagilim.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="YetenekGelisim\YG_OgrenciSecimleri.resx">
+      <DependentUpon>YG_OgrenciSecimleri.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="YetenekGelisim\YG_TopluKarne.resx">
+      <DependentUpon>YG_TopluKarne.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="YetenekGelisim\YG_UstSinifKarne.resx">
+      <DependentUpon>YG_UstSinifKarne.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="YYS\YYSTopluKarne.resx">
+      <DependentUpon>YYSTopluKarne.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ZekaTest\ZekaTestRapor.resx">
+      <DependentUpon>ZekaTestRapor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ZumreCalisma\KatilimBelgesi.resx">
+      <DependentUpon>KatilimBelgesi.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ZumreCalisma\KatilimRapor.resx">
+      <DependentUpon>KatilimRapor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ZumreCalisma\YaziliRapor.resx">
+      <DependentUpon>YaziliRapor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ZumreCalisma\YoklamaRapor.resx">
+      <DependentUpon>YoklamaRapor.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="packages.config" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <None Include="Resources\Tkt1.Sinif.jpg" />
+    <None Include="Resources\TktAnaokulu.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\bosSayfa.jpg" />
+    <Content Include="Resources\gelisimraporulogo.png" />
+    <Content Include="Resources\gelisimraporuwatermark.png" />
+    <Content Include="Resources\konuanaliz.PNG" />
+    <Content Include="Resources\KOS\KARNE.jpg" />
+    <Content Include="Resources\KOS\KOS-01.jpg" />
+    <Content Include="Resources\KOS\KOS-01.png" />
+    <Content Include="Resources\KOS\KOS-02.jpg" />
+    <Content Include="Resources\KOS\KOS-02.png" />
+    <Content Include="Resources\KOS\ON.jpg" />
+    <Content Include="Resources\LUS\LUS-01.png" />
+    <Content Include="Resources\LUS\LUS-02.png" />
+    <Content Include="Resources\LUS\LUS-03.png" />
+    <Content Include="Resources\LUS\LUS-04.png" />
+    <Content Include="Resources\OkyanusLogo.png" />
+    <Content Include="Resources\okyanus_logo.png" />
+    <Content Include="Resources\Slayt1.PNG" />
+    <Content Include="Resources\Slayt2.PNG" />
+    <Content Include="Resources\Slayt3.PNG" />
+    <Content Include="Resources\Slayt4.PNG" />
+    <None Include="Resources\TktAnaokuluArka.png" />
+    <None Include="Resources\Tkt1_SinifPng.bmp" />
+    <Content Include="Resources\Tkt1.Sinif.png" />
+    <None Include="Resources\TktAnaokulu-a.bmp" />
+    <None Include="Resources\TktAnaokulu-a.png" />
+    <None Include="Resources\TktAnaokulu-b.png" />
+    <None Include="Resources\TktAnaokulu-c.png" />
+    <Content Include="Resources\TktAnaokulu.png" />
+    <Content Include="Resources\TktIlkokulArka.png" />
+    <Content Include="Resources\TKTWATERMARK.png" />
+    <Content Include="Resources\TYT-01.jpg" />
+    <Content Include="Resources\TYT-02.jpg" />
+    <None Include="Resources\xrPictureBox1.Image.png" />
+    <Content Include="Resources\TYT-02.png" />
+    <Content Include="Resources\UstSinifYetenekKarnesi.png" />
+    <Content Include="Resources\xrPictureBox1.Image.jpg" />
+    <Content Include="Resources\xrPictureBox2.Image.jpg" />
+    <Content Include="Resources\YetenekKarnesi\ilk.png" />
+    <Content Include="Sinav\images\arkaPlan.jpg" />
+    <Content Include="Sinav\images\ArkaPlan\arkaPlanBos.jpg" />
+    <Content Include="Sinav\images\ArkaPlan\arkaPlanLogo.png" />
+    <Content Include="Sinav\images\ArkaPlan\arkaPlanUst.png" />
+    <Content Include="Sinav\images\sinavsonuckarne.jpg" />
+    <Content Include="Sinav\images\TYT-03-min.jpg" />
+    <Content Include="Sinav\images\TYT-04-min.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Connected Services\" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

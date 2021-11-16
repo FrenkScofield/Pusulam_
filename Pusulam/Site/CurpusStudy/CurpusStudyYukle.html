@@ -1,0 +1,151 @@
+﻿<link href="assets/global/plugins/bootstrap-fileinput/bootstrap-fileinput.css" rel="stylesheet" type="text/css" />
+<div class="page-head">
+    <!-- BEGIN PAGE TITLE -->
+    <div class="page-title col-md-12">
+        <h1>
+            Curpus Study Excel  <span onclick="YardimGoster(ID_MENU);" class="pull-right" style="cursor:pointer;"><img src="assets/global/img/info.gif" class="info-image-icon" /> </span>
+        </h1>
+    </div>
+    <!-- END PAGE TITLE -->
+</div>
+
+<div class="row" id="app">
+    <div class="col-md-12">
+        <div class="portlet box blue-hoki dd-item" style="border:none">
+            <div class="portlet-title dd-handle" data-toggle='collapse' data-target='#filters' style="cursor:pointer;">
+                <div class="caption">
+                    <i class="icon-list"></i>
+                    <span class="caption-subject bold uppercase"> Excel Yükle </span>
+                    <span class="caption-helper"></span>
+                </div>
+                <div class='actions'>
+                    <a href='javascript:;' class='btn btn-default btn-sm' style='border:none;'>
+                        <i class='fa fa-chevron-down'></i>
+                    </a>
+                </div>
+            </div>
+            <!-- BEGIN PORTLET-->
+            <div class="portlet-body form collapse in" id="filters">
+                <form role="form" style="padding:12px 20px">
+                    <div class="row">
+
+                        <div class="fileinput fileinput-new" data-provides="fileinput">
+                            <span class="fileinput-preview thumbnail" style="max-width: 1000px; max-height: 1000px;"> </span>
+                            <span>
+                                <span class="btn default btn-file">
+                                    <span class="fileinput-new yellow"> Curpus Study Excel Yükle </span>
+                                    <span class="fileinput-exists"> Değiştir </span>
+                                    <input type="file" name="..." accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" id="dosya" data-preview-file-type="text">
+                                </span>
+                                <a href="javascript:;" class="btn red fileinput-exists" data-dismiss="fileinput"> Sil </a>
+                                <a href="javascript:;" @click="ExcelYukle" class="btn green fileinput-exists" data-dismiss="modal"> Tamam </a>
+                            </span>
+                        </div>
+
+                        <button type="button" style="float:right" class="btn yellow" @click="ExcelTaslakIndir">Taslak İndir</button>
+
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!--<div class="col-md-12" v-if="1 == 2">
+        <div class="portlet light">
+            <div class="portlet-title">
+                <div class="caption">
+                    <i class="icon-list font-green"></i>
+                    <span class="caption-subject bold font-green uppercase"> Curpus Study Listesi </span>
+                    <span class="caption-helper"></span>
+                </div>
+            </div>
+            <div class="portlet-body form">
+                <form role="form">
+                    <div class="portlet light bordered">
+                        <div class="portlet-body" style="overflow-x:auto;">
+                            <c-table tabloadi="CurpusStudyListesi"
+                                     :gelendata="LIST">
+                            </c-table>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>-->
+
+</div>
+<script src="VueComponents/Genel.js"></script>
+<script>
+    var vue = new Vue({
+
+        el: "#app",
+        name: "CurpusStudyYukle",
+
+        data: {
+            TCKIMLIKNO: '',
+            OTURUM: '',
+            controller: 'CurpusStudyYukle',
+            LIST: []
+        },
+
+        mounted() {
+            this.TCKIMLIKNO = session.TCKIMLIKNO;
+            this.OTURUM = session.OTURUM;
+
+            //this.CurpusStudyListe();
+        },
+
+        methods: {
+
+            //CurpusStudyListe() {
+            //    var p = {
+            //        TCKIMLIKNO: session.TCKIMLIKNO,
+            //        OTURUM: session.OTURUM
+            //    };
+            //    WebPost(this, this.controller, "CurpusStudyListe", p, '', '', function (data, parent) {
+            //        if (data != null && data.length > 0) {
+            //            vue.LIST = JSON.parse(data);
+            //        }
+            //        else {
+            //            vue.PUANTURLIST = null;
+            //        }
+            //    });
+            //},
+
+            ExcelTaslakIndir() {
+                window.open("Dosyalar/ExcelTaslak/CurpusStudyTaslak.xlsx", "_blank");
+            },
+
+            ExcelYukle() {
+                var dosya = document.getElementById('dosya').files;
+                dosyaadi = $('#dosya').val().replace(/^.*[\\\/]/, '');
+                if (dosya.length == 0) {
+                    Alert_Info('Lütfen Dosya Seçiniz.');
+                    return;
+                }
+                var _this = this;
+
+                ExcelVeriYukle("CurpusStudy", dosya, function (response) {
+
+                    $('.fileinput').fileinput("clear");
+
+                    var p = {
+                        TCKIMLIKNO: session.TCKIMLIKNO,
+                        OTURUM: session.OTURUM,
+                        SQLJSON: response,
+                    };
+
+                    WebPost(_this, _this.controller, "CurpusStudyExcelYukle", p, '', '', function (data, parent) {
+                        if (data > 0) {
+                            Alert_Info("Curpus Study Aktarımı Tamamlanmıştır.");
+                        } else {
+                            Alert_Warning("Curpus Study Aktarımı Sırasında Hata Oluştu..!");
+                        }
+                    }, 'RAISERROR');
+                });
+            },
+        }
+    });
+</script>
+<script src="Scripts/PublicMethods.js"></script>
+<script src="assets/global/plugins/bootstrap-fileinput/bootstrap-fileinput.js" type="text/javascript"></script>

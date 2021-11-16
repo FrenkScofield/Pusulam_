@@ -1,0 +1,900 @@
+﻿<style>
+    table td, th {
+        font-size: 10px !important;
+    }
+
+    .TarihSecici {
+        cursor: pointer;
+        text-align: left;
+        width: 100%;
+        background: transparent;
+        border: none;
+        padding-left: 14px;
+        padding-right: 14px;
+        padding-top: 8px;
+        padding-bottom: 7px;
+    }
+</style>
+
+<div class="page-head">
+    <div class="page-title col-md-12">
+        <h1>
+            Viu Raporlar <span onclick="YardimGoster(ID_MENU);" class="pull-right" style="cursor:pointer;"><img src="assets/global/img/info.gif" class="info-image-icon" /> </span>
+        </h1>
+    </div>
+</div>
+
+<div class="row" id="app">
+    <div class="col-md-12">
+        <div class="portlet box green-haze dd-item" style="border:none">
+            <div class="portlet-title dd-handle" data-toggle='collapse' data-target='#filters' style="cursor:pointer;">
+                <div class="caption">
+                    <i class="icon-magnifier"></i>
+                    <span class="caption-subject bold uppercase"> Filtreler </span>
+                    <span class="caption-helper"></span>
+                </div>
+                <div class='actions'>
+                    <a href='javascript:;' class='btn btn-default btn-sm' style='border:none;'>
+                        <i class='fa fa-chevron-down'></i>
+                    </a>
+                </div>
+            </div>
+            <div class="portlet-body form collapse in" id="filters">
+                <div class="form-body">
+                    <div class="portlet-body">
+                        <form role="form">
+                            <div class="row">
+                                <c-viu-raportur @OnChange="RaporturSelected">
+                                </c-viu-raportur>
+                            </div>
+                            <div v-if="ID_RAPORTUR>0">
+                                <div class="row" v-show="ID_RAPORTUR != 4 && ID_RAPORTUR !=6 ">
+                                    <c-sube-multi :controller="controller"
+                                                  @OnChange="SubeSelected">
+                                    </c-sube-multi>
+                                </div>
+                                <div class="row" v-show="ID_RAPORTUR == 2">
+                                    <c-arama-sebep-multi :controller="controller"
+                                                         @OnChange="AramaSebepSelected">
+                                    </c-arama-sebep-multi>
+                                </div>
+                                <div class="row" v-show="ID_RAPORTUR == 2">
+                                    <c-arama-durum-multi :controller="controller"
+                                                         @OnChange="AramaDurumSelected">
+                                    </c-arama-durum-multi>
+                                </div>
+
+                                <div class="row" v-show="ID_RAPORTUR == 5 && ID_RAPORTUR != 6">
+                                    <c-kullanici-multi :controller="controller"
+                                                       :idsubelist="ID_SUBELIST"
+                                                       :idkullanicitipilist=[53,54]
+                                                       @OnChange="KullaniciSelected">
+                                    </c-kullanici-multi>
+                                </div>
+
+
+
+
+
+                                <div class="row" v-show="ID_RAPORTUR == 4">
+                                    <c-sube-multi controller="ViuRaporlar"
+                                                  @OnChange="KampusSelected">
+                                    </c-sube-multi>
+                                </div>
+
+                                <div class="row" v-show="ID_RAPORTUR == 4">
+                                    <c-kademe3 controller="ViuRaporlar"
+                                               :idsubelist="SUBELER"
+                                               @OnChange="Kademe3Selected">
+                                    </c-kademe3>
+                                </div>
+                                <div class="row" v-show="ID_RAPORTUR == 4">
+                                    <c-sinif-multi controller="ViuRaporlar"
+                                                   :idsubelist="SUBELER"
+                                                   :idkademe3="ID_KADEME3"
+                                                   @OnChange="SinifSelected">
+                                    </c-sinif-multi>
+                                </div>
+
+
+
+                                <!--<div class="row" v-show="ID_RAPORTUR == 5">
+                                    <div class="form-md-line-input">
+                                        <label class="control-label col-md-3" style="vertical-align:middle;">Randevu Durum </label>
+                                        <div class="col-md-9">
+                                            <select class="selectpicker form-control" v-model="RANDEVUDURUM" @change="OnChange" title="Seçiniz...">
+                                                <option value="1">Geldi</option>
+                                                <option value="0">Gelmedi</option>
+                                                <option value="-1">Belirsiz</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>-->
+                                <div class="row" v-show="(ID_SUBELIST.length==1 || (ID_SUBELIST.length==2 && ID_SUBELIST.indexOf(0)>-1)) && ID_RAPORTUR!=3 &&ID_RAPORTUR!=4 &&ID_RAPORTUR!=5">
+                                    <div class="form-md-line-input">
+                                        <label class="control-label col-md-3" style="vertical-align:middle;">Filtrele </label>
+                                        <div class="col-md-9">
+                                            <label><input type="radio" @change="changeOgretmen()" name="optradio" checked> Öğretmen</label> &nbsp;&nbsp;
+                                            <label><input type="radio" @change="changeIdare()" name="optradio"> İdareci</label>&nbsp;&nbsp;
+                                            <label><input type="radio" @change="changeRehber()" name="optradio"> Rehber</label>&nbsp;&nbsp;
+                                            <label><input type="radio" @change="changeTumu()" name="optradio"> Tümü</label>&nbsp;&nbsp;
+
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <div class="row" v-show="(ID_SUBELIST.length==1 || (ID_SUBELIST.length==2 && ID_SUBELIST.indexOf(0)>-1)) && ID_RAPORTUR!=3 &&ID_RAPORTUR!=4 &&ID_RAPORTUR!=5 && IDAREAC">
+                                    <c-idare-multi :controller="controller"
+                                                   :idsube="ID_SUBE"
+                                                   :idkademe="ID_KADEME"
+                                                   @OnChange="IdareSelected">
+                                    </c-idare-multi>
+                                </div>
+
+                                <div class="row" v-show="(ID_SUBELIST.length==1 || (ID_SUBELIST.length==2 && ID_SUBELIST.indexOf(0)>-1)) && ID_RAPORTUR!=3 &&ID_RAPORTUR!=4 &&ID_RAPORTUR!=5 &&OGRETMENAC">
+                                    <c-ogretmen-multi :controller="controller"
+                                                      :idsube="ID_SUBE"
+                                                      :idkademe="ID_KADEME"
+                                                      @OnChange="OgretmenSelected">
+                                    </c-ogretmen-multi>
+                                </div>
+                                <div class="row" v-show="(ID_SUBELIST.length==1 || (ID_SUBELIST.length==2 && ID_SUBELIST.indexOf(0)>-1)) && ID_RAPORTUR!=3 &&ID_RAPORTUR!=4 &&ID_RAPORTUR!=5 &&REHBERAC">
+                                    <c-rehber-multi :controller="controller"
+                                                    :idsube="ID_SUBE"
+                                                    :idkademe="ID_KADEME"
+                                                    @OnChange="RehberSelected">
+                                    </c-rehber-multi>
+                                </div>
+                                <div class="row" v-show="(ID_SUBELIST.length==1 || (ID_SUBELIST.length==2 && ID_SUBELIST.indexOf(0)>-1)) && ID_RAPORTUR!=3 &&ID_RAPORTUR!=4 &&ID_RAPORTUR!=5 &&TUMUAC">
+                                    <c-idare_rehber_ogretmen-multi :controller="controller"
+                                                                   :idsube="ID_SUBE"
+                                                                   :idkademe="ID_KADEME"
+                                                                   @OnChange="TumuSelected">
+                                    </c-idare_rehber_ogretmen-multi>
+                                </div>
+                                <div class="row" v-show="ID_RAPORTUR!=3">
+                                    <div class="form-md-line-input">
+                                        <label class="control-label col-md-3" style="vertical-align:middle;">Başlangıç </label>
+                                        <div class="col-md-9">
+                                            <div class="dropdown-toggle btn grey-cararra" data-toggle="dropdown" role="button" title="Başlangıç Seçiniz.." style="width:100%; padding:0px;">
+                                                <input type="text" id="bas" v-model="ITEM.BASLANGIC" class="TarihSecici" readonly placeholder="Başlangıç Seçiniz..">
+                                                <span class="bs-caret" style="position:absolute; right:12px; top:5px;">
+                                                    <span class="caret"></span>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row" v-show="ID_RAPORTUR!=3">
+                                    <div class="form-md-line-input">
+                                        <label class="control-label col-md-3" style="vertical-align:middle;">Bitiş </label>
+                                        <div class="col-md-9">
+                                            <div class="dropdown-toggle btn grey-cararra" data-toggle="dropdown" role="button" title="Bitiş Seçiniz.." style="width:100%; padding:0px;">
+                                                <input type="text" id="bit" v-model="ITEM.BITIS" class="TarihSecici" readonly placeholder="Bitiş Seçiniz..">
+                                                <span class="bs-caret" style="position:absolute; right:12px; top:5px;">
+                                                    <span class="caret"></span>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row" v-if="ID_RAPORTUR==6">
+                                    <div class="form-md-line-input">
+                                        <label class="control-label col-md-3">Tc Kimlik </label>
+                                        <div class="col-md-9">
+                                            <input type="text" class="form-control" v-model="TC_KIME" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="form-group" style="margin-top:10px;">
+                                        <div class="col-md-12 text-right" style="padding-right:15px;">
+                                            <button type="button" class="btn yellow" @click="RaporOlustur" v-if="ID_RAPORTUR==2" style="margin-right:10px;">Rapor Oluştur</button>
+                                            <div class="row" v-if="ID_RAPORTUR == 6">
+                                                <div class="col-md-3">
+                                                    <c-rapor-tur-buton colmd="8" @yazdir="BildirimYazdir"> </c-rapor-tur-buton>
+                                                </div>
+                                                <div class="col-md-9">
+                                                    <button type="button" class="btn green" @click="BildirimRaporla" v-if="ID_RAPORTUR == 6">Raporla</button>
+
+                                                </div>
+                                            </div>
+
+
+                                            <button type="button" class="btn green" @click="ExcelOlustur" v-if="ID_RAPORTUR != 5 && ID_RAPORTUR != 6">Excel Oluştur</button>
+                                            <button type="button" class="btn yellow" @click="RandevuTakipListele" v-if="ID_RAPORTUR==5" style="margin-right:10px;">LİSTELE</button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-12" v-if="ARAMALISTE.length>0">
+        <div class="portlet light">
+            <div class="portlet-title">
+                <div class="caption">
+                    <i class="icon-list font-green"></i>
+                    <span class="caption-subject bold font-green uppercase"> Arama Listesi </span>
+                    <span class="caption-helper"></span>
+                </div>
+            </div>
+            <!-- BEGIN PORTLET-->
+            <div class="portlet-body form">
+                <form role="form">
+                    <div class="portlet light bordered">
+                        <div class="portlet-body">
+                            <table class="table table-striped table-bordered table-hover table-checkable" id="table_arama">
+                                <thead>
+                                    <tr>
+                                        <th>Arayan TC</th>
+                                        <th>Arayan </th>
+                                        <th>Arayan Şube</th>
+                                        <th>Kim İçin</th>
+                                        <th>Aranan Şube</th>
+                                        <th>Grup</th>
+                                        <th>Sınıf</th>
+                                        <th>Kimi</th>
+                                        <th>Sebep</th>
+                                        <th>Durum</th>
+                                        <th>Tarih</th>
+                                        <th>Ses</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="odd gradeX" v-for="u in ARAMALISTE">
+                                        <td>{{u.ARAYANTC}}</td>
+                                        <td>{{u.ARAYAN}}</td>
+                                        <td :title="u.ARAYANSUBE">{{u.ARAYANSUBE.length>20?u.ARAYANSUBE.substring(0,20) + '...' : u.ARAYANSUBE}}</td>
+                                        <td>{{u.KIMICIN}}</td>
+                                        <td :title="u.KIMESUBE">{{u.KIMESUBE.length>20?u.KIMESUBE.substring(0,20) + '...' : u.KIMESUBE}}</td>
+                                        <td :title="u.GRUP">{{u.GRUP}}</td>
+                                        <td :title="u.SINIF">{{u.SINIF}}</td>
+                                        <td>{{u.KIME}}</td>
+                                        <td>{{u.ARAMASEBEP}}</td>
+                                        <td>{{u.ARAMADURUM}}</td>
+                                        <td>{{u.KYE_TARIH}}</td>
+                                        <td>
+                                            <button type="button" class="btn green" @click="SesModal(u.GUID)" v-if="u.GUID!=''">Arama Kaydı</button>
+                                            <button type="button" class="btn red" v-else>Arama Kaydı Yok</button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <!-- END PORTLET-->
+        </div>
+    </div>
+    <div class="col-md-12" v-if="RANDEVULISTE.length>0">
+        <div class="portlet light">
+            <div class="portlet-title">
+                <div class="caption">
+                    <i class="icon-list font-green"></i>
+                    <span class="caption-subject bold font-green uppercase"> Randevu Listesi </span>
+                    <span class="caption-helper"></span>
+                </div>
+            </div>
+            <!-- BEGIN PORTLET-->
+            <div class="portlet-body form">
+                <form role="form">
+                    <div class="portlet light bordered">
+                        <div class="portlet-body">
+                            <div v-show="RANDEVUDETAYLISTE.length==0">
+                                <table class="table table-striped table-bordered table-hover table-checkable" id="table_randevu">
+                                    <thead>
+                                        <tr>
+                                            <th>Kampüs</th>
+                                            <th>Kademe</th>
+                                            <th>Ad</th>
+                                            <th>Soyad</th>
+                                            <th>Randevu Sayısı</th>
+                                            <th>Gelen Randevu Sayısı</th>
+                                            <th>Gelmeyen Randevu Sayısı</th>
+                                            <th>Belirsiz Randevu Sayısı</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr class="odd gradeX" v-for="u in RANDEVULISTE">
+                                            <td>{{u.SUBEAD}}</td>
+                                            <td>
+                                                <div v-for="k in u.KADEMELIST">
+                                                    {{k.KADEME}}
+                                                </div>
+                                            </td>
+                                            <td>{{u.AD}}</td>
+                                            <td>{{u.SOYAD}}</td>
+                                            <td>{{u.RANDEVUSAYISI}}</td>
+                                            <td @click="RandevuDetayListele(u.TCKIMLIKNO,1 ,u.GELENRANDEVUSAYISI   )" style="cursor:pointer"><a href="javascript:;">{{u.GELENRANDEVUSAYISI   }}</a></td>
+                                            <td @click="RandevuDetayListele(u.TCKIMLIKNO,0 ,u.GELMEYENRANDEVUSAYISI)" style="cursor:pointer"><a href="javascript:;">{{u.GELMEYENRANDEVUSAYISI}}</a></td>
+                                            <td @click="RandevuDetayListele(u.TCKIMLIKNO,-1,u.BELIRSIZRANDEVUSAYISI)" style="cursor:pointer"><a href="javascript:;">{{u.BELIRSIZRANDEVUSAYISI}}</a></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <div v-show="RANDEVUDETAYLISTE.length>0">
+
+                                <table class="table table-striped table-bordered table-hover table-checkable" id="table_randevu_detay">
+                                    <thead>
+                                        <tr>
+                                            <th>Kampüs</th>
+                                            <th>İdareci</th>
+                                            <th>Öğrenci</th>
+                                            <th>Veli</th>
+                                            <th>Randevu</th>
+                                            <th>Randevu Durum</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr class="odd gradeX" v-for="u in RANDEVUDETAYLISTE">
+                                            <td>{{u.SUBEAD}}</td>
+                                            <td>{{u.IDARECI}}</td>
+                                            <td>{{u.ADSOYAD}}</td>
+                                            <td>
+                                                <div v-for="k in u.VELILIST">
+                                                    {{k.ADSOYAD}}
+                                                </div>
+                                            </td>
+                                            <td>{{u.RANDEVUAD}}</td>
+                                            <td>{{u.RANDEVUDURUM}}</td>
+                                            <!--<td :style="u.RANDEVUDURUM == 'Geldi' ? 'color:green' : (u.RANDEVUDURUM == 'Gelmedi' ? 'color:red' : 'color:black')" >{{u.RANDEVUDURUM}}</td>-->
+                                        </tr>
+                                    </tbody>
+                                </table>
+
+                                <button @click="RandevuTakipListele" class="btn yellow">Geri</button>
+
+                            </div>
+
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <!-- END PORTLET-->
+        </div>
+    </div>
+    <div id="arama_modal" class="modal fade in" tabindex="-1" data-replace="true">
+        <div class="modal-dialog" style="transform:none!important;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                    <h4 class="modal-title">Ses Kaydı</h4>
+                </div>
+
+                <div class="modal-body" style="padding-bottom:0px;">
+                    <div class="form-body form-horizontal">
+                        <div class="row" style="text-align:center;" id="DIV_SES">
+
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn default" data-dismiss="modal">Kapat</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div v-if="BILDIRIM_RAPORU.length>0">
+        <div class="col-md-12">
+
+            <div class="portlet light"
+                 style="margin:0px; border-bottom-style: solid;border-bottom-width: 3px;border-bottom-color: rgb(0, 173, 239);">
+                <div class="portlet-body">
+                    <div class="form-inline">
+
+                        <table class="table table-striped" id="tableBildirim">
+                            <thead>
+                                <tr>
+
+                                    <th>TARİH</th>
+                                    <th>TC KIMLIK NO</th>
+                                    <th>UYGULAMA</th>
+                                    <th>BAŞLIK</th>
+                                    <th>MESAJ</th>
+                                    <th>MESAJ TAM</th>
+
+
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="s in BILDIRIM_RAPORU">
+
+                                    <td>{{s.KYE_TARIH}}</td>
+                                    <td>{{s.TCKIMLIKNO_KIME}}</td>
+                                    <td>{{s.UYGULAMA}}</td>
+                                    <td>{{s.HEADER}}</td>
+                                    <td>{{s.MESAJ}}</td>
+                                    <td>{{s.MESAJTAM}}</td>
+
+                                </tr>
+                            </tbody>
+                        </table>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+<script src="/VueComponents/Degerlendirme/Filtreler.js?v=5"></script>
+<script src="/VueComponents/Viu/Filtreler.js?v=5"></script>
+<script src="/VueComponents/Filtre.js?v=5"></script>
+<script src="/VueComponents/Genel.js?v=5"></script>
+<script>
+
+    var vue = new Vue({
+        el: "#app",
+        name: "ViuRaporlar.html",
+
+        data: {
+            controller: 'ViuRaporlar',
+            TCOGRETMENLIST: [],
+            ID_SUBELIST: [],
+            ID_KADEME: 0,
+            ID_RAPORTUR: 0,
+            ID_ARAMASEBEPLIST: [],
+            ID_ARAMADURUMLIST: [],
+            ARAMALISTE: [],
+            SESURL: '',
+            ITEM: { BASLANGIC: "", BITIS: "" },
+            SUBELER: [],
+            ID_KADEME3: 0,
+            SINIFLAR: [],
+            TCLIST: [],
+            //RANDEVUDURUM: null,
+            RANDEVULISTE: [],
+            RANDEVUDETAYLISTE: [],
+            TC_KIME: '',
+            BILDIRIM_RAPORU: [],
+            OGRETMENAC: true,
+            IDAREAC: false,
+            REHBERAC: false,
+            TUMUAC: false
+        },
+
+        computed: {
+            ID_SUBE: function () {
+                return this.ID_SUBELIST[0] == 0 ? this.ID_SUBELIST[1] : this.ID_SUBELIST[0];
+            }
+        },
+
+        mounted() {
+            $('#arama_modal').on('hidden.bs.modal', function () {
+                $("#videoContainer")[0].pause();
+                $('#DIV_SES').html('');
+            })
+        },
+
+        methods: {
+            changeOgretmen() {
+                this.IDAREAC = false;
+                this.OGRETMENAC = true;
+                this.REHBERAC = false;
+                this.TUMUAC = false;
+                this.TCOGRETMENLIST = [];
+            },
+            changeIdare() {
+                this.IDAREAC = true;
+                this.OGRETMENAC = false;
+                this.REHBERAC = false;
+                this.TUMUAC = false;
+                this.TCOGRETMENLIST = [];
+            },
+            changeRehber() {
+                this.IDAREAC = false;
+                this.OGRETMENAC = false;
+                this.REHBERAC = true;
+                this.TUMUAC = false;
+                this.TCOGRETMENLIST = [];
+            },
+            changeTumu() {
+                this.IDAREAC = false;
+                this.OGRETMENAC = false;
+                this.REHBERAC = false;
+                this.TUMUAC = true;
+                this.TCOGRETMENLIST = [];
+            },
+
+            KullaniciSelected(TCLIST) {
+                this.TCLIST = TCLIST;
+            },
+            KampusSelected(SUBELER) {
+                this.SUBELER = SUBELER;
+            },
+            Kademe3Selected(ID_KADEME3) {
+                this.ID_KADEME3 = ID_KADEME3;
+            },
+            SinifSelected(SINIFLAR) {
+                this.SINIFLAR = SINIFLAR;
+            },
+            AramaSebepSelected(item) {
+                this.ID_ARAMASEBEPLIST = item;
+            },
+            AramaDurumSelected(item) {
+                this.ID_ARAMADURUMLIST = item;
+            },
+            RaporturSelected(item) {
+                this.ID_RAPORTUR = item;
+                this.TCOGRETMENLIST = [];
+                this.RANDEVULISTE = [];
+
+                vue.$nextTick(function () {
+                    $('.TarihSecici').each(function () {
+                        $(this).datepicker({
+                            format: 'dd.mm.yyyy',
+                            language: 'tr'
+                        }).on(
+                            'changeDate', () => {
+                                var day1 = $(this).datepicker('getDate').getDate();
+                                var month1 = $(this).datepicker('getDate').getMonth() + 1;
+                                var year1 = $(this).datepicker('getDate').getFullYear();
+                                var fullDate = (day1 < 10 ? '0' + day1 : day1) + "." + (month1 < 10 ? '0' + month1 : month1) + "." + year1;
+
+                                var tur = $(this).attr('id');
+
+                                if (tur == 'bas') {
+                                    vue.ITEM.BASLANGIC = fullDate;
+                                } else if (tur == 'bit') {
+                                    vue.ITEM.BITIS = fullDate;
+                                }
+                            }
+                        );
+                    });
+                });
+            },
+            SubeSelected(item) {
+                this.ID_SUBELIST = item;
+                this.TCOGRETMENLIST = [];
+            },
+            OgretmenSelected(item) {
+                debugger
+                this.TCOGRETMENLIST = item;
+            },
+            IdareSelected(item) {
+                this.TCOGRETMENLIST = item;
+            },
+            RehberSelected(item) {
+                this.TCOGRETMENLIST = item;
+            },
+            TumuSelected(item) {
+                this.TCOGRETMENLIST = item;
+            },
+
+            BildirimRaporla() {
+
+                if (this.ITEM.BASLANGIC == "")
+                    this.ITEM.BASLANGIC = dateToStr(new Date());
+                if (this.ITEM.BITIS == "")
+                    this.ITEM.BITIS = dateToStr(new Date());
+
+                var basTar = (strToDateTurkish(vue.ITEM.BASLANGIC));
+                var bitTar = (strToDateTurkish(vue.ITEM.BITIS));
+
+                if (basTar > bitTar) {
+                    Alert_Warning("Tarih Seçimini Kontrol Ediniz...");
+                    return;
+                }
+
+                if (this.TC_KIME == "") {
+
+                    Alert_Warning("Tc Kimlik Numarasınız Kontrol Ediniz...");
+                    return;
+                }
+
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    TC_KULLANICI: this.TC_KIME,
+                    BASTARIH: this.ITEM.BASLANGIC,
+                    BITTARIH: this.ITEM.BITIS,
+
+                };
+
+                WebPost(this, this.controller, "ViuBildirimListele", p, '', '', function (data, parent) {
+
+
+                    if (data != null || data != undefined) {
+                        parent.BILDIRIM_RAPORU = JSON.parse(data);
+                        ListeOlustur('tableBildirim');
+                    }
+
+
+                });
+            },
+            BildirimYazdir(val) {
+
+                if (val == "" || val == undefined || val == null) {
+                    Alert_Warning("Rapor Türünü Seçiniz.!");
+                    return;
+                }
+
+                else {
+
+
+
+                    window.open("Rapor.aspx?raporTur=" + val + "&rapor=Viu.Bildirim&p="
+                        + session.TCKIMLIKNO + ";"
+                        + session.OTURUM + ';'
+                        + this.TC_KIME + ';'
+                        + this.ITEM.BASLANGIC + ';'
+                        + this.ITEM.BITIS + ''
+
+                    );
+
+                }
+
+            },
+            RandevuTakipListele() {
+                if (this.ITEM.BASLANGIC == "")
+                    this.ITEM.BASLANGIC = dateToStr(new Date());
+                if (this.ITEM.BITIS == "")
+                    this.ITEM.BITIS = dateToStr(new Date());
+
+                var basTar = (strToDateTurkish(vue.ITEM.BASLANGIC));
+                var bitTar = (strToDateTurkish(vue.ITEM.BITIS));
+
+                if (basTar > bitTar) {
+                    Alert_Warning("Tarih Seçimini Kontrol Ediniz...");
+                    return;
+                }
+
+                ListeTemizle(this.RANDEVULISTE)
+                ListeTemizle(this.RANDEVUDETAYLISTE)
+
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    ID_SUBELIST: JSON.stringify(this.ID_SUBELIST),
+                    TCLIST: JSON.stringify(this.TCLIST),
+                    BASTARIH: this.ITEM.BASLANGIC,
+                    BITTARIH: this.ITEM.BITIS,
+                    //RANDEVUDURUM: this.RANDEVUDURUM,
+
+                };
+
+                WebPost(this, this.controller, "ViuRandevuTakipListele", p, '', '', function (data, parent) {
+                    if (data != null || data != undefined) {
+                        parent.RANDEVULISTE = JSON.parse(data);
+                    }
+
+                    $("#table_randevu").DataTable().destroy();
+                    Vue.nextTick(function () {
+                        $('#table_randevu').DataTable({
+                            language: { "url": "/Utility/dil.json" }
+                        });
+                    })
+                });
+
+            },
+            RandevuDetayListele(tcIdareci, randevuDurum, adet) {
+                if (adet == 0) {
+                    return;
+                }
+
+                if (this.ITEM.BASLANGIC == "")
+                    this.ITEM.BASLANGIC = dateToStr(new Date());
+                if (this.ITEM.BITIS == "")
+                    this.ITEM.BITIS = dateToStr(new Date());
+
+                var basTar = (strToDateTurkish(vue.ITEM.BASLANGIC));
+                var bitTar = (strToDateTurkish(vue.ITEM.BITIS));
+
+                if (basTar > bitTar) {
+                    Alert_Warning("Tarih Seçimini Kontrol Ediniz...");
+                    return;
+                }
+
+                ListeTemizle(this.RANDEVUDETAYLISTE)
+
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    TC_IDARECI: tcIdareci,
+                    RANDEVUDURUM: randevuDurum,
+                    BASTARIH: this.ITEM.BASLANGIC,
+                    BITTARIH: this.ITEM.BITIS,
+                    //ID_SUBELIST: JSON.stringify(this.ID_SUBELIST),
+                    //RANDEVUDURUM: this.RANDEVUDURUM,
+                };
+
+                WebPost(this, this.controller, "ViuRandevuTakipDetay", p, '', '', function (data, parent) {
+                    if (data != null || data != undefined) {
+                        parent.RANDEVUDETAYLISTE = JSON.parse(data);
+                    }
+
+                    $("#table_randevu_detay").DataTable().destroy();
+                    Vue.nextTick(function () {
+                        $('#table_randevu_detay').DataTable({
+                            language: { "url": "/Utility/dil.json" }
+                        });
+                    });
+                });
+
+            },
+
+            RaporOlustur() {
+                if (this.ITEM.BASLANGIC == "")
+                    this.ITEM.BASLANGIC = dateToStr(new Date());
+                if (this.ITEM.BITIS == "")
+                    this.ITEM.BITIS = dateToStr(new Date());
+
+                var basTar = (strToDateTurkish(vue.ITEM.BASLANGIC));
+                var bitTar = (strToDateTurkish(vue.ITEM.BITIS));
+
+                if (basTar > bitTar) {
+                    Alert_Warning("Tarih Seçimini Kontrol Ediniz...");
+                    return;
+                }
+
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    ID_SUBELIST: JSON.stringify(this.ID_SUBELIST),
+                    TCOGRETMENLIST: (this.ID_SUBELIST.length == 1 || (this.ID_SUBELIST[0] == 0 && this.ID_SUBELIST.length == 2) ? JSON.stringify(this.TCOGRETMENLIST) : '[]'),
+                    BASTARIH: this.ITEM.BASLANGIC,
+                    BITTARIH: this.ITEM.BITIS,
+                    ID_ARAMASEBEPLIST: JSON.stringify(this.ID_ARAMASEBEPLIST),
+                    ID_ARAMADURUMLIST: JSON.stringify(this.ID_ARAMADURUMLIST),
+                    JSON: 1
+                };
+
+                WebPost(this, this.controller, "AramaRapor", p, '', '', function (data, parent) {
+                    if (data != null || data != undefined) {
+                        parent.ARAMALISTE = JSON.parse(data);
+                    } else {
+                        parent.ARAMALISTE = [];
+                    }
+
+                    $("#table_arama").DataTable().destroy();
+                    Vue.nextTick(function () {
+                        $('#table_arama').DataTable(
+                            {
+                                language: { "url": "/Utility/dil.json" }
+                            });
+                    })
+                });
+            },
+            ExcelOlustur() {
+                if (this.ITEM.BASLANGIC == "")
+                    this.ITEM.BASLANGIC = dateToStr(new Date());
+                if (this.ITEM.BITIS == "")
+                    this.ITEM.BITIS = dateToStr(new Date());
+
+                var basTar = (strToDateTurkish(vue.ITEM.BASLANGIC));
+                var bitTar = (strToDateTurkish(vue.ITEM.BITIS));
+
+                if (basTar > bitTar) {
+                    Alert_Warning("Tarih Seçimini Kontrol Ediniz...");
+                    return;
+                }
+
+                if (this.ID_RAPORTUR == 1) {
+                    var params = 'Viu.Mesaj' +
+                        '@XLSX' +
+                        '@' + session.TCKIMLIKNO +
+                        '@' + session.OTURUM +
+                        '@' + JSON.stringify(this.ID_SUBELIST) +
+                        '@' + (this.ID_SUBELIST.length == 1 || (this.ID_SUBELIST[0] == 0 && this.ID_SUBELIST.length == 2) ? JSON.stringify(this.TCOGRETMENLIST) : '[]') +
+                        '@' + this.ITEM.BASLANGIC +
+                        '@' + this.ITEM.BITIS;
+
+                    var xForm = document.createElement("form");
+                    xForm.target = "rapor";
+                    xForm.method = "POST";
+                    xForm.action = "../RaporPost.aspx";
+
+                    var xInput = document.createElement("input");
+                    xInput.type = "text";
+                    xInput.name = "p";
+                    xInput.value = params;
+                    xForm.appendChild(xInput);
+                    xForm.hidden = "hidden";
+                    document.body.appendChild(xForm);
+
+                    map = window.open("", "rapor", "");
+
+                    if (map) {
+                        xForm.submit();
+                    } else {
+                        Alert_Error('Açılır sekmelere izin veriniz.');
+                    }
+                }
+                else if (this.ID_RAPORTUR == 2) {
+                    var params = 'Viu.Arama' +
+                        '@XLSX' +
+                        '@' + session.TCKIMLIKNO +
+                        '@' + session.OTURUM +
+                        '@' + JSON.stringify(this.ID_SUBELIST) +
+                        '@' + (this.ID_SUBELIST.length == 1 || (this.ID_SUBELIST[0] == 0 && this.ID_SUBELIST.length == 2) ? JSON.stringify(this.TCOGRETMENLIST) : '[]') +
+                        '@' + JSON.stringify(this.ID_ARAMASEBEPLIST) +
+                        '@' + JSON.stringify(this.ID_ARAMADURUMLIST) +
+                        '@' + this.ITEM.BASLANGIC +
+                        '@' + this.ITEM.BITIS;
+
+                    var xForm = document.createElement("form");
+                    xForm.target = "rapor";
+                    xForm.method = "POST";
+                    xForm.action = "../RaporPost.aspx";
+
+                    var xInput = document.createElement("input");
+                    xInput.type = "text";
+                    xInput.name = "p";
+                    xInput.value = params;
+                    xForm.appendChild(xInput);
+                    xForm.hidden = "hidden";
+                    document.body.appendChild(xForm);
+
+                    map = window.open("", "rapor", "");
+
+                    if (map) {
+                        xForm.submit();
+                    } else {
+                        Alert_Error('Açılır sekmelere izin veriniz.');
+                    }
+                }
+                else if (this.ID_RAPORTUR == 3) {
+                    window.open('../Rapor.aspx?rapor=Viu.MenuLog&raporTur=XLS&p=' + session.TCKIMLIKNO + ';' + session.OTURUM + ';' + JSON.stringify(this.ID_SUBELIST), '_blank');
+                    //window.open("Rapor.aspx?raporTur=XLS&rapor=Viu.MenuLog&p="
+                    //    + session.TCKIMLIKNO + ";"
+                    //    + session.OTURUM + ";"
+                    //    + JSON.stringify(this.ID_SUBELIST) + ";"
+                    //    + ";"
+                    //    + "");
+                }
+                else if (this.ID_RAPORTUR == 4) {
+                    console.log('yoklama');
+                    window.open("Rapor.aspx?raporTur=XLS&rapor=Viu.Yoklama&p="
+                        + session.TCKIMLIKNO + ";"
+                        + session.OTURUM + ";"
+
+                        + JSON.stringify(this.SUBELER) + ";"
+                        + JSON.stringify(this.SINIFLAR) + ";"
+                        + this.ITEM.BASLANGIC + ";"
+                        + this.ITEM.BITIS + ""
+                    );
+
+
+                }
+            },
+
+            SesModal(GUID) {
+                if (GUID == undefined || GUID == null || GUID == '') {
+                    Alert_Error('Ses kaydı mevcut değil.');
+                    return;
+                }
+
+                App.blockUI({
+                    target: '#app',
+                    boxed: true,
+                    message: 'Yükleniyor...'
+                });
+
+                $.ajax({
+                    crossDomain: true,
+                    type: "GET",
+                    url: 'https://cmuservice.techlife.com.tr/WEBAPIMOBILE/Service1/AramaKaydiRaporGuid?key=K.Ib5YepU&AramaGuid=' + GUID
+                }).done(function (data) {
+                    App.unblockUI('#app');
+                    vue.SESURL = JSON.parse(data)[0].SesUrl.replace('http:', 'https:');
+                    $('#DIV_SES').html('<video controls autoplay id="videoContainer" name="media" style="height:50px;width:500px;"><source src="' + vue.SESURL + '" type="audio/mpeg"></video>');
+                    $('#arama_modal').modal();
+                }).fail(function (date) {
+                    App.unblockUI('#app');
+                    Alert_Error('Arama kaydı dinleme sistemine erişilemiyor!');
+                });
+            }
+        },
+    });
+</script>
+<script src="../../../Scripts/PublicMethods.js?v=1.0.0"></script>

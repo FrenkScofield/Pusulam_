@@ -1,0 +1,311 @@
+﻿
+<div class="page-head">
+    <!-- BEGIN PAGE TITLE -->
+    <div class="page-title col-md-12">
+        <h1>
+            Öğrenci Listesi <small>Puan Tanımla</small> <span onclick="YardimGoster(ID_MENU);" class="pull-right" style="cursor:pointer;"><img src="assets/global/img/info.gif" class="info-image-icon" /> </span>
+        </h1>
+    </div>
+    <!-- END PAGE TITLE -->
+</div>
+
+<div class="row" id="app">
+    <div class="col-md-3">
+        <div class="portlet light">
+            <div class="portlet-title">
+                <div class="caption">
+                    <i class="icon-magnifier font-green"></i>
+                    <span class="caption-subject bold font-green uppercase"> Filtre </span>
+                    <span class="caption-helper"></span>
+                </div>
+            </div>
+            <!-- BEGIN PORTLET-->
+            <div class="portlet-body form">
+                <form role="form">
+                    <div class="form-body form-horizontal">
+                        <div class="row">
+                            <c-sube controller="OgrenciListesi"
+                                    @OnChange="SubeSelected">
+                            </c-sube>
+                        </div>
+                        <div class="row">
+                            <c-sinavgrup controller="OgrenciListesi"
+                                         :idsube="ID_SUBE"
+                                         @OnChange="SinavGrupSelected">
+                            </c-sinavgrup>
+                        </div>
+                        <div class="row">
+                            <c-sinif controller="OgrenciListesi"
+                                     :idsube="ID_SUBE"
+                                     :idsinavgrup="ID_SINAVGRUP"
+                                     @OnChange="SinifSelected">
+                            </c-sinif>
+                        </div>
+                        <div class="row">
+                            <c-sinav-listesi controller="OgrenciListesi"
+                                             @OnChange="SinavSelected">
+                            </c-sinav-listesi>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-md-12 text-right">
+                                <button type="button" class="btn green" @click="OgrenciListele">Öğrenci Listele</button>
+                            </div>
+                        </div>
+
+                    </div>
+                </form>
+
+            </div>
+            <!-- END PORTLET-->
+        </div>
+    </div>
+    <div class="col-md-9">
+        <div class="portlet light">
+            <div class="portlet-title">
+                <div class="caption">
+                    <i class="icon-list font-green"></i>
+                    <span class="caption-subject bold font-green uppercase"> Öğrenci Listesi </span>
+                    <span class="caption-helper"></span>
+                </div>
+            </div>
+            <!-- BEGIN PORTLET-->
+            <div class="portlet-body form">
+                <form role="form">
+                    <!--<table class="table table-striped table-bordered table-hover" id="sample_xxx">
+
+
+                    </table>-->
+
+                    <div class="portlet light bordered">
+
+                        <div class="portlet-body">
+                            <table class="table table-striped table-bordered table-hover table-checkable order-column" id="ogrenciliste">
+                                <thead>
+                                    <tr>
+                                        <th>TcKimlikNo</th>
+                                        <th>Ad</th>
+                                        <th>Soyad</th>
+                                        <th>Doğum Tarihi</th>
+                                        <th>Yaş (Ay)</th>
+                                        <th>Durum</th>
+                                        <th>İşlemler</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="odd gradeX" v-for="u in OGRENCI_LISTESI">
+                                        <td>{{u.TCKIMLIKNO}}</td>
+                                        <td>{{u.AD}}</td>
+                                        <td>{{u.SOYAD}}</td>
+                                        <td>{{u.DOGUMTARIHI}}</td>
+                                        <td>{{u.YASAY}}</td>
+                                        <td v-if="u.PUANGIRISI==0"><i class='fa fa-circle-o'></i></td>
+                                        <td v-else-if="u.PUANGIRISI>0"><i class='fa fa-check'></i></td>
+                                        <td v-if="u.DOGUMTARIHI!==null">
+                                            <a class='btn btn-sm green' @click='KategoriPuanGetir(u)' data-toggle='modal' href='#puan_modal'>Puanlar</a>
+                                        </td>
+                                        <td v-else-if="u.DOGUMTARIHI===null">Doğum Tarihi Girilmemiş</td>
+
+                                    </tr>
+                                </tbody>
+
+                            </table>
+                        </div>
+                    </div>
+                </form>
+
+            </div>
+            <!-- END PORTLET-->
+        </div>
+    </div>
+
+    <div id="puan_modal" class="modal fade" tabindex="-1" data-replace="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                    <h4 class="modal-title">Öğrenci Puan Girişi</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+
+                        <p v-if="KATEGORIPUAN_LISTESI.length==0" style="margin-left:25px;"><b>Bu Yaş İçin Puan Girişi Yapılamıyor.</b></p>
+                        <div class="form-group form-md-line-input" v-for="u in KATEGORIPUAN_LISTESI">
+                            <label class="control-label col-md-4" :for="'txtKategoriPuan'+u.ID_TKTKATEGORI">{{u.AD}}</label>
+                            <div class="col-md-8">
+                                <input type="number" class="form-control" v-model.number="u.PUAN" :id="'txtKategoriPuan'+u.ID_TKTKATEGORI" />
+                                <div class="form-control-focus"> </div>
+                                <span class="help-block"></span>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn default" data-dismiss="modal">Kapat</button>
+                    <button type="button" class="btn green" @click="PuanKaydet" v-if="KATEGORIPUAN_LISTESI.length>0">Kaydet</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+
+<script src="VueComponents/SoruFiltreleri.js"></script>
+<script src="VueComponents/SubeGrupSinif.js"></script>
+
+<script>
+
+    var tblOgrenciler = null;
+    var vue = new Vue({
+
+        el: "#app",
+        name: "OgrenciListesi.html",
+
+        data: {
+            ID_SUBE: 0,
+            ID_SINAVGRUP: 0,
+            ID_SINIF: 0,
+            OGRENCI_LISTESI: [],
+            ID_TKTSINAV: 0,
+            KATEGORIPUAN_LISTESI: [],
+            SECILI_OGRENCI: null
+        },
+
+        mounted() {
+            this.ListeOlustur();
+        },
+
+        methods: {
+
+            SubeSelected(ID_SUBE) {
+                this.ID_SUBE = ID_SUBE;
+            },
+
+            SinavGrupSelected(ID_SINAVGRUP) {
+                this.ID_SINAVGRUP = ID_SINAVGRUP;
+            },
+
+            SinifSelected(ID_SINIF) {
+                this.ID_SINIF = ID_SINIF;
+            },
+
+            SinavSelected(ID_TKTSINAV) {
+                this.ID_TKTSINAV = ID_TKTSINAV;
+            },
+
+            OgrenciListele() {
+
+                if (this.ID_SUBE == 0) {
+                    Alert_Warning("Lütfen Şube Seçin.");
+                    return;
+                }
+                if (this.ID_TKTSINAV == 0) {
+                    Alert_Warning("Lütfen Sınav Seçin.");
+                    return;
+                }
+                this.OGRENCI_LISTESI = [];
+                if (tblOgrenciler != null) {
+                    tblOgrenciler.rows().remove().draw();
+                    tblOgrenciler.destroy();
+                }
+
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    ID_SUBE: this.ID_SUBE,
+                    ID_SINAVGRUP: this.ID_SINAVGRUP,
+                    ID_SINIF: this.ID_SINIF,
+                    ID_TKTSINAV: this.ID_TKTSINAV
+                };
+
+                WebPost(this, "OgrenciListesi", "UpgradeOgrenciListele", p, '#ogrenciliste', 'Yükleniyor..', function (data, parent) {
+                    if (data != null) {
+                        parent.OGRENCI_LISTESI = data;
+                        //DOM update olmasını bekleyip update olunca listeyi oluşturuyor.
+
+                        $("#sample_1").DataTable().destroy();
+                        Vue.nextTick(function () {
+                            parent.ListeOlustur();
+                        })
+                    }
+                    else {
+                        Alert_Warning("Liste Bulunamadı!");
+                    }
+                })
+
+            },
+
+            ListeOlustur() {
+                tblOgrenciler = $('#sample_1').DataTable(
+                {
+                    language: {
+                        "url": "./Utility/dil.json"
+                    }
+                });
+            },
+
+            KategoriPuanGetir(Ogrenci) {
+
+                this.SECILI_OGRENCI = Ogrenci;
+                this.KATEGORIPUAN_LISTESI = [];
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    TCKIMLIKNO_OGR: Ogrenci.TCKIMLIKNO,
+                    //YASYIL: Ogrenci.YASYIL,
+                    YASAY: Ogrenci.YASAY,
+                    ID_SINAVGRUP: this.ID_SINAVGRUP,
+                    ID_TKTSINAV: this.ID_TKTSINAV
+                };
+
+                WebPost(this, "OgrenciListesi", "ModalKategoriPuanListele", p, '', '', function (data, parent) {
+                    if (data != null) {
+                        parent.KATEGORIPUAN_LISTESI = data;
+                    }
+                    else {
+                        Alert_Warning("Liste Bulunamadı!");
+                    }
+                })
+
+            },
+
+            PuanKaydet() {
+
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    TCKIMLIKNO_OGR: this.SECILI_OGRENCI.TCKIMLIKNO,
+                    ID_TKTSINAV: this.ID_TKTSINAV,
+                    SQLJSON: JSON.stringify({
+                        KATEGORIPUAN_LISTESI: this.KATEGORIPUAN_LISTESI
+                    })
+                };
+
+                WebPost(this, "OgrenciListesi", "PuanKaydet", p, '', '', function (data, parent) {
+                    if (data == true) {
+                        parent.KATEGORIPUAN_LISTESI = [];
+                        parent.SECILI_OGRENCI.PUANGIRISI = 1;
+                        parent.SECILI_OGRENCI = null;
+                        $('#puan_modal').modal('hide');
+                        Alert_Info("Kaydedildi");
+                    }
+                    else {
+                        Alert_Warning("İşlem Başarısız Oldu!");
+                    }
+                })
+
+            }
+
+        }
+
+    });
+
+</script>
+
+
+<script src="Scripts/PublicMethods.js"></script>

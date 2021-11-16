@@ -1,0 +1,438 @@
+﻿<head>
+    <script src="../../../Scripts/Rapor/amcharts.js"></script>
+    <script src="../../../Scripts/Rapor/jquery.easypiechart.js"></script>
+    <script src="../../../Scripts/Rapor/light.js"></script>
+    <script src="../../../Scripts/Rapor/serial.js"></script>
+</head>
+
+<style>
+    #chartdiv {
+        width: 100%;
+        height: 500px;
+        font-size: 11px;
+    }
+
+    .table > tbody > tr > td, .table > tbody > tr > th, .table > tfoot > tr > td, .table > tfoot > tr > th, .table > thead > tr > td, .table > thead > tr > th {
+        font-size: 11px;
+    }
+
+    .turuncu {
+        background-color: #EA5702;
+        color: white;
+        font-size: 12px !important;
+    }
+
+    .fontsize12 {
+        font-size: 12px !important;
+    }
+
+    .koyumavi {
+        background-color: #0E3170;
+        color: white;
+    }
+
+    .acikmavi {
+        background-color: #2786C3;
+        color: white;
+    }
+
+    .bordermavi {
+        border: #2786C3 1px solid;
+        text-align: center;
+        color: black;
+    }
+
+    .bordersag {
+        border-right: #b4d2e6 1px solid;
+        text-align: center;
+    }
+
+    .analizbaslik {
+        background-color: #FFA500 !important;
+    }
+
+    .fixed-table-body {
+        overflow-x: hidden !important;
+    }
+
+    .red {
+        color: red;
+    }
+</style>
+
+<div class="page-head">
+    <div class="page-title col-md-12">
+        <h1>
+            Etüt
+
+            <span onclick="YardimGoster(ID_MENU);" class="pull-right" style="cursor:pointer;"><img src="assets/global/img/info.gif" class="info-image-icon" /> </span>
+        </h1>
+    </div>
+</div>
+
+<div class="row" id="app">
+    <div class="col-md-12">
+        <div class="portlet box green-haze dd-item" style="border:none">
+            <div class="portlet-title dd-handle" data-toggle='collapse' data-target='#filters' style="cursor:pointer;">
+                <div class="caption">
+                    <i class="icon-magnifier"></i>
+                    <span class="caption-subject bold uppercase"> Filtreler </span>
+                    <span class="caption-helper"></span>
+                </div>
+                <div class='actions'>
+                    <a href='javascript:;' class='btn btn-default btn-sm' style='border:none;'>
+                        <i class='fa fa-chevron-down'></i>
+                    </a>
+                </div>
+            </div>
+            <div class="portlet-body form collapse in" id="filters">
+                <form role="form" style="padding:12px 20px">
+                    <div class="form-body form-group-lg form-horizontal row" style="padding: 0px;margin-top: 0px !important;">
+                        <div class="portlet-body">
+                            <div class="form-inline">
+                                <c-sube controller="EtutSabitOlustur"
+                                        @OnChange="SubeSelected">
+                                </c-sube>
+                                <c-kademe3 controller="EtutSabitOlustur"
+                                           :idsube="idsube"
+                                           @OnChange="Kademe3Selected">
+                                </c-kademe3>
+                                <c-sinif controller="EtutSabitOlustur"
+                                         :idsube="idsube"
+                                         :idkademe3="idkademe3"
+                                         @OnChange="SinifSelected">
+                                </c-sinif>
+                                <input style="float:right;" type="button" class="btn btn-success" v-on:click="Kaydet" v-if="DersOgretmenListe.length>0" value="Kaydet">
+                            </div>
+                        </div>
+
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="portlet light col-md-12" id="Tablodiv" style="min-height:100px;padding:0px;" v-show="DersOgretmenListe.length>0">
+        <div class="col-md-12 form-group" v-if="DersProgramiList.length>0">
+            <table data-height="700" class="table table-striped table-bordered  table-checkable" data-width="100%" style="margin-bottom:0px; color:#111; width:100%;">
+                <thead>
+                    <tr>
+                        <td>SAAT</td>
+                        <td>Pazartesi</td>
+                        <td>Salı</td>
+                        <td>Çarşamba</td>
+                        <td>Perşembe</td>
+                        <td>Cuma</td>
+                        <td>Cumartesi</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="derssaat in 5" :key="derssaat">
+                        <td style="width:10% !important">{{derssaat}}. Ders</td>
+                        <td style="width:15% !important" v-for="gun in 6 ">
+                            <div class="row">
+                                <div class="col-md-12" v-for="d in getObjects(DersProgramiList,'ID',gun+'-'+derssaat)">
+                                    <div class="row" v-for="u in DersOgretmenListe" v-if="d.NESNE.ID_DERS == u.ID_DERS && d.NESNE.ID_DERS > 0">
+                                        <div class="col-sm-8">
+                                            <span> {{u.DERSAD}} </span>
+                                        </div>
+                                        <div class="col-sm-4">
+                                            <a class="text-success" style="cursor:pointer" @click="DersModalDuzenle(d)"><i class="fa fa-pencil fa-lg"></i></a>
+                                            <a class="text-danger" style="cursor:pointer" @click="EtutSil(d)"><i class="fa fa-trash fa-lg"></i></a>
+                                        </div>
+                                        <!--getObjects(d, 'ID', gun+'-'+derssaat).splice(1, 1)-->
+                                        <div class="col-sm-12">
+                                            <span>
+                                                <small> {{d.DERSAD}} </small>
+                                                <br />
+                                                <a :href="d.LINK" target="_blank">{{d.NESNE.LINK}}</a>
+                                                <br />
+                                                <small style="color:brown">Şifre : {{d.NESNE.SIFRE}} </small>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="row" v-if="d.NESNE.ID_DERS == 0">
+                                        <div class="col-sm-12 text-center">
+                                            <a style="cursor:pointer" @click="DersModalAc(d)"><i class="fa fa-plus"></i></a>
+                                        </div>
+                                    </div>
+                                    <!--<select class ="selectpicker form-control" title="" v-model='d.NESNE'>
+                                        <option v-bind:value="{TCKIMLIKNO:'',ID_DERS:0,GUN:gun,DERSSAAT:derssaat}"></option>
+                                        <option v-for="u in DersOgretmenListe" v-bind:value="{TCKIMLIKNO:u.TCKIMLIKNO,ID_DERS:u.ID_DERS,GUN:gun,DERSSAAT:derssaat}">
+                                            {{u.DERSAD}}
+                                        </option>
+                                    </select>-->
+                                </div>
+                            </div>
+
+
+                        </td>
+                    </tr>
+
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+
+    <div id="modalLink" class="modal fade" tabindex="-1" data-replace="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header" style="background-color:#67809F;color:#fff;">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true" style="margin-top:8px!important;"></button>
+                    <h4 class="modal-title bold">Link Bilgileri</h4>
+                </div>
+                <div class="modal-body" style="padding:0px;">
+                    <div class="form-body form-horizontal">
+                        <div class="row" style="margin:0px!important; display:flex;">
+
+                            <table class="table table-striped table-bordered table-hover table-checkable" style="margin: 0px;">
+                                <tbody>
+                                    <tr>
+                                        <th style="text-align: right; padding-top: 17px;">Ders Ad : </th>
+                                        <td>
+                                
+                                            <select class="selectpicker form-control" title="" v-model='DERS'>
+                                                <option v-bind:value="{TCKIMLIKNO:'',ID_DERS:0,GUN:DERS.GUN,DERSSAAT:DERS.DERSSAAT}"></option>
+                                                <option v-for="u in DersOgretmenListe" v-bind:value="{TCKIMLIKNO:u.TCKIMLIKNO,ID_DERS:u.ID_DERS,GUN:DERS.GUN,DERSSAAT:DERS.DERSSAAT}">
+                                                    {{u.DERSAD}}
+                                                </option>
+                                            </select>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th style="text-align:right">Link : </th>
+                                        <td> <input type="text" class="form-control" v-model="CUD.LINK" /> </td>
+                                    </tr>
+                                    <tr>
+                                        <th style="text-align:right">Şifre : </th>
+                                        <td> <input type="text" class="form-control" v-model="CUD.SIFRE" /> </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn default" data-dismiss="modal">Kapat</button>
+                    <button type="button" class="btn green" data-dismiss="modal" @click="ModalKaydet">
+                        <!--{{LINK.DUZENLE ? 'Düzenle' : 'Ekle'}}-->
+                        Ekle
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</div>
+<script src="../../VueComponents/Genel.js?v=3"></script>
+<script src="../../VueComponents/KonuAnaliziFiltreleri.js"></script>
+<script>
+
+
+
+    var vue = new Vue({
+        el: "#app",
+        name: "EtutSabitOlustur.html",
+
+        data: {
+            idkademe3: 0,
+            idsube: 0,
+            idsinif: 0,
+            DersOgretmenListe: [],
+            SelectedID: {},
+
+            secili: [],
+            TCKIMLIKNO: '',
+            DersProgramiList: [],
+            CUD: { ID: "", TCKIMLIKNO: "", ID_DERS: 0, GUN: 0, DERSSAAT: 0, LINK: "", SIFRE: "" },
+            DERS: { TCKIMLIKNO: '', ID_DERS: 0, GUN: 0, DERSSAAT: 0 }
+        },
+
+        mounted() {
+
+            for (var i = 1; i <= 6; i++) { //gün
+                for (var j = 1; j <= 5; j++) { //saat
+                    this.DersProgramiList.push({ ID: i + "-" + j, NESNE: { TCKIMLIKNO: "", ID_DERS: 0, GUN: i, DERSSAAT: j, LINK: "", SIFRE: "" } });
+                }
+            }
+        },
+
+        methods: {
+
+            EtutSil(d) {
+                d.NESNE.ID_DERS = 0;
+                d.NESNE.LINK = "";
+                d.NESNE.SIFRE = "";
+                d.NESNE.TCKIMLIKNO = "";
+            },
+
+            DersModalAc(item) {
+                vue.CUD.ID = item.ID;
+                vue.CUD.GUN = item.NESNE.GUN;
+                vue.CUD.DERSSAAT = item.NESNE.DERSSAAT;
+                vue.CUD.LINK = undefined;
+                vue.CUD.SIFRE = undefined;
+                vue.DERS = undefined;
+
+                $("#modalLink").modal();
+                //Modal AÇılacak.
+                //Modal Modeli CUD.
+                // Link ve tc , idders, sifre burdan alınacak.
+            },
+            DersModalDuzenle(item) {
+                vue.CUD.ID = item.ID;
+                vue.CUD.GUN = item.NESNE.GUN;
+                vue.CUD.DERSSAAT = item.NESNE.DERSSAAT;
+                vue.CUD.TCKIMLIKNO = item.NESNE.TCKIMLIKNO;
+                vue.CUD.ID_DERS = item.NESNE.ID_DERS;
+                vue.CUD.LINK = item.NESNE.LINK;
+                vue.CUD.SIFRE = item.NESNE.SIFRE;
+               
+                vue.DERS.TCKIMLIKNO = vue.CUD.TCKIMLIKNO;
+                vue.DERS.ID_DERS = vue.CUD.ID_DERS;
+                vue.DERS.DERSSAAT = vue.CUD.DERSSAAT;
+                vue.DERS.GUN = vue.CUD.GUN;
+                console.log(vue.DERS);
+
+                $("#modalLink").modal();
+
+                vue.$nextTick(() => {
+                    $('.selectpicker').selectpicker('refresh');
+                });
+            },
+            ModalKaydet() {
+
+                $.each(vue.DersProgramiList, function (j, u) {
+
+                    if (u.ID == vue.CUD.ID) {
+                        //var kt = getObjects(vue.DersProgramiList, "ID", u.ID_GUN + "-" + u.DERSSAAT);
+                        u.NESNE.TCKIMLIKNO = vue.DERS.TCKIMLIKNO;
+                        u.NESNE.ID_DERS = vue.DERS.ID_DERS;
+                        u.NESNE.LINK = vue.CUD.LINK;
+                        u.NESNE.SIFRE = vue.CUD.SIFRE;
+
+                    }
+                });
+                vue.$forceUpdate();
+
+            },
+            Sil(d) {
+                console.log(d.ID)
+                $.each(vue.DersProgramiList, function (j, u) {
+                    if (u.ID == d.ID) {
+
+                    }
+                });
+                vue.$forceUpdate();
+            },
+            getObjects(obj, key, val) {
+                var objects = [];
+                for (var i in obj) {
+                    if (!obj.hasOwnProperty(i)) continue;
+                    if (typeof obj[i] == 'object') {
+                        objects = objects.concat(this.getObjects(obj[i], key, val));
+                    } else if (i == key && obj[key] == val) {
+                        objects.push(obj);
+                    }
+                }
+                return objects;
+            },
+            SubeSelected(item) {
+                this.idsube = item;
+            },
+            Kademe3Selected(item) {
+                this.idkademe3 = item;
+            },
+            SinifSelected(item) {
+                this.idsinif = item;
+            },
+
+            Kaydet() {
+
+                vue.$forceUpdate();
+
+
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    ID_SINIF: this.idsinif,
+                    ETUTLIST: JSON.stringify(this.DersProgramiList)
+                };
+                WebPost(this, "EtutSabitOlustur", "EtutSabitKaydet", p, "#app", "Yükleniyor...", function (data, parent) {
+
+                    if (data) {
+                        Alert_Info("Kayıt Yapıldı");
+                    } else {
+                        Alert_Error("Kayıt Yapılırken Hata Oluştu.");
+                    }
+                });
+            },
+
+            Listele() {
+
+
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    ID_SINIF: this.idsinif
+                };
+                WebPost(this, "EtutSabitOlustur", "EtutSabitListe", p, "#app", "Yükleniyor...", function (data, parent) {
+                    var veri = JSON.parse(data)[0].LISTE;
+
+                    for (var i in vue.DersProgramiList) {
+                        vue.DersProgramiList[i].NESNE.TCKIMLIKNO = "";
+                        vue.DersProgramiList[i].NESNE.ID_DERS = 0;
+                        vue.DersProgramiList[i].NESNE.LINK = "";
+                        vue.DersProgramiList[i].NESNE.SIFRE = "";
+
+                    }
+
+                    $.each(veri, function (j, u) {
+                        var kt = getObjects(vue.DersProgramiList, "ID", u.ID_GUN + "-" + u.DERSSAAT);
+                        kt[0].NESNE.TCKIMLIKNO = u.TC_OGRETMEN;
+                        kt[0].NESNE.ID_DERS = u.ID_DERS;
+                        kt[0].NESNE.LINK = u.LINK;
+                        kt[0].NESNE.SIFRE = u.SIFRE;
+                    });
+
+                    vue.$forceUpdate();
+                    vue.$nextTick(() => {
+                        $('.selectpicker').selectpicker('refresh');
+                    });
+
+                });
+
+            },
+
+            DersOgretmenListele() {
+                vue.SelectedID = [];
+                vue.secili = [];
+                var p = { TCKIMLIKNO: session.TCKIMLIKNO, OTURUM: session.OTURUM, ID_SINIF: this.idsinif };
+                WebPost(this, "EtutSabitOlustur", "DersOgretmenListesi", p, '', '', function (data, parent) {
+                    parent.DersOgretmenListe = JSON.parse(data)[0].LISTE;
+                    vue.$nextTick(() => {
+                        $('.selectpicker').selectpicker('refresh');
+                    });
+
+                });
+            },
+
+        },
+
+
+        watch: {
+            idsinif() {
+                this.DersOgretmenListele();
+                this.Listele();
+            },
+        },
+
+    });
+
+
+</script>
+
+<script src="../../../Scripts/PublicMethods.js"></script>

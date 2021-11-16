@@ -1,0 +1,157 @@
+﻿<head>
+    <script src="/Scripts/Tools.js"></script>
+    <script src="../../../assets/global/plugins/nouislider/jquery.nouislider.js"></script>
+</head>
+
+<div class="page-head">
+    <div class="page-title col-md-12">
+        <h1>
+            Dış Kaynak <small>Kademe Ekle</small>
+            <span onclick="YardimGoster(ID_MENU);" class="pull-right" style="cursor:pointer;"><img src="assets/global/img/info.gif" class="info-image-icon" /> </span>
+        </h1>
+    </div>
+</div>
+
+<div class="row" id="app" style="margin-top:0px!important;">
+    <div class="col-md-12">
+        <div class="portlet light">
+            <div class="portlet-title">
+                <div class="caption">
+                    <i class="icon-list font-green"></i>
+                    <span class="caption-subject bold font-green uppercase"> Dış Kaynak Grup Eşleştir </span>
+                    <span class="caption-helper"></span>
+                </div>
+            </div>
+            <div class="portlet-body form-inline">
+                <form role="form" style="padding:12px 20px">
+                    <div class="form-body form-group-lg form-horizontal row" style="padding: 0px;margin-top: 0px !important;">
+                        <div class="portlet light col-md-12" id="FiltreDivOgretmen" style="margin:0px; border-bottom-style: solid;border-bottom-width: 3px;border-bottom-color: rgb(0, 173, 239);">
+                            <div class="portlet-body form collapse in" id="filters">
+                                <div class="form-md-line-input">
+                                    <div class="col-md-2">
+                                        <select v-model="ID_DISKAYNAK" class="selectpicker form-control">
+                                            <option value="0">Proje Seçiniz..</option>
+                                            <option v-for="P in PROJELER" :value="P.ID_DISKAYNAK">{{P.PROJE}}</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <c-kademe3-multi :controller="controller"
+                                                 @OnChange="Kademe3Selected">
+                                </c-kademe3-multi>
+
+                                <div class="form-md-line-input">
+                                    <div class="col-md-2">
+                                        <input type="button" class="btn btn-primary" value="Kaydet" @click="Kaydet()">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <table class="table table-striped table-bordered table-hover table-checkable order-column" id="tblListe">
+                            <thead>
+                                <tr>
+                                    <th style="text-align:left!important;">Proje</th>
+                                    <th>Grup</th>
+                                    <th class="text-center">Sil</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="u in LISTE">
+                                    <td style="text-align:left!important;">{{u.PROJE}}</td>
+                                    <td>{{u.AD}}</td>
+                                    <td class="col-sm-1 text-center"><a class="text-danger" @click="SilUyari(u.ID_KADEME3, u.ID_DISKAYNAK)"><i class="fa fa-trash"></i></a></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="VueComponents/KulupFiltreleri.js?v=4"></script>
+<script src="VueComponents/Genel.js?v=3"></script>
+<script>
+    var vue = new Vue({
+        el: "#app",
+        name: "PeriyotBelirle",
+
+        data: {
+            controller: 'DisKaynakKademe',
+            ID_KADEME3: [],
+            PROJELER: [],
+            ID_DISKAYNAK: 0,
+            KADEME3s: '',
+            LISTE: []
+        },
+
+        mounted() {
+            this.ProjeListele();
+            this.Listele();
+        },
+
+        methods: {
+            Kademe3Selected(item) {
+                this.KADEME3s = item;
+            },
+            ProjeListele() {
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                };
+
+                WebPost(this, this.controller, "ProjeListe", p, '', '', function (data, parent) {
+                    parent.PROJELER = JSON.parse(data);
+                })
+            },
+            Kaydet() {
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    ID_KADEME3s: '',
+                    ID_DISKAYNAK: this.ID_DISKAYNAK,
+                    ID_KADEME3s: JSON.stringify(this.KADEME3s)
+                };
+
+                WebPost(this, this.controller, "Ekle", p, '', '', function (data, parent) {
+                    Alert_Info("Gruplar projeye başarı ile eklendi.");
+                })
+            },
+            Listele() {
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                };
+
+                WebPost(this, this.controller, "Liste", p, '', '', function (data, parent) {
+                    parent.LISTE = JSON.parse(data);
+                    ListeOlustur('tblListe');
+                })
+            },
+            SilUyari(idKademe, idDisKaynak) {
+                Alert_Confirm("Emin misiniz?", "Ödevi silmek istediğinizden emin misiniz?", function () {
+                    var p = {
+                        TCKIMLIKNO: session.TCKIMLIKNO,
+                        OTURUM: session.OTURUM,
+                        ID_KADEME3: idKademe,
+                        ID_DISKAYNAK: idDisKaynak
+                    };
+
+                    WebPost(vue, vue.controller, "Sil", p, '', '', function (data, parent) {
+                        if (data) {
+                            Alert_Info("Grup Projeden Ayrıldı.");
+                            parent.Listele();
+                        } else {
+                            Alert_Warning("Bir hata oluştu!");
+                        }
+                    });
+                });
+            }
+        },
+    });
+</script>
+<script src="Scripts/PublicMethods.js"></script>

@@ -1,0 +1,381 @@
+﻿<link href="assets/global/plugins/bootstrap-fileinput/bootstrap-fileinput.css" rel="stylesheet" type="text/css" />
+<style>
+    td {
+        vertical-align: middle !important;
+    }
+
+    .row {
+        margin-top: 10px !important;
+    }
+</style>
+<div class="page-head">
+    <!-- BEGIN PAGE TITLE -->
+    <div class="page-title col-md-12">
+        <h1>
+            Ödev Ekle <span onclick="YardimGoster(ID_MENU);" class="pull-right" style="cursor:pointer;"><img src="assets/global/img/info.gif" class="info-image-icon" /> </span>
+        </h1>
+    </div>
+    <!-- END PAGE TITLE -->
+</div>
+
+<div class="row" id="app">
+    <div class="col-md-12">
+        <div class="portlet box blue-hoki dd-item" style="border:none">
+            <!-- BEGIN PORTLET-->
+            <div class="portlet-body form">
+                <form role="form" style="padding:12px 20px">
+                    <div class="row">
+                        <c-sube :controller="controller"
+                                @OnChange="SubeSelected">
+                        </c-sube>
+                    </div>
+
+                    <div class="row">
+                        <c-kademe :controller="controller"
+                                  :idsube="ODEV.ID_SUBE"
+                                  @OnChange="KademeSelected">
+                        </c-kademe>
+                    </div>
+
+                    <div class="row">
+                        <c-odev-tur :controller="controller"
+                                    :idkademe="ODEV.ID_KADEME"
+                                    @OnChange="OdevTurSelected">
+                        </c-odev-tur>
+                    </div>
+
+                    <div class="row">
+                        <c-kademe3 :controller="controller"
+                                   :idsube="ODEV.ID_SUBE"
+                                   :idkademe="ODEV.ID_KADEME"
+                                   @OnChange="Kademe3Selected">
+                        </c-kademe3>
+                    </div>
+
+                    <div class="row" v-show="ODEV.ID_ODEVTUR != 3">
+                        <c-ders :controller="controller"
+                                :idkademe3="ODEV.ID_KADEME3"
+                                :idsube="ODEV.ID_SUBE"
+                                @OnChange="DersSelected">
+                        </c-ders>
+                    </div>
+
+                    <div class="row">
+                        <c-sinif-multi :controller="controller"
+                                       :idsube="ODEV.ID_SUBE"
+                                       :idkademe3="ODEV.ID_KADEME3"
+                                       :idders="ODEV.ID_DERS"
+                                       dersvarsasadecekur="true"
+                                       @OnChange="SinifSelected">
+                        </c-sinif-multi>
+                    </div>
+
+                    <div class="row">
+                        <c-ogrenci-multi :controller="controller"
+                                         :idsiniflist="ODEV.ID_SINIFLIST"
+                                         secili="true"
+                                         @OnChange="OgrenciSelected">
+                        </c-ogrenci-multi>
+                    </div>
+
+                    <div class="row">
+                        <c-tarih tarihid="t_verilis"
+                                 label="Veriliş Tarihi"
+                                 gun="0"
+                                 @change-date="VerilisTarihiSelected">
+                        </c-tarih>
+                    </div>
+
+                    <div class="row">
+                        <c-tarih tarihid="t_teslim"
+                                 label="Teslim Tarihi"
+                                 gun="7"
+                                 @change-date="TeslimTarihiSelected">
+                        </c-tarih>
+                    </div>
+
+                    <div class="row">
+                        <div class="form-md-line-input">
+                            <label class="control-label col-md-3">Başlık </label>
+                            <div class="col-md-9">
+                                <input type="text" v-model="ODEV.BASLIK" class="form-control" placeholder="Başlık" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="form-md-line-input">
+                            <label class="control-label col-md-3">Açıklama </label>
+                            <div class="col-md-9">
+                                <textarea id="editor">{{ODEV.ACIKLAMA}}</textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="form-md-line-input">
+                            <label class="control-label col-md-3">Linkler </label>
+                            <div class="col-md-9">
+                                <div class="row" v-for="ITEM in ODEV.LINKLIST" style="padding-bottom:8px; margin-left:0px; margin-right:0px; border-bottom:1px solid gray; margin-top:0px!important;">
+                                    <input type="text" v-model="ITEM.AD" class="form-control col-md-12" @change="LinkControl(ITEM)" placeholder="Link Açıklama" />
+                                    <input type="text" v-model="ITEM.LINK" class="form-control col-md-12" @change="LinkControl(ITEM)" placeholder="Link" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="form-md-line-input">
+                            <label class="control-label col-md-3">Dosyalar </label>
+                            <div class="col-md-9">
+                                <div class="fileinput fileinput-new" data-provides="fileinput">
+                                    <div class="input-group" style="width:100%!important;">
+                                        <div class="form-control uneditable-input input-fixed input-medium" data-trigger="fileinput" style="width:100%!important;">
+                                            <i class="fa fa-file fileinput-exists"></i>&nbsp;
+                                            <span class="fileinput-filename"> </span>
+                                        </div>
+                                        <span class="input-group-addon btn default btn-file">
+                                            <span class="fileinput-new"> Dosya Seç </span>
+                                            <span class="fileinput-exists"> Değiştir </span>
+                                            <input multiple="multiple" type="file" name="..." id="Dosya">
+                                        </span>
+                                        <a href="javascript:;" class="input-group-addon btn red fileinput-exists" data-dismiss="fileinput"> Sil </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div v-show="ODEV.ID_ODEVTUR == 5">
+                        <div class="row">
+                            <c-morpa-ders :controller="controller"
+                                          :idkademe3="ODEV.ID_KADEME3"
+                                          @OnChange="MorpaDersSelected">
+                            </c-morpa-ders>
+                        </div>
+                        <div class="row">
+                            <c-morpa-materyal-multi :controller="controller"
+                                                    :idmorpaders="ODEV.ID_MORPADERS"
+                                                    @OnChange="MorpaMateryalSelected">
+                            </c-morpa-materyal-multi>
+                        </div>
+                        <div class="row">
+                            <c-morpa-kazanim-multi :controller="controller"
+                                                   :idmorpaders="ODEV.ID_MORPADERS"
+                                                   @OnChange="MorpaKazanimSelected">
+                            </c-morpa-kazanim-multi>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="form-group" style="margin-top:10px;">
+                            <div class="col-md-12 text-right">
+                                <button type="button" class="btn green" @click="Kaydet">Kaydet</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="assets/global/plugins/ckeditor/ckeditor.js"></script>
+<script src="VueComponents/Filtre.js"></script>
+<script src="VueComponents/FiltreEk.js?v=001"></script>
+
+<script>
+    var vue = new Vue({
+
+        el: "#app",
+        name: "OdevEkle",
+
+        data: {
+            controller: 'OdevEkle',
+            ODEV: {
+                ID_SUBE: 0,
+                ID_KADEME: 0,
+                ID_KADEME3: 0,
+                ID_ODEVTUR: 0,
+                ID_DERS: 0,
+                ID_SINIFLIST: [],
+                TC_OGRENCILIST: [],
+                VERILIS_TARIHI: '',
+                TESLIM_TARIHI: '',
+                BASLIK: '',
+                ACIKLAMA: '',
+                LINKLIST: [{ AD: '', LINK: '' }],
+                DOSYALIST: [{ AD: '', GUID: '', UZANTI: '' }],
+                ID_MORPADERS: 0,
+                ID_MORPAMATERYALLIST: [],
+                ID_MORPAKAZANIMLIST: [],
+            }
+        },
+
+        mounted() {
+            this.$nextTick(function () {
+                CKEDITOR.replace('editor');
+                //Editor değiştiğinde model güncellensin
+                CKEDITOR.instances['editor'].on('change', function () {
+                    vue.ODEV.ACIKLAMA = CKEDITOR.instances['editor'].getData();
+                });
+            })
+        },
+
+        methods: {
+            MorpaDersSelected(val) {
+                this.ODEV.ID_MORPADERS = val;
+            },
+            MorpaMateryalSelected(val) {
+                this.ODEV.ID_MORPAMATERYALLIST = val;
+            },
+            MorpaKazanimSelected(val) {
+                this.ODEV.ID_MORPAKAZANIMLIST = val;
+            },
+
+            LinkControl(ITEM) {
+                var NEWS = [];
+                for (var i = 0; i < this.ODEV.LINKLIST.length; i++) {
+                    if (this.ODEV.LINKLIST[i].LINK.length > 0 || this.ODEV.LINKLIST[i].AD.length > 0) {
+                        NEWS.push(this.ODEV.LINKLIST[i])
+                    }
+                }
+                NEWS.push({ AD: '', LINK: '' });
+                this.ODEV.LINKLIST = NEWS;
+            },
+
+            SubeSelected(val) {
+                this.ODEV.ID_SUBE = val;
+            },
+
+            KademeSelected(val) {
+                this.ODEV.ID_KADEME = val;
+            },
+
+            Kademe3Selected(val) {
+                this.ODEV.ID_KADEME3 = val;
+            },
+
+            OdevTurSelected(val) {
+                this.ODEV.ID_ODEVTUR = val;
+                if (this.ODEV.ID_ODEVTUR == 3) {
+                    this.ODEV.ID_DERS = undefined;
+                }
+            },
+
+            DersSelected(val) {
+                this.ODEV.ID_DERS = val;
+            },
+
+            SinifSelected(val) {
+                this.ODEV.ID_SINIFLIST = val;
+            },
+
+            OgrenciSelected(val) {
+                this.ODEV.TC_OGRENCILIST = val;
+            },
+
+            VerilisTarihiSelected(val) {
+                this.ODEV.VERILIS_TARIHI = val;
+            },
+
+            TeslimTarihiSelected(val) {
+                this.ODEV.TESLIM_TARIHI = val;
+            },
+
+            Kaydet() {
+                var VERILIS_TARIHI = (strToDate(this.ODEV.VERILIS_TARIHI));
+                var TESLIM_TARIHI = (strToDate(this.ODEV.TESLIM_TARIHI));
+
+                if (VERILIS_TARIHI > TESLIM_TARIHI) {
+                    Alert_Info("Tarih Seçimini Kontrol Ediniz...");
+                    return;
+                }
+
+                if (this.ODEV.TC_OGRENCILIST.length == 0) {
+                    Alert_Info('Lütfen Öğrenci Seçiniz.');
+                    return;
+                }
+                else if (this.ODEV.ID_ODEVTUR == 0) {
+                    Alert_Info('Lütfen Ödev Türü Seçiniz.');
+                    return;
+                }
+                else if (this.ODEV.BASLIK.length == 0) {
+                    Alert_Info('Lütfen Ödev Konusu Giriniz.');
+                    return;
+                }
+                else if (this.ODEV.VERILIS_TARIHI.length == 0) {
+                    Alert_Info('Lütfen Ödev Veriliş Tarihi Seçiniz.');
+                    return;
+                }
+                else if (this.ODEV.TESLIM_TARIHI.length == 0) {
+                    Alert_Info('Lütfen Ödev Teslim Tarihi Seçiniz.');
+                    return;
+                }
+                else if (this.ODEV.ID_ODEVTUR == 5 && (this.ODEV.ID_MORPADERS == 0 || this.ODEV.ID_MORPAMATERYALLIST.length == 0 || this.ODEV.ID_MORPAKAZANIMLIST.length == 0)) {
+                    Alert_Info('Morpa ödevleri için "Morpa Ders, Morpa Materyal, Morpa Kazanım" seçimleri zorunludur.');
+                    return;
+                }
+                else {
+
+                    this.ODEV.DOSYALIST = [];
+                    let x = document.getElementById("Dosya");
+                    if ('files' in x) {
+
+                        let p = JSON.stringify(vue.ODEV);
+                        var formData = new FormData();
+                        for (var i = 0; i < x.files.length; i++) {
+                            formData.append("file", x.files[i]);                        
+
+                        }
+                        formData.append("TCKIMLIKNO", session.TCKIMLIKNO);
+                        formData.append("OTURUM", session.OTURUM);
+                        formData.append("SQLJSON", p);
+                        $.ajax({
+                            url: vue.controller + '/Kaydet',
+                            processData: false,
+                            contentType: false,
+                            data: formData,
+                            type: 'POST'
+                        }).done(function (result) {
+                            App.unblockUI('#app');
+                            if (result != null) {
+                                vue.Kaydedildi();
+                            }
+                            else
+                                Alert_Error("Dosya Yüklenirken Hata Oluştu")
+                        })
+
+                    } else {
+                        var p = { TCKIMLIKNO: session.TCKIMLIKNO, OTURUM: session.OTURUM, SQLJSON: JSON.stringify(vue.ODEV) };
+                        WebPost(vue, vue.controller, "Kaydet", p, '', '', function (data, parent) {
+                            if (data > 0) {
+                                vue.Kaydedildi();
+                            }
+                            else {
+                                Alert_Warning("Kaydedilirken Sorun Oluştu!");
+                            }
+                        })
+                    }
+                }
+            },
+
+            Kaydedildi() {
+                bootbox.dialog({
+                    message: "<font color='green'>Ödev Kaydedildi.</font>",
+                    title: "<font color='green'>İşlem Tamam</font>",
+                    buttons: {
+                        success: {
+                            label: "Tamam!",
+                            className: "btn-success",
+                            callback: function () {
+                                location.reload();
+                            }
+                        },
+                    }
+                });
+            },
+        },
+    });
+</script>
+<script src="Scripts/PublicMethods.js"></script>
+<script src="assets/global/plugins/bootstrap-fileinput/bootstrap-fileinput.js" type="text/javascript"></script>

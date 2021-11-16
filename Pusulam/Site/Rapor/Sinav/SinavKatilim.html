@@ -1,0 +1,591 @@
+﻿<head>
+    <script src="../../../Scripts/Rapor/amcharts.js"></script>
+    <script src="../../../Scripts/Rapor/jquery.easypiechart.js"></script>
+    <script src="../../../Scripts/Rapor/light.js"></script>
+    <script src="../../../Scripts/Rapor/serial.js"></script>
+</head>
+
+<style>
+    #chartdiv {
+        width: 100%;
+        height: 500px;
+        font-size: 11px;
+    }
+    
+    #chartdiv2 {
+        width: 100%;
+        height: 500px;
+        font-size: 11px;
+    }
+
+    .table > tbody > tr > td, .table > tbody > tr > th, .table > tfoot > tr > td, .table > tfoot > tr > th, .table > thead > tr > td, .table > thead > tr > th {
+        font-size: 11px;
+    }
+
+    
+    .table-hover>tbody>tr:hover, .table-hover>tbody>tr:hover>td {color: black !important; }
+
+    .turuncu {
+        background-color: #EA5702;
+        color: white;
+        font-size: 12px !important;
+    }
+
+    .fontsize12 {
+        font-size: 12px !important;
+    }
+
+    .koyumavi {
+        background-color: #0E3170;
+        color: white;
+    }
+
+    .acikmavi {
+        background-color: #2786C3;
+        color: white;
+    }
+
+    .bordermavi {
+        border: #2786C3 1px solid;
+        text-align: center;
+        color: black;
+    }
+
+    .bordersag {
+        border-right: #b4d2e6 1px solid;
+        text-align: center;
+    }
+
+    .analizbaslik {
+        background-color: #FFA500 !important;
+    }
+
+    .fixed-table-body {
+        overflow-x: hidden !important;
+    }
+
+    .red {
+        color: red;
+    }
+</style>
+
+<link href="../../../assets/fixed-table/css/component.css?v=4" rel="stylesheet" />
+
+<div class="page-head">
+    <div class="page-title col-md-12">
+        <h1>
+            Sınav Katılım
+            <span style="font-size: small; color:  red; "> Sınıf seçilmesi takdirde raporlar sınıflara göre alınır !! Okul Bazında liste almak istediğinizde sınıf seçimini kaldırınız !! </span>
+             <span onclick="YardimGoster(ID_MENU);" class="pull-right" style="cursor:pointer;"><img src="assets/global/img/info.gif" class="info-image-icon" /> </span>
+        </h1>
+    </div>
+</div>
+
+<div class="row" id="app">
+    <div class="col-md-12">
+	<div class="portlet box green-haze dd-item" style="border:none">
+		<div class="portlet-title dd-handle" data-toggle='collapse' data-target='#filters' style="cursor:pointer;">
+			<div class="caption">
+				<i class="icon-magnifier"></i>
+				<span class="caption-subject bold uppercase"> Filtreler </span>
+				<span class="caption-helper"></span>
+			</div>
+			<div class='actions'>
+				<a href='javascript:;' class='btn btn-default btn-sm' style='border:none;'>
+					<i class='fa fa-chevron-down'></i>
+				</a>
+			</div>
+		</div>
+		<div class="portlet-body form collapse in" id="filters">
+			<form role="form" style="padding:12px 20px">
+				<div class="row">
+                    			
+                    <div class="portlet light col-md-12" id="FiltreDiv" style="margin:0px; border-bottom-style: solid;border-bottom-width: 3px;border-bottom-color: rgb(0, 173, 239);">
+                        <div class="portlet-body">
+                            <div class="form-inline">
+                                <c-donem controller="SinavKatilim"
+                                         @OnChange="DonemSelected">
+                                </c-donem>
+                                <c-sube-multi controller="SinavKatilim"
+                                        @OnChange="SubeSelected">
+                                </c-sube-multi>
+                                <c-kademe3 controller="SinavKatilim"
+                                           :idsubelist="idsubelist"
+                                           @OnChange="Kademe3Selected">
+                                </c-kademe3>
+
+                                
+                                        <c-sinif-multi-donem controller="SinavKatilim"
+                                                       :idsubelist="idsubelist"
+                                                       :idkademe3="idkademe3"
+                                                       :donem="donem"
+                                                       @OnChange="SinifSelected">
+                                        </c-sinif-multi-donem>
+                                </div>
+                            </div>
+                        </div>
+                    
+
+                    <div class="portlet light col-md-12" id="FiltreDiv" style="margin:0px; border-bottom-style: solid;border-bottom-width: 3px;border-bottom-color: rgb(0, 173, 239);">
+                        <div class="portlet-body">
+                            <div class="form-inline">
+                                <c-donem controller="SinavKatilim"
+                                         @OnChange="SinavDonemSelected">
+                                </c-donem>
+
+                                <c-sinav-turu-tc controller="SinavKatilim"
+			                                      :tc="tcogrenci"
+			                                      :idkademe3="idkademe3"
+                                                  :donem="sinavDonem"
+                                                  :ogrencidonem="donem"
+			                                  @OnChange="SinavTuruSelected">
+                                </c-sinav-turu-tc>
+                                 <c-sinav-multi controller="SinavKatilim"
+                                                :idsinavturu="idsinavturu"
+                                                :idkademe3="idkademe3"
+                                                  :donem="sinavDonem"
+                                                  :ogrencidonem="donem"
+                                                @OnChange="SinavSelected">
+                                </c-sinav-multi>
+
+                                 <input style="float:right;margin: 10px;" type="button" class="btn btn-success" v-on:click="Raporla" value="Raporla">   
+                
+                                <div class="col-md-12 md-radio-list form-group">
+                                    <br />
+                                    <div class="md-radio">
+                                        <input type="radio" id="radio1" name="rd" class="md-radiobtn">
+                                        <label for="radio1">
+                                            <span></span>
+                                            <span class="check"></span>
+                                            <span class="box"></span> Sınıf/Okul Bazında </label>
+                                    </div>                      
+                                    <div class="md-radio">
+                                        <input type="radio" id="radio2" name="rd" class="md-radiobtn">
+                                        <label for="radio2">
+                                            <span></span>
+                                            <span class="check"></span>
+                                            <span class="box"></span> Sınava Katılmayan Öğrenci Yüzdeleri </label>
+                                    </div>
+                                    <div class="md-radio">
+                                        <input type="radio" id="radio3" name="rd" class="md-radiobtn">
+                                        <label for="radio3">
+                                            <span></span>
+                                            <span class="check"></span>
+                                            <span class="box"></span> Sınava Katılan Öğrenci Yüzdeleri </label>
+                                    </div>
+
+                                    <input style="float:left;margin: 10px;" type="button" class="btn btn-success" v-on:click="Yazdir" value="Yazdır">   
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+    	        </div>
+			</form>
+		</div>
+	</div>
+</div>
+
+    <div class="portlet light col-md-12" id="Tablodiv" style="min-height:100px;padding:0px;" v-show="divAc==1">
+        <div class="col-md-12 form-group" v-show="secim!=2">
+            <div id="chartdiv" style="border: #DDD 1px solid;"></div>
+
+            <div class="comp-table" id="divFixedTableKatilan">
+                <table id="tblKatilan"  class="overflow-y fixed-table">
+                    <thead id="thKatilan"></thead>
+                    <tbody id="tbKatilan"></tbody>
+                </table>
+            </div>
+        </div>
+        &nbsp;
+        <br />&nbsp;
+        <br />&nbsp;
+        <div class="col-md-12  form-group"  v-show="secim!=3">
+            <div id="chartdiv2" style="border: #DDD 1px solid;"></div>
+
+                <div class="comp-table" id="divFixedTableKatilmayan">
+                <table id="tblKatilmayan"  class="overflow-y fixed-table">
+                    <thead id="thKatilmayan"></thead>
+                    <tbody id="tbKatilmayan"></tbody>
+                </table>
+            </div>
+        </div>
+            
+    </div>
+</div>
+
+<script src="../../../VueComponents/GenelSinavRaporuFiltreleri.js?v=17"></script>
+<script>
+
+
+    var vue = new Vue({
+        el: "#app",
+        name: "SinavKatilim.html",
+
+        data: {
+
+            donem: '',
+            sinavDonem: '',
+            idkademe3: 0,
+            idsinavturu: 0,
+            idsinav: 0,
+            idsinavlist: [],
+            idsubelist: [],
+            idsiniflist: [],
+            t1: [],
+            t2: [],
+            t3: [],
+            t4: [],
+            dersGenel: [],
+            puanGenel: [],
+            dersler: [],
+            puanlar: [],
+            subeler:[],
+            subeler2: [],
+            secim:0,
+
+            tcGorunsun: false,
+            toplamSoru: 0,
+            dID_SINAVPUANTURU: 0,
+            TCKIMLIKNO: '',      
+            LISTE: [],
+
+            divAc: 1, // 0 olacak
+            tcogrenci: '',
+            idkullanicitur: 0,
+            ListKullaniciTipi: [],
+            divOgrenci: 1,
+            kurGorunsun: false,
+            ESKIDONEMSINIF: false
+
+        },
+
+        mounted() {
+            //this.Getir();
+            var _this = this;
+            var p = {
+                TCKIMLIKNO: session.TCKIMLIKNO,
+                OTURUM: session.OTURUM
+            };
+            var list = [];
+            WebPost(this, "SinavKatilim", "KullaniciTipiGetir", p, "#app", "Yükleniyor...", function (data, parent) {                
+                if (data != null) {
+                    $.each(data, function (j, el) {
+                        list.push(this.ID_KULLANICITIPI)
+                    });
+                    parent.ListKullaniciTipi = list;
+                    if (list.indexOf(4) > -1)
+                        parent.tcogrenci = session.TCKIMLIKNO;
+                } else {
+                    Alert_Warning("Kullanıcı Bulunamadı..!");
+                }
+            });
+          
+               
+            _this.Getir();
+
+            $('#filters').collapse('show');
+            
+        },
+      
+        methods: {
+
+            
+            DonemSelected(item) {
+                this.donem = item;
+                //this.divAc = 0;
+                this.divOgrenci = 0;
+            },
+
+            SinavDonemSelected(item) {
+                this.sinavDonem = item;                
+                this.divOgrenci = 0;
+            },
+            SubeSelected(item) {
+                this.idsubelist = item;
+                this.idsinif = 0;
+                this.divAc = 0;
+                this.divOgrenci = 0;
+            },
+            Kademe3Selected(item) {
+                this.idkademe3 = item;
+                this.divAc = 0;
+                this.divOgrenci = 0;
+            },
+            SinifSelected(item) {
+                this.idsiniflist = item;
+                this.divAc = 0;
+                if (item.length>0)                 
+                    this.divOgrenci = 1;
+            },
+            SinavTuruSelected(item) {
+                this.idsinavturu = item;
+                this.idsinav = 0;
+                this.divAc = 0;
+                this.kurGorunsun = false;
+                
+            },
+            SinavSelected(item) {
+                this.idsinavlist = item;
+                this.divAc = 0;
+            },
+            DonemSecimSelected(item) {
+                if (item != undefined)
+                    this.ESKIDONEMSINIF = item;
+            },
+
+            Yazdir() {
+                if ((this.idsubelist != undefined && this.idsubelist.length > 0) && (this.idsinavlist != undefined && this.idsinavlist.length == 0)) {
+                    Alert_Warning("Sınav Seçiniz ..!");
+                    return;
+                }
+
+
+                var secim = 0;
+                if ($("#radio1:checked").val() != undefined) {
+                    secim = 1;
+                }
+                else if ($("#radio2:checked").val() != undefined) {
+                    secim = 2;
+                }
+                else if ($("#radio3:checked").val() != undefined) {
+                    secim =3;
+                }
+                else {
+                    Alert_Warning("Öncelikle Rapor Türü Seçiniz ..!");
+                    return;
+                }
+
+                window.open('../Rapor.aspx?rapor=Sinav.SinavKatilim&raporTur=pdf&p=' + session.TCKIMLIKNO + ';' + session.OTURUM + ';' + this.donem + ';' + this.sinavDonem + ';' + JSON.stringify(this.idsubelist) + ';' + JSON.stringify(this.idsiniflist) + ';' + JSON.stringify(this.idsinavlist) + ';' + this.idsinavturu + ';' + this.idkademe3 + ';' + secim, '_blank');
+            },
+
+            Raporla: function (event) {
+                this.Getir();
+            },
+
+            
+            distinct(data,key){
+                var distList = [];
+                $.each(data, function (j,item) {
+                    if (distList.indexOf(item[key]) == -1) {
+                        distList.push(item[key]);
+                    }
+                });
+                return distList;
+            },
+
+            Getir() {
+                    var _this = this;
+                    if (this.idkademe3 != 0 || 1 == 1) {
+                        this.divAc = 1;
+                        var idsubelist = JSON.stringify(this.idsubelist);
+                        var idsinavlist = JSON.stringify(this.idsinavlist);
+                        var idsiniflist = JSON.stringify(this.idsiniflist);
+
+                        $('#filters').collapse('hide');
+                        var p = {
+                            TCKIMLIKNO: session.TCKIMLIKNO,
+                            OTURUM: session.OTURUM,
+                            DONEMSINAV: this.sinavDonem,//'2017',//
+                            ID_KADEME3: this.idkademe3,//18,//
+                            ID_SINAVTURU: this.idsinavturu,//3,//
+                            ID_SINAVs: idsinavlist,//'[90,75,153]',//
+                            ID_SUBEs: idsubelist,//'[335,368]'//
+                            ID_SINIFs: idsiniflist,//'[335,368]'//
+                            DONEM: this.donem,
+                        };
+
+                        WebPost(this, "SinavKatilim", "SinavKatilim", p, "#app", "Yükleniyor...", function (data, parent) {
+                            if (data != null) {
+                                _this.t1 = JSON.parse(data)[0].t1;
+                                _this.t2 = JSON.parse(data)[0].t2;
+                                _this.t3 = JSON.parse(data)[0].t3;
+
+                                _this.dersler = _this.distinct(_this.t1, "DERSAD");
+                                _this.subeler = _this.distinct(_this.t1, "SUBEAD");
+
+
+                                parent.Listele();
+
+                            } else {
+                                Alert_Warning("Sınav Bulunamadı..!");
+                            }
+                        });
+                    }
+                    else {
+                        Alert_Warning("Lütfen Gerekli Seçimleri Yapınız")
+                        this.divAc = 0;
+                    }
+                //this.$nextTick(() => { });
+            },
+            
+            divFixedTableClear() {
+                var html = ''
+                + '<table id="tablobaslik" class="overflow-y fixed-table">  '
+                + '    <thead id="thKatilan"></thead>                           '
+                + '    <tbody id="tbKatilan"></tbody>                           '
+                + '</table>                                                 ';
+
+                $("#divFixedTableKatilan").html(html);
+
+
+                var html = ''
+                + '<table id="tablobaslik" class="overflow-y fixed-table">  '
+                + '    <thead id="thKatilmayan"></thead>                           '
+                + '    <tbody id="tbKatilmayan"></tbody>                           '
+                + '</table>                                                 ';
+
+                $("#divFixedTableKatilmayan").html(html);
+            },
+
+            Listele() {
+
+                if (this.t1 == undefined ) {
+                    return;
+                }
+
+                this.secim = 0;
+                if ($("#radio1:checked").val() != undefined) {
+                    this.secim = 1;
+                }
+                else if ($("#radio2:checked").val() != undefined) {
+                    this.secim = 2;
+                }
+                else if ($("#radio3:checked").val() != undefined) {
+                    this.secim =3;
+                }
+
+                this.divFixedTableClear();
+                this.$nextTick(() => {
+                    this.Grafik();
+                    this.Baslik();
+                    this.Icerik();
+                    fixedTableCreate()
+                });
+            },
+
+            Grafik() {
+                var tt1 = this.t1;
+                var sinavlar = this.t2;
+                if (this.idsiniflist==undefined || this.idsiniflist.length>0) {
+                    tt1 = this.t3;
+                }
+                
+                var graphs = [];
+                $.each(sinavlar, function (j, el) {
+                    var graph = {
+                        "balloonText": "<strong>" + el["SINAVAD"] + "</strong><br/>[[value]]",
+                        "fillAlphas": 0.8,
+                        "id": el["SINAVAD"],
+                        "lineAlpha": 0.2,
+                        "title": el["SINAVAD"],
+                        "type": "column",
+                        "valueField": el["SINAVAD"]
+                    };
+                    graphs.push(graph);
+                });
+
+                
+                var graphs2 = [];
+                $.each(sinavlar, function (j, el) {                    
+                    var graph2 = {
+                        "balloonText": "<strong>" + el["SINAVAD"] + "</strong><br/>[[value]]",
+                        "fillAlphas": 0.8,
+                        "id": el["SINAVAD"],
+                        "lineAlpha": 0.2,
+                        "title": el["SINAVAD"],
+                        "type": "column",
+                        "valueField": el["SINAVAD"]
+                    };
+                    graphs2.push(graph2); 
+                })
+
+                var datapro = [];
+                var datapro2 = [];
+                var frekans = 0;
+                $.each(tt1, function (j, el) {
+                    if (el.SUBEAD != 'GENEL') {
+                        var eleman = { "sinif": this.SUBEAD };
+                        var eleman2 = { "sinif": this.SUBEAD };
+                        $.each(sinavlar, function (j, sinav) {
+                            var yuzde = parseFloat(eval(el[sinav.ID_SINAV] / el.OGRSAY * 100));
+                            eleman[sinav["SINAVAD"]] = parseFloat(yuzde);
+                            eleman2[sinav["SINAVAD"]] = parseFloat(100-yuzde);
+
+                        });
+                        datapro.push(eleman);
+                        datapro2.push(eleman2);
+                    }
+                });
+              
+                    var baslik = sinavlar[0].KADEME3 + 'LARDA ' + sinavlar[0].SINAVTURU + ' DENEME SINAVLARINA KATILAN ÖĞRENCİ YÜZDELERİ';
+                    var baslik2 = sinavlar[0].KADEME3 + 'LARDA ' + sinavlar[0].SINAVTURU + ' DENEME SINAVLARINA KATILMAYAN ÖĞRENCİ YÜZDELERİ';
+                    AmchartOlustur("chartdiv", datapro, 100, sinavlar, "sinif", "color", "", true, 0, 200, "", baslik, "%", false, 2, frekans, 44, false, graphs, true, 0);                   
+                    AmchartOlustur("chartdiv2", datapro2, 100, sinavlar, "sinif", "color", "", true, 0, 200, "", baslik2, "%", false, 2, frekans, 44, false, graphs2, true, 0);                   
+                
+            },
+
+            Baslik() {
+                var tt1 = this.t1;
+                var sinavlar = this.t2; // sınav listesi (ID_SINAV,SINAVAD)
+                if (this.idsiniflist==undefined || this.idsiniflist.length>0) {
+                    tt1 = this.t3;
+                }
+
+                var html = '<tr>';
+                
+                html += '<th></th>';
+                $.each(tt1, function (j, veri) {
+                        html += '<th>' + veri.SUBEAD + '</th>';
+                    
+                });
+                html += '</tr>';
+
+                $("#thKatilan").html(html);
+                $("#thKatilmayan").html(html);
+            },
+
+            Icerik() {
+                var _this = this;
+                var tt1 = this.t1;
+                var sinavlar = this.t2; // sınav listesi (ID_SINAV,SINAVAD)
+                if (this.idsiniflist==undefined || this.idsiniflist.length>0) {
+                    tt1 = this.t3;
+                }
+
+                var html = '';
+                var html2 = '';
+                $.each(sinavlar, function (k, sinav) {                    
+                    html += '<tr>';
+                    html += '<th>' + sinav.SINAVAD + '</th>';
+
+                    html2 += '<tr>';
+                    html2 += '<th>' + sinav.SINAVAD + '</th>';
+
+                    var stil = "";//'style=" color: red !important;"';
+                    $.each(tt1, function (j, veri) {
+                        if (parseFloat( veri["YUZDEKATILAN" + sinav.ID_SINAV])>=50) {
+                            stil = '';
+                        }
+                        html += '<td '+stil+'>% ' + veri["YUZDEKATILAN" + sinav.ID_SINAV] + '</td>';                            
+                            
+                        if (parseFloat( veri["YUZDEKATILMAYAN" + sinav.ID_SINAV])<50) {
+                            stil = '';
+                        }
+                        html2 += '<td '+stil+'>% ' + veri["YUZDEKATILMAYAN"+sinav.ID_SINAV] + '</td>';                      
+                    });
+                   
+                    html += '</tr>';
+                    html2 += '</tr>';
+                });              
+              
+                    $("#tbKatilan").html(html);
+                    $("#tbKatilmayan").html(html2);
+
+
+            },
+
+        },
+    });
+</script>
+<script src="../../../Scripts/PublicMethods.js"></script>
+<script src="../../../assets/fixed-table/js/jquery.stickyheader.js?v=4"></script>

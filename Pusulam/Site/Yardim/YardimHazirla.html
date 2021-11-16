@@ -1,0 +1,95 @@
+﻿<link href="assets/global/plugins/bootstrap-fileinput/bootstrap-fileinput.css" rel="stylesheet" type="text/css" />
+
+<div class="page-head">
+    <!-- BEGIN PAGE TITLE -->
+    <div class="page-title col-md-12">
+        <h1>
+            Yardım Hazırla <span onclick="YardimGoster(ID_MENU);" class="pull-right" style="cursor:pointer;"><img src="assets/global/img/info.gif" class="info-image-icon" /> </span>
+        </h1>
+    </div>
+    <!-- END PAGE TITLE -->
+</div>
+
+<div class="row" id="app">
+    <div class="col-md-12">
+        <div class="portlet light">
+            <!-- BEGIN PORTLET-->
+            <div class="portlet-body form">
+                <form role="form">
+                    <div class="form-body form-horizontal" style="padding:0px;">
+                        <div class="row">
+                            <c-menu controller="YardimHazirla" @OnChange="MenuSelected">
+                            </c-menu>
+                        </div>
+                        <hr>
+                        <!--<c-yardim-html v-if="ID_MENU>0" controller="YardimHazirla" :idmenu="ID_MENU" :html="HTML"></c-yardim-html>-->
+                        <div v-if="ID_MENU>0">
+                            <h3 style="margin-top:10px;">Yardım Metni</h3>
+
+                            <textarea id="editor">{{HTML}}</textarea>
+                        </div>
+
+                        <div v-if="ID_MENU>0" style="text-align:right;margin-top:10px;">
+                            <button type="button" class="btn green" @click="Kaydet()">Kaydet</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <!-- END PORTLET-->
+        </div>
+    </div>
+</div>
+
+<script src="/assets/global/plugins/ckeditor/ckeditor.js"></script>
+<script src="/VueComponents/Yardim.js"></script>
+<script>
+    var idTktPuan = null;
+    var vue = new Vue({
+        el: "#app",
+        name: "YardimTanimla.html",
+
+        data: {
+            ID_MENU: 0,
+            HTML: ''
+        },
+        methods: {
+            MenuSelected(ID_MENU) {
+                var _this = this;
+                this.ID_MENU = ID_MENU;
+
+                this.$nextTick(function () {
+                    CKEDITOR.replace('editor');
+                    //Editor değiştiğinde model güncellensin
+                    CKEDITOR.instances['editor'].on('change', function () {
+                        _this.HTML = CKEDITOR.instances['editor'].getData();
+                    });
+                })
+
+                this.Yenile();
+            },
+
+            Kaydet() {
+                var p = { TCKIMLIKNO: session.TCKIMLIKNO, OTURUM: session.OTURUM, ID_MENU_SELECTED: this.ID_MENU, HTML: this.HTML };
+                WebPost(this, "YardimHazirla", "YardimKaydet", p, '', '', function (data, parent) {
+                    if (data == true) {
+                        Alert_Info("Kaydedildi.");
+                    }
+                    else {
+                        Alert_Warning("Bir sorun oluştu. Lütfen daha sonra tekrar deneyiniz...");
+                    }
+                })
+            },
+
+            Yenile() {
+                var _this = this;
+                var p = { TCKIMLIKNO: session.TCKIMLIKNO, OTURUM: session.OTURUM, ID_MENU_SELECTED: this.ID_MENU };
+                WebPost(this, "YardimHazirla", "YardimGetir", p, '', '', function (data) {
+                    _this.HTML = JSON.parse(data)[0].YARDIMHTML == null ? '' : JSON.parse(data)[0].YARDIMHTML;
+                    CKEDITOR.instances['editor'].setData(_this.HTML);
+                });
+            }
+        }
+    });
+</script>
+
+<script src="Scripts/PublicMethods.js"></script>

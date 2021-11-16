@@ -1,0 +1,626 @@
+﻿<link href="assets/global/plugins/bootstrap-fileinput/bootstrap-fileinput.css" rel="stylesheet" type="text/css" />
+
+<link href="assets/global/plugins/nouislider/jquery.nouislider.css" rel="stylesheet" type="text/css" />
+<style>
+    td {
+        vertical-align: middle !important;
+    }
+
+    tr td:first-child {
+        text-align: left !important;
+    }
+
+    tr th:first-child {
+        text-align: left !important;
+    }
+
+    .margintop0 {
+        margin-top: 0px !important;
+        margin-bottom: 10px !important;
+    }
+
+    #detay_modal tr td:first-child {
+        text-align: left !important;
+        background-color: brown;
+        color: white;
+        font-weight: 600;
+        vertical-align: top;
+    }
+
+    .nav-tabs .active {
+        border-bottom: 5px solid #32c5d2 !important;
+    }
+
+    table {
+        font-family: 'Open Sans', sans-serif;
+        width: 98%;
+        border-collapse: collapse;
+        border: 1px solid #8A9198 !important;
+        margin: 10px 10px 0 10px;
+        background-color: transparent;
+        background-color: transparent;
+    }
+
+        table th {
+            text-align: left;
+            color: #000000 !important;
+            padding: 8px;
+            border-color: grey;
+            border: 1px solid #8A9198 !important;
+            padding: 8px;
+            line-height: 24px;
+            vertical-align: top;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            font-size: 12px !important;
+            font-weight: 600;
+        }
+
+    td .sorting_1 {
+        background-color: #676F75 !important;
+    }
+
+    table td {
+        font-size: 12px !important;
+        background-color: #676F75 !important;
+        color: #EEE;
+        border: 1px solid #8A9198 !important;
+        height: 40px !important;
+        padding: 8px;
+    }
+
+        table td:last-child {
+            border-right: none;
+        }
+
+    table tbody tr:nth-child(2n) td {
+        /*background: #D4D8F9;*/
+        font-size: 12px !important;
+        background-color: #50575D !important;
+        color: #EEE;
+        border: 1px solid #8A9198 !important;
+        padding: 8px;
+    }
+
+    th {
+        font-size: 12px !important;
+    }
+
+    .text {
+        font-size: 12px !important;
+    }
+
+    .filter-option {
+        font-size: 12px !important;
+    }
+</style>
+
+<div class="page-head">
+    <div class="page-title col-md-12">
+        <h1>Hedef Belirleme  <span onclick="YardimGoster(ID_MENU);" class="pull-right" style="cursor:pointer;"><img src="assets/global/img/info.gif" class="info-image-icon" /> </span></h1>
+    </div>
+</div>
+
+<div class="row" id="app" style="margin-top:0px!important;">
+    <div class="col-md-12">
+        <div class="portlet box blue-hoki dd-item" style="border:none; margin-bottom:10px!important;">
+            <div class="portlet-title dd-handle" data-toggle='collapse' data-target='#filters' style="cursor:pointer;">
+                <div class="caption">
+                    <i class="icon-magnifier"></i>
+                    <span class="caption-subject bold uppercase"> Filtreler </span>
+                    <span class="caption-helper"></span>
+                </div>
+                <div class='actions'>
+                    <a href='javascript:;' class='btn btn-default btn-sm' style='border:none;'>
+                        <i class='fa fa-chevron-down'></i>
+                    </a>
+                </div>
+            </div>
+            <!-- BEGIN PORTLET-->
+            <div class="portlet-body form collapse" id="filters">
+                <form role="form" style="padding:12px 20px">
+                    <div class="col-md-6" style="margin-top:0px!important;">
+                        <c-il controller="HedefBelirleme"
+                              @OnChange="IlSelected">
+                        </c-il>
+                    </div>
+                    <div class="col-md-6">
+                        <c-universiteturu controller="HedefBelirleme"
+                                          @OnChange="UniversiteTuruSelected">
+                        </c-universiteturu>
+                    </div>
+                    <div class="col-md-6">
+                        <c-puanturugenel controller="HedefBelirleme"
+                                         @OnChange="PuanTuruSelected">
+                        </c-puanturugenel>
+                    </div>
+                    <div class="col-md-6">
+                        <c-bolum controller="HedefBelirleme"
+                                 :il="IL"
+                                 :universiteturu="UNIVERSITETURU"
+                                 :puanturu="PUANTURU"
+                                 :idset="BOLUM"
+                                 @OnChange="BolumSelected">
+                        </c-bolum>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="col-md-12">
+                            <div class="col-md-4" style="padding-left:0px!important;">
+                                Puan Aralığı
+                            </div>
+                            <div class="col-md-8">
+                                <div id="skipstep" class="noUi-target noUi-ltr noUi-horizontal noUi-background">
+                                    <div style="margin-top:-15px;" class="noUi-base">
+                                        <!--<div class="noUi-origin" style="left: 20%;"><div class="noUi-handle noUi-handle-lower"></div></div>
+                                        <div class="noUi-origin" style="left: 90%;"><div class="noUi-handle noUi-handle-upper"></div></div>-->
+                                    </div>
+                                </div>
+                                Min : <span id="skip-value-lower">100.00</span> -
+                                Max : <span id="skip-value-upper">560.00</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row" style="margin-top:10px;">
+                        <div class="col-md-12 text-right">
+                            <button type="button" class="btn green" @click="Filtrele">Filtre Uygula</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-12">
+        <div class="portlet light" style="margin-bottom:10px!important;">
+            <div class="row" style="line-height:34px; margin-top:0px!important;">
+                <label class="col-md-2" style="margin-bottom:0px;">Diploma Notu</label>
+                <div class="col-md-10" style="line-height:36px;">
+                    <input class="form-control" type="text" v-model="OOBP" style="display:inline-block; width:50%!important;" />
+                    <i class="fa fa-2x fa-question-circle" style="vertical-align:middle;" title="Diploma Notu varsayılan olarak 85 alınır."></i>
+                    <button type="button" class="btn green" @click="OOBPKaydet">Kaydet</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-12">
+        <div class="portlet light">
+            <div class="portlet-title">
+                <div class="caption">
+                    <i class="icon-list font-green"></i>
+                    <span class="caption-subject bold font-green uppercase"> Üniversite Bölümleri Listesi </span>
+                    <span class="caption-helper"></span>
+                </div>
+                <ul class="nav nav-tabs">
+                    <li class="active">
+                        <a href="#portlet_tab1" data-toggle="tab"> Tüm Bölümler </a>
+                    </li>
+                    <li>
+                        <a href="#portlet_tab2" data-toggle="tab"> Kayıtlı Hedefler </a>
+                    </li>
+                </ul>
+            </div>
+            <!-- BEGIN PORTLET-->
+            <div class="portlet-body form">
+                <div class="tab-content">
+                    <div class="tab-pane active" id="portlet_tab1">
+                        <form role="form">
+                            <div class="portlet light bordered">
+                                <div class="portlet-body">
+                                    <table class="table table-striped table-bordered table-checkable" id="table">
+                                        <thead>
+                                            <tr>
+                                                <th>#</th>
+                                                <th>İl</th>
+                                                <th>Üniversite</th>
+                                                <th>Fakülte</th>
+                                                <th>Bölüm</th>
+                                                <th>Üniversite<br />Türü</th>
+                                                <th>Ücret<br />Burs</th>
+                                                <th style="text-align:center;" title="Öğrenim Süresi">Öğr.<br />Süre</th>
+                                                <th>Puan<br />Türü</th>
+                                                <!--<th>Yıl</th>-->
+                                                <th>Taban<br />Puan</th>
+                                                <th title="KONTENJAN">KNT</th>
+                                                <th>İşlemler</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody></tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="tab-pane" id="portlet_tab2">
+                        <form role="form">
+                            <div class="portlet light bordered">
+                                <div class="portlet-body">
+                                    <table class="table table-striped table-bordered table-checkable" id="table" style="width:100%; margin:0px;">
+                                        <thead>
+                                            <tr>
+                                                <th>İl</th>
+                                                <th>Üniversite</th>
+                                                <th>Fakülte</th>
+                                                <th>Bölüm</th>
+                                                <th>Üniversite<br />Türü</th>
+                                                <th>Ücret<br />Burs</th>
+                                                <th title="Öğrenim Süresi">Öğr.<br />Süre</th>
+                                                <th>Puan<br />Türü</th>
+                                                <!--<th>Yıl</th>-->
+                                                <th>Taban<br />Puan</th>
+                                                <th title="KONTENJAN">KNT</th>
+                                                <th>İşlemler</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr v-for="h in HEDEFLER">
+                                                <td>{{h.IL}}</td>
+                                                <td>{{h.UNIVERSITE}}</td>
+                                                <td>{{h.FAKULTE}}</td>
+                                                <td>{{h.BOLUM}}</td>
+                                                <td>{{h.UNIVERSITETURU}}</td>
+                                                <td>{{h.UCRETBURS}}</td>
+                                                <td style="text-align:center;">{{h.OGRENIMSURESI}}</td>
+                                                <td>{{h.PUANTURU}}</td>
+
+
+                                                <!--<td>{{h.YIL}}</td>-->
+                                                <td>{{h.TABANPUAN}}</td>
+                                                <td>{{h.KONTENJAN}}</td>
+                                                <td>
+                                                    <button type="button" class="btn yellow" style="width:80px; font-size:10px!important; padding:4px;" @click="HedefDetayGor(h.PROGRAMKODU)">DETAY GÖR</button><br />
+                                                    <button type="button" class="btn red" style="width:80px; font-size:10px!important; padding:4px;margin-top:4px;" @click="Sil(h.PROGRAMKODU)">Sil</button>
+                                                    <!--<div class="btn-group">
+                                                        <button class="btn btn-xs green dropdown-toggle form-control" type="button" data-toggle="dropdown" aria-expanded="false">
+                                                            İşlemler
+                                                            <i class="fa fa-angle-down"></i>
+                                                        </button>
+                                                        <ul class="dropdown-menu pull-right pull-up" role="menu">
+                                                            <li @click="HedefDetayGor(h.PROGRAMKODU)">
+                                                                <a href="javascript:;">
+                                                                    <i class="fa fa-lg fa-search" /> DETAY GÖR
+                                                                </a>
+                                                            </li>
+                                                            <li @click="Sil(h.PROGRAMKODU)">
+                                                                <a href="javascript:;">
+                                                                    <i class="fa fa-lg fa-times" /> Sil
+                                                                </a>
+                                                            </li>
+                                                        </ul>
+                                                    </div>-->
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <!-- END PORTLET-->
+        </div>
+    </div>
+
+    <div id="detay_modal" class="modal fade" tabindex="-1" data-replace="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                    <h4 class="modal-title">Bölüm Detayları</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-body form-horizontal">
+                        <div class="row" style="margin:0px!important;" v-if="SECILIDATA!=null">
+                            <table class="table table-striped table-bordered table-checkable" style="margin:0px!important;">
+                                <tbody>
+                                    <tr><td>PROGRAM KODU</td><td>{{SECILIDATA.PROGRAMKODU}}</td></tr>
+                                    <tr><td>UNIVERSITE</td><td>{{SECILIDATA.UNIVERSITE}}</td></tr>
+                                    <tr><td>FAKULTE</td><td>{{SECILIDATA.FAKULTE}}</td></tr>
+                                    <tr><td>BOLUM</td><td>{{SECILIDATA.BOLUM}}</td></tr>
+                                    <tr><td>BOLUM2</td><td>{{SECILIDATA.BOLUM2}}</td></tr>
+                                    <tr><td>EGITIM DILI</td><td>{{SECILIDATA.EGITIMDILI}}</td></tr>
+                                    <tr><td>UCRET/BURS</td><td>{{SECILIDATA.UCRETBURS}}</td></tr>
+                                    <tr><td>IL</td><td>{{SECILIDATA.IL}}</td></tr>
+                                    <tr><td>UNIVERSITE TURU</td><td>{{SECILIDATA.UNIVERSITETURU}}</td></tr>
+                                    <tr><td>OGRENIM SURESI</td><td>{{SECILIDATA.OGRENIMSURESI}}</td></tr>
+                                    <tr><td>OGRENIM TURU</td><td>{{SECILIDATA.OGRENIMTURU}}</td></tr>
+                                    <tr><td>PUAN TURU</td><td>{{SECILIDATA.PUANTURU}}</td></tr>
+                                    <tr><td>YIL</td><td>{{SECILIDATA.YIL}}</td></tr>
+                                    <tr><td>TABAN PUAN</td><td>{{SECILIDATA.TABANPUAN}}</td></tr>
+                                    <tr><td>KONTENJAN</td><td>{{SECILIDATA.KONTENJAN}}</td></tr>
+                                    <tr><td>PROGRAM TURU</td><td>{{SECILIDATA.PROGRAMTURU}}</td></tr>
+                                    <tr><td>SON YGS YERLESTIRME</td><td>{{SECILIDATA.SONYGSYERLESTIRME}}</td></tr>
+                                    <tr><td>OKUL BIRINCILIGI KONTENJANI</td><td>{{SECILIDATA.OKULBIRINCILIGIKONTENJANI}}</td></tr>
+                                    <tr><td>YER ONCELIKLERI</td><td>{{SECILIDATA.YERONCELIKLERI}}</td></tr>
+                                    <tr><td>EN BUYUK PUAN</td><td>{{SECILIDATA.ENBUYUKPUAN}}</td></tr>
+                                    <tr><td>BASARI SIRALAMA</td><td>{{SECILIDATA.BASARISIRALAMA}}</td></tr>
+                                    <tr><td>OZEL KOSUL ACIKLAMA</td><td v-html="SECILIDATA.OZELKOSULACIKLAMA"></td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn default" data-dismiss="modal">Kapat</button>
+                    <button type="button" class="btn green" data-dismiss="modal" @click="Ekle(SECILIDATA.PROGRAMKODU)" id="BTN_EKLE">Ekle</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../../../VueComponents/UniversiteFiltreleri.js?v=4"></script>
+<script src="assets/global/plugins/nouislider/jquery.nouislider.js" type="text/javascript"></script>
+<script>
+    $(document).ready(function () {
+        $(".sidebar-toggler").trigger("click");
+    });
+    var vue = new Vue({
+        el: "#app",
+        name: "HedefBelirleme.html",
+
+        data: {
+            table: null,
+            DATA: null,
+            HEDEFLER: null,
+            SECILIDATA: null,
+            IL: '',
+            UNIVERSITETURU: '',
+            PUANTURU: 0,
+            BOLUM: '',
+            FILTER: '',
+            OOBP: 0
+        },
+
+        mounted() {
+            vue = this;
+
+            var p = { TCKIMLIKNO: session.TCKIMLIKNO, OTURUM: session.OTURUM };
+            WebPost(vue, "HedefBelirleme", "OOBPGetir", p, '', '', function (data, parent) {
+                parent.OOBP = data;
+            })
+
+            this.TabanPuanListele();
+            this.HedefListele();
+
+            var skipSlider = document.getElementById('skipstep');
+
+            noUiSlider.create(skipSlider, {
+                range: {
+                    'min': 100,
+                    '10%': 120,
+                    '15%': 140,
+                    '20%': 180,
+                    '25%': 200,
+                    '30%': 220,
+                    '35%': 240,
+                    // Nope, 40 is no fun.
+                    '40%': 260,
+                    '45%': 280,
+                    '50%': 300,
+                    '55%': 320,
+                    '60%': 340,
+                    '65%': 360,
+                    '70%': 400,
+                    '75%': 420,
+                    '80%': 460,
+                    '85%': 500,
+                    '90%': 520,
+                    '95%': 540,
+                    '100%': 560,
+                    // I never liked 80.
+                    'max': 560
+                },
+                snap: true,
+                start: [100, 560]
+            });
+
+            var skipValues = [
+	    document.getElementById('skip-value-lower'),
+	    document.getElementById('skip-value-upper')
+            ];
+
+            skipSlider.noUiSlider.on('update', function (values, handle) {
+                skipValues[handle].innerHTML = values[handle];
+            });
+
+            $('[data-toggle="tooltip"]').tooltip();
+        },
+
+        methods: {
+            IlSelected(IL) {
+                this.IL = IL;
+                this.BOLUM = "0";
+
+            },
+            UniversiteTuruSelected(UNIVERSITETURU) {
+                this.UNIVERSITETURU = UNIVERSITETURU
+            },
+            PuanTuruSelected(PUANTURU) {
+                this.PUANTURU = PUANTURU
+            },
+            BolumSelected(BOLUM) {
+                this.BOLUM = BOLUM
+            },
+            TabanPuanListele() {
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    DONEM: this.DONEM,
+                    FILTER: this.FILTER//.replace(/./g, ',')
+                };
+                console.log(this.table)
+                if (this.table != null) {
+                    this.table.destroy();
+                }
+                this.table = $('#table').DataTable(
+                {
+                    "processing": true,
+                    "serverSide": true,
+                    "order": [[1, 'asc']],
+                    "orderClasses": false,
+                    "columnDefs": [
+                        {
+                            "targets": 0,
+                            "visible": false,
+                            "searchable": false,
+                            "orderable": false
+                        }
+                    ],
+                    "ajax": {
+                        "url": "/HedefBelirleme/UniversiteTabanPuanListeleOgrenci",
+                        "type": 'POST',
+                        "data": function (d) {
+                            p.SQLJSON = JSON.stringify(d);
+                            return p;
+                        },
+                        "dataFilter": function (data) {
+                            var json = JSON.parse(JSON.parse(data));
+                            json.data = JSON.parse(json.data);
+                            vue.DATA = json;
+                            return JSON.stringify(json);
+                        },
+                    },
+                    "columns": [
+                      { "data": "RowNumber" },
+                      { "data": "IL" },
+                      { "data": "UNIVERSITE" },
+                      { "data": "FAKULTE" },
+                      { "data": "BOLUM2" },
+                      { "data": "UNIVERSITETURU" },
+                      { "data": "UCRETBURS" },
+                      { "data": "OGRENIMSURESI" },
+                      { "data": "PUANTURU" },
+                      //{ "data": "YIL" },
+                      { "data": "TABANPUAN" },
+                      { "data": "KONTENJAN" },
+                      {
+                          "data": "PROGRAMKODU",
+                          "searchable": false,
+                          "sortable": false,
+                          "render": function (PROGRAMKODU, type, full, meta) {
+                              vue.SECILIDATA = vue.getObjects(vue.DATA, 'PROGRAMKODU', PROGRAMKODU);
+                              return '<button type="button" class="btn yellow" style="width:80px; font-size:10px!important; padding:4px;" onclick="vue.DetayGor(' + PROGRAMKODU + ')">DETAY GÖR</button><br />' +
+                                     '<button type="button" class="btn green" style="width:80px; font-size:10px!important; padding:4px;margin-top:4px;" onclick="vue.Ekle(' + PROGRAMKODU + ')">EKLE</button>';
+                              //<div class="btn-group" style="margin-top:-18px!important;">'
+                              //   + '   <button class="btn btn-xs green dropdown-toggle form-control" type="button" data-toggle="dropdown" aria-expanded="false">'
+                              //   + '       İşlemler'
+                              //   + '       <i class="fa fa-angle-down"></i>'
+                              //   + '   </button>'
+                              //   + '   <ul class="dropdown-menu pull-right" role="menu">'
+                              //   + '       <li onclick="vue.DetayGor(' + PROGRAMKODU + ')">'
+                              //   + '           <a href="javascript:;">'
+                              //   + '               <i class="fa fa-lg fa-search" /> DETAY GÖR'
+                              //   + '           </a>'
+                              //   + '       </li>'
+                              //   + '       <li onclick="vue.Ekle(' + PROGRAMKODU + ')">'
+                              //   + '           <a href="javascript:;">'
+                              //   + '               <i class="fa fa-lg fa-plus" /> EKLE'
+                              //   + '           </a>'
+                              //   + '       </li>'
+                              //   + '   </ul>'
+                              //   + '</div>'
+
+                              //'<button type="button" class="btn btn-sm yellow" onclick="vue.DetayGor(' + PROGRAMKODU + ')">DETAY</button>';
+                          }
+                      }
+                    ],
+                    language: {
+                        "url": "./Utility/dil.json"
+                    }
+                });
+            },
+            getObjects(obj, key, val) {
+                var objects = [];
+                for (var i in obj) {
+                    if (!obj.hasOwnProperty(i)) continue;
+                    if (typeof obj[i] == 'object') {
+                        objects = objects.concat(this.getObjects(obj[i], key, val));
+                    } else if (i == key && obj[key] == val) {
+                        objects.push(obj);
+                    }
+                }
+                return objects;
+            },
+            DetayGor(PROGRAMKODU) {
+                this.SECILIDATA = this.getObjects(vue.DATA, 'PROGRAMKODU', PROGRAMKODU)[0];
+                $('#BTN_EKLE').css("display", "inline-block");
+                $('#detay_modal').modal();
+            },
+            HedefDetayGor(PROGRAMKODU) {
+                this.SECILIDATA = this.getObjects(vue.HEDEFLER, 'PROGRAMKODU', PROGRAMKODU)[0];
+                $('#BTN_EKLE').css("display", "none");
+                $('#detay_modal').modal();
+            },
+            Ekle(PROGRAMKODU) {
+                var p = { TCKIMLIKNO: session.TCKIMLIKNO, OTURUM: session.OTURUM, PROGRAMKODU: PROGRAMKODU };
+                WebPost(this, "HedefBelirleme", "HedefEkle", p, '', '', function (data, parent) {
+                    if (data) {
+                        Alert_Info("Kaydedildi");
+                        vue.HedefListele();
+                    } else {
+                        Alert_Warning("Bir hata oluştu.");
+                    }
+                })
+            },
+            HedefListele() {
+                var p = { TCKIMLIKNO: session.TCKIMLIKNO, OTURUM: session.OTURUM };
+                WebPost(this, "HedefBelirleme", "HedefListele", p, '', '', function (data, parent) {
+                    vue.HEDEFLER = JSON.parse(data)
+                })
+            },
+            Sil(PROGRAMKODU) {
+                Alert_Confirm("Emin misiniz?", "Hedef Silinsin mi?", function () {
+                    var p = { TCKIMLIKNO: session.TCKIMLIKNO, OTURUM: session.OTURUM, PROGRAMKODU: PROGRAMKODU };
+                    WebPost(vue, "HedefBelirleme", "HedefSil", p, '', '', function (data, parent) {
+                        if (data) {
+                            Alert_Info("Kaydedildi");
+                            vue.HedefListele();
+                        } else {
+                            Alert_Warning("Bir hata oluştu.");
+                        }
+                    })
+                });
+            },
+            Filtrele() {
+                $('#filters').toggleClass("in");
+                var Min_Puan = $("#skip-value-lower").text();
+                var Max_Puan = $("#skip-value-upper").text();
+
+                vue.FILTER = ' and (';
+                if (vue.IL.length > 0 && vue.IL != '0') {
+                    vue.FILTER += ' IL=\'' + vue.IL + '\' and'
+                }
+                if (vue.UNIVERSITETURU.length > 0 && vue.UNIVERSITETURU != '0') {
+                    vue.FILTER += ' UNIVERSITETURU=\'' + vue.UNIVERSITETURU + '\' and'
+                }
+                if (vue.PUANTURU > 0) {
+                    vue.FILTER += ' PUANTURU=(SELECT KOD FROM SinavPuanTuru WHERE ID_SINAVPUANTURU=\'' + vue.PUANTURU + '\') and'
+                }
+                if (vue.BOLUM.length > 0 && vue.BOLUM != '0') {
+                    vue.FILTER += ' BOLUM=\'' + vue.BOLUM + '\' and'
+                }
+                vue.FILTER += ' TABANPUAN <= \'' + Max_Puan + '\' and TABANPUAN >= \'' + Min_Puan + '\''//.replace('.',',')
+                //vue.FILTER += " CASE WHEN  TABANPUAN = '---' THEN NULL ELSE CAST(REPLACE(TABANPUAN, ',', '.') AS FLOAT) END <= " + Max_Puan
+                //    + "     and CASE WHEN  TABANPUAN = '---' THEN NULL ELSE CAST(REPLACE(TABANPUAN, ',', '.') AS FLOAT) END >= " + Min_Puan;
+                vue.FILTER += ')';
+
+                vue.FILTER = vue.FILTER.replace('and)', ')')
+                this.TabanPuanListele();
+            },
+
+            OOBPKaydet() {
+                var p = { TCKIMLIKNO: session.TCKIMLIKNO, OTURUM: session.OTURUM, OOBP: this.OOBP };
+                WebPost(vue, "HedefBelirleme", "OOBPKaydet", p, '', '', function (data, parent) {
+                    if (data) {
+                        Alert_Info("Kaydedildi");
+                    } else {
+                        Alert_Warning("Bir hata oluştu.");
+                    }
+                })
+            }
+        }
+    });
+</script>
+<script src="Scripts/PublicMethods.js"></script>
+<script src="assets/global/plugins/bootstrap-fileinput/bootstrap-fileinput.js" type="text/javascript"></script>

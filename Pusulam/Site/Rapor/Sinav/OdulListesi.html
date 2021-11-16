@@ -1,0 +1,251 @@
+﻿<style>
+    .stil {
+        text-align: center;
+        vertical-align: middle;
+    }
+
+    .stil2 {
+        vertical-align: middle;
+    }
+
+    table td, th {
+        font-size: 10px !important;
+    }
+</style>
+<link href="../../../assets/fixed-table/css/component.css?v=4" rel="stylesheet" />
+
+<div class="page-head">
+    <div class="page-title col-md-12">
+        <h1>
+            Ödül Listesi  <span onclick="YardimGoster(ID_MENU);" class="pull-right" style="cursor:pointer;"><img src="assets/global/img/info.gif" class="info-image-icon" /> </span>
+        </h1>
+    </div>
+</div>
+
+<div class="row" id="app">
+    <div class="col-md-12">
+        <div class="portlet box green-haze dd-item" style="border:none">
+            <div class="portlet-title dd-handle" data-toggle='collapse' data-target='#filters' style="cursor:pointer;">
+                <div class="caption">
+                    <i class="icon-magnifier"></i>
+                    <span class="caption-subject bold uppercase"> Filtreler </span>
+                    <span class="caption-helper"></span>
+                </div>
+                <div class='actions'>
+                    <a href='javascript:;' class='btn btn-default btn-sm' style='border:none;'>
+                        <i class='fa fa-chevron-down'></i>
+                    </a>
+                </div>
+            </div>
+            <div class="portlet-body form collapse in" id="filters">
+                <div class="form-body form-group-lg form-horizontal">
+                    <div class="form-inline list-group-item row">
+
+                        <div class="portlet light col-md-12" id="FiltreDiv" style="margin:0px; border-bottom-style: solid;border-bottom-width: 3px;border-bottom-color: rgb(0, 173, 239);">
+                            <div class="portlet-body">
+                                <div class="form-inline">
+                                    <c-sube-multi controller="OdulListesi"
+                                                  @OnChange="SubeSelected">
+                                    </c-sube-multi>
+                                    <c-kademe3 controller="OdulListesi"
+                                               :idsubelist="idsubelist"
+                                               @OnChange="Kademe3Selected">
+                                    </c-kademe3>
+
+                                    <c-donem controller="OdulListesi"
+                                             @OnChange="SinavDonemSelected">
+                                    </c-donem>
+                                    <c-sinav-turu-tc controller="OdulListesi"
+                                                     :donem="donemSinav"
+                                                     :ogrencidonem="donemSinav"
+                                                     :idkademe3="idkademe3"
+                                                     @OnChange="SinavTuruSelected">
+                                    </c-sinav-turu-tc>
+                                    <c-sinav-multi controller="OdulListesi"
+                                                   :idsinavturu="idsinavturu"
+                                                   :donem="donemSinav"
+                                                   :ogrencidonem="donem"
+                                                   :idkademe3="idkademe3"
+                                                   @OnChange="SinavSelected">
+                                    </c-sinav-multi>
+                                    <c-sinav-puan-turu controller="OdulListesi"
+                                                       :idsinavturu="idsinavturu"
+                                                       @OnChange="SinavPuanTuruSelected"
+                                                       v-show="puanList.length > 0 ">
+                                    </c-sinav-puan-turu>
+
+                                    <div class="col-md-12" style="margin-top: 15px;">
+                                        <label class="col-md-2" style="text-align:right"> Değer Aralığı : </label>
+                                        <input type="number" class="col-md-1" v-model="minSira" />
+                                        <label class="col-md-1"> ile </label>
+                                        <input type="number" class="col-md-1" v-model="maxSira" />
+                                        <label class="col-md-1"> arası </label>
+                                    </div>
+                                    <div class="col-md-12" style="margin-top: 15px;">
+                                        <label class="col-md-2" style="text-align:right"> Minumum Net : </label>
+                                        <input type="number" class="col-md-1" v-model="minNet" value="0" step="0.01" />
+                                    </div>
+
+                                    <input style="float:right;margin: 10px;" type="button" class="btn btn-success" v-on:click="Raporla" value="Raporla">
+                                    <input style="float:right;margin: 10px;" type="button" class="btn btn-success yellow" v-on:click="Yazdir" value="Yazdır">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="portlet light col-md-12" id="Tablodiv" style="min-height:100px;padding:0px;" v-if="divAc">
+        <div class="comp-table" id="divFixedTable">
+            <table id="tablobaslik" class="overflow-y fixed-table">
+                <thead id="thead">
+                    <tr>
+                        <th>SINAV ADI</th>
+                        <th>GRUP</th>
+                        <th>SINAV TARIHI</th>
+                        <th>SUBE</th>
+                        <th>SINIF</th>
+                        <th>TCKIMLIKNO</th>
+                        <th>AD SOYAD</th>
+                        <th>SIRA</th>
+                        <th>TOPLAM NET</th>
+                        <th>PUAN</th>
+                        <th>MIN. NET</th>
+                    </tr>
+                </thead>
+                <tbody id="tbody">
+                    <tr v-for="u in LISTE">
+                        <td>{{u.SINAVAD}}</td>
+                        <td>{{u.KADEME3}}</td>
+                        <td>{{u.SINAVTARIH}}</td>
+                        <td>{{u.SUBEAD}}</td>
+                        <td>{{u.SINIFAD}}</td>
+                        <td>{{u.TCKIMLIKNO}}</td>
+                        <td>{{u.ADSOYAD}}</td>
+                        <td>{{u.SIRA}}</td>
+                        <td>{{u.TN}}</td>
+                        <td>{{u.PUAN}}</td>
+                        <td>{{u.MINNET}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<script src="../../assets/global/plugins/bootstrap-select/js/i18n/defaults-tr_TR.js"></script>
+<script src="../../../VueComponents/GenelSinavRaporuFiltreleri.js?v=19"></script>
+<script>
+    var vue = new Vue({
+        el: "#app",
+        name: "OdulListesi.html",
+
+        data: {
+
+            donem: '',
+            donemSinav: '',
+            idkademe3: 0,
+            idsinavturu: 0,
+            idsinavpuanturu: 0,
+            idsubelist: [],
+            idsinavlist: [],
+            LISTE: [],
+            minNet: 0.00,
+            minSira: 1,
+            maxSira: 3,
+            divAc: false,
+            puanList: [],
+        },
+
+        methods: {
+
+            DonemSelected(item) {
+                this.donem = item;
+                this.divAc = false;
+            },
+            SinavDonemSelected(item) {
+                this.donemSinav = item;
+                this.divAc = false;
+            },
+            SubeSelected(item) {
+                this.idsubelist = item;
+                this.divAc = false;
+            },
+            Kademe3Selected(item) {
+                this.idkademe3 = item;
+                this.divAc = false;
+            },
+            SinavTuruSelected(item) {
+                this.idsinavturu = item;
+                ListeTemizle(this.idsinavlist);
+                this.divAc = false;
+            },
+            SinavSelected(item) {
+                this.idsinavlist = item;
+                this.divAc = false;
+            },
+
+            SinavPuanTuruSelected(item) {
+                this.idsinavpuanturu = item;
+            },
+
+            Yazdir() {
+                if (this.idsinavlist.length >0 ) {                  
+                window.open('../Rapor.aspx?rapor=Sinav.OdulListesi&raporTur=pdf&p='
+                    + session.TCKIMLIKNO + ';'
+                    + session.OTURUM + ';'
+                    + JSON.stringify(this.idsinavlist) + ";"
+                    + JSON.stringify(this.idsubelist) + ";"
+                    + this.minNet + ";"
+                    + this.minSira + ";"
+                    + this.maxSira + ";"
+                    + (this.puanList.length > 0 ? this.idsinavpuanturu : "0")
+                    , '_blank');
+                }
+                else {
+                    Alert_Warning("Gerekli alanları seçmeniz gerekmektedir.");
+                    return;
+                }
+            },
+
+            Raporla() {
+                var _this = this;
+                _this.divAc = false;
+                
+                if (this.idsinavlist.length >0 ) {      
+
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    ID_SINAVs: JSON.stringify(_this.idsinavlist),
+                    ID_SUBES: JSON.stringify(_this.idsubelist),
+                    MIN_NET: this.minNet,
+                    MIN_DERECE: this.minSira,
+                    MAX_DERECE: this.maxSira,
+                    ID_SINAVPUANTURU: this.puanList.length > 0 ? this.idsinavpuanturu : 0,
+                };
+
+                WebPost(this, "OdulListesi", "OdulListesi", p, "#app", "Yükleniyor...", function (data, parent) {
+                    if (data != '[]') {
+                        _this.LISTE = JSON.parse(data);
+
+                        _this.divAc = true;
+                        $('#filters').collapse();
+
+                    } else {
+                        Alert_Warning("Ödül Verilecek Öğrenci Bulunamadı...!");
+                    }
+                });
+                }
+                else {
+                    Alert_Warning("Gerekli alanları seçmeniz gerekmektedir.");
+                    return;
+                }
+            },
+
+        },
+    });
+</script>
+<script src="../../../Scripts/PublicMethods.js?v=1.0.0"></script>
+<script src="../../../assets/fixed-table/js/jquery.stickyheader.js"></script>

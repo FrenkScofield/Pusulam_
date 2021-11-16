@@ -1,0 +1,536 @@
+﻿<head>
+    <script src="/Scripts/Rapor/amcharts.js"></script>
+    <script src="/Scripts/Rapor/jquery.easypiechart.js"></script>
+    <script src="/Scripts/Rapor/light.js"></script>
+    <script src="/Scripts/Rapor/serial.js"></script>
+</head>
+<style>
+    #chartdiv {
+        width: 100%;
+        height: 500px;
+        font-size: 11px;
+    }
+
+    .table > tbody > tr > td, .table > tbody > tr > th, .table > tfoot > tr > td, .table > tfoot > tr > th, .table > thead > tr > td, .table > thead > tr > th {
+        font-size: 11px;
+    }
+
+    .turuncu {
+        background-color: #EA5702;
+        color: white;
+        font-size: 12px !important;
+    }
+
+    .fontsize12 {
+        font-size: 12px !important;
+    }
+
+    .koyumavi {
+        background-color: #0E3170;
+        color: white;
+    }
+
+    .acikmavi {
+        background-color: #2786C3;
+        color: white;
+    }
+
+    .bordermavi {
+        border: #2786C3 1px solid;
+        text-align: center;
+        color: black;
+    }
+
+    .bordersag {
+        border-right: #b4d2e6 1px solid;
+        text-align: center;
+    }
+
+    .analizbaslik {
+        background-color: #FFA500 !important;
+    }
+
+    .fixed-table-body {
+        overflow-x: hidden !important;
+    }
+
+    .red {
+        color: red;
+    }
+
+    @media print {
+        body * {
+            visibility: hidden !important;
+        }
+
+        #karne_table2, #karne_table2 * {
+            visibility: visible !important;
+        }
+
+        #karne_table2 {
+            position: absolute !important;
+            left: 0 !important;
+            top: 0 !important;
+        }
+    }
+</style>
+
+
+<div class="page-head">
+    <!-- BEGIN PAGE TITLE -->
+    <div class="page-title col-md-12">
+        <h1>
+            Sınav Sonuçları <small>Sınav Sonuç Veriler</small> <span onclick="YardimGoster(ID_MENU);" class="pull-right" style="cursor:pointer;"><img src="assets/global/img/info.gif" class="info-image-icon" /> </span>
+        </h1>
+    </div>
+    <!-- END PAGE TITLE -->
+</div>
+
+<div class="row" id="app">
+    <div class="col-md-12">
+
+        <div class="portlet box green-haze dd-item" style="border:none; margin-bottom:0px!important;">
+            <div class="portlet-title dd-handle" data-toggle='collapse' data-target='#filters' style="cursor:pointer;">
+                <div class="caption">
+                    <i class="icon-magnifier"></i>
+                    <span class="caption-subject bold uppercase"> Filtreler </span>
+                    <span class="caption-helper"></span>
+                </div>
+                <div class='actions'>
+                    <a href='javascript:;' class='btn btn-default btn-sm' style='border:none;'>
+                        <i class='fa fa-chevron-down'></i>
+                    </a>
+                </div>
+            </div>
+            <div class="portlet-body form collapse in" id="filters">
+                <div class="portlet light col-md-12" id="FiltreDivOgretmen" style="margin:0px; border-bottom-style: solid;border-bottom-width: 3px;border-bottom-color: rgb(0, 173, 239);"
+                     v-show="ListKullaniciTipi.indexOf(4)==-1 && ListKullaniciTipi.indexOf(5)==-1 && divAc==0">
+                    <div class="portlet-body">
+                        <div class="form-inline">
+                            <c-sube controller="VeliKonuAnalizi"
+                                    @OnChange="SubeSelected">
+                            </c-sube>
+                            <c-kademe3 controller="VeliKonuAnalizi"
+                                       :idsube="idsube"
+                                       @OnChange="Kademe3Selected">
+                            </c-kademe3>
+                            <c-sinif controller="VeliKonuAnalizi"
+                                     :idsube="idsube"
+                                     :idkademe3="idkademe3"
+                                     @OnChange="SinifSelected">
+                            </c-sinif>
+                            <c-ogrenci controller="VeliKonuAnalizi"
+                                       :idsinif="idsinif"
+                                       @OnChange="OgrenciSelected">
+                            </c-ogrenci>
+                        </div>
+                    </div>
+                </div>
+                <div class="portlet light col-md-12" id="FiltreDivVeli" style="margin:0px; border-bottom-style: solid; border-bottom-width: 3px;border-bottom-color: rgb(0, 173, 239);"
+                     v-show="ListKullaniciTipi.indexOf(5)>-1 && divAc==0">
+
+                    <div class="portlet-body">
+                        <div class="form-inline">
+                            <c-ogrenci-veli controller="VeliKonuAnalizi"
+                                            :tc="TCKIMLIKNO"
+                                            @OnChange="OgrenciVeliSelected">
+                            </c-ogrenci-veli>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="portlet light col-md-12" id="FiltreDivOgrenci" style="margin:0px; border-bottom-style: solid; border-bottom-width: 3px; border-bottom-color: rgb(0, 173, 239);"
+                     v-show="(ListKullaniciTipi.indexOf(4)>-1 || divOgrenci==1) && divAc==0">
+                    <div class="portlet-body">
+                        <div class="form-inline">
+                            <c-donem controller="VeliKonuAnalizi"
+                                     @OnChange="DonemSelected">
+                            </c-donem>
+
+                            <!--<c-yazili controller="YaziliYoklamaSonuclari"
+                                      :donem="DONEM"
+                                      :tc="tcogrenci"
+                                      @OnChange="YaziliSelected">
+                            </c-yazili>-->
+                            <input style="float:right;margin: 10px;" type="button" class="btn btn-success" v-on:click="YaziliListele" value="Listele" id="BtnYaziliListele" v-if="ListKullaniciTipi.indexOf(4)==-1">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="portlet light" id="DivYaziliListesi" style="min-height: 100px; margin-top:100px;" v-show="divAcYazili==1">
+        <table class="table table-striped table-bordered table-hover table-checkable" id="Table_Yazili">
+            <thead>
+                <tr>
+                    <th>
+                        Sınav Tarihi
+                    </th>
+                    <th>
+                        Sınav Adı
+                    </th>
+                    <th>
+                        YY Notu
+                    </th>
+                    <th style="width:50px;">
+                        İşlem
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="yy in YaziliListesi">
+                    <td>{{yy.SINAVTARIH}}</td>
+                    <td>{{yy.AD}}</td>
+                    <td>{{yy.PUAN}}</td>
+                    <td>
+                        <a @click='Getir(yy.ID_SINAV)' class='btn btn-sm yellow'>DETAY</a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="portlet light" id="Tablodiv" style="min-height: 100px;" v-if="divAc==1">
+        <div class="col-md-12" style="float:right;display:inherit; padding:0px;" id="ExcelButon">
+            <input v-if="idyazilituru!=2" style="float:right;margin: 10px; margin-right:0px;" type="button" class="btn btn-success" onclick="Glb_Print('');" value="Yazdır">
+            <input v-if="idyazilituru==2" style="float:right;margin: 10px; margin-right:0px;" type="button" class="btn btn-success" @click="KosRapor()" value="Rapor">
+            <input style="float:right;margin: 10px;" type="button" class="btn" v-on:click="Geri();" value="Geri">
+        </div>
+        <table class="table table-striped table-bordered table-hover table-checkable " id="karne_table2">
+            <thead>
+                <tr>
+                    <th style="text-align:left; vertical-align:middle; width:150px;">
+                        Öğrencinin Adı Soyadı
+                    </th>
+                    <th id="OgrenciAd">
+
+                    </th>
+                    <th id="OkLogo" rowspan="12" colspan="2" style="text-align:center; vertical-align:middle;width: 5px;" class=" hidden-xs">
+                        <img src="../../../img/okyanus_logoyeni.png" style="width:100%;" />
+                    </th>
+                </tr>
+                <tr>
+                    <th style="text-align:left; vertical-align:middle; width:150px;">
+                        Dersin Adı
+                    </th>
+                    <th id="DersAd">
+
+                    </th>
+                </tr>
+                <tr>
+                    <th style="text-align:left; vertical-align:middle; width:150px;">
+                        Sınav Adı
+                    </th>
+                    <th id="SinavAd">
+
+                    </th>
+                </tr>
+                <tr>
+                    <th style="text-align:left; vertical-align:middle; width:150px;">
+                        Sınav Tarihi
+                    </th>
+                    <th id="SinavTarihi">
+
+                    </th>
+                </tr>
+                <tr>
+                    <th style="text-align:left; vertical-align:middle; width:150px;">
+                        Toplam Soru Sayısı
+                    </th>
+                    <th id="SoruSayisi">
+
+                    </th>
+                </tr>
+                <tr>
+                    <th style="text-align:left; vertical-align:middle; width:150px;">
+                        Puan
+                    </th>
+                    <th id="Puan">
+
+                    </th>
+                </tr>
+                <tr>
+                    <th style="text-align:left; vertical-align:middle; width:150px;">
+                        Genel Sıra
+                    </th>
+                    <th id="GenelSira">
+
+                    </th>
+                </tr>
+                <tr>
+                    <th style="text-align:left; vertical-align:middle; width:150px;">
+                        Şube Sıra
+                    </th>
+                    <th id="SubeSira">
+
+                    </th>
+                </tr>
+                <tr>
+                    <th style="text-align:left; vertical-align:middle; width:150px;">
+                        Sınıf Sıra
+                    </th>
+                    <th id="SinifSira">
+
+                    </th>
+                </tr>
+                <tr id="trGenelOrtalama">
+                    <th style="text-align:left; vertical-align:middle; width:150px;">
+                        Genel Ortalama
+                    </th>
+                    <th id="GenelOrtalama">
+
+                    </th>
+                </tr>
+                <tr id="trSubeOrtalama">
+                    <th style="text-align:left; vertical-align:middle; width:150px;">
+                        Şube Ortalama
+                    </th>
+                    <th id="SubeOrtalama">
+
+                    </th>
+                </tr>
+                <tr id="trSinifOrtalama">
+                    <th style="text-align:left; vertical-align:middle; width:150px;">
+                        Sınıf Ortalama
+                    </th>
+                    <th id="SinifOrtalama">
+
+                    </th>
+                </tr>
+
+            </thead>
+        </table>
+
+        <table class="table table-striped table-bordered table-hover table-checkable " id="karne_table2">
+            <thead>
+                <tr>
+                    <th style="text-align:left; vertical-align:middle" colspan="2">
+                        KAZANIMLAR
+                    </th>
+                    <th style="width:50px">
+                        SORUNUN PUAN DEĞERİ
+                    </th>
+                    <th style="width:50px">
+                        ÖĞRENCİNİN ALDIĞI PUAN
+                    </th>
+                </tr>
+            </thead>
+            <tbody id="tbody_notlar"></tbody>
+        </table>
+    </div>
+</div>
+<script src="/VueComponents/YaziliYoklamaFiltreleri.js?v=3"></script>
+
+<script>
+    var vue = new Vue({
+        el: "#app",
+        name: "YaziliYoklamaSonuclari.html",
+
+        data: {
+            TCKIMLIKNO: '',
+            DONEM: 0,
+            ID_SINAVRAPOR: 0,
+            t1: [],
+            divAc: 0,
+            divAcYazili: 0,
+            idsinav: 0,
+            idsube: 0,
+            idkademe3: 0,
+            idsinif: 0,
+            tcogrenci: '',
+            ListKullaniciTipi: [],
+            divOgrenci: 0,
+            YaziliListesi: [],
+            idyazilituru: 0
+        },
+
+        created() {
+            var p = {
+                TCKIMLIKNO: session.TCKIMLIKNO,
+                OTURUM: session.OTURUM
+            };
+            var list = [];
+            WebPost(this, "VeliKonuAnalizi", "KullaniciTipiGetir", p, "#app", "Yükleniyor...", function (data, parent) {
+                if (data != null) {
+                    $.each(data, function (j, el) {
+                        list.push(this.ID_KULLANICITIPI)
+                    });
+                    parent.ListKullaniciTipi = list;
+                    if (list.indexOf(4) > -1) {
+                        parent.tcogrenci = session.TCKIMLIKNO;
+                        //parent.YaziliListele();
+                    }
+                } else {
+                    Alert_Warning("Kullanıcı Bulunamadı..!");
+                }
+            });
+        },
+
+        watch: {
+            tcogrenci() {
+                this.YaziliListele();
+            },
+
+            DONEM() {
+                this.YaziliListele();
+            }
+        },
+
+        methods: {
+            YaziliListele: function (event) {
+                if (parseInt(this.DONEM) == 0 || this.tcogrenci == '') {
+                    return;
+                }
+                var _donem = this.DONEM;
+                var _tc = this.tcogrenci;
+
+                var p = { TCKIMLIKNO: session.TCKIMLIKNO, OTURUM: session.OTURUM, DONEM: _donem, TC_OGRENCI: _tc };
+                WebPost(this, 'VeliYaziliYoklamaSonuclari', "YaziliYoklamaSinavListesibyOgrenci", p, '', '', function (data, parent) {
+                    if (data.length > 0) {
+                        parent.YaziliListesi = data;
+                        $('#filters').collapse('hide');
+                        parent.divAcYazili = 1;
+                        parent.$nextTick(function () {
+                            $('#Table_Yazili').DataTable().destroy();
+                            $('#Table_Yazili').DataTable(
+                                {
+                                    "aLengthMenu": [
+                                        [15, 20, -1],
+                                        [15, 20, "Hepsi"] // change per page values here
+                                    ],
+                                    "aaSorting": [[0, 'desc']],
+                                    language: {
+                                        "url": "./Utility/dil.json"
+                                    },
+                                    columnDefs: [
+                                        { type: 'de_date', targets: 0 }
+                                    ]
+                                });
+                        });
+                    } else {
+                        parent.divAcYazili = 0;
+                        Alert_Warning("Yazılı Yoklama Bulunamadı..!");
+                    }
+                })
+            },
+
+            Geri() {
+                this.divAc = 0;
+                this.divAcYazili = 1
+            },
+
+            SubeSelected(item) {
+                this.idsube = item;
+                this.idkademe3 = 0;
+                this.idsinif = 0;
+                this.divAc = 0;
+                this.divOgrenci = 0;
+            },
+
+            Kademe3Selected(item) {
+                this.idkademe3 = item;
+                this.idsinif = 0;
+                this.divAc = 0;
+                this.divOgrenci = 0;
+            },
+
+            SinifSelected(item) {
+                this.idsinif = item;
+                this.divAc = 0;
+                this.divOgrenci = 0;
+            },
+
+            OgrenciSelected(item) {
+                this.tcogrenci = item;
+                this.divOgrenci = 1;
+                this.divAc = 0;
+                this.idsinav = 0;
+            },
+            OgrenciVeliSelected(item) {
+                this.tcogrenci = item;
+                this.divOgrenci = 1;
+                this.divAc = 0;
+                this.idsinav = 0;
+            },
+
+            DonemSelected(item) {
+                this.DONEM = item;
+                this.divAc = 0;
+            },
+
+            Getir(ID_SINAV) {
+                this.idsinav = ID_SINAV;
+                this.divAcYazili = 0;
+                this.divAc = 1;
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    TC_OGRENCI: this.tcogrenci,
+                    DONEM: this.DONEM,
+                    ID_SINAVRAPOR: ID_SINAV
+                };
+
+                WebPost(this, "VeliYaziliYoklamaSonuclari", "YaziliYoklamaSonuclari", p, "#app", "Yükleniyor...", function (data, parent) {
+                    if (data != null) {
+                        parent.t1 = JSON.parse(data)[0].t1;
+                        parent.idyazilituru = parent.t1[0].ID_YAZILITURU;
+                        parent.Listele();
+
+                    } else {
+                        parent.divAc = 0;
+                        Alert_Warning("Sınav Bulunamadı..!");
+                    }
+                });
+            },
+
+            Listele() {
+                $("#OgrenciAd").text(this.t1[0].ADSOYAD);
+                $("#DersAd").text(this.t1[0].DERSAD);
+                $("#SinavAd").text(this.t1[0].SINAVADI);
+                $("#SinavTarihi").text(this.t1[0].SINAVTARIH);
+                $("#SoruSayisi").text(this.t1[0].SORUSAYISI);
+                $("#Puan").text(this.t1[0].PUAN);
+
+                $("#GenelSira").text(this.t1[0].GENELSIRA);
+                $("#GenelOrtalama").text(this.t1[0].GENELORTALAMA.toFixed(2));
+                $("#SubeSira").text(this.t1[0].SUBESIRA);
+                $("#SubeOrtalama").text(this.t1[0].SUBEORTALAMA.toFixed(2));
+                $("#SinifSira").text(this.t1[0].SINIFSIRA);
+                $("#SinifOrtalama").text(this.t1[0].SINIFORTALAMA.toFixed(2));
+
+                $("#trSinifOrtalama").show();
+                $("#trGenelOrtalama").show();
+                $("#trSubeOrtalama").show();
+                if (this.t1[0].ID_KADEME == 5) { // lise ise kapat
+                    $("#trSinifOrtalama").hide();
+                    $("#trGenelOrtalama").hide();
+                    $("#trSubeOrtalama").hide();
+
+                    $("#OkLogo").attr('rowspan', '9');
+                    
+                }
+
+                $("#tbody_notlar").html("");
+                var puan = 0;
+                $.each(this.t1, function (i) {
+                    if (this.DETAYMI == true) {
+                        var tablo = "<tr>";
+                        tablo += "<td colspan='2' style=' vertical-align:middle; text-align:left;'>" + this.SORUNO + ".Soru:<br>Kazanım: " + this.KAZANIM + "</td>";
+                        tablo += "<td style=' vertical-align:middle; text-align:center;'>" + this.PUANDEGERI + "</td>";
+                        tablo += "<td style=' vertical-align:middle; text-align:center;'>" + this.PUAN + "</td>";
+                        tablo += "</tr>";
+                        $("#tbody_notlar").append(tablo);
+                        puan += parseInt(this.PUAN);
+                    }
+                });
+                $("#Puan").html(puan);
+            },
+            KosRapor() {
+                window.open("Rapor.aspx?raporTur=PDF&rapor=Yazili.KOSRapor&p=" + session.TCKIMLIKNO + ";" + session.OTURUM + ";;;" + this.tcogrenci + ";" + this.idsinav + ";" + 1068);
+            }
+        },
+    });
+</script>
+
+<script src="Scripts/PublicMethods.js"></script>

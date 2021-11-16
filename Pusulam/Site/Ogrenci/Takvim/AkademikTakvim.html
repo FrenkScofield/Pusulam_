@@ -1,0 +1,122 @@
+﻿
+<link href="/assets/plugins/fullcalendar/fullcalendar/fullcalendar.css" rel="stylesheet" />
+<link href="/assets/global/plugins/bootstrap-datepicker/css/bootstrap-datepicker3.css" rel="stylesheet" />
+<style>
+    td {
+        vertical-align: top !important;
+    }
+</style>
+<div class="col-md-12" id="test">
+    <div class="portlet light" style="margin:0px; border-bottom-style: solid;
+    border-bottom-width: 3px;
+    border-bottom-color: rgb(0, 173, 239);">
+        Akademik Takvim
+    </div>
+    <div class="portlet light" id="Tablodiv" style="min-height: 100px;padding:0px">
+        <div class="portlet box green-meadow calendar">
+            <div class="portlet-title">
+                <div class="caption">
+                    <i class="fa fa-gift"></i>Sınav Tarihleri
+                </div>
+            </div>
+            <div class="portlet-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <table class="table-bordered table-striped table-condensed cf display col-md-12"
+                               id="Table1">
+                            <thead class="cf">
+                                <tr>
+                                    <th style="text-align: center;">
+                                        Sınav Listesi
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbody1"></tbody>
+                        </table>
+                    </div>
+
+                    <div class="col-md-8">
+                        <div id="calendar" class="has-toolbar">
+                        </div>
+                    </div>
+                </div>
+                <!-- END CALENDAR PORTLET-->
+            </div>
+        </div>
+        <script src="../../../assets/plugins/fullcalendar/fullcalendar/fullcalendar.js"></script>
+
+        <script src="/Scripts/calendarpusulamogrenci.js"></script>
+
+        <div class="modal fade" id="ModalEtkinlikIncele" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+             aria-hidden="true" style="display: none;">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                            &times;
+                        </button>
+                        <h4 class="modal-title" id="H1">
+                            Etkinlik
+                        </h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-horizontal">
+                            <div class="form-group">
+                                <label class="control-label col-md-3">
+                                    Etkinlik
+                                </label>
+                                <div class="col-md-9">
+                                    <input type="text" readonly="readonly" class="form-control" maxlength="40" id="txtInceleEtkinlik" />
+                                </div>
+                            </div>
+                            <br />
+                            <div class="form-group">
+                                <label class="control-label col-md-3">
+                                    Açıklama
+                                </label>
+                                <div class="col-md-9" id="txtInceleAciklama">
+                                    <!--<textarea class="form-control" readonly="readonly" rows="3"></textarea>-->
+                                </div>
+                            </div>
+                            <br />
+                            <div class="form-group">
+                                <label class="control-label col-md-3">
+                                    Başlangıç Tarihi
+                                </label>
+                                <div class="col-md-9">
+                                    <input type="text" id="dpInceleBasTarih" class="form-control" readonly="readonly" />
+                                </div>
+                            </div>
+                            <br />
+                            <div class="form-group">
+                                <label class="control-label col-md-3">
+                                    Bitiş Tarihi
+                                </label>
+                                <div class="col-md-9">
+                                    <input type="text" id="dpInceleBitTarih" class="form-control" readonly="readonly" />
+                                </div>
+                            </div>
+                            <br />
+                            <div class="form-group">
+                                <label class="control-label col-md-3">
+                                    Yetki
+                                </label>
+                                <div class="col-md-9">
+                                    <label class="control-label col-md-9" style="text-align:left" id="YetkiText">
+
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">
+                            Kapat
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>

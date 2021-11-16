@@ -1,0 +1,619 @@
+﻿<style>
+    #chartdiv {
+        width: 100%;
+        height: 500px;
+        font-size: 11px;
+    }
+
+    .table > tbody > tr > td, .table > tbody > tr > th, .table > tfoot > tr > td, .table > tfoot > tr > th, .table > thead > tr > td, .table > thead > tr > th {
+        font-size: 11px;
+    }
+
+
+    .table-hover > tbody > tr:hover, .table-hover > tbody > tr:hover > td {
+        color: black !important;
+    }
+
+    .turuncu {
+        background-color: #EA5702;
+        color: white;
+        font-size: 12px !important;
+    }
+
+    .fontsize12 {
+        font-size: 12px !important;
+    }
+
+    .koyumavi {
+        background-color: #0E3170;
+        color: white;
+    }
+
+    .acikmavi {
+        background-color: #2786C3;
+        color: white;
+    }
+
+    .bordermavi {
+        border: #2786C3 1px solid;
+        text-align: center;
+        color: black;
+    }
+
+    .bordersag {
+        border-right: #b4d2e6 1px solid;
+        text-align: center;
+    }
+
+    .analizbaslik {
+        background-color: #FFA500 !important;
+    }
+
+    .fixed-table-body {
+        overflow-x: hidden !important;
+    }
+
+    .red {
+        color: red;
+    }
+</style>
+
+<link href="../../../assets/fixed-table/css/component.css?v=4" rel="stylesheet" />
+
+<div class="page-head">
+    <div class="page-title col-md-12">
+        <h1>
+            Frekans Öğrenci Sinav Raporu <span onclick="YardimGoster(ID_MENU);" class="pull-right" style="cursor:pointer;"><img src="assets/global/img/info.gif" class="info-image-icon" /> </span>
+        </h1>
+    </div>
+</div>
+
+<div class="row" id="app">
+    <div class="col-md-12">
+        <div class="tab-pane fade active in" id="tab_1_1">
+            <div class="portlet box blue-hoki dd-item" style="border:none">
+                <!-- BEGIN PORTLET-->
+                <div class="portlet-body form">
+                    <form role="form" style="padding:12px 20px">
+                        <div class="row" style="margin-top:0PX!important;">
+                            <c-donem :controller="controller"
+                                     @OnChange="DonemSelected">
+                            </c-donem>
+                        </div>
+                        <div class="row">
+                            <c-sube-multi :controller="controller"
+                                          @OnChange="SubeSelected">
+                            </c-sube-multi>
+                        </div>
+                        <div class="row">
+                            <c-kademe3 :controller="controller"
+                                       :idsubelist="ID_SUBELIST"
+                                       :idset="ID_KADEME3"
+                                       @OnChange="Kademe3Selected">
+                            </c-kademe3>
+                        </div>
+                        <div class="row">
+                            <c-sinav-turu :controller="controller"
+                                          :idkademe3="ID_KADEME3"
+                                          :donem="DONEM"
+                                          @OnChange="SinavTuruSelected">
+                            </c-sinav-turu>
+                        </div>
+                        <!--<div class="row">
+                            <c-sinav :controller="controller"
+                                     :idkademe3="ID_KADEME3"
+                                     :donem="DONEM"
+                                     :idsinavturu="ID_SINAVTURU"
+                                     @OnChange="SinavSelected">
+                            </c-sinav>
+
+                        </div>-->
+                        <div class="row">
+                            <c-ders-multi2 controller="MaddeFrekansAnalizi"
+                                           :idkademe3="ID_KADEME3"
+                                           :idsinavturu="ID_SINAVTURU"
+                                           @OnChange="DersSelected">
+                            </c-ders-multi2>
+                        </div>
+                        <div class="row">
+                            <div class="form-group" style="margin-top:10px;">
+                                <div class="col-md-12 text-right">
+                                    <span style="display:inline-block; width:200px; margin-right:4px;">
+                                        <select class="selectpicker form-control" v-model="RAPORTUR">
+                                            <option value="PDF">Pdf</option>
+                                            <option value="XLS">Xls</option>
+                                            <option value="XLSX">Xlsx</option>
+                                            <option value="HTML">Html</option>
+                                        </select>
+                                    </span>
+                                    <span class="btn green" @click="Yazdir" style="margin-right:10px;">Yazdır</span>
+                                    <span class="btn green" @click="Raporla">Raporla</span>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="portlet light" v-if="LISTE.length>0">
+                <div class="portlet-title">
+                    <div class="caption">
+                        <i class="icon-list font-green"></i>
+                        <span class="caption-subject bold font-green uppercase"> Frekans Listesi </span>
+                        <span class="caption-helper"></span>
+                    </div>
+                </div>
+                <!-- BEGIN PORTLET-->
+                <div class="portlet-body form">
+                    <form role="form">
+                        <div class="portlet light bordered">
+                            <div class="portlet-body">
+                                <table class="table table-striped table-bordered table-hover table-checkable" id="tablo_frekans">
+                                    <thead>
+                                        <tr>
+                                            <th>ŞUBE</th>
+                                            <th>SINIF</th>
+                                            <th>TCNO</th>
+                                            <th>AD SOYAD</th>
+                                            <th>FREKAS</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr class="odd gradeX" v-for="(u, index) in LISTE">
+                                            <td>
+                                                {{u.SUBEAD}}
+                                            </td>
+                                            <td>
+                                                {{u.SINIFAD}}
+                                            </td>
+                                            <td>
+                                                {{u.TCKIMLIKNO}}
+                                            </td>
+                                            <td>
+                                                {{u.ADSOYAD}}
+                                            </td>
+                                            <td>
+                                                {{u.FREKANS}}
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <!-- END PORTLET-->
+            </div>
+        </div>
+    </div>
+    <div class="portlet light col-md-12" id="Tablodiv" style="min-height:100px;padding:0px;" v-if="divAc==1">
+        <div class="col-md-1" style="float:right;" id="ExcelButon">
+            <input style="float:right;margin: 10px;" type="button" class="btn btn-success" onclick="tableToExcel('tablobaslik', 'W3C Example Table')" value="Excel">
+        </div>
+        <div class="comp-table" id="divFixedTable">
+            <table id="tablobaslik"
+                   class="overflow-y fixed-table">
+                <thead id="thead"></thead>
+                <tbody id="tbody"></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<script src="VueComponents/Genel.js?v=1.0.0"></script>
+<script src="VueComponents/Filtre.js?v=1.0.0"></script>
+<script src="VueComponents/FiltreEk.js?v=1.0.0"></script>
+<!--<script src="../../../VueComponents/GenelSinavRaporuFiltreleri.js?v=17"></script>-->
+<script>
+    var vue = new Vue({
+        el: "#app",
+        name: "FrekansSinavOgrenciNew.html",
+
+        data: {
+            controller: 'FrekansSinavOgrenci',
+            ID_SUBELIST: [],
+            DONEM: 0,
+            ID_KADEME3: 0,
+            ID_SINAVTURU: 0,
+            ID_SINAV: 0,
+            LISTE: [],
+            RAPORTUR: 'PDF',
+            idderslist: [],
+            divAc: 1,
+            t1: [],
+            t2: [],
+            t3: [],
+            t4: []
+
+        },
+
+        methods: {
+            DonemSelected(item) {
+                this.DONEM = item;
+            },
+
+            SubeSelected(item) {
+                this.ID_SUBELIST = item;
+                this.ID_KADEME3 = 0;
+            },
+
+            Kademe3Selected(item) {
+                this.ID_KADEME3 = item;
+            },
+
+            SinavTuruSelected(item) {
+                this.ID_SINAVTURU = item;
+            },
+
+            //SinavSelected(item) {
+            //    this.ID_SINAV = item;
+            //},
+            DersSelected(item) {
+                this.idderslist = item;
+                this.divAc = 0;
+            },
+
+            Yazdir() {
+                if (this.ID_SINAV > 0) {
+                    window.open('../Rapor.aspx?rapor=Frekans.SinavOgrenciFrekansRapor&raporTur=' + this.RAPORTUR + '&p=' + session.TCKIMLIKNO + ';' + session.OTURUM + ';' + JSON.stringify(this.ID_SUBELIST) + ";" + this.ID_SINAV, '_blank');
+                }
+                else {
+                    Alert_Warning("Sınav seçmeniz gerekmektedir.");
+                    return;
+                }
+            },
+
+            //Raporla() {
+            //    if (this.ID_SINAV > 0) {
+            //        var p = {
+            //            TCKIMLIKNO: session.TCKIMLIKNO,
+            //            OTURUM: session.OTURUM,
+            //            ID_SUBELIST: JSON.stringify(this.ID_SUBELIST),
+            //            ID_SINAV: this.ID_SINAV,
+            //            ID_SINAVTURU: this.ID_SINAVTURU,
+            //            DONEM: this.DONEM,
+            //            ISJSON: true
+            //        };
+
+            //        WebPost(this, this.controller, "FrekansSinavOgrenciListeleNew", p, "", "", function (data, parent) {
+            //            if (JSON.parse(data) != []) {
+            //                parent.LISTE = JSON.parse(data);
+            //                $('#filters').collapse();
+            //                parent.$nextTick(function () {
+            //                    $("#tablo_frekans").DataTable().destroy();
+            //                    parent.$nextTick(function () {
+            //                        parent.ListeOlustur('tablo_frekans');
+            //                    });
+            //                });
+            //            } else {
+            //                Alert_Warning("Sınava Ait Öğrenci Listesi Bulunamadı..!");
+            //            }
+            //        });
+            //    }
+            //    else {
+            //        Alert_Warning("Lütfen Sınav Seçiminizi Yapınız..!")
+            //    }
+            //},
+            Raporla: function (event) {
+                this.Getir();
+            },
+            distinct(data, key) {
+                var distList = [];
+                $.each(data, function (j, item) {
+                    if (distList.indexOf(item[key]) == -1) {
+                        distList.push(item[key]);
+                    }
+                });
+                return distList;
+            },
+
+            Getir() {
+                var _this = this;
+                if (this.ID_KADEME3 != 0) {
+                    this.divAc = 1;
+
+                    var idsinavlist = JSON.stringify(this.idsinavlist);
+                    $('#ExcelButon').css('visibility', 'visible');
+
+                    $('#filters').collapse('hide');
+                    var p = {
+                        TCKIMLIKNO: session.TCKIMLIKNO,
+                        OTURUM: session.OTURUM,
+                        ID_SUBELIST: JSON.stringify(this.ID_SUBELIST),
+                        ID_SINAV: this.ID_SINAV,
+                        ID_SINAVTURU: this.ID_SINAVTURU,
+                        DONEM: this.DONEM,
+                        ISJSON: true
+                    };
+                    WebPost(this, this.controller, "FrekansSinavOgrenciListeleNew", p, "#app", "Yükleniyor...", function (data, parent) {
+
+                        if (data != null) {
+                            _this.t1 = JSON.parse(data)[0].t1;
+                            
+                            _this.t2 = JSON.parse(data)[0].t2;
+
+                            _this.t3 = JSON.parse(data)[0].t3;
+                            _this.t4 = JSON.parse(data)[0].t4;
+
+                            _this.dersGenel = JSON.parse(data)[0].t5;
+
+                            _this.puanGenel = JSON.parse(data)[0].t6;
+
+                            _this.dersler = _this.distinct(_this.t2, "TAKMAAD");
+
+                            _this.subeler = _.groupBy(JSON.parse(data)[0].t3, function (d) { return d.SUBEAD });
+
+                            _this.ogrList = _.groupBy(JSON.parse(data)[0].t3,  function (d) { return d.TCKIMLIKNO });
+
+                            //_this.puanlar = _this.distinct(_this.t3, "PUANTURU");
+
+                            _this.subeler2 = _.groupBy(JSON.parse(data)[0].t3, function (d) { return d.SUBEAD });
+
+                            parent.Listele();
+
+                        } else {
+                            Alert_Warning("Sınav Bulunamadı..!");
+                        }
+                    });
+                }
+                else {
+                    Alert_Warning("Lütfen Gerekli Seçimleri Yapınız")
+                    this.divAc = 0;
+                }
+            },
+            Listele() {
+
+                if (this.t1 == undefined) {
+                    return;
+                }
+
+
+                divFixedTableClear();
+                this.$nextTick(() => {
+                    this.Baslik();
+                    this.Icerik();
+                    fixedTableCreate()
+                });
+            },
+            Baslik() {
+                var tt1 = this.t1;
+                var tt2 = this.t2; // sınav listesi (ID_UNITETARAMASINAV,SINAVAD)
+
+                var tt3 = this.t3;
+                var tt4 = this.t4; // sınav listesi (ID_UNITETARAMASINAV,SINAVAD)
+                var _this = this;
+
+                var html = '<tr>                        ';
+                html += '    <th rowspan="2"> KAMPÜS </th>    ';//sabit
+                html += '    <th rowspan="2"> SINIF </th>    ';//sabit
+                html += '    <th rowspan="2"> ÖĞRENCİ AD SOYAD </th>    ';//sabit
+                $.each(_this.dersler, function (i, ders) {
+                    html += '    <th colspan="' + (tt1.length+1) + '" >' + ders + ' </th>    ';//sınav sayısı +1
+                });
+
+
+
+                html += '  </tr>                    ';
+                html += '<tr>';
+                //sınavlar
+                $.each(_this.dersler, function (i, ders) {
+                    //html += '<th > ÖĞRENCİ AD SOYAD </th>';
+                    $.each(tt1, function (j, el) {
+                        html += '<th >' + el.AD + '</th>';
+                    });
+                    html += '<th > </th>';
+                });
+
+
+
+                html += '</tr>';
+                $("#thead").html(html);
+
+            },
+            Icerik() {
+
+                var html = '';
+                
+
+                var dersG = this.dersGenel;
+               
+
+                var sinavlar = this.t1;
+                var dersler = this.dersler;
+                var subeler = this.subeler;
+                var ogrList = this.ogrList;
+   
+                var _this = this;
+
+                $.each(ogrList, function (k, sube) {
+                    var sinif = _.groupBy(sube, function (d) { return d.ID_SINIF });                   
+                    html += '<tr>';
+                    $.each(sinif, function (k, snf) {
+                        html += '<th>' + snf[0].SUBEAD + '</th>';
+                        html += '<th>' + snf[0].SINIFAD + '</th>';
+
+                        //console.log(snf);
+
+                        $.each(dersler, function (j, ders) {
+                            var girdi = false;
+                            var kar = '';
+                            var sonNet = undefined;
+                            //console.log(dersler);
+                            $.each(sinavlar, function (k, sinav) {
+
+                                //console.log(sinavlar);
+
+                                $.each(snf, function (k, veri) {
+                                    //console.log(veri.DERSAD);
+                                    //var renk = 'black';
+                                    //var array = $.grep(dersG, function (el, j) {
+
+                                    //    if (el[sinav.SINAVAD] > veri[sinav.SINAVAD] && el[sinav.SINAVAD] <= 100 && veri.DERSAD == el.DERSAD && veri.ID_SINIF == snf[0].ID_SINIF) {
+
+                                    //        return renk = 'red';
+                                    //    }
+                                    //    else if (el[sinav.SINAVAD] < veri[sinav.SINAVAD] && el[sinav.SINAVAD] <= 100 && veri.DERSAD == el.DERSAD && veri.ID_SINIF == snf[0].ID_SINIF) {
+
+                                    //        return renk = 'black';
+                                    //    }
+
+                                    //    return (el[sinav.SINAVAD] < veri[sinav.SINAVAD]);
+
+                                    //});
+
+                                    console.log(veri.FREKANS);
+                                    if (veri.ID_SINIF == snf[0].ID_SINIF ) {
+                                        
+                                        if (girdi == false && sinavlar.length == 1) {
+                                            html += '<td style=color:red> ' + veri.ADSOYAD + ' </td>';
+
+                                            girdi = true;
+                                        }
+                                        else if (girdi == false && sinavlar.length > 1) {
+                                            html += '<td> ' + veri.ADSOYAD + ' </td>';
+
+                                            girdi = true;
+                                        }
+                                        if (veri.FREKANS == '-') {
+                                            html += '<td> ' + ' ' + ' </td>';
+                                        }
+                                        else {
+                                            html += '<td style=color:red> ' + '%' + veri.FREKANS + ' </td>';
+                                        }
+
+
+                                        if (veri.FREKANS == '-') {
+                                            kar = '';
+                                            sonNet = undefined;
+                                        }
+                                        else if (sonNet > veri.FREKANS) {
+                                            kar = '<img src="../../../img/asagiok.png" />';
+                                            sonNet = veri.FREKANS;
+                                        }
+                                        else if (sonNet < veri.FREKANS) {
+                                            kar = '<img src="../../../img/yukariok.png" />';
+                                            sonNet = veri.FREKANS;
+                                        }
+                                        else
+                                            sonNet = veri.FREKANS;
+                                    }
+
+                                    if (veri.DERSAD == ders && veri.ID_SINIF == snf[0].ID_SINIF ) {
+                                        if (girdi == false) {
+                                            html += '<td> ' + veri.ADSOYAD + ' </td>';
+                                            girdi = true;
+                                        }
+
+                                        if (veri.FREKANS == '-') {
+                                            html += '<td> ' + ' ' + ' </td>';
+                                        }
+                                        else {
+                                            html += '<td> ' + '%' + veri.FREKANS + ' </td>';
+                                        }
+
+
+                                        //console.log(veri[sinav.SINAVAD]);
+
+                                        if (veri.FREKANS == '-') {
+                                            kar = '';
+                                            sonNet = undefined;
+                                        }
+                                        else if (sonNet > veri.FREKANS) {
+                                            kar = '<img src="../../../img/asagiok.png" />';
+                                            sonNet = veri.FREKANS;
+                                        }
+                                        else if (sonNet < veri.FREKANS) {
+                                            kar = '<img src="../../../img/yukariok.png" />';
+                                            sonNet = veri.FREKANS;
+                                        }
+                                        else
+                                            sonNet = veri.FREKANS;
+                                    }
+
+                                });
+
+                            });
+
+                            if (girdi == false) {
+                                html += '<td></td>';
+                                $.each(sinavlar, function (k, sinav) {
+                                    html += '<td></td>';
+                                });
+                            }
+
+                            html += '<td class="acikmavi"> ' + kar + ' </td>';
+
+
+                        });
+
+
+                        html += '</tr>';
+
+                    });
+
+
+                });
+
+                //html += '<tr><th colspan="2"></th></tr>';
+
+                //html += '<tr>';
+                //html += '<th colspan="2" class="turuncu">Genel Ort.</th>';
+
+
+                $.each(dersler, function (j, ders) {
+                    var kar = '';
+                    var sonNet = undefined;
+                    html += '<td></td>';
+                    $.each(sinavlar, function (k, sinav) {
+                        $.each(dersG, function (i, veri) {
+
+                            if (veri.DERSAD == ders) {
+                                if (veri[sinav.SINAVAD] == undefined)
+                                    html += '<td></td>';
+                                else
+                                    html += '<td> ' + '%' + veri[sinav.SINAVAD] + ' </td>';
+
+                                if (veri[sinav.SINAVAD] == undefined) {
+                                    kar = '';
+                                    sonNet = undefined;
+                                }
+                                else if (sonNet > veri[sinav.SINAVAD]) {
+                                    kar = '<img src="' + _this.asagiOkResim + '" />';
+                                    sonNet = veri[sinav.SINAVAD];
+                                }
+                                else if (sonNet < veri[sinav.SINAVAD]) {
+                                    kar = '<img src="' + _this.yukariOkResim + '" />';
+                                    sonNet = veri[sinav.SINAVAD];
+                                }
+                                else
+                                    sonNet = veri[sinav.SINAVAD];
+                            }
+                        });
+                    });
+
+
+                    html += '<td class="acikmavi"> ' + kar + ' </td>';
+
+                });
+
+
+                $("#tbody").html(html);
+                return;
+            },
+            ListeOlustur(tabloAdi) {
+                var tblOlustur = $('#' + tabloAdi).DataTable(
+                    {
+                        "aLengthMenu": [
+                            [10, 15, 20, -1],
+                            [10, 15, 20, "Hepsi"] // change per page values here
+                        ],
+                        "aaSorting": [[0, 'asc']],
+                        language: {
+                            "url": "./Utility/dil.json"
+                        },
+                    });
+            },
+        },
+    });
+</script>
+<script src="../../../Scripts/PublicMethods.js"></script>
+<script src="../../../assets/fixed-table/js/jquery.stickyheader.js?v=4"></script>

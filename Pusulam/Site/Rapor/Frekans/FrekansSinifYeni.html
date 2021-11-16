@@ -1,0 +1,1253 @@
+﻿<style>
+    /*.table-bordered, .table-bordered > tbody > tr > td, .table-bordered > tbody > tr > th, .table-bordered > tfoot > tr > td, .table-bordered > tfoot > tr > th, .table-bordered > thead > tr > td, .table-bordered > thead > tr > th {
+        border: 1px solid #8A9198;
+    }*/
+
+    /*#c-tablo-header{ position: fixed; top: 0; }*/
+
+    table {
+        font-family: 'Open Sans', sans-serif;
+        width: 100%;
+        border-collapse: collapse;
+        border: 1px solid #8A9198 !important;
+        background-color: transparent;
+    }
+
+        table th {
+            text-transform: uppercase;
+            text-align: left;
+            background: #FFF;
+            color: #000000;
+            padding: 8px;
+            border-color: grey;
+            border: 1px solid #8A9198 !important;
+            padding: 8px;
+            line-height: 24px;
+            vertical-align: middle;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            /*white-space: nowrap;*/
+            font-size: 12px !important;
+            font-weight: 600;
+        }
+
+        table td {
+            font-size: 12px !important;
+            background-color: #676F75 !important;
+            color: #EEE;
+            border: 1px solid #8A9198 !important;
+            height: 20px !important;
+            padding: 8px;
+        }
+
+            table td:last-child {
+                border-right: none;
+            }
+
+        table tbody tr:nth-child(2n) td {
+            background-color: #50575D !important;
+        }
+
+    .satir1 {
+        background-color: #676F75 !important;
+        color: #EEE;
+        border: 1px solid #8A9198 !important;
+    }
+
+    .badge-danger {
+        background-color: #F34C59;
+        font-size: 9px !important;
+    }
+
+    .fixed-table-container #tabloanaliz tbody tr {
+        cursor: pointer;
+    }
+
+
+    .fixed-table-container #tabloogretmensiralamalar tbody tr {
+        cursor: pointer;
+    }
+
+
+    .fixed-table-container #tabloogretmensiniffrekans tbody tr {
+        cursor: pointer;
+    }
+
+    .fixed-table-container #tabloogrencifrekans tbody tr {
+        cursor: pointer;
+    }
+
+    #SinavSiralama .fixed-table-container tbody tr {
+        white-space: nowrap;
+    }
+
+    #Tablodiv .fixed-table-container tbody tr td:nth-child(2) {
+        text-align: left !important;
+    }
+
+    #Tablodiv .fixed-table-container tbody tr td:nth-child(3) {
+        text-align: left !important;
+    }
+
+    #Tablodiv .fixed-table-container tbody tr td:nth-child(4) {
+        text-align: left !important;
+    }
+
+    #OgretmenSinifFrekans .fixed-table-container tbody tr td:nth-child(2) {
+        text-align: left !important;
+    }
+
+    #OgretmenSinifFrekans .fixed-table-container tbody tr td:nth-child(3) {
+        text-align: left !important;
+    }
+
+    #OgretmenSinifFrekans .fixed-table-container tbody tr td:nth-child(4) {
+        text-align: left !important;
+    }
+
+    #OgretmenSinifFrekans .fixed-table-container tbody tr td:nth-child(5) {
+        text-align: left !important;
+    }
+
+    #OgretmenSinifFrekans .fixed-table-container tbody tr td:nth-child(6) {
+        text-align: left !important;
+    }
+
+    #OgrenciFrekans .fixed-table-container tbody tr td:nth-child(2) {
+        text-align: left !important;
+    }
+
+    #OgrenciFrekans .fixed-table-container tbody tr td:nth-child(3) {
+        text-align: left !important;
+    }
+
+    #OgrenciFrekans .fixed-table-container tbody tr td:nth-child(4) {
+        text-align: left !important;
+    }
+
+    #OgrenciFrekans .fixed-table-container tbody tr td:nth-child(5) {
+        text-align: left !important;
+    }
+
+    #OgretmenEksikKazanim .fixed-table-container tbody tr td:nth-child(1) {
+        text-align: left !important;
+    }
+
+    #OgretmenEksikKazanim .fixed-table-container tbody tr td:nth-child(2) {
+        text-align: left !important;
+    }
+
+    #accordions .fixed-table-container tbody tr td:nth-child(1) {
+        text-align: left !important;
+    }
+
+    #accordions .fixed-table-container tbody tr td:nth-child(2) {
+        text-align: left !important;
+    }
+
+    #accordionsinif .fixed-table-container tbody tr td:nth-child(1) {
+        text-align: left !important;
+    }
+
+    #accordionsinif .fixed-table-container tbody tr td:nth-child(2) {
+        text-align: left !important;
+    }
+
+    #accordion3 .fixed-table-container tbody tr td:nth-child(1) {
+        text-align: left !important;
+    }
+
+    #accordion3 .fixed-table-container tbody tr td:nth-child(2) {
+        text-align: left !important;
+    }
+
+
+
+    .fixed-table-container tbody tr td:nth-child(1) {
+        text-align: center !important;
+    }
+
+
+    .fixed-table-container tbody tr td:nth-child(5) {
+        text-align: center !important;
+    }
+
+    .fixed-table-container tbody tr td:nth-child(6) {
+        text-align: center !important;
+    }
+
+
+    .fixed-table-container tbody tr td:nth-child(7) {
+        text-align: center !important;
+    }
+
+    .fixed-table-container tbody tr td:nth-child(8) {
+        text-align: center !important;
+    }
+
+    .fixed-table-container tbody tr td:nth-child(9) {
+        text-align: center !important;
+    }
+
+    .fixed-table-container tbody tr td:nth-child(10) {
+        text-align: center !important;
+    }
+
+    .fixed-table-container tbody tr td:nth-child(11) {
+        text-align: center !important;
+    }
+
+    #tabloogretmensiralamalar tbody tr td {
+        text-align: center !important;
+    }
+
+
+
+
+    #tab_1_2 .fixed-table-container tbody tr td:nth-child(6) {
+        text-align: center !important;
+    }
+
+    #tab_1_1 .fixed-table-container tbody tr td:nth-child(6) {
+        text-align: center !important;
+    }
+
+    .bootstrap-table .table thead > tr > th {
+        vertical-align: middle !important;
+    }
+
+    #SiralamaTablo .bootstrap-table .table tbody > tr {
+        height: 40px !important;
+    }
+
+    .sticky-wrap {
+        margin: 0px !important;
+    }
+
+    .comp-table {
+        padding: 0px !important;
+    }
+</style>
+<link href="../../../assets/fixed-table/css/component.css?v=4" rel="stylesheet" />
+
+<div class="page-head">
+    <div class="page-title col-md-12">
+        <h1>
+            Frekans Sınıf <small>v2</small> <span onclick="YardimGoster(ID_MENU);" class="pull-right" style="cursor:pointer;"><img src="assets/global/img/info.gif" class="info-image-icon" /> </span>
+        </h1>
+    </div>
+</div>
+
+<div class="row" id="app">
+
+    <div class="col-md-12">
+        <div class="portlet box green-haze dd-item" style="border:none">
+            <div class="portlet-title dd-handle" data-toggle='collapse' data-target='#filters' style="cursor:pointer;">
+                <div class="caption">
+                    <i class="icon-magnifier"></i>
+                    <span class="caption-subject bold uppercase"> Filtreler </span>
+                    <span class="caption-helper"></span>
+                </div>
+                <div class='actions'>
+                    <a href='javascript:;' class='btn btn-default btn-sm' style='border:none;'>
+                        <i class='fa fa-chevron-down'></i>
+                    </a>
+                </div>
+            </div>
+            <div class="portlet-body form collapse in" id="filters">
+                <div class="portlet light col-md-12" style="margin:0px; border-bottom-style: solid;border-bottom-width: 3px;border-bottom-color: rgb(0, 173, 239);">
+                    <div class="portlet-body">
+                        <div class="form-inline">
+                            <f-donem controller="FrekansSinifV2"
+                                     :idset="FILTER.DONEM"
+                                     @OnChange="DonemSelected">
+                            </f-donem>
+                            <f-sube controller="FrekansSinifV2"
+                                    ilksecenek="Tümü"
+                                    :idset="FILTER.ID_SUBE"
+                                    @OnChange="SubeSelected">
+                            </f-sube>
+                            <f-kademe-multi controller="FrekansSistemV2"
+                                            :idsubes="ID_SUBE"
+                                            :idset="FILTER.ID_KADEMEs"
+                                            @OnChange="KademeSelected">
+                            </f-kademe-multi>
+                            <f-kademe3-multi controller="FrekansSinifV2"
+                                             :idsube="ID_SUBE"
+                                             :idkademes="ID_KADEMEs"
+                                             :idset="FILTER.ID_KADEME3"
+                                             lise="true"
+                                             @OnChange="Kademe3Selected">
+                            </f-kademe3-multi>
+                            <f-sinav-turu-multi controller="FrekansSinifV2"
+                                                :idkademe3="ID_KADEME3"
+                                                :idset="FILTER.ID_SINAVTURU"
+                                                ekle="YAZILI"
+                                                @OnChange="SinavTuruSelected">
+                            </f-sinav-turu-multi>
+
+                            <f-frekans-ders-multi controller="FrekansSinifV2"
+                                                  :idkademe3="ID_KADEME3"
+                                                  :idsinavturu="ID_SINAVTURU"
+                                                  :idset="FILTER.DERSLIST"
+                                                  @OnChange="DersSelected">
+                            </f-frekans-ders-multi>
+
+                            <input style="float:right;margin: 10px;" type="button" class="btn btn-success" id="RaporButon" @click="Filtrele()" value="Filtrele">
+                            <input style="float:right;margin: 10px;" type="button" class="btn btn-success" id="RaporButon" @click="FiltreSifirla()" value="Filtre Sıfırla" v-if="false">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="Tablodiv" style="min-height: 100px;padding:0px">
+        <div class="col-md-2" style="float:right; display: none;" id="ExcelButon">
+            <input style="float:right;margin: 10px;" type="button" class="btn btn-success" onclick="ExportToPdf()" value="Pdf">
+            <input style="float:right;margin: 10px;" type="button" class="btn btn-success" onclick="tableToExcel('tablobaslik', 'W3C Example Table')" value="Excel">
+        </div>
+
+        <div id="divFixedTable" class="comp-table">
+            <c-tablo-frekans tabloadi="tablobaslik"
+                             :gelendata="ListeOgretmen"
+                             :istisna="istisna"
+                             @OnChange="FrekansTabloClick">
+            </c-tablo-frekans>
+        </div>
+    </div>
+
+    <div class="modal draggable fade bd-example-modal-lg" id="OgretmenSinifFrekansModal" tabindex="-1" role="dialog" aria-hidden="true"
+         style="display: none;">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header" style="background-color:#005189;border-bottom:3px solid #00adef">
+                    <div class="col-md-12" id="RaporTool">
+                        <h4 class="modal-title" id="ModalBaslik" style="color:#ffffff">Öğretmen Sınıf Frekansı</h4>
+                    </div>
+                </div>
+                <div class="modal-body" id="ModalTableDiv" style="background-color:#ffffff;font-size:18px;">
+                    <ul class="nav nav-tabs">
+                        <li class="active" style="display: none;">
+                            <a href="#tab_1_1" data-toggle="tab"></a>
+                        </li>
+                        <li style="display: none;"><a href="#tab_1_2" data-toggle="tab"></a></li>
+                    </ul>
+                    <div class="tab-content">
+                        <div class="tab-pane fade active in" id="tab_1_1">
+                            <div class="form-body form-horizontal form-bordered">
+                                <div class="form-group">
+                                    <div class="col-md-10" id="SiralamaTablo">
+                                        <c-tablo-frekans tabloadi="OgretmenSinavlarTablo"
+                                                         :gelendata="t1"
+                                                         :istisna="t1Istisna"
+                                                         @OnChange="OgretmenSinavlarTabloClick">
+                                        </c-tablo-frekans>
+                                    </div>
+                                    <div class="col-md-2" style="height:285px;">
+                                        <table class="table table-bordered table-hover" style="margin: 10px 0px 10px 0px">
+                                            <thead>
+                                                <tr style="height:67px;">
+                                                    <th style="vertical-align:middle; text-align:center"> # </th>
+                                                    <th style="vertical-align:middle;"> FREKANS KATKI <br> DERECELERİ  </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr style="height:40px; background-color:#72fd7b">
+                                                    <td style="vertical-align:middle; color: black; background-color:#72fd7b !important; text-align:center"> 5 </td>
+                                                    <td style="vertical-align:middle; color: black; background-color:#72fd7b !important;"> Çok Etkili </td>
+                                                </tr>
+                                                <tr style="height:40px; background-color:#affd72 !important">
+                                                    <td style="vertical-align:middle; color: black; background-color:#affd72 !important; text-align:center"> 4 </td>
+                                                    <td style="vertical-align:middle; color: black; background-color:#affd72 !important;"> Etkili </td>
+                                                </tr>
+                                                <tr style="height:40px; background-color:#d6fd72">
+                                                    <td style="vertical-align:middle; color: black; background-color:#d6fd72 !important; text-align:center"> 3 </td>
+                                                    <td style="vertical-align:middle; color: black; background-color:#d6fd72 !important;"> Normal </td>
+                                                </tr>
+                                                <tr style="height:40px; background-color:#fcfd72 !important">
+                                                    <td style="vertical-align:middle; color: black; background-color:#fcfd72 !important; text-align:center;"> 2 </td>
+                                                    <td style="vertical-align:middle; color: black; background-color:#fcfd72 !important;"> Az Etkili </td>
+                                                </tr>
+                                                <tr style="height:40px; background-color:#fdca72">
+                                                    <td style="vertical-align:middle; color: black; background-color:#fdca72 !important; text-align:center"> 1 </td>
+                                                    <td style="vertical-align:middle; color: black; background-color:#fdca72 !important;"> Etkisiz </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="col-md-12" id="chartdiv" style="height:260px;">
+
+                                    </div>
+                                </div>
+                                <div class="form-group" id="OgretmenSinifFrekans" style="margin: 10px 0px 10px 0px">
+                                    <f-tablo tabloadi="OgretmenSinifTablo"
+                                             :gelendata="t2Filtered"
+                                             :istisna="t2Istisna"
+                                             @OnChange="OgretmenSinifTabloClick">
+                                    </f-tablo>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade active in" id="tab_1_2">
+                            <div class="form-body form-horizontal form-bordered">
+                                <div class="form-group">
+                                    <label class="control-label col-md-2"></label>
+                                    <div class="col-md-8"></div>
+                                    <div class="col-md-2" style="text-align:right;"><button class="btn" @click="Geri">Geri</button></div>
+                                </div>
+                                <div class="form-group" id="OgrenciFrekans" style="margin: 10px 0px 10px 0px">
+                                    <c-tablo-frekans tabloadi="SinifOgrenciTablo"
+                                                     :gelendata="t3"
+                                                     :istisna="t3Istisna"
+                                                     @OnChange="SinifOgrenciTabloClick">
+                                    </c-tablo-frekans>
+                                </div>
+                                <div class="form-group">
+                                    <div class="panel-group accordion" id="accordionsinif">
+                                        <div class="panel panel-default">
+                                            <div class="panel-heading">
+                                                <h4 class="panel-title">
+                                                    <a class="accordion-toggle accordion-toggle-styled collapsed" id="accordionhref" data-toggle="collapse" data-parent="#accordionsinif" href="#collapse_6_1" style="text-align:center">Sınıf Eksik Kazanımları</a>
+                                                </h4>
+                                            </div>
+                                            <div id="collapse_6_1" class="panel-collapse collapse">
+                                                <div class="panel-body" id="SinifKazanim" style="height:350px; overflow-y:auto; padding:0px; margin: 10px 0px 10px 0px">
+                                                    <f-tablo tabloadi="SinifOgrenciTablo"
+                                                             :gelendata="sinifEksikKazanim"
+                                                             :istisna="sinifEksikKazanimIstisna">
+                                                    </f-tablo>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade active in" id="tab_1_3">
+                            <div class="form-body form-horizontal form-bordered">
+                                <div class="form-group">
+                                    <label class="control-label col-md-2"></label>
+                                    <div class="col-md-8"></div>
+                                    <div class="col-md-2" style="text-align:right;"><button class="btn" @click="Geri">Geri</button></div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="col-md-12" id="chartdiv2" style="min-height:600px;overflow-y:scroll">
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade active in" id="tab_1_4">
+                            <div class="form-body form-horizontal form-bordered">
+                                <div class="form-group">
+                                    <div class="col-md-10">
+                                    </div>
+                                    <div class="col-md-2" style="text-align:right;"><button class="btn" @click="Geri">Geri</button></div>
+                                </div>
+                                <div class="form-group" id="SinavSiralama" style="overflow-x:auto; margin: 10px 0px 10px 0px">
+                                    <c-tablo-frekans tabloadi="OgretmenSinifFrekansTablo"
+                                                     :gelendata="t5"
+                                                     :istisna="t5Istisna"
+                                                     @OnChange="OgretmenSinifFrekansClick">
+                                    </c-tablo-frekans>
+                                </div>
+                                <div class="form-group">
+                                    <div class="panel-group accordion" id="accordions" durum="bos">
+                                        <div class="panel panel-default" v-show="data15Sinif.length>0">
+                                            <div class="panel-heading">
+                                                <h4 class="panel-title">
+                                                    <a class="accordion-toggle accordion-toggle-styled collapsed" data-toggle="collapse" data-parent="#accordions" href="#collapse_15" style="text-align:center">
+                                                        Öğretmen Eksik Kazanımları 9. SINIF
+                                                    </a>
+                                                </h4>
+                                            </div>
+                                            <div id="collapse_15" class="panel-collapse collapse">
+                                                <div class="panel-body">
+                                                    <f-tablo tabloadi="OgretmenEksikKazanim15" :gelendata="data15Sinif" :istisna="dataSinifIstisna"> </f-tablo>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="panel panel-default" v-show="data16Sinif.length>0">
+                                            <div class="panel-heading">
+                                                <h4 class="panel-title">
+                                                    <a class="accordion-toggle accordion-toggle-styled collapsed" data-toggle="collapse" data-parent="#accordions" href="#collapse_16" style="text-align:center">
+                                                        Öğretmen Eksik Kazanımları 10. SINIF
+                                                    </a>
+                                                </h4>
+                                            </div>
+                                            <div id="collapse_16" class="panel-collapse collapse">
+                                                <div class="panel-body">
+                                                    <f-tablo tabloadi="OgretmenEksikKazanim16" :gelendata="data16Sinif" :istisna="dataSinifIstisna"> </f-tablo>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="panel panel-default" v-show="data17Sinif.length>0">
+                                            <div class="panel-heading">
+                                                <h4 class="panel-title">
+                                                    <a class="accordion-toggle accordion-toggle-styled collapsed" data-toggle="collapse" data-parent="#accordions" href="#collapse_17" style="text-align:center">
+                                                        Öğretmen Eksik Kazanımları 11. SINIF
+                                                    </a>
+                                                </h4>
+                                            </div>
+                                            <div id="collapse_17" class="panel-collapse collapse">
+                                                <div class="panel-body">
+                                                    <f-tablo tabloadi="OgretmenEksikKazanim17" :gelendata="data17Sinif" :istisna="dataSinifIstisna"> </f-tablo>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="panel panel-default" v-show="data18Sinif.length>0">
+                                            <div class="panel-heading">
+                                                <h4 class="panel-title">
+                                                    <a class="accordion-toggle accordion-toggle-styled collapsed" data-toggle="collapse" data-parent="#accordions" href="#collapse_18" style="text-align:center">
+                                                        Öğretmen Eksik Kazanımları 12. SINIF
+                                                    </a>
+                                                </h4>
+                                            </div>
+                                            <div id="collapse_18" class="panel-collapse collapse">
+                                                <div class="panel-body">
+                                                    <f-tablo tabloadi="OgretmenEksikKazanim18" :gelendata="data18Sinif" :istisna="dataSinifIstisna"> </f-tablo>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <div class="form-group">
+                                    <div class="col-md-12" id="chartdiv3" style="min-height:500px;overflow:scroll">
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade active in" id="tab_1_5">
+                            <div class="form-body form-horizontal form-bordered">
+                                <div class="form-group">
+                                    <div class="col-md-10 text-left" id="OgrenciAdSoyad"></div>
+
+                                    <div class="col-md-2" style="text-align:right;"><button class="btn" @click="Geri2">Geri</button></div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="panel-group accordion" id="accordion3">
+                                        <div class="panel panel-default">
+                                            <div class="panel-heading">
+                                                <h4 class="panel-title">
+                                                    <a class="accordion-toggle accordion-toggle-styled" data-toggle="collapse" data-parent="#accordion3" href="#collapse_3_1" style="text-align:center"> Öğrencinin Sınav Puanları </a>
+                                                </h4>
+                                            </div>
+                                            <div id="collapse_3_1" class="panel-collapse collapse in">
+                                                <div class="panel-body" id="OgrenciFrekans" style="height:310px; overflow-y:auto; padding:0px; margin: 10px 0px 10px 0px">
+                                                    <c-tablo-frekans tabloadi="OgrenciFrekansDetayTablo"
+                                                                     :gelendata="t4"
+                                                                     :istisna="t4Istisna">
+                                                    </c-tablo-frekans>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="panel panel-default">
+                                            <div class="panel-heading">
+                                                <h4 class="panel-title">
+                                                    <a class="accordion-toggle accordion-toggle-styled collapsed" data-toggle="collapse" data-parent="#accordion3" href="#collapse_3_2" style="text-align:center"> Öğrencinin Sınava Göre Eksik Kazanımları </a>
+                                                </h4>
+                                            </div>
+                                            <div id="collapse_3_2" class="panel-collapse collapse" style="margin: 10px 0px 10px 0px">
+                                                <div class="panel-body" id="OgretmenEksikKazanim" style="height:370px; overflow-y:auto; padding:0px;">
+                                                    <f-tablo tabloadi="ogrenciEksikKazanimTablo"
+                                                             :gelendata="ogrenciEksikKazanim"
+                                                             :istisna="ogrenciEksikKazanimIstisna">
+                                                    </f-tablo>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="col-md-12" id="chartdiv4" style="min-height:450px;overflow:scroll">
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer" style="background-color:#3b434c;">
+                        <button type="button" class="btn btn-default" @click="OgretmenFrekansGrafik" id="OgretmenGrafik">
+                            Öğretmen Frekans Grafiği
+                        </button>
+                        <button type="button" class="btn btn-default" data-dismiss="modal">
+                            Kapat
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../../../VueComponents/Frekans/Frekans.js?v=4"></script>
+<script src="../../../VueComponents/SubeGrupSinif.js?v=3"></script>
+<script src="../../../VueComponents/SinavFiltreleri.js?v=4"></script>
+<script src="../../../assets/fixed-table/js/jquery.stickyheader.js?v=2"></script>
+<script src="../../../VueComponents/Genel.js?v=11"></script>
+
+<script>
+    var vue = new Vue({
+        el: "#app",
+        name: "FrekansSinifV2.html",
+
+        data: {
+            FILTER:
+            {
+                DONEM: 0,
+                ID_SUBE: [],
+                ID_KADEMEs: [],
+                ID_KADEME3: [],
+                ID_SINAVTURU: [],
+                DERSLIST: [],
+            },
+            dID_SINAVPUANTURU: 0,
+            TCKIMLIKNO: '',
+            DONEM: 0,
+            idsinav: 0,
+            t1: [],
+            t2: [],
+            t2Filtered: [],
+            t3: [],
+            t4: [],
+            t5: [],
+            dersler: [],
+
+            sinifEksikKazanim: [],
+            ogrenciEksikKazanim: [],
+            ogretmenEksikKazanim: [],
+
+            sinifEksikKazanimIstisna: [],
+            ogrenciEksikKazanimIstisna: [],
+            ogretmenEksikKazanimIstisna: ["KONUKODU", "ID_KADEME3", "GRUP"],
+
+            data15Sinif: [],
+            data16Sinif: [],
+            data17Sinif: [],
+            data18Sinif: [],
+
+            dataSinifIstisna: [],
+            gruplar: [],
+
+            DERSLIST: [],
+            DERSAD: '',
+            SeciliDersAd: '',
+            ID_SUBE: [],
+            ID_KADEMEs: [],
+            ID_KADEME3: [],
+            ID_SINAVTURU: [],
+
+            ListeOgretmen: [],
+            idsinif: [],
+            tcogrenci: [],
+            idkullanicitur: 0,
+            ListKullaniciTipi: [],
+            divOgrenci: 0,
+            divAc: 0,
+
+
+
+            istisna: ["TC_OGRETMEN", "SIRA"],
+            t1Istisna: [],
+            t2Istisna: [],
+            t3Istisna: [],
+            t4Istisna: [],
+            t5Istisna: [],
+            grafikdata: "",
+            grafikbolum: "",
+            grafiktcogretmen: "",
+        },
+
+        created() {
+            this.$nextTick(function () {
+                this.SonFiltre();
+            });
+        },
+
+        methods: {
+            DonemSelected(item) {
+                this.DONEM = item;
+                ListeTemizle(this.DERSLIST)
+                ListeTemizle(this.ID_SINAVTURU)
+                ListeTemizle(this.ID_KADEME3)
+                ListeTemizle(this.ID_KADEMEs)
+                ListeTemizle(this.ID_SUBE)
+                this.divAc = 0;
+            },
+            SubeSelected(item) {
+                this.ID_SUBE = item;
+                ListeTemizle(this.DERSLIST)
+                ListeTemizle(this.ID_SINAVTURU)
+                ListeTemizle(this.ID_KADEME3)
+                ListeTemizle(this.ID_KADEMEs)
+                //this.ID_KADEME3 = [];
+                this.idsinif = 0;
+                this.divAc = 0;
+                this.divOgrenci = 0;
+            },
+            KademeSelected(item) {
+                this.ID_KADEMEs = item;
+                ListeTemizle(this.DERSLIST)
+                ListeTemizle(this.ID_SINAVTURU)
+                ListeTemizle(this.ID_KADEME3)
+                //this.ID_KADEME3 = [];
+                this.idsinif = 0;
+                this.divAc = 0;
+                this.divOgrenci = 0;
+            },
+            Kademe3Selected(item) {
+                this.ID_KADEME3 = item;
+                ListeTemizle(this.DERSLIST)
+                ListeTemizle(this.ID_SINAVTURU)
+                this.idsinif = 0;
+                this.divAc = 0;
+                this.divOgrenci = 0;
+            },
+            SinavTuruSelected(item) {
+                this.ID_SINAVTURU = item;
+                ListeTemizle(this.DERSLIST)
+            },
+            DersSelected(item) {
+                this.DERSLIST = item;
+                //this.DERSAD = item;
+                //this.SeciliDersAd = item;
+            },
+            t2SinavTurChanged() {
+                var val = $('#t2SinavTurPicker').val();
+                if (val != '0') {
+                    this.t2Filtered = this.getObjects(this.t2, 'SINAV TÜRÜ', val);
+                } else {
+                    this.t2Filtered = JSON.parse(JSON.stringify(this.t2));
+                }
+            },
+            tabAc(item) {
+                for (var i = 1; i <= 5; i++) {
+                    var classYaz = 'tab-pane'
+                    if (item == i)
+                        classYaz += ' fade active in';
+                    $("#tab_1_" + item).attr("class", classYaz);
+                }
+            },
+
+            //////////////////////////////////////////////////////////////////////////
+            Filtrele() {
+
+                //this.FILTER =
+                //    {
+                //        DONEM: this.DONEM,
+                //        ID_SUBE: this.ID_SUBE,
+                //        ID_KADEME3: this.ID_KADEME3,
+                //        ID_SINAVTURU: this.ID_SINAVTURU,
+                //        DERSLIST: this.DERSLIST,
+                //    };
+
+                var _this = this;
+                if (this.ID_SUBE != [] && this.ID_KADEME3 != [] && this.DERSLIST != [] && this.DONEM != '' && this.ID_SINAVTURU != []) {
+                    var p = {
+                        TCKIMLIKNO: session.TCKIMLIKNO,
+                        OTURUM: session.OTURUM,
+                        ID_SUBE: JSON.stringify(this.ID_SUBE),
+                        ID_KADEMEs: JSON.stringify(this.ID_KADEMEs),
+                        ID_KADEME3: JSON.stringify(this.ID_KADEME3),
+                        DERSLIST: JSON.stringify(this.DERSLIST),
+                        DONEM: this.DONEM,
+                        ID_SINAVTURU: JSON.stringify(this.ID_SINAVTURU),
+                    };
+                    var _this = this;
+                    _this.ListeOgretmen = [];
+                    WebPost(this, "FrekansSinifV2", "FrekansSinifOgretmenSirali", p, '#app', 'Yükleniyor..', function (data, parent) {
+                        $('#filters').collapse('hide');
+                        _this.ListeOgretmen = [];
+                        if (data != null || data != undefined) {
+                            _this.ListeOgretmen = JSON.parse(data)[0].t;  // veriler
+
+                            _this.istisna.push("ID_SINIF", "TC_DANISMAN");
+
+                            if (_this.ID_SINAVTURU.length > 1) {
+                                _this.istisna.push("SORU SAYISI");
+                            }
+                            if (_this.ID_SINAVTURU[0] == 0) {
+                                _this.istisna.push("SORU SAYISI", "HB NET");
+                            }
+                            $('#filters').collapse();
+                        }
+                        else {
+                            Alert_Warning("Liste Bulunamadı!");
+                        }
+                    });
+                }
+                else {
+                    Alert_Warning("Gerekli Seçimleri Yapınız !");
+                }
+            },
+
+            // 1. SAYFA
+            FrekansTabloClick(item) {
+                var _this = this;
+                if (item.FREKANS == '-') {
+                    return;
+                }
+                var grafikbolum = ""
+                var grafiktcogretmen = 0;
+                $("#tab_1_3").attr("class", "tab-pane");
+                $("#tab_1_2").attr("class", "tab-pane");
+                $("#tab_1_4").attr("class", "tab-pane");
+                $("#tab_1_5").attr("class", "tab-pane");
+                $("#tab_1_1").attr("class", "tab-pane fade active in");
+
+                var ogretmen = item["DANIŞMAN ÖĞRETMEN"];
+                var tcogretmen = item["TC_OGRETMEN"];
+                var tcDanisman = item["TC_DANISMAN"];
+                var idSinif = item["ID_SINIF"];
+                var sinif = item["SINIF"];
+                var bolum = item["BRANŞ"];
+                this.DERSAD = item["BRANŞ"];
+                this.SeciliDersAd = item["BRANŞ"];
+
+                this.ID_SINIF = idSinif;
+
+                $("#accordions").attr("durum", "bos");
+                _this.grafikbolum = bolum;
+                _this.grafiktcogretmen = tcDanisman;
+
+                var SecilenGruplar = JSON.stringify(_this.ID_KADEME3);   // Glb_SecileniAl("Gruplar", "id", "TumGrup", false, "", ". SINIF");
+                var SecilenEgitimTuru = JSON.stringify(_this.ID_SINAVTURU);   // Glb_SecileniAl("EgitimTuru", "idegitimturu", "TumEgitim", true, "Eğitim türü seçiniz");
+
+                $('#ModalBaslik').html("Öğretmen Sınıf Frekansı - " + ogretmen + "-(" + sinif + ")");
+                $("#OgretmenSinifFrekansModal").modal("show");
+
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    ID_SUBE: JSON.stringify(_this.ID_SUBE),
+                    ID_KADEME3: JSON.stringify(_this.ID_KADEME3),
+                    DERSAD: _this.DERSAD,
+                    DONEM: _this.DONEM,
+                    DERSLIST: JSON.stringify(this.DERSLIST),
+                    ID_SINAVTURU: JSON.stringify(_this.ID_SINAVTURU),//.indexOf(-1) > -1 ? '[]' : this.ID_SINAVTURU),
+                    TC_OGRETMEN: tcogretmen,
+                    ID_SINIF: idSinif,
+                };
+                _this.t1 = [];
+                _this.t2 = [];
+                WebPost(_this, "FrekansSinifV2", "FrekansGetirSinif", p, '#ModalTableDiv', 'Yükleniyor..', function (data, parent) {
+
+                    _this.t1 = JSON.parse(data)[0].t1;
+                    _this.t1Istisna = ["ID_SINIF", "TC_OGRETMEN", "ID_SINAVTURU", "SIRA", "STKISAAD"];
+
+                    ////siralama tablosu
+                    _this.t2 = JSON.parse(data)[0].t2;
+                    _this.t2Filtered = JSON.parse(data)[0].t2;
+                    _this.t2Istisna = ["ID_SINIF", "ID_SINAVTURU", "TC_OGRETMEN", "SIRA"];
+
+                    //Grafik
+                    var datapro = [];
+                    var frekans = 0;
+                    $.each(_this.t1, function (j) {
+                        if (frekans > parseFloat(this.FREKANS)) {
+                            frekans = parseFloat(this.FREKANS) - 5;
+                        }
+                        var eleman = {
+                            "yuzde": parseFloat(this.FREKANS),
+                            "soruno": _this.t1[j]["STKISAAD"] + " (" + _this.t1[j]["BRANŞ"] + ")",
+                            "balloonTextField": this.FREKANS,
+                            "color": _this.t1[j]["SINAV TÜRÜ"] === "GENEL" ? "#fb9a10" : "#0D52D1"
+                        };
+                        datapro.push(eleman);
+                    })
+                    AmchartOlustur("chartdiv", datapro, 100, "yuzde", "soruno", "color", "", true, 0, 200, "", "", "%", false, 2, frekans, 44);
+
+
+                    _this.$nextTick(function () {
+                        var TURLIST = [];
+                        var TURHTML = '<select class ="form-control" title="Sınav Türü" id="t2SinavTurPicker" onchange="t2SinavTurChanged()">'
+                        TURHTML += '   <option value="' + 0 + '">Sınav Türü</option>'
+                        for (var i = 0; i < _this.t2.length; i++) {
+                            if (TURLIST.indexOf(_this.t2[i]['SINAV TÜRÜ']) == -1) {
+                                TURLIST.push(_this.t2[i]['SINAV TÜRÜ']);
+                                TURHTML += '   <option value="' + _this.t2[i]['SINAV TÜRÜ'] + '">' + _this.t2[i]['SINAV TÜRÜ'] + '</option>'
+                            }
+                        }
+                        TURHTML += '</select>';
+                        $('#OgretmenSinifTablo th').eq(2).html(TURHTML);
+                        _this.$forceUpdate();
+                    });
+                });
+                //_this.OgretmenFrekansGrafikOlustur();
+            },
+            // (2.1.1)
+            OgretmenSinavlarTabloClick(item) {
+                if (item.ID_SINAVTURU == -1 || item.ID_SINAVTURU == 999999) {
+                    return;
+                }
+                this.SeciliDersAd = item["BRANŞ"];
+
+                $("#tab_1_1").attr("class", "tab-pane");
+                $("#tab_1_2").attr("class", "tab-pane");
+                $("#tab_1_3").attr("class", "tab-pane");
+                $("#tab_1_4").attr("class", "tab-pane fade active in");
+                $("#tab_1_5").attr("class", "tab-pane");
+                var _this = this;
+                var idSinavturu = [];
+                idSinavturu.push(item.ID_SINAVTURU)
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    ID_SUBE: JSON.stringify(_this.ID_SUBE),
+                    ID_KADEME3: JSON.stringify(_this.ID_KADEME3),
+                    DERSAD: _this.SeciliDersAd,
+                    DONEM: _this.DONEM,
+                    ID_SINAVTURU: JSON.stringify(idSinavturu),//.indexOf(-1) > -1 ? '[]' : this.ID_SINAVTURU),
+                    TC_OGRETMEN: item.TC_OGRETMEN,
+                    ID_SINIF: this.ID_SINIF,
+                };
+                _this.t5 = [];
+                WebPost(_this, "FrekansSinifV2", "SinifFrekansGrafikGetir", p, '#ModalTableDiv', 'Yükleniyor..', function (data, parent) {
+                    _this.t5 = JSON.parse(data)[0].t5;
+                    _this.t5Istisna = ["TC_OGRETMEN", "ID_SINIF", "ID_SINAVTURU", "__ob__", "SINAVADI"];
+
+                    var sinavlar = JSON.parse(data)[0].t6;
+
+                    var graphs = [];
+                    $.each(sinavlar, function (j, el) {
+                        var graph = {
+                            "balloonText": "<strong>" + el["SINAVADI"] + "</strong><br/>[[value]]",
+                            "fillAlphas": 0.8,
+                            "id": el["SINAVADI"],
+                            "lineAlpha": 0.2,
+                            "title": el["SINAVADI"],
+                            "type": "column",
+                            "valueField": el["SINAVADI"]
+                        };
+                        graphs.push(graph);
+
+                    })
+                    var datapro = [];
+                    var frekans = 0;
+                    $.each(_this.t5, function (j, el) {
+                        var eleman = {
+                            "sinif": this.SINIF,
+                        };
+                        $.each(sinavlar, function (j, sel) {
+                            //for (var i = 0; i < sinavlar.length; i++) {
+                            if (el[sel["SINAVADI"]] !== "") {
+                                if (frekans > el[sel["SINAVADI"]])
+                                    frekans = el[sel["SINAVADI"]] - 10;
+                                eleman[sel["SINAVADI"]] = parseFloat(el[sel["SINAVADI"]]);
+                            }
+                        });
+                        datapro.push(eleman);
+                    })
+                    AmchartOlustur("chartdiv3", datapro, 100, sinavlar, "sinif", "color", "", true, 0, 200, "", "", "%", false, 2, frekans, 0, false, graphs, true);
+                });
+
+                //kadir
+                //öğretmen eksik kazanımları
+
+
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    ID_SUBE: JSON.stringify(_this.ID_SUBE),
+                    ID_KADEME3: JSON.stringify(_this.ID_KADEME3),
+                    DERSAD: _this.DERSAD,
+                    DONEM: _this.DONEM,
+                    ID_SINAVTURU: JSON.stringify(idSinavturu),//.indexOf(-1) > -1 ? '[]' : this.ID_SINAVTURU),
+                    TC_OGRETMEN: item.TC_OGRETMEN,
+                    ID_SINIF: item.ID_SINIF,
+                };
+                _this.gruplar = [];
+                if (_this.ID_KADEME3.indexOf(15) > -1
+                    || _this.ID_KADEME3.indexOf(16) > -1
+                    || _this.ID_KADEME3.indexOf(17) > -1
+                    || _this.ID_KADEME3.indexOf(18) > -1
+                ) {
+                    WebPost(_this, "FrekansSinifV2", "OgretmenFrekansEksikKazanimGetir", p, '#ModalTableDiv', 'Yükleniyor..', function (data, parent) {
+
+                        var tablo = JSON.parse(data)[0].t4;
+                        var gruplar = [];
+                        $.each(tablo, function (j) {
+
+                            if (parent.getObjects(gruplar, "GRUP", this.GRUP).length == 0) {
+                                gruplar.push({ GRUP: this.GRUP, ID_KADEME3: this.ID_KADEME3 })
+                            }
+                        });
+                        _this.gruplar = gruplar;
+                        _this.$nextTick(function () {
+                            _this.data15Sinif = parent.getObjects(tablo, 'ID_KADEME3', 15);
+                            _this.data16Sinif = parent.getObjects(tablo, 'ID_KADEME3', 16);
+                            _this.data17Sinif = parent.getObjects(tablo, 'ID_KADEME3', 17);
+                            _this.data18Sinif = parent.getObjects(tablo, 'ID_KADEME3', 18);
+                        });
+                        _this.dataSinifIstisna = ["KONUKODU", "ID_KADEME3", "GRUP"]
+                    });
+                }
+
+
+            },
+            // (2.2.1) Öğrenci Listesi
+            OgretmenSinifTabloClick(item) {
+                this.SeciliDersAd = item["BRANŞ"];
+                //this.tabAc(2);
+                $("#tab_1_1").attr("class", "tab-pane");
+                $("#tab_1_2").attr("class", "tab-pane fade active in");
+                $("#tab_1_3").attr("class", "tab-pane");
+                $("#tab_1_4").attr("class", "tab-pane");
+                $("#tab_1_5").attr("class", "tab-pane");
+                var _this = this;
+                var idSinavTuru = [];
+                idSinavTuru.push(item.ID_SINAVTURU);
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    ID_SUBE: JSON.stringify(_this.ID_SUBE),
+                    ID_KADEME3: JSON.stringify(_this.ID_KADEME3),
+                    DERSAD: _this.SeciliDersAd,
+                    DONEM: _this.DONEM,
+                    ID_SINAVTURU: JSON.stringify(idSinavTuru),//.indexOf(-1) > -1 ? '[]' : this.ID_SINAVTURU),
+                    TC_OGRETMEN: item.TC_OGRETMEN,
+                    ID_SINIF: item.ID_SINIF,
+                };
+                WebPost(_this, "FrekansSinifV2", "SinifFrekansGetirSinifOgrenci", p, '#ModalTableDiv', 'Yükleniyor..', function (data, parent) {
+                    _this.t3 = JSON.parse(data)[0].t3;
+                    _this.t3Istisna = ["TC_OGRENCI", "ID_SINAVTURU", "TC_OGRETMEN", "ID_SINIF", "ID_DERS", "SORU SAYISI", "H.B NET", "NET ORT", "HEDEFE UZAKLIK"];
+                });
+                WebPost(_this, "FrekansSinifV2", "SinifFrekansEksikKazanimGetir", p, '#ModalTableDiv', 'Yükleniyor..', function (data, parent) {
+                    _this.sinifEksikKazanim = JSON.parse(data)[0].t3;
+                    _this.sinifEksikKazanimIstisna = ["DERSAD", "KONUKODU", "ID_DERS"];
+                });
+
+            },
+            // (2.2.1.1) ÖĞRENCİ PUAN LİSTESİ
+            SinifOgrenciTabloClick(item) {
+                //this.tabAc(2);
+                var idSinavTuru = [];
+                idSinavTuru.push(item.ID_SINAVTURU);
+                $("#tab_1_1").attr("class", "tab-pane");
+                $("#tab_1_2").attr("class", "tab-pane");
+                $("#tab_1_3").attr("class", "tab-pane");
+                $("#tab_1_4").attr("class", "tab-pane");
+                $("#tab_1_5").attr("class", "tab-pane fade active in");
+                var _this = this;
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    ID_SUBE: JSON.stringify(_this.ID_SUBE),
+                    ID_KADEME3: JSON.stringify(_this.ID_KADEME3),
+                    DERSAD: _this.SeciliDersAd,//_this.DERSAD,
+                    DONEM: _this.DONEM,
+                    ID_SINAVTURU: JSON.stringify(idSinavTuru),//.indexOf(-1) > -1 ? '[]' : this.ID_SINAVTURU),
+                    TC_OGRENCI: item.TC_OGRENCI,
+                    ID_SINIF: item.ID_SINIF,
+                };
+                WebPost(_this, "FrekansSinifV2", "SinifOgrenciFrekansDetayGetir", p, '#ModalTableDiv', 'Yükleniyor..', function (data, parent) {
+                    _this.t4 = JSON.parse(data)[0].t4;
+                    _this.t4Istisna = ["TC_OGRENCI", "ID_SINAVTURU", "ADSOYAD", "SON NET"];
+                    if (idSinavTuru == 0)
+                        _this.t4Istisna.push("FREKANS", "SORU SAYISI", "H.B. NET ORT.", "HEDEFE UZAKLIK", "SON NET");
+                    else
+                        _this.t4Istisna.push("PUAN");
+                    var grafiktitle = "Öğrenci Sınav Puan Grafiği";
+
+                    $("#OgrenciAdSoyad").html(_this.t4[0]["ADSOYAD"]);
+
+                    //Grafik
+                    var datapro = [];
+                    var frekans = 0;
+                    $.each(_this.t4, function (j) {
+                        if (frekans > parseFloat(this.PUAN)) {
+                            frekans = parseFloat(this.PUAN) - 5;
+                        }
+                        var eleman = {
+                            "frekans": parseFloat(this.PUAN),
+                            "sinav": _this.t4[j]["SINAV"],
+                            "balloonTextField": this.PUAN,
+                            "color": _this.t4[j]["SINAV"] === "ORTALAMA" || (j + 1) == _this.t4.length ? "#fb9a10" : "#0D52D1"
+                        };
+                        datapro.push(eleman);
+                    })
+                    AmchartOlustur("chartdiv4", datapro, 100, "frekans", "sinav", "color", "Frekans", true, 0, 200, "Sınav", grafiktitle, "%", false, 2, frekans, 30);
+
+                });
+
+                WebPost(_this, "FrekansSinifV2", "OgrenciFrekansEksikKazanimGetir", p, '#ModalTableDiv', 'Yükleniyor..', function (data, parent) {
+                    _this.ogrenciEksikKazanim = JSON.parse(data)[0].t1;
+                    _this.ogrenciEksikKazanimIstisna = ["DERSADET", "ID_DERS", "DERSAD", "KONUKODU"];
+                });
+
+            },
+            // (GRAFİK)
+            OgretmenFrekansGrafik() {
+                $("#tab_1_1").attr("class", "tab-pane");
+                $("#tab_1_2").attr("class", "tab-pane");
+                $("#tab_1_3").attr("class", "tab-pane fade active in");
+                $("#tab_1_4").attr("class", "tab-pane");
+                $("#tab_1_5").attr("class", "tab-pane");
+
+                var grafikdata = "";
+                var Secilen_ders = this.grafikbolum;
+
+                var SecilenGruplar = JSON.stringify(this.ID_KADEME3);   // Glb_SecileniAl("Gruplar", "id", "TumGrup", false, "", ". SINIF");
+                var SecilenEgitimTuru = JSON.stringify(this.ID_SINAVTURU);   // Glb_SecileniAl("EgitimTuru", "idegitimturu", "TumEgitim", true, "Eğitim türü seçiniz");
+
+                var item = this.grafiktcogretmen;
+                //Grafik
+                var datapro = [];
+                var frekans = 0;
+                var ogretmen = "";
+                $.each(this.ListeOgretmen, function (j, el) {
+                    console.log(el)
+                    if (frekans > parseFloat(this.FREKANS)) {
+                        frekans = parseFloat(this.FREKANS) - 5;
+                    }
+                    if (el["TC_DANISMAN"] === item) {
+                        ogretmen = el["DANIŞMAN ÖĞRETMEN"];
+                    }
+                    var eleman = {
+                        "yuzde": parseFloat(this.FREKANS),
+                        "ogretmen": el["DANIŞMAN ÖĞRETMEN"],
+                        "balloonTextField": this.FREKANS,
+                        "color": el["TC_DANISMAN"] === item ? "#fb9a10" : "#0D52D1"
+                    };
+                    datapro.push(eleman);
+                })
+                $('#chartdiv2').css("height", ((datapro.length * 30) < 600 ? 600 : (datapro.length * 30)) + "px");
+                AmchartOlustur("chartdiv2", datapro, 100, "yuzde", "ogretmen", "color", "", true, 0, 200, "", " Danışman Öğretmen " + Secilen_ders + " Frekans Grafiği", "%", false, 2, frekans, 0, true);
+            },
+
+            OgretmenFrekansGrafikOlustur() {
+                $("#chartdiv2").html();
+                var Secilen_ders = this.grafikbolum;
+
+                var SecilenGruplar = JSON.stringify(this.ID_KADEME3);   // Glb_SecileniAl("Gruplar", "id", "TumGrup", false, "", ". SINIF");
+                var SecilenEgitimTuru = JSON.stringify(this.ID_SINAVTURU);   // Glb_SecileniAl("EgitimTuru", "idegitimturu", "TumEgitim", true, "Eğitim türü seçiniz");
+
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    ID_SUBE: JSON.stringify(this.ID_SUBE),
+                    ID_KADEME3: JSON.stringify(this.ID_KADEME3),
+                    DERSAD: this.DERSAD,
+                    DONEM: this.DONEM,
+                    ID_SINAVTURU: JSON.stringify(this.ID_SINAVTURU.indexOf(-1) > -1 ? '[]' : this.ID_SINAVTURU),
+                };
+
+                WebPost(this, "FrekansSinifV2", "FrekansSinifOgretmenSirali", p, '#ModalTableDiv', 'Grafik Yükleniyor...', function (data, parent) {
+
+                    //SqlAjaxWithLoading("OkyanusNet", "FrekansGetirOgretmen", { ID_KULLANICI: s.ID, oturum: s.oturum, GRUP: SecilenGruplar, DERS: Secilen_ders, ID_SUBE: idsube, EGITIMTURU: SecilenEgitimTuru }, "#OgretmenGrafik", "Grafik Yükleniyor...", function (data) {
+                    grafikdata = JSON.parse(data);
+                });
+            },
+
+            //////////////////////////////////////////////////////////////////////////
+            //  Geri Modal
+            Geri() {
+                $("#tab_1_1").attr("class", "tab-pane fade active in");
+                $("#tab_1_2").attr("class", "tab-pane");
+                $("#tab_1_3").attr("class", "tab-pane");
+                $("#tab_1_4").attr("class", "tab-pane");
+                $("#tab_1_5").attr("class", "tab-pane");
+            },
+            //  Geri Öğrenci List
+            Geri2() {
+                $("#tab_1_1").attr("class", "tab-pane");
+                $("#tab_1_2").attr("class", "tab-pane fade active in");
+                $("#tab_1_3").attr("class", "tab-pane");
+                $("#tab_1_4").attr("class", "tab-pane");
+                $("#tab_1_5").attr("class", "tab-pane");
+            },
+
+
+
+
+            getObjects(obj, key, val) {
+                var objects = [];
+                for (var i in obj) {
+                    if (!obj.hasOwnProperty(i)) continue;
+                    if (typeof obj[i] == 'object') {
+                        objects = objects.concat(this.getObjects(obj[i], key, val));
+                    } else if (i == key && obj[key] == val) {
+                        objects.push(obj);
+                    }
+                }
+                return objects;
+            },
+
+            OgretmenSinifFrekansClick() { },
+
+
+            SonFiltre() {
+                var _this = this;
+
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                };
+                WebPost(this, "FrekansSinifV2", "FrekansSinifSonFiltre", p, '#app', 'Yükleniyor..', function (data, parent) {
+
+                    var parametreler = JSON.parse(data);
+                    console.log(parametreler)
+                    if (parametreler.length > 0) {
+
+                        _this.FILTER = {
+                            DONEM: parametreler.DONEM,
+                            ID_SUBE: JSON.parse(parametreler.ID_SUBE),
+                            ID_KADEMEs: JSON.parse(parametreler.ID_KADEMEs),
+                            ID_KADEME3: JSON.parse(parametreler.ID_KADEME3),
+                            ID_SINAVTURU: JSON.parse(parametreler.ID_SINAVTURU),
+                            DERSLIST: JSON.parse(parametreler.DERSLIST),
+                        }
+                    }
+
+                });
+
+            },
+
+
+            FiltreSifirla() {
+                this.FILTER =
+                    {
+                        DONEM: 0,
+                        ID_SUBE: [],
+                        ID_KADEMEs: [],
+                        ID_KADEME3: [],
+                        ID_SINAVTURU: [],
+                        DERSLIST: [],
+                    };
+
+            },
+        },
+        // watch: {
+        //    ID_SINAVTURU() {
+        //        if (this.FILTER.ID_SUBE > 0) {
+        //            this.DERSLIST = this.FILTER.DERSLIST;
+        //        }
+        //    },
+        //},
+
+    });
+
+    function t2SinavTurChanged() {
+        var val = $('#t2SinavTurPicker').val();
+        if (val != '0') {
+            vue.t2Filtered = vue.getObjects(vue.t2, 'SINAV TÜRÜ', val);
+        } else {
+            vue.t2Filtered = JSON.parse(JSON.stringify(vue.t2));
+        }
+    }
+</script>
+
+
+<script src="Scripts/PublicMethods.js"></script>
+<script src="../../../Scripts/Rapor/amcharts.js"></script>
+<script src="../../../Scripts/Rapor/light.js"></script>
+<script src="../../../Scripts/Rapor/pie.js"></script>
+<script src="../../../Scripts/Rapor/serial.js"></script>
+<script src="../../../Scripts/Rapor/jquery.easypiechart.js"></script>

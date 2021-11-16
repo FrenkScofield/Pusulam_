@@ -1,0 +1,1050 @@
+﻿<link href="/assets/global/plugins/bootstrap-slider/bootstrap-slider.min.css" rel="stylesheet" />
+<link href="/assets/global/plugins/bootstrap-touchspin/bootstrap.touchspin.css" rel="stylesheet" />
+<script src="/assets/global/plugins/bootstrap-touchspin/bootstrap.touchspin.min.js"></script>
+<head>
+    <script src="/Scripts/Tools.js"></script>
+    <script src="/Scripts/Rapor/amcharts.js"></script>
+    <script src="/Scripts/Rapor/jquery.easypiechart.js"></script>
+    <script src="/Scripts/Rapor/light.js"></script>
+    <script src="/Scripts/Rapor/serial.js"></script>
+    <script src="/Scripts/Rapor/pie.js"></script>
+</head>
+<style>
+    #chartdiv {
+        width: 100%;
+        height: 500px;
+        font-size: 11px;
+    }
+
+    .chartdiv {
+        width: 100%;
+        height: 500px;
+        font-size: 11px;
+    }
+
+    .amcharts-pie-slice {
+        transform: scale(1);
+        transform-origin: 50% 50%;
+        transition-duration: 0.3s;
+        transition: all .3s ease-out;
+        -webkit-transition: all .3s ease-out;
+        -moz-transition: all .3s ease-out;
+        -o-transition: all .3s ease-out;
+        cursor: pointer;
+        box-shadow: 0 0 30px 0 #000;
+    }
+
+        .amcharts-pie-slice:hover {
+            transform: scale(1.1);
+            filter: url(#shadow);
+        }
+
+
+    .chart {
+        position: relative;
+        display: inline-block;
+        width: 90px;
+        height: 90px;
+        text-align: center;
+    }
+
+        .chart canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+    td {
+        vertical-align: middle !important;
+    }
+
+    tr td:first-child {
+        text-align: left !important;
+    }
+
+    tr th:first-child {
+        text-align: left !important;
+    }
+
+    .margintop0 {
+        margin-top: 0px !important;
+        margin-bottom: 10px !important;
+    }
+
+    #detay_modal tr td:first-child {
+        text-align: left !important;
+        background-color: brown;
+        color: white;
+        font-weight: 600;
+        vertical-align: top;
+    }
+
+    .nav-tabs .active {
+        border-bottom: 5px solid #32c5d2 !important;
+    }
+
+    .slider-track {
+        cursor: default !important;
+    }
+
+    .col-lg-3 {
+        padding: 4px !important;
+    }
+
+    .col-lg-2 {
+        padding: 4px !important;
+    }
+
+    .col-lg-5 {
+        padding: 4px !important;
+    }
+
+    .progress {
+        background-color: #D2D1D1 !important;
+        margin-bottom: 0px !important;
+        height: auto !important;
+    }
+
+    .progress-bar {
+        color: #444d58;
+        font-weight: bold;
+        text-indent: 0px;
+    }
+
+    .progress-bar-gray {
+        background-color: #ADB6C1;
+    }
+
+    .table-bordered,
+    .table-bordered > tbody > tr > td,
+    .table-bordered > tbody > tr > th,
+    .table-bordered > tfoot > tr > td,
+    .table-bordered > tfoot > tr > th,
+    .table-bordered > thead > tr > td,
+    .table-bordered > thead > tr > th {
+        border: 1px solid #E6E8EA;
+    }
+
+    .panel-default .panel-heading {
+        border: 1px solid #B1AEAE;
+    }
+
+    .badgenew {
+        color: black !important;
+        font-size: 14px !important;
+        font-weight: bold;
+        float: right;
+        height: 23px;
+        margin-top: -3px;
+        padding-top: 5px;
+    }
+
+    @media (max-width: 1510px) {
+        .accordion-toggle {
+            font-size: 10px;
+        }
+
+        .badgenew {
+            color: black !important;
+            font-size: 10px !important;
+            font-weight: bold;
+            float: right;
+            height: 17px;
+            margin-top: -3px;
+            padding-top: 2px;
+        }
+    }
+
+    @media (max-width: 1190px) {
+        .accordion-toggle {
+            font-size: 10px;
+            padding: 10px 0px !important;
+        }
+    }
+
+    @media (max-width: 1020px) {
+        .badge {
+            padding: 2px 2px;
+        }
+    }
+
+    .badge10 {
+        background-color: #F31D13 !important;
+    }
+
+    .badge20 {
+        background-color: #F34713 !important;
+    }
+
+    .badge30 {
+        background-color: #F37013 !important;
+    }
+
+    .badge40 {
+        background-color: #F39913 !important;
+    }
+
+    .badge50 {
+        background-color: #F1CD1C !important;
+    }
+
+    .badge60 {
+        background-color: #E4DE1C !important;
+    }
+
+    .badge70 {
+        background-color: #D6EC1B !important;
+    }
+
+    .badge80 {
+        background-color: #BDF11C !important;
+    }
+
+    .badge90 {
+        background-color: #95F11C !important;
+    }
+
+    .badge100 {
+        background-color: #1CF140 !important;
+    }
+
+    .touch {
+        height: 20px !important;
+        /*  width: 20px;*/
+        line-height: 0.44 !important;
+        padding: 0px !important;
+        font-size: 12px !important;
+        text-align: center !important;
+    }
+
+    .bootstrap-touchspin-down {
+        width: 13px !important;
+    }
+
+    .bootstrap-touchspin-up {
+        width: 13px !important;
+    }
+
+    tr {
+        background-color: #F1F1F1;
+    }
+
+    thead tr {
+        background-color: #D6D5D5;
+    }
+
+    .max-slider-handle {
+        background-image: none !important;
+        background-color: #659be0 !important;
+    }
+
+    .min-slider-handle {
+        background-image: none !important;
+        background-color: #36c6d3 !important;
+    }
+
+    .slider-selection {
+        background-color: #f1f1f1;
+    }
+
+    @media only screen and (max-width: 1400px) {
+        td {
+            font-size: 10px !important;
+        }
+
+        .slider-tick {
+            background-image: linear-gradient(to bottom, #89cdef 0%, #81bfde 100%) !important;
+        }
+
+        body {
+            font-size: 10px !important;
+        }
+    }
+</style>
+
+
+<div class="page-head">
+    <!-- BEGIN PAGE TITLE -->
+    <div class="page-title col-md-12">
+        <h1>
+            Gelişim Raporu <small>Öğrenci Gelişim Raporu</small> <span onclick="YardimGoster(ID_MENU);" class="pull-right" style="cursor:pointer;"><img src="assets/global/img/info.gif" class="info-image-icon" /> </span>
+        </h1>
+    </div>
+    <!-- END PAGE TITLE -->
+</div>
+
+<div id="app">
+            <div class="row col-md-12">
+        <div class="portlet box green-haze dd-item" style="border:none">
+            <div class="portlet-title dd-handle" data-toggle='collapse' data-target='#filters' style="cursor:pointer;">
+                <div class="caption">
+                    <i class="icon-magnifier"></i>
+                    <span class="caption-subject bold uppercase"> Filtreler </span>
+                    <span class="caption-helper"></span>
+                </div>
+                <div class='actions'>
+                    <a href='javascript:;' class='btn btn-default btn-sm' style='border:none;'>
+                        <i class='fa fa-chevron-down'></i>
+                    </a>
+                </div>
+            </div>
+            <div class="portlet-body form collapse in" id="filters">
+                <div class="portlet light col-md-12" id="FiltreDivOgretmen" style="margin:0px; border-bottom-style: solid;border-bottom-width: 3px;border-bottom-color: rgb(0, 173, 239);"
+                     v-if="ListKullaniciTipi.indexOf(4)==-1 && ListKullaniciTipi.indexOf(5)==-1">
+                    <div class="portlet-body">
+                        <div class="form-inline">
+                            <c-donem controller="GelisimRaporuLS"
+                                     @OnChange="DonemSelected" />
+                            <c-sube controller="GelisimRaporuLS"
+                                    @OnChange="SubeSelected" />
+                            <c-kademe3 controller="GelisimRaporuLS"
+                                       :idsube="idsube"
+                                       idkademe="5"
+                                       @OnChange="Kademe3Selected">
+                            </c-kademe3>
+                            <c-sinif-donem controller="GelisimRaporuLS"
+                                           :idsube="idsube"
+                                           :idkademe3="idkademe3"
+                                           :donem="DONEM"
+                                           @OnChange="SinifSelected">
+                            </c-sinif-donem>
+                            <c-ogrenci controller="GelisimRaporuLS"
+                                       :idsinif="idsinif"
+                                       @OnChange="OgrenciSelected">
+                            </c-ogrenci>
+                        </div>
+                    </div>
+                </div>
+                <div class="portlet light col-md-12" id="FiltreDivVeli" style="margin:0px; border-bottom-style: solid;border-bottom-width: 3px;border-bottom-color: rgb(0, 173, 239);"
+                     v-if="ListKullaniciTipi.indexOf(5)>-1">
+
+                    <div class="portlet-body">
+                        <div class="form-inline">
+                            <c-ogrenci-veli controller="GelisimRaporuLS"
+                                            :tc="TCKIMLIKNO"
+                                            @OnChange="OgrenciVeliSelected">
+                            </c-ogrenci-veli>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="portlet light col-md-12" id="FiltreDivOgrenci" style="margin:0px; border-bottom-style: solid;border-bottom-width: 3px;border-bottom-color: rgb(0, 173, 239);"
+                     v-if="ListKullaniciTipi.indexOf(4)>-1 || divOgrenci==1">
+                    <div class="portlet-body">
+                        <div class="form-inline">
+                            <c-donem controller="GelisimRaporuLS"
+                                     @OnChange="SinavDonemSelected" />
+                            <c-gelisimraporu-tur-ls controller="GelisimRaporuLS" @OnChange="GelisimTurSelected" />
+                            <input style="float:right;margin: 10px;" type="button" class="btn btn-success" v-on:click="Kaydet" value="Kaydet">
+                            <input style="float:right;margin: 10px;" type="button" class="btn btn-success" v-on:click="Yazdir" value="Raporla">
+                            <input style="float:right;margin: 10px;" type="button" class="btn btn-success" v-on:click="GelisimRaporuHtmlGetir" value="Html Raporla">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </div>
+        <!--DERS ÖĞRETMENLERİ-->
+        <div class="row col-md-12" v-if="DERSOGRETMEN.length>0">
+            <c-accordion name="DERS ÖĞRETMENLERİ" accordionId="adersOgretmeni">
+                <table class="table table-striped" id="dersOgretmenTablo">
+                    <thead>
+                        <tr>
+                            <th>AD SOYAD</th>
+                            <th>DERS</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="u in DERSOGRETMEN">
+                            <td>{{u.ADSOYAD}}</td>
+                            <td>{{u.DERSAD}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </c-accordion>
+        </div>
+        <!--YAZILI YOKLAMA-->
+        <div class="row col-md-12" v-if="YAZILIYOKLAMA.length>0">
+            <c-accordion name="YAZILI YOKLAMA" accordionId="ayaziliYoklama">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th rowspan="2">DERS</th>
+                            <th colspan="2" v-for="yd in getDistinct(YAZILIYOKLAMA,'DONEMBILGI')">
+                                {{yd}} YAZILI YOKLAMA SONUÇLARI
+                            </th>
+                        </tr>
+                        <tr>
+                            <template v-for="yd in getDistinct(YAZILIYOKLAMA,'DONEMBILGI')">
+                                <th>1. SINAV</th>
+                                <th>2. SINAV</th>
+                            </template>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="yd in GELISIMRAPORUDATA[0].YOKLAMADERS">
+                            <td>{{yd.DERSAD}}</td>
+                            <td>{{getObjects(getObjects(getObjects( YAZILIYOKLAMA, 'DERSAD', yd.DERSAD),'DONEMBILGI','1. Dönem'),'SIRA',1).length== 0 ? '' : getObjects(getObjects(getObjects( YAZILIYOKLAMA, 'DERSAD', yd.DERSAD),'DONEMBILGI','1. Dönem'),'SIRA',1)[0].PUAN}}</td>
+                            <td>{{getObjects(getObjects(getObjects( YAZILIYOKLAMA, 'DERSAD', yd.DERSAD),'DONEMBILGI','1. Dönem'),'SIRA',2).length== 0 ? '' : getObjects(getObjects(getObjects( YAZILIYOKLAMA, 'DERSAD', yd.DERSAD),'DONEMBILGI','1. Dönem'),'SIRA',2)[0].PUAN}}</td>
+                            <td>{{getObjects(getObjects(getObjects( YAZILIYOKLAMA, 'DERSAD', yd.DERSAD),'DONEMBILGI','2. Dönem'),'SIRA',1).length== 0 ? '' : getObjects(getObjects(getObjects( YAZILIYOKLAMA, 'DERSAD', yd.DERSAD),'DONEMBILGI','2. Dönem'),'SIRA',1)[0].PUAN}}</td>
+                            <td>{{getObjects(getObjects(getObjects( YAZILIYOKLAMA, 'DERSAD', yd.DERSAD),'DONEMBILGI','2. Dönem'),'SIRA',2).length== 0 ? '' : getObjects(getObjects(getObjects( YAZILIYOKLAMA, 'DERSAD', yd.DERSAD),'DONEMBILGI','2. Dönem'),'SIRA',2)[0].PUAN}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </c-accordion>
+        </div>
+        <!--DENEMESINAVISONUCLARI-->
+        <div class="row col-md-12" v-if="DENEMESINAVISONUCLARI.length>0">
+            <c-accordion name="ULUSAL SINAVLARA HAZIRLIK DENEME SONUÇLARI" accordionId="adenemeSinavSonuc">
+
+                <div class="table-responsive sticky-table sticky-headers sticky-ltr-cells">
+
+                    <table class="table table-striped table-bordered" v-for="u in DENEMESINAVISONUCLARI">
+                        <thead>
+                            <tr>
+                                <th :colspan="1 + ( getObjects(DENEMESINAVIDERSLERI,'ID_SINAVTURU',u.ID_SINAVTURU)[0].T.length * 4 ) + 4"
+                                    style=" text-align center !important;">{{u.SINAVTURU}}</th>
+                            </tr>
+                            <tr class="sticky-header">
+                                <th rowspan="2" class="sticky-cell">Sınav Adı</th>
+                                <th colspan="4" v-for="d in getObjects(DENEMESINAVIDERSLERI,'ID_SINAVTURU',u.ID_SINAVTURU)[0].T">
+                                    {{d.DERSAD}}
+                                </th>
+                                <th colspan="4">TOPLAM</th>
+                            </tr>
+                            <tr>
+                                <template v-for="d in getObjects(DENEMESINAVIDERSLERI,'ID_SINAVTURU',u.ID_SINAVTURU)[0].T">
+                                    <th>D</th>
+                                    <th>Y</th>
+                                    <th>B</th>
+                                    <th>N</th>
+                                    <th v-if="d.OLCEKSINAVI">P</th>
+                                </template>
+
+                                <th>TD</th>
+                                <th>TY</th>
+                                <th>TB</th>
+                                <th>TN</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="s in getObjects(DENEMESINAVILISTESI,'ID_SINAVTURU',u.ID_SINAVTURU)[0].T">
+                                <td class="sticky-cell">{{s.SINAVAD}}</td>
+                                <template v-for="d in getObjects(DENEMESINAVIDERSLERI,'ID_SINAVTURU',u.ID_SINAVTURU)[0].T">
+                                    <template v-for="ps in getObjects(getObjects(u.TT,'DERSAD',d.DERSAD),'ID_SINAV',s.ID_SINAV)">
+                                        <td>{{ps.DOGRU}}</td>
+                                        <td>{{ps.YANLIS}}</td>
+                                        <td>{{ps.BOS}}</td>
+                                        <td>{{ps.NET}}</td>
+                                        <th v-if="d.OLCEKSINAVI">{{ps.DERSPUAN}}</th>
+                                    </template>
+                                    <template v-if="getObjects(getObjects(u.TT,'DERSAD',d.DERSAD),'ID_SINAV',s.ID_SINAV).length==0">
+                                        <td>-</td>
+                                        <td>-</td>
+                                        <td>-</td>
+                                        <td>-</td>
+                                        <td v-if="d.OLCEKSINAVI">-</td>
+                                    </template>
+                                </template>
+                                <template v-for="ps in getObjects(u.TT,'ID_SINAV',s.ID_SINAV)">
+                                    <td v-if="ps.DERSAD == getObjects(DENEMESINAVIDERSLERI,'ID_SINAVTURU',u.ID_SINAVTURU)[0].T[0].DERSAD">{{ps.TD}}</td>
+                                    <td v-if="ps.DERSAD == getObjects(DENEMESINAVIDERSLERI,'ID_SINAVTURU',u.ID_SINAVTURU)[0].T[0].DERSAD">{{ps.TY}}</td>
+                                    <td v-if="ps.DERSAD == getObjects(DENEMESINAVIDERSLERI,'ID_SINAVTURU',u.ID_SINAVTURU)[0].T[0].DERSAD">{{ps.TB}}</td>
+                                    <td v-if="ps.DERSAD == getObjects(DENEMESINAVIDERSLERI,'ID_SINAVTURU',u.ID_SINAVTURU)[0].T[0].DERSAD">{{ps.TN}}</td>
+                                </template>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </c-accordion>
+        </div>
+        <!--ULUSAL SINAVLARA HAZIRLIK DENEMELERİ GELİŞİM ANALİZLERİ-->
+        <div class="row col-md-12" v-if="SINAVLARGROUP.length>0">
+            <c-accordion name="ULUSAL SINAVLARA HAZIRLIK DENEMELERİ GELİŞİM ANALİZLERİ" accordionid="ulusalSinav">
+                <div class="row" v-for="s in SINAVLARGROUP">
+                    <div class="col-md-6">
+                        <h2 class="label-info">{{s[0]}}</h2>
+                        <table class="table table-striped" id="tableUlusalSinav">
+                            <thead>
+                                <tr>
+
+                                    <th>SINAV ADI</th>
+                                    <th>DOĞRU</th>
+                                    <th>YANLIŞ</th>
+                                    <th>BOŞ</th>
+                                    <th>NET</th>
+                                    <th>BAŞARI %</th>
+
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="u in s[1]">
+                                    <td>{{u.SINAVADI}}</td>
+                                    <td>{{u.DOGRU}}</td>
+                                    <td>{{u.YANLIS}}</td>
+                                    <td>{{u.BOS}}</td>
+                                    <td>{{u.NET}}</td>
+                                    <td>{{u.BASARI}}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="col-md-6">
+                        <div :id="GetChartId(s)" class="chartdiv"></div>
+                    </div>
+                </div>
+            </c-accordion>
+        </div>
+        <!--ULUSAL SINAVLARA HAZIRLIK DENEMELERİ GELİŞİM ANALİZLERİ TOPLAM-->
+        <div class="row col-md-12" v-if="GELISIMANALIZISONUC.length>0">
+            <c-accordion name="ULUSAL SINAVLARA HAZIRLIK DENEMELERİ GELİŞİM ANALİZLERİ TOPLAM" accordionid="ulusalSinavSonuc">
+                <div class="row" v-for="u in GELISIMANALIZISONUC">
+                    <div class="col-md-6">
+                        <table class="table table-striped" id="tableAnalizToplam">
+                            <thead>
+                                <tr>
+                                    <th colspan="6">
+                                        {{u.STKISAAD}}
+                                    </th>                                   
+                                    {{u.SS}}                           
+                                </tr>
+                                <tr>
+                                    <th>SINAV ADI</th>
+                                    <th>DOĞRU</th>
+                                    <th>YANLIŞ</th>
+                                    <th>BOŞ</th>
+                                    <th>NET</th>
+                                    <th>BAŞARI %</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="s in u.SINAVLIST">
+                                    <td>{{s.SINAVADI}}</td>
+                                    <td>{{s.DOGRU}}</td>
+                                    <td>{{s.YANLIS}}</td>
+                                    <td>{{s.BOS}}</td>
+                                    <td>{{s.NET}}</td>
+                                    <td>{{s.BASARI}}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="col-md-6">
+                        <div :id="'analizToplamChart'+u.ID_SINAVTURU" class="chartdiv"></div>
+                    </div>
+                </div>
+            </c-accordion>
+        </div>
+        <!--ULUSAL SINAVLARA HAZIRLIK DENEMELERİ GELİŞİM ANALİZLERİ PUAN-->
+        <div class="row col-md-12" v-if="GELISIMANALIZIPUAN.length>0">
+            <c-accordion name="ULUSAL SINAVLARA HAZIRLIK DENEMELERİ GELİŞİM ANALİZLERİ PUAN " accordionid="ulusalSinavSonucPuan">
+                <div class="row" v-for="u in GELISIMANALIZIPUAN">
+                    <div class="col-md-6">
+                        <table class="table table-striped" id="tableAnalizToplam">
+                            <thead>
+                                <tr>
+                                    <th colspan="3">
+                                        {{u.PUANTURU}}
+                                    </th>
+                                </tr>
+                                <tr>
+                                    <th>SINAV ADI</th>
+                                    <th>PUAN</th>
+                                    <th>YÜZDE</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="s in u.S">
+                                    <td>{{s.SINAVAD}}</td>
+                                    <td>{{s.PUAN}}</td>
+                                    <td>{{s.BASARI}}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="col-md-6">
+                        <div :id="'analizPuanChart'+u.ID_SINAVPUANTURU" class="chartdiv"></div>
+                    </div>
+                </div>
+            </c-accordion>
+        </div>
+        <!--ULUSAL SINAVLARA HAZIRLIK DENEMELERİ SONUCUNDA ÖĞRENME ORANI %50’NİN ALTINDAKİ KAZANIMLAR TABLOSU-->
+        <div class="row col-md-12" v-if="KONUANALIZ.length>0">
+            <c-accordion name="ULUSAL SINAVLARA HAZIRLIK DENEMELERİ SONUCUNDA ÖĞRENME ORANI %50’NİN ALTINDAKİ KAZANIMLAR TABLOSU"
+                         accordionid="ulusalSinavKazanim1">
+                <table class="table table-striped" id="tableKonuAnalizi">
+                    <thead>
+                        <tr>
+                            <th colspan="6">KONU ANALİZ VERİLERİ</th>
+                        </tr>
+                        <tr>
+                            <!--Soru Sayısı Doğru Yanlış Boş % Başarı-->
+                            <th>Ders-Konu</th>
+                            <th>SORU SAYISI</th>
+                            <th>DOĞRU</th>
+                            <th>YANLIŞ</th>
+                            <th>BOŞ</th>
+                            <th>% BAŞARI</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr style="(d.DERSAD==d.KONUAD ? 'background: darkgrey;' : '')" v-for="d in KONUANALIZ">
+                            <td style="(d.DERSAD!=d.KONUAD ? 'padding-left:15px' : '')">{{d.KONUAD}}</td>
+                            <td style="(d.DERSAD!=d.KONUAD ? 'padding-left:15px' : '')">{{d.SORU}}</td>
+                            <td style="(d.DERSAD!=d.KONUAD ? 'padding-left:15px' : '')">{{d.DOGRU}}</td>
+                            <td style="(d.DERSAD!=d.KONUAD ? 'padding-left:15px' : '')">{{d.YANLIS}}</td>
+                            <td style="(d.DERSAD!=d.KONUAD ? 'padding-left:15px' : '')">{{d.BOS}}</td>
+                            <td style="(d.DERSAD!=d.KONUAD ? 'padding-left:15px' : '')">{{d.YUZDE}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </c-accordion>
+        </div>
+        <!--ÖDEV DURUMU-->
+        <div class="row col-md-12" v-show="ODEVRAPORUGROUP.length>0">
+            <c-accordion name="ÖDEV DURUMU" accordionid="odevDurumu1">
+                <div v-for="p in ODEVRAPORUGROUP" class="col-md-6 col-sm-12" style="padding-top: 15px; border-bottom: 5px solid cadetblue; padding-bottom: 15px; ">     
+                    <div :id="GetChartId2(p)" class="chartdiv"></div>
+                </div>
+            </c-accordion>
+        </div>
+        <!--ETÜT RAPORU-->
+        <div class="row col-md-12" v-if="ETUTRAPORU.length>0">
+            <c-accordion name="ETÜT RAPORU" accordionId="aetutRapor">
+                <table class="table table-striped table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Tarih</th>
+                            <th>Branş</th>
+                            <th>İçerik</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="s in ETUTRAPORU">
+                            <td>{{s.TARIH}}</td>
+                            <td>{{s.BRANS}}</td>
+                            <td>{{s.ICERIK}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </c-accordion>
+        </div>
+        <!--ÖĞRETMEN ÖĞRENCİ DEĞERLENDİRME-->
+        <div class="row col-md-12" v-if="OGRETMENDEGERLENDIRMEYORUMSUZ.length>0">
+            <c-accordion name="ÖĞRETMEN ÖĞRENCİ DEĞERLENDİRME" accordionId="aogrenciDegerlendirmeRapor">
+                <table class="table table-striped table-bordered" v-for="u in getDistinct(OGRETMENDEGERLENDIRMEYORUMSUZ,'PERIYOT')">
+                    <thead>
+                        <tr>
+                            <th>Kategori</th>
+                            <th>{{u}}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="s in getObjects(OGRETMENDEGERLENDIRMEYORUMSUZ,'PERIYOT',u)">
+                            <td>{{s.BOLUM}}</td>
+                            <td>{{s.KENDI}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </c-accordion>
+        </div>
+    </div>
+<script src="../../../VueComponents/Genel.js?v=3"></script>
+<script src="../../../VueComponents/SinavFiltreleri.js?v=10"></script>
+<script src="../../../VueComponents/GenelSinavRaporuFiltreleri.js?v=17"></script>
+<script src="../../../VueComponents/SinavIstatistikFiltreleri.js?v=10"></script>
+<script src="/VueComponents/UniversiteFiltreleri.js?v=2"></script>
+<script src="assets/global/plugins/bootstrap-slider/bootstrap-slider.min.js?v=2"></script>
+<script>
+
+    function groupBy(list, keyGetter) {
+        const map = new Map();
+        list.forEach((item) => {
+            const key = keyGetter(item);
+            const collection = map.get(key);
+            if (!collection) {
+                map.set(key, [item]);
+            } else {
+                collection.push(item);
+            }
+        });
+        return map;
+    }
+    function getRandomColor() {
+        var letters = '0123456789ABCDEF';
+        var color = '#';
+        for (var i = 0; i < 6; i++) {
+            color += letters[Math.floor(Math.random() * 16)];
+        }
+        return color;
+    }
+
+    var vue = new Vue({
+        el: "#app",
+        name: "GelisimRaporuLS.html",
+
+        data: {
+            TCKIMLIKNO: '',
+            DONEM: '',
+            DONEMSINAV: '',
+            divAc: 0,
+            idsube: 0,
+            idders: 0,
+            idkademe3: 0,
+            idsinif: 0,
+            tcogrenci: '',
+            ListKullaniciTipi: [],
+            divOgrenci: 0,
+            RAPORTURLIST: [],
+            ABIDENEREDEYIMGRAFIK: [],
+            DERSOGRETMEN: [],
+            GELISIMANALIZISONUC: [],
+            NETORTALAMAKARS: [],
+            KONUANALIZ: [],
+            ODEVRAPORU: [],
+            ODEVRAPORUGROUP: [],
+            YAZILIYOKLAMA: [],
+            DENEMESINAVIDERSLERI: [],
+            DENEMESINAVISONUCLARI: [],
+            DENEMESINAVILISTESI: [],
+            GELISIMANALIZIPUAN: [],
+            GELISIMRAPORUDATA: [],
+            OGRETMENDEGERLENDIRME: [],
+            OGRETMENDEGERLENDIRMEDETAY: [],
+            ETUTRAPORU: [],
+            LUSRAPORU: [],
+            KOSRAPOR: [],
+            KOSRAPORDETAY: [],
+            OGRETMENDEGERLENDIRMEYORUMSUZ: [],
+            GELISIMANALIZIDERS: [],
+            SINAVLARGROUP: [],
+            idCounter: 0,
+            YAZILIYOKLAMA: [],
+            TOPLAMNETORTALAMAKARS: {
+                DERSAD: "TOPLAM NET"
+                , ORTALAMA: 0
+                , SINIF: 0
+                , SUBE: 0
+                , GENEL: 0
+            }
+
+        },
+
+        mounted() {
+            var p = {
+                TCKIMLIKNO: session.TCKIMLIKNO,
+                OTURUM: session.OTURUM
+            };
+            var list = [];
+            WebPost(this, "GelisimRaporuLS", "KullaniciTipiGetir", p, "#app", "Yükleniyor...", function (data, parent) {
+                if (data != null) {
+                    $.each(data, function (j, el) {
+                        list.push(this.ID_KULLANICITIPI)
+                    });
+                    parent.ListKullaniciTipi = list;
+                    if (list.indexOf(4) > -1)
+                        parent.tcogrenci = session.TCKIMLIKNO;
+                    if (list.indexOf(4) == -1 && list.indexOf(5) == -1) {
+                        parent.divOgrenci = 1;
+                        parent.divAc = 0;
+                    }
+                } else {
+                    Alert_Warning("Kullanıcı Bulunamadı..!");
+                }
+            });
+        },
+
+        methods: {
+            Raporla: function (event) {
+                this.Getir();
+            },
+            Yazdir(event) {
+                if (this.tcogrenci == undefined || this.tcogrenci == 0) {
+                    if ((this.idsinif == undefined || this.idsinif == 0) || (this.DONEM == undefined || this.DONEM == "0")) {
+                        Alert_Warning("Sınıf ve dönem seçmeniz gerekmektedir.");
+                        return;
+                    } else {
+                        window.open('../Rapor.aspx?rapor=Sinav.GelisimRaporuLSMain&raporTur=pdf&p=' + session.TCKIMLIKNO + ';' + session.OTURUM + ';' + this.tcogrenci + ';' + this.idsinif + ';' + JSON.stringify(this.RAPORTURLIST).replace('-1,', '') + ';' + (this.DONEMSINAV == '' ? this.DONEM : this.DONEMSINAV) + ';' + 1 + ';' + 1141, '_blank');
+                    }
+                } else {
+                    window.open('../Rapor.aspx?rapor=Sinav.GelisimRaporuLSMain&raporTur=pdf&p=' + session.TCKIMLIKNO + ';' + session.OTURUM + ';' + this.tcogrenci + ';' + this.idsinif + ';' + JSON.stringify(this.RAPORTURLIST).replace('-1,', '') + ';' + (this.DONEMSINAV == '' ? this.DONEM : this.DONEMSINAV) + ';' + 1 + ';' + 1141, '_blank');
+                }
+
+            },
+            Kaydet() {
+                if (this.tcogrenci == undefined || this.tcogrenci == 0) {
+                    if ((this.idsinif == undefined || this.idsinif == 0) || (this.DONEM == undefined || this.DONEM == "0")) {
+                        Alert_Warning("Sınıf ve dönem seçmeniz gerekmektedir.");
+                        return;
+                    } else {
+                        window.open('../RaporGelisimRaporuLS.aspx?rapor=Sinav.GelisimRaporuLSMain&raporTur=pdf&p=' + session.TCKIMLIKNO + ';' + session.OTURUM + ';' + this.tcogrenci + ';' + this.idsinif + ';' + JSON.stringify(this.RAPORTURLIST).replace('-1,', '') + ';' + (this.DONEMSINAV == '' ? this.DONEM : this.DONEMSINAV) + ';' + 2 + ';' + 1141, '_blank');
+                    }
+                } else {
+                    window.open('../RaporGelisimRaporuLS.aspx?rapor=Sinav.GelisimRaporuLSMain&raporTur=pdf&p=' + session.TCKIMLIKNO + ';' + session.OTURUM + ';' + this.tcogrenci + ';' + this.idsinif + ';' + JSON.stringify(this.RAPORTURLIST).replace('-1,', '') + ';' + (this.DONEMSINAV == '' ? this.DONEM : this.DONEMSINAV) + ';' + 2 + ';' + 1141, '_blank');
+                }
+            },
+            SubeSelected(item) {
+                this.idsube = item;
+                this.idkademe3 = 0;
+                this.idsinif = 0;
+                this.divOgrenci = 0;
+                this.divAc = 0;
+                if (this.ListKullaniciTipi.indexOf(4) == -1 && this.ListKullaniciTipi.indexOf(5) == -1) {
+                    this.divOgrenci = 1;
+                    this.divAc = 0;
+                }
+            },
+            Kademe3Selected(item) {
+                this.idkademe3 = item;
+                this.idsinif = 0;
+                this.divOgrenci = 0;
+                this.divAc = 0;
+                if (this.ListKullaniciTipi.indexOf(4) == -1 && this.ListKullaniciTipi.indexOf(5) == -1) {
+                    this.divOgrenci = 1;
+                    this.divAc = 0;
+                }
+            },
+            SinifSelected(item) {
+                this.idsinif = item;
+                this.divOgrenci = 0;
+                this.divAc = 0;
+                if (this.ListKullaniciTipi.indexOf(4) == -1 && this.ListKullaniciTipi.indexOf(5) == -1) {
+                    this.divOgrenci = 1;
+                    this.divAc = 0;
+                }
+            },
+            OgrenciSelected(item) {
+                this.tcogrenci = item;
+                this.divOgrenci = 1;
+                this.divAc = 0;
+                //this.Getir();
+            },
+            OgrenciVeliSelected(item) {
+                this.tcogrenci = item;
+                this.divOgrenci = 1;
+                this.divAc = 0;
+                //this.Getir();
+            },
+            DonemSelected(item) {
+                this.DONEM = item;
+                this.divAc = 0;
+            },
+            SinavDonemSelected(item) {
+                this.DONEMSINAV = item;
+            },
+            GelisimTurSelected(item) {
+                this.RAPORTURLIST = item;
+            },
+            Getir() {
+                if (this.DONEM != "" && this.tcogrenci != "") {
+                    this.divAc = 1;
+                }
+            },
+            GetChartId: function (item) {
+                var uniqId = 'chart' + this.SINAVLARGROUP.indexOf(item);
+                return uniqId;
+            },
+            
+            GetChartId2: function (item) {
+                var uniqId = 'chartpie' + this.ODEVRAPORUGROUP.indexOf(item);
+                return uniqId;
+            },
+            ChartOlustur: function () {
+                var datagrouped = this.SINAVLARGROUP;
+                for (var i = 0; i < datagrouped.length; i++) {
+                    var uniqId = 'chart' + i;
+                    var list = datagrouped[i];
+                    var dataList = [];
+                    var maxnet = 0;
+                    for (var y = 0; y < list[1].length; y++) {
+                        var itemData = list[1][y];
+                        if (parseFloat(itemData.NET) > maxnet) {
+                            maxnet = itemData.NET;
+                        }
+                        var colorRand = getRandomColor();
+                        var data = { "sinavlar": itemData.SINAVADI, "netler": itemData.NET, "color": colorRand };
+                        if (itemData.SINAVADI != "ORTALAMA")
+                            dataList.push(data);
+                    }
+                    AmchartOlustur(uniqId, dataList, maxnet + 5, "netler", "sinavlar", "color", " Net", true);
+
+
+                }
+
+            },
+            AnalizSonucuChartOlustur: function () {
+                $.each(this.GELISIMANALIZISONUC, (j, el) => {
+                    var sonucData = el.SINAVLIST;
+                    var dataList = [];
+                    var maxnet = 0;
+                    for (var y = 0; y < sonucData.length; y++) {
+                        var itemData = sonucData[y];
+                        var colorRand = getRandomColor();
+                        if (parseFloat(itemData.NET) > maxnet) {
+                            maxnet = itemData.NET;
+                        }
+                        var data = { "sinavlar": itemData.SINAVADI, "netler": itemData.NET, "color": colorRand };
+
+                        dataList.push(data);
+                    }
+
+                    AmchartOlustur("analizToplamChart" + el.ID_SINAVTURU, dataList, maxnet + 5, "netler", "sinavlar", "color", " Net", true);
+
+                });
+            },
+            AnalizSonucuPuanChartOlustur: function () {
+                $.each(this.GELISIMANALIZIPUAN, (j, el) => {
+                    var sonucData = el.S;
+                    var dataList = [];
+                    var maxnet = 0;
+                    for (var y = 0; y < sonucData.length; y++) {
+                        var itemData = sonucData[y];
+                        var colorRand = getRandomColor();
+                        if (parseFloat(itemData.NET) > maxnet) {
+                            maxnet = itemData.NET;
+                        }
+                        var data = { "sinavlar": itemData.SINAVAD, "netler": itemData.BASARI, "color": colorRand };
+                        dataList.push(data);
+                    }
+                    AmchartOlustur("analizPuanChart" + el.ID_SINAVPUANTURU, dataList, maxnet + 5, "netler", "sinavlar", "color", " Net", true);
+                });
+            },
+            OrtalamaKArsilastirmaChartOlustur: function () {
+                $.each(vue.getDistinct(vue.NETORTALAMAKARS, 'STKISAAD'), (j, el) => {
+
+                    var sonucData = $.grep(vue.NETORTALAMAKARS, (sel) => { return sel.STKISAAD == el });
+                    var dataList = [];
+                    var maxnet = 0;
+
+                    for (var y = 0; y < sonucData.length; y++) {
+                        var itemData = sonucData[y];
+                        if (parseFloat(itemData.GENEL) > maxnet) {
+                            maxnet = itemData.GENEL;
+                        }
+                        let data = {
+                            "ders": itemData.DERSAD,
+                            "Öğrenci": itemData.ORTALAMA,
+                            "Sınıf": itemData.SINIF,
+                            "Okul": itemData.SUBE,
+                            "Genel": itemData.GENEL
+                        };
+                        dataList.push(data);
+                    }
+
+                    AmchartGrupluOlustur("ortalamaKarsilastirmaGrafik" + el, dataList, maxnet + 5, ["Öğrenci", "Sınıf", "Okul", "Genel"], "ders", "color", el, true);
+                });
+            },
+            AbideChartOlustur: function () {
+                
+                var dataList = [];
+                var maxnet = 0;
+                var sinavList = [];
+                $.each(vue.getDistinct(vue.ABIDENEREDEYIMGRAFIK, 'DERS'), (j, el) => {
+                    let result = vue.getObjects(vue.ABIDENEREDEYIMGRAFIK, 'DERS', el);
+                    maxnet = maxnet > result.MAXDUZEY ? result.MAXDUZEY : maxnet;
+                    let data = {
+                        "ders": el,
+                    };
+                    $.each(result, (sj, sel) => {
+                        data[sel.SINAV] = sel.DUZEY;
+                        if (sinavList.indexOf(sel.SINAV) == -1) {
+                            sinavList.push(sel.SINAV)
+                        }
+                    });
+                    dataList.push(data);
+                });
+                AmchartGrupluOlustur("abideGrafik", dataList, maxnet, sinavList, "ders", "color", "Düzeyler", true);
+            },
+            OdevDurumuChartOlustur: function () {
+                var sonucData = this.ODEVRAPORU;
+                var groupedData = Array.from(groupBy(sonucData, x => x.DERS));
+                for (var i = 0; i < groupedData.length; i++) {
+                    var divId = 'chartpie' + i;
+                    var itemdData = groupedData[i];
+                    var dataList = [];
+                    var maxnet = 0;
+                    var durumlar = itemdData[1];                  
+                    for (var y = 0; y < durumlar.length; y++) {
+                        var durumItem = durumlar[y];
+                        var x = { "durum": durumItem.ODEVDURUM, "yuzde": durumItem.SAYI, "color": "#DDD" };
+                        dataList.push(x);
+                    }
+                    AmChartPieOlustur(divId, dataList, "yuzde", "durum", false, itemdData[0], true, "bottom");
+                }
+            },
+            GelisimRaporuHtmlGetir: function () {                                
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    DONEM: this.DONEM,
+                    TC_OGRENCI: this.tcogrenci,
+                    ID_SINIF: this.idsinif,
+                    RAPORTURLIST: JSON.stringify(this.RAPORTURLIST)                 
+                };
+
+                WebPost(this, "GelisimRaporuLS", "GelisimRaporuHTML", p, "#app", "Yükleniyor...", function (data, parent) {
+                    parent.GELISIMRAPORUDATA = JSON.parse(data);
+
+                    parent.DERSOGRETMEN = parent.arrayKontrol(parent.GELISIMRAPORUDATA[0].DERSOGRETMEN);
+                    parent.DENEMESINAVIDERSLERI = parent.arrayKontrol(parent.GELISIMRAPORUDATA[0].DENEMESINAVIDERSLERI);
+                    parent.GELISIMANALIZIDERS = parent.arrayKontrol(parent.GELISIMRAPORUDATA[0].GELISIMANALIZIDERS);
+                    parent.GELISIMANALIZISONUC = parent.arrayKontrol(parent.GELISIMRAPORUDATA[0].GELISIMANALIZISONUC);
+                    parent.NETORTALAMAKARS = parent.arrayKontrol(parent.GELISIMRAPORUDATA[0].NETORTALAMAKARS);                 
+                    parent.KONUANALIZ = parent.arrayKontrol(parent.GELISIMRAPORUDATA[0].KONUANALIZ);
+                    parent.YAZILIYOKLAMA = parent.arrayKontrol(parent.GELISIMRAPORUDATA[0].YAZILIYOKLAMA);
+                    parent.ODEVRAPORU = parent.arrayKontrol(parent.GELISIMRAPORUDATA[0].ODEVRAPORU);
+                    parent.DENEMESINAVIDERSLERI = parent.arrayKontrol(parent.GELISIMRAPORUDATA[0].DENEMESINAVIDERSLERI);
+                    parent.DENEMESINAVISONUCLARI = parent.arrayKontrol(parent.GELISIMRAPORUDATA[0].DENEMESINAVISONUCLARI);
+                    parent.DENEMESINAVILISTESI = parent.arrayKontrol(parent.GELISIMRAPORUDATA[0].DENEMESINAVILISTESI);
+                    parent.GELISIMANALIZIPUAN = parent.arrayKontrol(parent.GELISIMRAPORUDATA[0].GELISIMANALIZIPUAN);
+                    parent.OGRETMENDEGERLENDIRME = parent.arrayKontrol(parent.GELISIMRAPORUDATA[0].OGRETMENDEGERLENDIRME);
+                    parent.OGRETMENDEGERLENDIRMEDETAY = parent.arrayKontrol(parent.GELISIMRAPORUDATA[0].OGRETMENDEGERLENDIRMEDETAY);
+                    parent.ETUTRAPORU = parent.arrayKontrol(parent.GELISIMRAPORUDATA[0].ETUTRAPORU);
+                    parent.ABIDENEREDEYIMGRAFIK = parent.arrayKontrol(parent.GELISIMRAPORUDATA[0].ABIDENEREDEYIMGRAFIK);
+                    var grouped = groupBy(parent.GELISIMANALIZIDERS, s => s.DERSAD);
+                    parent.SINAVLARGROUP = Array.from(grouped);
+                    parent.ODEVRAPORUGROUP = Array.from(groupBy(parent.ODEVRAPORU, x => x.DERS));
+                    Vue.nextTick(function () {
+                        $(document).trigger("stickyTable");
+                        parent.ChartOlustur();
+                        parent.AnalizSonucuChartOlustur();
+                        parent.AbideChartOlustur();
+                        parent.AnalizSonucuPuanChartOlustur();
+                        parent.OrtalamaKArsilastirmaChartOlustur();
+                        parent.OdevDurumuChartOlustur();                      
+                    })
+
+                });
+
+            },
+            arrayKontrol(item) {
+                return $.isArray(item) ? item : [];
+            },
+            getObjects(obj, key, val) {
+                var objects = [];
+                for (var i in obj) {
+                    if (!obj.hasOwnProperty(i)) continue;
+                    if (typeof obj[i] == 'object') {
+                        objects = objects.concat(this.getObjects(obj[i], key, val));
+                    } else if (i == key && obj[key] == val) {
+                        objects.push(obj);
+                    }
+                }
+                return objects;
+            },
+            getDistinct(data, key) {
+                var distList = [];
+                $.each(data, function (j, item) {
+                    if (distList.indexOf(item[key]) == -1) {
+                        distList.push(item[key]);
+                    }
+                });
+                return distList;
+            },
+         
+
+        }
+    });
+</script>
+<script src="../../../Scripts/PublicMethods.js"></script>
+<script src="../../../../assets/fixed-table/js/jquery.stickyheader.js?v=4"></script>

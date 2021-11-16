@@ -1,0 +1,366 @@
+﻿<div class="page-head">
+    <!-- BEGIN PAGE TITLE -->
+    <div class="page-title col-md-12">
+        <h1>
+            Upgrade Sonuç Gir <small></small> <span onclick="YardimGoster(ID_MENU);" class="pull-right" style="cursor:pointer;"><img src="assets/global/img/info.gif" class="info-image-icon" /> </span>
+        </h1>
+    </div>
+    <!-- END PAGE TITLE -->
+</div>
+
+<div class="row" id="app">
+    <!--<div class="col-md-12" v-if="TCKIMLIKNO != '56545519606'">Sayfa güncelleniyor. Daha sonra tekrar deneyiniz.</div>
+    <div v-else>-->
+    <div>
+        <div class="col-md-12">
+            <div class="portlet box green-haze dd-item" style="border:none">
+                <div class="portlet-title dd-handle" data-toggle='collapse' data-target='#filters' style="cursor:pointer;">
+                    <div class="caption">
+                        <i class="icon-magnifier"></i>
+                        <span class="caption-subject bold uppercase"> Filtreler </span>
+                        <span class="caption-helper"></span>
+                    </div>
+                    <div class='actions'>
+                        <a href='javascript:;' class='btn btn-default btn-sm' style='border:none;'>
+                            <i class='fa fa-chevron-down'></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="portlet-body form collapse in" id="filters">
+                    <div class="form-body form-horizontal">
+                        <div class="row">
+                            <c-sube controller="UpgradeSonucGir"
+                                    @OnChange="SubeSelected">
+                            </c-sube>
+                        </div>
+                        <div class="row">
+                            <c-sinavgrup controller="UpgradeSonucGir"
+                                         :idsube="ID_SUBE"
+                                         @OnChange="SinavGrupSelected">
+                            </c-sinavgrup>
+                        </div>
+                        <div class="row">
+                            <c-donem controller="UpgradeSonucGir"
+                                     @OnChange="DonemSelected">
+                            </c-donem>
+                        </div>
+                        <div class="row">
+                            <c-sinif-multi-id_subes-donem controller="UpgradeSonucGir"
+                                                          :idsube="ID_SUBES"
+                                                          :idsinavgrup="ID_SINAVGRUPS"
+                                                          :donem="DONEM"
+                                                          @OnChange="SinifSelected">
+                            </c-sinif-multi-id_subes-donem>
+                        </div>
+                        <!--<div class="row">
+                            <c-tkttest-listesi controller="UpgradeSonucGir"
+                                               @OnChange="TestSelected">
+                            </c-tkttest-listesi>
+                        </div>-->
+                        <div class="row">
+                            <c-sinav-listesi controller="UpgradeSonucGir"
+                                             @OnChange="SinavSelected">
+                            </c-sinav-listesi>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="text-right">
+                                    <button type="button" class="btn green" @click="OgrenciListele">Öğrenci Listele</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-12" v-show="OGRENCI_LISTESI.length>0">
+            <div class="portlet light">
+                <div class="portlet-title">
+                    <div class="caption">
+                        <i class="icon-list font-green"></i>
+                        <span class="caption-subject bold font-green uppercase"> Öğrenci Listesi </span>
+                        <span class="caption-helper"></span>
+                    </div>
+                </div>
+                <!-- BEGIN PORTLET-->
+                <div class="portlet-body form">
+                    <form role="form">
+                        <div class="portlet light bordered">
+                            <div class="portlet-body">
+                                <table class="table table-striped table-bordered table-hover table-checkable order-column" id="sample_1">
+                                    <thead>
+                                        <tr>
+                                            <th>SINIF</th>
+                                            <th>TcKimlikNo</th>
+                                            <th>Ad</th>
+                                            <th>Soyad</th>
+                                            <!--<th>Doğum Tarihi</th>
+                                            <th>Ay</th>-->
+                                            <!--<th>Durum</th>-->
+                                            <th>Soru Sayısı</th>
+                                            <th>Oluşturan</th>
+                                            <th>İşlemler</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr class="odd gradeX" v-for="u in OGRENCI_LISTESI">
+                                            <td>{{u.SINIF}}</td>
+                                            <td>{{u.TCKIMLIKNO}}</td>
+                                            <td>{{u.AD}}</td>
+                                            <td>{{u.SOYAD}}</td>
+                                            <!--<td>{{u.DOGUMTARIHI}}</td>
+                                            <td>{{u.YASAY}}</td>-->
+                                            <!--<td v-if="u.PUANGIRISI==0"><i class='fa fa-circle-o'></i></td>
+                                            <td v-else-if="u.PUANGIRISI>0"><i class='fa fa-check'></i></td>-->
+
+                                            <th v-if="u.SORUSAYISI<10" style="color:red;">{{u.SORUSAYISI}}</th>
+                                            <th v-else>{{u.SORUSAYISI}}</th>
+                                            <td>{{u.KYE_ADSOYAD}}<br />{{u.TARIH}}</td>
+
+                                            <td v-if="u.DOGUMTARIHI===null">Doğum Tarihi Girilmemiş</td>
+                                            <!--<td v-else-if="u.PUANGIRISI==0">Puan Girilmemiş</td>-->
+                                            <td v-else-if="u.SORUSAYISI==0">Etkinlik Kağıdı Oluşturulmamış</td>
+                                            <td v-else>
+                                                <a class='btn btn-sm green' @click='UpgradeSonucGir(u)'>Sonuç Gir</a>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <!-- END PORTLET-->
+            </div>
+        </div>
+    </div>
+
+    <div id="soru_modal" class="modal fade" tabindex="-1" data-replace="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                    <h4 class="modal-title">Öğrenci Cevap Girişi</h4>
+                </div>
+                <div class="modal-body" style="padding-bottom:0px; padding-top:0px;">
+                    <div class="row">
+                        <p v-if="SORULISTESI.length==0" style="margin-left:25px;"><b>Öğrenci için etkinlik kağıdı oluşturulmamış.</b></p>
+
+                        <table v-if="SORULISTESI.length>0" style="margin-bottom:0px;" class="table table-striped table-bordered table-hover table-checkable order-column" id="ogrencicevapliste">
+                            <thead>
+                                <tr>
+                                    <th>Soru</th>
+                                    <th>Kategori</th>
+                                    <th>Düzey</th>
+                                    <th>Kazanım Adedi</th>
+                                    <th>Doğru Kazanım Adedi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="odd gradeX" v-for="u in SORULISTESI">
+                                    <td style="cursor:pointer;">
+                                        <div class="tooltipx" data-toggle="tooltip" data-html="true" data-placement="bottom" :title="'<img src=\''+ u.RESIM +'\' width=\'180\' />'">
+                                            {{u.SORUNO}}
+                                        </div>
+                                    </td>
+                                    <td>{{u.KATEGORI}}</td>
+                                    <td>{{u.HARF}}</td>
+                                    <td>
+                                        <input type="number" class="form-control" v-model="u.KAZANIMADEDI" min="0" max="50" step="1" v-if="u.ISDISABLED == 0" />
+                                        <input type="number" class="form-control" v-model="u.KAZANIMADEDI" min="0" max="50" step="1" v-else disabled />
+                                    </td>
+                                    <td>
+                                        <input type="number" class="form-control" v-model="u.DOGRUKAZANIMADEDI" min="0" max="50" step="1" />
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn default" data-dismiss="modal">Kapat</button>
+                    <button type="button" class="btn green" @click="Kaydet" v-if="SORULISTESI.length>0">Kaydet</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="VueComponents/SoruFiltreleri.js?v=3"></script>
+<script src="VueComponents/SubeGrupSinif.js?v=3"></script>
+<script>
+    var tblOgrenciler = null;
+    var vue = new Vue({
+
+        el: "#app",
+        name: "SonucGor.html",
+
+        data: {
+            TCKIMLIKNO: '',
+            DONEM: '',
+            ID_SUBE: 0,
+            ID_SUBES: [],
+            ID_SINAVGRUP: 0,
+            ID_SINAVGRUPS: [],
+            ID_SINIF: [],
+            OGRENCI_LISTESI: [],
+            ID_TKTSINAV: 0,
+            //ID_TKTTEST: 0,
+            SORULISTESI: []
+        },
+
+        mounted() {
+            this.TCKIMLIKNO = session.TCKIMLIKNO;
+        },
+
+        methods: {
+
+            DonemSelected(DONEM) {
+                this.OGRENCI_LISTESI = [];
+                this.DONEM = DONEM;
+            },
+
+            SubeSelected(ID_SUBE) {
+                this.OGRENCI_LISTESI = [];
+                this.ID_SUBE = ID_SUBE;
+                this.ID_SUBES = [];
+                this.ID_SUBES.push(ID_SUBE);
+            },
+
+            SinavGrupSelected(ID_SINAVGRUP) {
+                this.OGRENCI_LISTESI = [];
+                this.ID_SINAVGRUP = ID_SINAVGRUP;
+                this.ID_SINAVGRUPS = [];
+                this.ID_SINAVGRUPS.push(ID_SINAVGRUP);
+            },
+
+            SinifSelected(ID_SINIF) {
+                this.OGRENCI_LISTESI = [];
+                this.ID_SINIF = ID_SINIF;
+            },
+
+            //TestSelected(ID_TKTTEST) {
+            //    this.OGRENCI_LISTESI = [];
+            //    this.ID_TKTTEST = ID_TKTTEST;
+            //},
+
+            SinavSelected(ID_TKTSINAV) {
+                this.OGRENCI_LISTESI = [];
+                this.ID_TKTSINAV = ID_TKTSINAV;
+            },
+
+            OgrenciListele() {
+                if (this.ID_SUBE == 0) {
+                    Alert_Warning("Lütfen Şube Seçin.");
+                    return;
+                }
+                if (this.ID_TKTSINAV == 0) {
+                    Alert_Warning("Lütfen Sınav Seçin.");
+                    return;
+                }
+                this.OGRENCI_LISTESI = [];
+                if (tblOgrenciler != null) {
+                    tblOgrenciler.rows().remove().draw();
+                    tblOgrenciler.destroy();
+                }
+
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    DONEM: this.DONEM,
+                    ID_SUBE: this.ID_SUBE,
+                    ID_SINAVGRUP: this.ID_SINAVGRUP,
+                    ID_SINIFS: JSON.stringify(this.ID_SINIF),
+                    ID_TKTSINAV: this.ID_TKTSINAV,
+                    //ID_TKTTEST: this.ID_TKTTEST
+                };
+
+                WebPost(this, "UpgradeSonucGir", "UpgradeOgrenciListele", p, '', '', function (data, parent) {
+                    if (data != null) {
+                        $('#filters').collapse('hide');
+                        parent.OGRENCI_LISTESI = data;
+                        //DOM update olmasını bekleyip update olunca listeyi oluşturuyor.
+                        $("#sample_1").DataTable().destroy();
+                        Vue.nextTick(function () {
+                            parent.ListeOlustur();
+                        })
+                    }
+                    else {
+                        Alert_Warning("Liste Bulunamadı!");
+                    }
+                })
+            },
+
+            ListeOlustur() {
+                tblOgrenciler = $('#sample_1').DataTable(
+                    {
+                        language: {
+                            "url": "./Utility/dil.json"
+                        }
+                    });
+            },
+
+            UpgradeSonucGir(OGRENCI) {
+                this.SORULISTESI = [];
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    TCKIMLIKNO_OGR: OGRENCI.TCKIMLIKNO,
+                    ID_TKTSINAV: this.ID_TKTSINAV,
+                    DONEM: this.DONEM
+                };
+
+                WebPost(this, "UpgradeSonucGir", "UpgradeOgrenciSoruListele", p, '', '', function (data, parent) {
+                    if (data != null) {
+                        parent.SORULISTESI = JSON.parse(data);
+                        $('#soru_modal').modal();
+                        vue.$nextTick(function () {
+                            $('.tooltipx').tooltip();
+                        });
+                    }
+                    else {
+                        Alert_Warning("Liste Bulunamadı!");
+                    }
+                })
+            },
+
+            Kaydet() {
+                if (this.Kontrol()) {
+                    var p = {
+                        TCKIMLIKNO: session.TCKIMLIKNO,
+                        OTURUM: session.OTURUM,
+                        SQLJSON: JSON.stringify(this.SORULISTESI)
+                    };
+
+                    WebPost(this, "UpgradeSonucGir", "UpgradeOgrenciSoruPuanKaydet", p, '', '', function (data, parent) {
+                        if (data) {
+                            parent.SORULISTESI = []
+                            $('#soru_modal').modal('hide');
+                        }
+                        else {
+                            Alert_Error("Bir sorun oluştu! Daha sonra tekrar deneyin.");
+                        }
+                    })
+                }
+            },
+
+            Kontrol() {
+                for (var i = 0; i < this.SORULISTESI.length; i++) {
+                    if (parseInt(this.SORULISTESI[i].DOGRUKAZANIMADEDI) == null || parseInt(this.SORULISTESI[i].KAZANIMADEDI) == null) {
+                        Alert_Error("Kazanım adedi ve doğru kazanım adedi boş olamaz.");
+                        return false;
+                    } else {
+                        if (parseInt(this.SORULISTESI[i].DOGRUKAZANIMADEDI) > parseInt(this.SORULISTESI[i].KAZANIMADEDI)) {
+                            Alert_Error("Doğru kazanım adedi sorunun kazanım adedinden fazla olamaz.");
+                            return false;
+                        }
+                    }
+                }
+                return true;
+            }
+        }
+    });
+</script>
+<script src="Scripts/PublicMethods.js"></script>

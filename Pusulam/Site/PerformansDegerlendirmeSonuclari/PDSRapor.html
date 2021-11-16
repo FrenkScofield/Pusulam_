@@ -1,0 +1,211 @@
+﻿<div class="page-head">
+    <!-- BEGIN PAGE TITLE -->
+    <div class="page-title col-md-12">
+        <h1>
+            360 Derece PDS Rapor <span onclick="YardimGoster(ID_MENU);" class="pull-right" style="cursor:pointer;"><img src="assets/global/img/info.gif" class="info-image-icon" /> </span>
+        </h1>
+    </div>
+    <!-- END PAGE TITLE -->
+</div>
+
+<div class="row" id="app">
+    <div class="col-md-12">
+        <div class="portlet box blue-hoki dd-item" style="border:none">
+            <div class="portlet-title dd-handle" data-toggle='collapse' data-target='#filters' style="cursor:pointer;">
+                <div class="caption">
+                    <i class="icon-list"></i>
+                    <span class="caption-subject bold uppercase"> Filtreler </span>
+                    <span class="caption-helper"></span>
+                </div>
+                <div class='actions'>
+                    <a href='javascript:;' class='btn btn-default btn-sm' style='border:none;'>
+                        <i class='fa fa-chevron-down'></i>
+                    </a>
+                </div>
+            </div>
+            <!-- BEGIN PORTLET-->
+            <div class="portlet-body form collapse in" id="filters">
+                <form role="form" style="padding:12px 20px">
+                    <div class="row">
+                        <c-sube-multi controller="PerformansDegerlendirmeSonuclariPDSRapor"
+                                      @OnChange="SubeSelected" />
+                    </div>
+                    <div class="row">
+                        <c-kademe-personel controller="PerformansDegerlendirmeSonuclariPDSRapor"
+                                           @OnChange="IdKademeSelected" />
+                    </div>
+                    <div class="row">
+                        <c-kullanici-tipimmy controller="PerformansDegerlendirmeSonuclariPDSRapor"
+                                             @OnChange="IdKullaniciTipiSelected" />
+                    </div>
+                    <div class="row">
+                        <c-personel-multi-sube-multi controller="PerformansDegerlendirmeSonuclariPDSRapor"
+                                                     :idsube="ID_SUBE"
+                                                     :idkademe="ID_KADEME"
+                                                     :idkullanicitipi="ID_KULLANICITIPI"
+                                                     @OnChange="TcPersonelSelected" />
+                    </div>
+                    <div class="row">
+                        <c-donem controller="PerformansDegerlendirmeSonuclariPDSRapor"
+                                 @OnChange="DonemSelected" />
+                    </div>
+                    <div class="row">
+                        <c-periyot controller="PerformansDegerlendirmeSonuclariPDSRapor"
+                                   :donem="DONEM"
+                                   :idkademe="ID_KADEME"
+                                   :idkullanicitipi="ID_KULLANICITIPI"
+                                   @OnChange="IdDegerlendirmePeriyotSelected" />
+                    </div>
+                    <div class="row">
+                        <div class="form-group" style="margin-top:10px;">
+                            <div class="col-md-12 text-right">
+                                <button type="button" class="btn green" @click="Excel">Excel Oluştur</button>
+                                <button type="button" class="btn yellow" @click="Rapor">Rapor Oluştur</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../../VueComponents/SinavFiltreleri.js"></script>
+<script src="../../VueComponents/YetkilendirmeFiltreleri.js"></script>
+<script src="../../VueComponents/Degerlendirme/Filtreler.js?v=1"></script>
+
+<script>
+    var vue = new Vue({
+
+        el: "#app",
+        name: "PDSRapor.html",
+
+        data: {
+            ID_KADEME: null,
+            ID_SUBE: [],
+            ID_KULLANICITIPI: null,
+            TCPERSONEL: '',
+            DONEM: '',
+            ID_DEGERLENDIRMEPERIYOT: 0
+        },
+
+        methods: {
+            IdKademeSelected(ID_KADEME) {
+                this.ID_KADEME = ID_KADEME;
+            },
+
+            IdKullaniciTipiSelected(ID_KULLANICITIPI) {
+                this.ID_KULLANICITIPI = ID_KULLANICITIPI;
+            },
+
+            SubeSelected(ID_SUBE) {
+                this.ID_SUBE = ID_SUBE;
+            },
+
+            TcPersonelSelected(TCPERSONEL) {
+                this.TCPERSONEL = TCPERSONEL;
+            },
+
+            DonemSelected(DONEM) {
+                this.DONEM = DONEM;
+            },
+
+            IdDegerlendirmePeriyotSelected(ID_DEGERLENDIRMEPERIYOT) {
+                this.ID_DEGERLENDIRMEPERIYOT = ID_DEGERLENDIRMEPERIYOT;
+            },
+
+            Rapor() {
+                if (this.ID_DEGERLENDIRMEPERIYOT == null || this.ID_DEGERLENDIRMEPERIYOT == '0') Alert_Warning("Lütfen Periyot Seçin.");
+                else {
+                    var params = 'PerformansDegerlendirmeSonuclari.Personel@' + 'PDF' +
+                        '@' + session.TCKIMLIKNO +
+                        '@' + session.OTURUM +
+                        '@' + JSON.stringify(this.ID_SUBE) +
+                        '@' + this.ID_KADEME +
+                        '@' + this.ID_KULLANICITIPI +
+                        '@' + JSON.stringify(this.TCPERSONEL) +
+                        '@' + this.ID_DEGERLENDIRMEPERIYOT;
+
+                    var xForm = document.createElement("form");
+                    xForm.target = "rapor";
+                    xForm.method = "POST"; // or "post" if appropriate
+                    xForm.action = "../RaporPost.aspx";
+
+                    var xInput = document.createElement("input");
+                    xInput.type = "text";
+                    xInput.name = "p";
+                    xInput.value = params;
+                    xForm.appendChild(xInput);
+
+                    document.body.appendChild(xForm);
+
+                    map = window.open("", "rapor", "");
+
+                    if (map) {
+                        xForm.submit();
+                    } else {
+                        Alert_Warning('Açılır sekmelere izin veriniz.');
+                    }
+
+                    //window.open("Rapor.aspx?raporTur=PDF&rapor=PerformansDegerlendirmeSonuclari.Personel&p="
+                    //    + session.TCKIMLIKNO + ";"
+                    //    + session.OTURUM + ";"
+                    //    + JSON.stringify(this.ID_SUBE) + ";"
+                    //    + this.ID_KADEME + ";"
+                    //    + this.ID_KULLANICITIPI + ";"
+                    //    + JSON.stringify(this.TCPERSONEL) + ";"
+                    //    + this.ID_DEGERLENDIRMEPERIYOT);
+                }
+            },
+
+            Excel() {
+                //if (this.ID_SUBE == null || this.ID_SUBE == '[]' ||
+                //    this.ID_KADEME == null || this.ID_KADEME == '0' ||
+                //    this.ID_KULLANICITIPI == null || this.ID_KULLANICITIPI == '0') Alert_Warning("Lütfen Periyot Haricindeki Seçimlerin Yapılmış Olduğundan Emin Olunuz.");
+                if (this.ID_DEGERLENDIRMEPERIYOT == null || this.ID_DEGERLENDIRMEPERIYOT == '0') Alert_Warning("Lütfen Periyot Seçin.");
+                else {
+                    var params = 'PerformansDegerlendirmeSonuclari.Excel@' + 'XLS' +
+                        '@' + session.TCKIMLIKNO +
+                        '@' + session.OTURUM +
+                        '@' + JSON.stringify(this.ID_SUBE) +
+                        '@' + this.ID_KADEME +
+                        '@' + this.ID_KULLANICITIPI +
+                        '@' + JSON.stringify(this.TCPERSONEL) +
+                        '@' + this.ID_DEGERLENDIRMEPERIYOT +
+                        '@' + this.DONEM;
+
+                    var xForm = document.createElement("form");
+                    xForm.target = "rapor";
+                    xForm.method = "POST"; // or "post" if appropriate
+                    xForm.action = "../RaporPost.aspx";
+
+                    var xInput = document.createElement("input");
+                    xInput.type = "text";
+                    xInput.name = "p";
+                    xInput.value = params;
+                    xForm.appendChild(xInput);
+
+                    document.body.appendChild(xForm);
+
+                    map = window.open("", "rapor", "");
+
+                    if (map) {
+                        xForm.submit();
+                    } else {
+                        Alert_Warning('Açılır sekmelere izin veriniz.');
+                    }
+
+                    //window.open("Rapor.aspx?raporTur=XLS&rapor=PerformansDegerlendirmeSonuclari.Excel&p="
+                    //    + session.TCKIMLIKNO + ";"
+                    //    + session.OTURUM + ";"
+                    //    + JSON.stringify(this.ID_SUBE) + ";"
+                    //    + this.ID_KADEME + ";"
+                    //    + this.ID_KULLANICITIPI + ";"
+                    //    + JSON.stringify(this.TCPERSONEL) + ";"
+                    //    + this.ID_DEGERLENDIRMEPERIYOT + ";"
+                    //    + this.DONEM);
+                }
+            }
+        }
+    });
+</script>
+<script src="Scripts/PublicMethods.js"></script>

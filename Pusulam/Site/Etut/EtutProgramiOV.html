@@ -1,0 +1,426 @@
+﻿<head>
+    <script src="/Scripts/Tools.js"></script>
+    <script src="/Scripts/Rapor/amcharts.js"></script>
+    <script src="/Scripts/Rapor/jquery.easypiechart.js"></script>
+    <script src="/Scripts/Rapor/light.js"></script>
+    <script src="/Scripts/Rapor/serial.js"></script>
+    <script src="/Scripts/Rapor/pie.js"></script>
+</head>
+
+<style>
+    #chartdiv {
+        width: 100%;
+        height: 500px;
+        font-size: 11px;
+    }
+
+    .table > tbody > tr > td, .table > tbody > tr > th, .table > tfoot > tr > td, .table > tfoot > tr > th, .table > thead > tr > td, .table > thead > tr > th {
+        font-size: 11px;
+    }
+
+    .turuncu {
+        background-color: #EA5702;
+        color: white;
+        font-size: 12px !important;
+    }
+
+    .fontsize12 {
+        font-size: 12px !important;
+    }
+
+    .koyumavi {
+        background-color: #0E3170;
+        color: white;
+    }
+
+    .acikmavi {
+        background-color: #2786C3;
+        color: white;
+    }
+
+    .bordermavi {
+        border: #2786C3 1px solid;
+        text-align: center;
+        color: black;
+    }
+
+    .bordersag {
+        border-right: #b4d2e6 1px solid;
+        text-align: center;
+    }
+
+    .analizbaslik {
+        background-color: #FFA500 !important;
+    }
+
+    .fixed-table-body {
+        overflow-x: hidden !important;
+    }
+
+    .red {
+        color: red;
+    }
+</style>
+
+<div class="page-head">
+    <div class="page-title col-md-12">
+        <h1>
+            Etüt
+             <span onclick="YardimGoster(ID_MENU);" class="pull-right" style="cursor:pointer;"><img src="assets/global/img/info.gif" class="info-image-icon" /> </span>
+        </h1>
+    </div>
+</div>
+
+<div class="row" id="app">
+    <div class="col-md-12">
+        <div class="form-body form-horizontal" id="tabs">
+            <ul class="nav nav-tabs">
+                <li @click="tabid=1" class="active">  <a data-id="1" href="#tab_1_1" data-toggle="tab">Sabit Etüt Programı</a></li>
+                <li @click="tabid=2">                 <a data-id="2" href="#tab_1_2" data-toggle="tab">Sınav/Yazılı Etüt Lisesi</a></li>
+                <li @click="tabid=3">                 <a data-id="3" href="#tab_1_3" data-toggle="tab">Etüt Katılım Grafiği</a></li>
+            </ul>
+            <div class="tab-content">
+                <!--SABİT ETÜT LİSTESİ-->
+                <div class="tab-pane fade active in" id="tab_1_1">
+                    <div v-if="TCKIMLIKNO!=tcOgrenci">
+                        <div class="col-md-12 portlet box green-haze dd-item" style="border:none">
+                            <div class="portlet-title dd-handle" data-toggle='collapse' data-target='#filters' style="cursor:pointer;">
+                                <div class="caption">
+                                    <i class="icon-magnifier"></i>
+                                    <span class="caption-subject bold uppercase"> Filtreler </span>
+                                    <span class="caption-helper"></span>
+                                </div>
+                                <div class='actions'>
+                                    <a href='javascript:;' class='btn btn-default btn-sm' style='border:none;'>
+                                        <i class='fa fa-chevron-down'></i>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="portlet-body form collapse in" id="filters">
+                                <form role="form" style="padding:12px 20px">
+                                    <div class="row">
+                                        <div class="portlet light  col-md-12" id="FiltreDivVeli" style="margin:0px; border-bottom-style: solid;border-bottom-width: 3px;border-bottom-color: rgb(0, 173, 239);"
+                                             v-if="ListKullaniciTipi.indexOf(5)>-1">
+                                            <div class="portlet-body">
+                                                <div class="form-inline">
+                                                    <c-ogrenci-veli controller="EtutProgramiOV"
+                                                                    :tc="TCKIMLIKNO"
+                                                                    @OnChange="OgrenciVeliSelected">
+                                                    </c-ogrenci-veli>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="portlet light col-md-12" id="Tablodiv" style="min-height:100px;padding:0px;">
+                        <div class="col-md-12 form-group" style="overflow:auto" v-if="DersProgramiList.length>0">
+                            <table data-height="700" class="table table-striped table-bordered  table-checkable" data-width="100%" style="margin-bottom:0px; color:#111; width:100%;">
+                                <thead>
+                                    <tr>
+                                        <td>SAAT</td>
+                                        <td>Pazartesi</td>
+                                        <td>Salı</td>
+                                        <td>Çarşamba</td>
+                                        <td>Perşembe</td>
+                                        <td>Cuma</td>
+                                        <td>Cumartesi</td>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="derssaat in 5" :key="derssaat">
+                                        <td style="width:10% !important">{{derssaat}}. Ders</td>
+                                        <td style="width:15% !important" v-for="gun in 6 ">
+                                            <div class="form-md-line-input">
+                                                <div class="col-md-12" v-for="a in getObjects(DersProgramiList,'ID',gun+'-'+derssaat)">
+                                                    <div v-if="a.NESNE.ADSOYAD!=''">
+
+
+
+                                                                {{a.NESNE.DERSAD}} <!--{{a.NESNE.ADSOYAD}}-->
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+
+                                </tbody>
+                            </table>
+
+                        </div>
+                    </div>
+
+                </div>
+
+
+                <!--SINAV ETÜT LİSTESİ-->
+                <div class="tab-pane fade" id="tab_1_2">
+                    <div class="col-md-12" v-if="TCKIMLIKNO!=tcOgrenci">
+                        <div class="portlet box green-haze dd-item" style="border:none">
+                            <div class="portlet-title dd-handle" data-toggle='collapse' data-target='#filters' style="cursor:pointer;">
+                                <div class="caption">
+                                    <i class="icon-magnifier"></i>
+                                    <span class="caption-subject bold uppercase"> Filtreler </span>
+                                    <span class="caption-helper"></span>
+                                </div>
+                                <div class='actions'>
+                                    <a href='javascript:;' class='btn btn-default btn-sm' style='border:none;'>
+                                        <i class='fa fa-chevron-down'></i>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="portlet-body form collapse in" id="filters">
+                                <form role="form" style="padding:12px 20px">
+                                    <div class="row">
+                                        <div class="portlet light  col-md-12" id="FiltreDivVeli" style="margin:0px; border-bottom-style: solid;border-bottom-width: 3px;border-bottom-color: rgb(0, 173, 239);"
+                                             v-if="ListKullaniciTipi.indexOf(5)>-1">
+                                            <div class="portlet-body">
+                                                <div class="form-inline">
+                                                    <c-ogrenci-veli controller="EtutProgramiOV"
+                                                                    :tc="TCKIMLIKNO"
+                                                                    @OnChange="OgrenciVeliSelected">
+                                                    </c-ogrenci-veli>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="portlet light col-md-12" id="Tablodiv" style="min-height:100px;padding:0px;">
+                        <div class="col-md-12 form-group" style="overflow:auto">
+                            <table data-height="700" class="table table-striped table-bordered  table-checkable" data-width="100%" style="margin-bottom:0px; color:#111; width:100%;">
+                                <thead>
+                                    <tr>
+                                        <th>DERS</th>
+                                        <th>KONU</th>
+                                        <th>ETÜT</th>
+                                        <th>YER</th>
+                                        <th>TARIH</th>
+                                        <th>ÖĞRETMEN</th>
+                                        <th>KATILIM</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="u in SinavEtutListesi">
+                                        <td>{{u.DERSAD}}</td>
+                                        <td>
+                                            <div v-for="j in u.UNITELIST">
+                                                {{j.UNITEAD}}
+                                            </div>
+                                        </td>
+                                        <td>{{u.ETUT}}</td>
+                                        <td>{{u.YER}}</td>
+
+                                        <td>{{u.TARIH}}</td>
+                                        <td>{{u.ADSOYAD}}</td>
+                                        <td>
+                                            <div>{{u.KATILDI ==true ? "KATILDI" : u.KATILDI== null ? "---" : "KATILMADI"}}</div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+
+
+
+                <!--SINAV ETÜT LİSTESİ-->
+                <div class="tab-pane fade" id="tab_1_3">
+                    <div class="col-md-12" v-if="TCKIMLIKNO!=tcOgrenci">
+                        <div class="portlet box green-haze dd-item" style="border:none">
+                            <div class="portlet-title dd-handle" data-toggle='collapse' data-target='#filters' style="cursor:pointer;">
+                                <div class="caption">
+                                    <i class="icon-magnifier"></i>
+                                    <span class="caption-subject bold uppercase"> Filtreler </span>
+                                    <span class="caption-helper"></span>
+                                </div>
+                                <div class='actions'>
+                                    <a href='javascript:;' class='btn btn-default btn-sm' style='border:none;'>
+                                        <i class='fa fa-chevron-down'></i>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="portlet-body form collapse in" id="filters">
+                                <form role="form" style="padding:12px 20px">
+                                    <div class="row">
+                                        <div class="portlet light  col-md-12" id="FiltreDivVeli" style="margin:0px; border-bottom-style: solid;border-bottom-width: 3px;border-bottom-color: rgb(0, 173, 239);"
+                                             v-if="ListKullaniciTipi.indexOf(5)>-1">
+                                            <div class="portlet-body">
+                                                <div class="form-inline">
+                                                    <c-ogrenci-veli controller="EtutProgramiOV"
+                                                                    :tc="TCKIMLIKNO"
+                                                                    @OnChange="OgrenciVeliSelected">
+                                                    </c-ogrenci-veli>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div v-if="SinavEtutGrafik==null" style="margin: 15px;">
+                        Henüz Etüt Tanımlanmamıştır.
+                    </div>
+                    <div class="portlet light col-md-12" id="Tablodiv" style="min-height:100px;padding:0px;">
+                        <div class="col-md-12 form-group" style="overflow:auto">
+
+                            <div id="chartdiv"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../../VueComponents/SinavIstatistikFiltreleri.js?v=3"></script>
+<script>
+    var vue = new Vue({
+        el: "#app",
+        name: "EtutProgramiOV.html",
+
+        data: {
+            TCKIMLIKNO: '',
+            tcOgrenci: '',
+
+            SinavEtutListesi: [],
+            ListKullaniciTipi: [],
+            DersProgramiList: [],
+            SinavEtutGrafik: [],
+
+            tabid: 1,
+        },
+
+        mounted() {
+
+            for (var i = 1; i <= 6; i++) { //gün
+                for (var j = 1; j <= 5; j++) { //saat
+                    this.DersProgramiList.push({ ID: i + "-" + j, NESNE: { TCKIMLIKNO: "", ID_DERS: 0, GUN: i, DERSSAAT: j, ADSOYAD: "", DERSAD: "" } });
+                }
+            }
+
+            this.TCKIMLIKNO = session.TCKIMLIKNO;
+            var list = [];
+
+            var p = {
+                TCKIMLIKNO: session.TCKIMLIKNO,
+                OTURUM: session.OTURUM
+            };
+            WebPost(this, "EtutProgramiOV", "KullaniciTipiGetir", p, "#app", "Yükleniyor...", function (data, parent) {
+                if (data != null) {
+                    $.each(data, function (j, el) {
+                        list.push(this.ID_KULLANICITIPI)
+                    });
+                    parent.ListKullaniciTipi = list;
+                    if (list.indexOf(4) > -1)
+                        parent.tcOgrenci = session.TCKIMLIKNO;
+
+
+                } else {
+                    Alert_Warning("Kullanıcı Bulunamadı..!");
+                }
+            });
+
+        },
+
+        methods: {
+            getObjects(obj, key, val) {
+                var objects = [];
+                for (var i in obj) {
+                    if (!obj.hasOwnProperty(i)) continue;
+                    if (typeof obj[i] == 'object') {
+                        objects = objects.concat(this.getObjects(obj[i], key, val));
+                    } else if (i == key && obj[key] == val) {
+                        objects.push(obj);
+                    }
+                }
+                return objects;
+            },
+            OgrenciVeliSelected(item) {
+                vue.tcOgrenci = item;
+            },
+
+            EtutSabitListeOV() {
+
+
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    TC_OGRENCI: vue.tcOgrenci,
+                };
+                WebPost(this, "EtutProgramiOV", "EtutSabitListeOV", p, "#app", "Yükleniyor...", function (data, parent) {
+                    var veri = JSON.parse(data)[0].LISTE;
+                    for (var i in vue.DersProgramiList) {
+                        vue.DersProgramiList[i].NESNE.TCKIMLIKNO = "";
+                        vue.DersProgramiList[i].NESNE.ADSOYAD = "";
+                        vue.DersProgramiList[i].NESNE.DERSAD = "";
+                        vue.DersProgramiList[i].NESNE.ID_DERS = 0;
+                    }
+
+                    $.each(veri, function (j, u) {
+                        var kt = getObjects(vue.DersProgramiList, "ID", u.ID_GUN + "-" + u.DERSSAAT);
+                        kt[0].NESNE.TCKIMLIKNO = u.TC_OGRETMEN;
+                        kt[0].NESNE.ADSOYAD = u.ADSOYAD;
+                        kt[0].NESNE.ID_DERS = u.ID_DERS;
+                        kt[0].NESNE.DERSAD = u.DERSAD;
+                    });
+
+
+
+                });
+
+            },
+            SinavEtutListeOV() {
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    TC_OGRENCI: vue.tcOgrenci,
+                };
+                WebPost(this, "EtutProgramiOV", "SinavEtutListeOV", p, "#app", "Yükleniyor...", function (data, parent) {
+                    vue.SinavEtutListesi = JSON.parse(data)[0].LISTE;
+                });
+
+            },
+            SinavEtutKatilimGrafigiOV() {
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    TC_OGRENCI: vue.tcOgrenci,
+                };
+                WebPost(this, "EtutProgramiOV", "SinavEtutKatilimGrafigiOV", p, "#app", "Yükleniyor...", function (data, parent) {
+                    vue.SinavEtutGrafik = JSON.parse(data)[0].LISTE;
+                    var TOPLAMETUTSAYISI = parseFloat(vue.SinavEtutGrafik[0].TOPLAMETUTSAYISI);
+                    var KATILIMSAYISI = parseFloat(vue.SinavEtutGrafik[0].KATILIMSAYISI);
+                    var datapro = [];
+                    //datapro.push({ "durum": "Katıldı", "yuzde": ((KATILIMSAYISI.toFixed(2) / TOPLAMETUTSAYISI).toFixed(4) * 100).toFixed(2), "color": "#DDD" })
+                    //datapro.push({ "durum": "Katılmadı", "yuzde": (((TOPLAMETUTSAYISI-KATILIMSAYISI).toFixed(2) / TOPLAMETUTSAYISI).toFixed(4) * 100).toFixed(2), "color": "#DDD" })
+                    datapro.push({ "durum": "Katıldı", "yuzde": KATILIMSAYISI.toFixed(2), "color": "#DDD" })
+                    datapro.push({ "durum": "Katılmadı", "yuzde": (TOPLAMETUTSAYISI - KATILIMSAYISI).toFixed(2), "color": "#DDD" })
+                    AmChartPieOlustur("chartdiv", datapro, "yuzde", "durum", false, "Etüt Katılım Grafiği", true);
+                });
+            },
+        },
+
+        watch: {
+            tcOgrenci() {
+                this.EtutSabitListeOV();
+                this.SinavEtutListeOV();
+                this.SinavEtutKatilimGrafigiOV();
+            },
+        },
+
+    });
+
+
+</script>
+
+<script src="../../../Scripts/PublicMethods.js"></script>

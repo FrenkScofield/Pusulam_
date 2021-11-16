@@ -1,0 +1,875 @@
+﻿
+<link href="../../../assets/global/plugins/nouislider/jquery.nouislider.css" rel="stylesheet" />
+<head>
+    <script src="../../../Scripts/Rapor/amcharts.js"></script>
+    <script src="../../../Scripts/Rapor/jquery.easypiechart.js"></script>
+    <script src="../../../Scripts/Rapor/light.js"></script>
+    <script src="../../../Scripts/Rapor/serial.js"></script>
+    <script src="../../../assets/global/plugins/nouislider/jquery.nouislider.js"></script>
+    <script src="../../../Scripts/Rapor/pie.js"></script>
+</head>
+<style>
+    .progressbar {
+        width: 400px;
+        height: 30px;
+    }
+
+    .progressbarlabel {
+        width: 300px;
+        height: 21px;
+        position: absolute;
+        text-align: center;
+        font-size: small;
+    }
+
+
+
+
+    .table > tbody > tr > td, .table > tbody > tr > th, .table > tfoot > tr > td, .table > tfoot > tr > th, .table > thead > tr > td, .table > thead > tr > th {
+        font-size: 11px;
+    }
+
+    .turuncu {
+        background-color: #EA5702;
+        color: white;
+        font-size: 12px !important;
+    }
+
+    .fontsize12 {
+        font-size: 12px !important;
+    }
+
+    .koyumavi {
+        background-color: #0E3170;
+        color: white;
+    }
+
+    .acikmavi {
+        background-color: #2786C3;
+        color: white;
+    }
+
+    .bordermavi {
+        border: #2786C3 1px solid;
+        text-align: center;
+        color: black;
+    }
+
+    .bordersag {
+        border-right: #b4d2e6 1px solid;
+        text-align: center;
+    }
+
+    .analizbaslik {
+        background-color: #FFA500 !important;
+    }
+
+    .fixed-table-body {
+        overflow-x: hidden !important;
+    }
+
+
+    .table > tbody > tr > td, .table > tbody > tr > th, .table > tfoot > tr > td, .table > tfoot > tr > th, .table > thead > tr > td, .table > thead > tr > th {
+        font-size: 11px;
+    }
+
+    .turuncu {
+        background-color: #EA5702;
+        color: white;
+        font-size: 12px !important;
+    }
+
+    .fontsize12 {
+        font-size: 12px !important;
+    }
+
+    .koyumavi {
+        background-color: #0E3170;
+        color: white;
+    }
+
+    .acikmavi {
+        background-color: #2786C3;
+        color: white;
+    }
+
+    .bordermavi {
+        border: #2786C3 1px solid;
+        text-align: center;
+        color: black;
+    }
+
+    .bordersag {
+        border-right: #b4d2e6 1px solid;
+        text-align: center;
+    }
+
+    .analizbaslik {
+        background-color: #FFA500 !important;
+    }
+
+    .fixed-table-body {
+        overflow-x: hidden !important;
+    }
+
+    .badgenew {
+        color: black !important;
+        font-size: 14px !important;
+        font-weight: bold;
+        float: right;
+        height: 23px;
+        margin-top: -3px;
+        padding-top: 5px;
+    }
+
+    @media (max-width: 1510px) {
+        .accordion-toggle {
+            font-size: 10px;
+        }
+
+        .badgenew {
+            color: black !important;
+            font-size: 10px !important;
+            font-weight: bold;
+            float: right;
+            height: 17px;
+            margin-top: -3px;
+            padding-top: 2px;
+        }
+    }
+
+    @media (max-width: 1190px) {
+        .accordion-toggle {
+            font-size: 10px;
+            padding: 10px 0px !important;
+        }
+    }
+
+    @media (max-width: 1020px) {
+        .badge {
+            padding: 2px 2px;
+        }
+    }
+
+    .badge10 {
+        background-color: #F31D13 !important;
+    }
+
+    .badge20 {
+        background-color: #F34713 !important;
+    }
+
+    .badge30 {
+        background-color: #F37013 !important;
+    }
+
+    .badge40 {
+        background-color: #F39913 !important;
+    }
+
+    .badge50 {
+        background-color: #F1CD1C !important;
+    }
+
+    .badge60 {
+        background-color: #E4DE1C !important;
+    }
+
+    .badge70 {
+        background-color: #D6EC1B !important;
+    }
+
+    .badge80 {
+        background-color: #BDF11C !important;
+    }
+
+    .badge90 {
+        background-color: #95F11C !important;
+    }
+
+    .badge100 {
+        background-color: #1CF140 !important;
+    }
+
+    .red {
+        color: red;
+    }
+</style>
+<div class="page-head">
+    <!-- BEGIN PAGE TITLE -->
+    <div class="page-title col-md-12">
+        <h1>
+            <small>Program Hazırla</small> <span onclick="YardimGoster(ID_MENU);" class="pull-right" style="cursor:pointer;"><img src="assets/global/img/info.gif" class="info-image-icon" /> </span>
+        </h1>
+    </div>
+    <!-- END PAGE TITLE -->
+</div>
+
+<div class="row" id="app">
+
+
+    <div v-if="divAcDeneme==0">
+        <div class="col-md-12">
+            <div class="portlet box green-haze dd-item" style="border:none">
+                <div class="portlet-title dd-handle" data-toggle='collapse' data-target='#filters' style="cursor:pointer;">
+                    <div class="caption">
+                        <i class="icon-magnifier"></i>
+                        <span class="caption-subject bold uppercase"> Filtreler </span>
+                        <span class="caption-helper"></span>
+                    </div>
+                    <div class='actions'>
+                        <a href='javascript:;' class='btn btn-default btn-sm' style='border:none;'>
+                            <i class='fa fa-chevron-down'></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="portlet-body form collapse in" id="filters">
+                    <form role="form" style="padding:12px 20px">
+                        <div class="form-body form-group-lg form-horizontal row" style="padding: 0px;margin-top: 0px !important;">
+                            <div class="portlet light col-md-12" id="FiltreDivOgretmen" style="margin:0px; border-bottom-style: solid;border-bottom-width: 3px;border-bottom-color: rgb(0, 173, 239);"
+                                 v-if="ListKullaniciTipi.indexOf(4)==-1">
+                                <div class="portlet-body">
+                                    <div class="form-inline">
+                                        <c-sube controller="ProgramHazirla"
+                                                @OnChange="SubeSelected">
+                                        </c-sube>
+                                        <c-kademe3 controller="ProgramHazirla"
+                                                   :idsube="idsube"
+                                                   @OnChange="Kademe3Selected">
+                                        </c-kademe3>
+                                        <c-sinif controller="ProgramHazirla"
+                                                 :idsube="idsube"
+                                                 :idkademe3="idkademe3"
+                                                 @OnChange="SinifSelected">
+                                        </c-sinif>
+                                        <c-ogrenci controller="ProgramHazirla"
+                                                   :idsinif="idsinif"
+                                                   @OnChange="OgrenciSelected">
+                                        </c-ogrenci>
+                                        <input style="float:right;margin: 10px;" type="button" class="btn btn-success" @click="KazanimListele" value="Listele">
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <div class="col-md-12" id="RaporTool" v-show="KAZANIMLIST.length>0">
+        <div class="col-md-6">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+            <h4 class="modal-title" id="ModalBaslik">Kazanım Listesi</h4>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group" id="RaporTool" style="padding-left:10px; padding-right:10px;">
+                <div id="slider-range">
+                </div>
+                <div id="value" class="col-md-12" value="100.00" style="text-align:center; height:30px; margin-top:10px;">
+                    %100.00 Altındakileri Raporla
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-12" id="divkazanim" v-if="KAZANIMLIST.length>0" style="word-break:break-word!important;">
+        <div class="portlet light" style="margin:0px; border-bottom-style: solid;
+    border-bottom-width: 3px;
+    border-bottom-color: rgb(0, 173, 239);">
+            <div class="portlet-body" style="padding:0px!important">
+                <div class="row" id="SinavAdiYKS" style="font-weight:600;font-size:16px;color:#929191; margin:0px!important;">
+                    KAZANIMLAR
+                </div>
+            </div>
+        </div>
+        <div class="portlet light" style="min-height: 100px;padding:0px;margin-top:1px">
+            <div class="panel-group accordion" id="accordion1">
+                <div class="panel panel-default" style="margin-top:-1px;" v-for="(u,index) in KAZANIMLIST">
+                    <div class="panel-heading">
+                        <div class="panel-title" style="padding: 3px;background-color: #444d58;">
+                            <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion1" :href="'#collapse_'+index" aria-expanded="true" style="font-size:14px; color:#FFF">
+                                <div style="display:inline-block; width:calc(100% - 60px); overflow:hidden; text-overflow:ellipsis;">{{u.DERSAD}}</div>
+                                <div :class="'badge badgenew pull-right'+' badge'+parseInt(u.DERSYUZDE-u.DERSYUZDE%10)">
+                                    {{u.DERSYUZDE}}
+                                </div>
+
+                            </a>
+                        </div>
+                    </div>
+                    <div :id="'collapse_'+index" class="panel-collapse collapse" aria-expanded="true" style="">
+                        <table class="table table-responsive table-bordered" style="margin:0PX!important;" id='tblSorular'>
+                            <thead>
+                                <tr>
+                                    <th>KAZANIMLAR</th>
+                                    <th style="width:100px!important;">ÇÖZÜLME ORANI</th>
+                                    <th style="width:100px!important;">VERİLEN ÇALIMA SAYISI</th>
+                                    <th style="width:100px!important;">İşlemler</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr style="background-color: #F1F1F1; cursor:pointer;" v-for="k in u.UNITELER" :title="'Doğru: ' + k.TD + ' Yanlış: ' + k.TY+ ' Boş: ' + k.TB">
+                                    <td @click="DetayGoster(k)" v-html="k.UNITEAD"></td>
+
+                                    <td style="text-align:center;vertical-align:middle; width:40px;">{{k.UNITEYUZDE}}</td>
+                                    <!--<td style="text-align:center;vertical-align:middle; width:40px;">{{k.CALISMASAYISI}}</td>-->
+                                    <td style="width:120px!important;">
+
+                                        <button type="button" class="btn btn-xs green" @click="OdevEkleDuzelt1(k)">{{k.CALISMASAYISI}}</button>
+
+
+                                    </td>
+                                    <td>
+                                        <button type="button" class="btn btn-xs green" @click="OdevEkleDuzelt(k)">Seç</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+    <div class="col-md-12 row" id="divKonu" v-show="divKonuFiltre==1">
+        <div class="col-md-12">
+            <div class="portlet box green-haze dd-item" style="border:none">
+                <div class="portlet-title dd-handle" data-toggle='collapse' data-target='#filtersKonu' style="cursor:pointer;">
+                    <div class="caption">
+                        <i class="icon-magnifier"></i>
+                        <span class="caption-subject bold uppercase"> Konu Analizi Filtreleri </span>
+                        <span class="caption-helper"></span>
+                    </div>
+                    <div class='actions'>
+                        <a href='javascript:;' class='btn btn-default btn-sm' style='border:none;'>
+                            <i class='fa fa-chevron-down'></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div id="unitedty" class="modal fade" tabindex="-1" data-replace="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                    <h4 class="modal-title">Kazanım Detay</h4>
+                </div>
+                <div class="modal-body" align="center" valign="middle">
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="row">
+                                    <div class="form-md-line-input">
+                                        <label class="control-label col-md-3" style="vertical-align:middle;">Kazanım Ad</label>
+                                        <div class="col-md-9">
+                                            <input type="text" v-model="UNITE.UNITEAD" disabled class="form-control" />
+                                        </div>
+                                    </div>
+                                </div>
+
+
+
+                                <div class="row">
+                                    <c-tarih tarihid="t_verilis"
+                                             label="Hedef Tarihi"
+                                             gun="0"
+                                             @change-date="VerilisTarihiSelected">
+                                    </c-tarih>
+                                </div>
+                                <div class="row">
+                                    <c-saat id="s_zumre"
+                                            label="Saat"
+                                            :idset="SAAT"
+                                            @change-time="SaatSelected">
+                                    </c-saat>
+                                </div>
+
+                                <div class="row">
+                                    <div class="form-md-line-input">
+                                        <label class="control-label col-md-3" style="vertical-align:middle;">Hedef Soru</label>
+                                        <div class="col-md-9">
+                                            <input type="text" class="form-control" v-model="ITEM.HEDEFSORU" />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                
+
+                               
+
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer margin-right-10">
+                    <button type="button" data-dismiss="modal" class="btn dark btn-outline margin-right-10 margin-top-10">Kapat</button>
+                    <button type="button" class="btn btn-success btn-outline margin-right-10 margin-top-10" @click="UniteGuncelle()">Kaydet</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="unitedty1" class="modal fade"  tabindex="-1" data-replace="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                    <h4 class="modal-title">Kazanım Detay</h4>
+                </div>
+                <div class="modal-body" align="center" valign="middle">
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="row">
+                                    <div class="form-md-line-input">
+                                        <div class="col-md-12">
+                                            <div class="col-md-3">Kayıt Tarih</div>
+
+                                            <div class="col-md-3">Kazanım Kod</div>
+
+
+                                            <div class="col-md-3">Hedef Tarih</div>
+
+                                            
+                                        </div>
+                                    </div>
+                                </div>
+ 
+                                    <div class="row" v-for="(u,j) in UNITE.LINKLIST">
+                                        <div class="form-md-line-input">
+
+                                            <div class="col-md-12">
+                                                <div class="col-md-3" style="padding: 0px;">
+
+                                                    <input type="text" v-model="u.KYE_TARIH" class="form-control" />
+                                                </div>
+                                                <div class="col-md-3" style="padding: 0px;">
+                                                    <input type="text" v-model="u.KAZANIMKOD" class="form-control" />
+                                                </div>
+                                                <div class="col-md-3" style="padding: 0px;">
+                                                    <input type="text" v-model="u.TARIH" class="form-control" />
+                                                </div>
+                                                <div class="col-md-3" style="padding: 0px;">
+                                                    <button type="button" class="btn btn-xs red pull-right" style="margin-top: 5px;" @click="LinkSil(j)"><i class="fa fa-close"></i></button>
+                                                </div>
+                                                </div>
+                                            </div>
+                                    </div>
+
+
+
+                                </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer margin-right-10">
+                    <button type="button" data-dismiss="modal" class="btn dark btn-outline margin-right-10 margin-top-10">Kapat</button>
+                    <button type="button" class="btn btn-success btn-outline margin-right-10 margin-top-10" @click="UniteGuncelle1()">Kaydet</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+<script src="../../../VueComponents/Genel.js?v=3"></script>
+<script src="../../../VueComponents/SinavFiltreleri.js?v=8"></script>
+<script src="../../../VueComponents/KonuAnaliziFiltreleri.js?v=3"></script>
+<script src="../../../VueComponents/OgrenciRaporlariFiltreleri.js?v=3"></script>
+
+<script src="VueComponents/FiltreEk.js?v=001"></script>
+<script src="../../../VueComponents/SinavIstatistikFiltreleri.js?v=3"></script>
+<script>
+    function btnDeneme(item) {
+        vue.DenemeGetir(item);
+    }
+    function btnYazili(item) {
+        vue.YaziliGetir(item);
+    }
+    var tblSorular = null;
+    var vue = new Vue({
+        el: "#app",
+        name: "ProgramHazirlama.html",
+
+        data: {
+            ITEM: {},
+            UNITE: { ID_DERSUNITE: 0, AD: '', ID_DERS: 0, KOD: '', LINKLIST: [{ LINK: '' }] },
+            UNITEGERCEK: { ID_DERSUNITE: 0, AD: '', ID_DERS: 0, KOD: '', LINKLIST: [{ LINK: '' }] },
+            //UNITE: {UNITEAD: '',KOD:'' },
+            KAZANIMLIST: [],
+            KAZANIMLAR: [],
+            VERILIS_TARIHI: '',
+            SAAT: '',
+            TCKIMLIKNO: '',
+            LISTE: [],
+            divAcDeneme: 0,
+            divKonuFiltre: 0,
+            idsube: 0,
+            idkademe3: 0,
+            idsinif: 0,
+            tcogrenci: '',
+            ListKullaniciTipi: [],
+            filtre: [],
+            count: 0
+           //  UNITE: { ID_DERSUNITE: 0, AD: '', ID_DERS: 0, KOD: '', LINKLIST: [{ LINK: '' }] }
+        },
+        mounted() {
+            var _this = this;
+            var rangeSlider = document.getElementById('slider-range');
+
+            noUiSlider.create(rangeSlider, {
+                start: [0, 100],
+                //behaviour: 'snap',
+                //connect: 'lower',
+                range: {
+                    'min': 0,
+                    'max': 100
+                }
+            });
+
+            rangeSlider.noUiSlider.on('slide', function (value) {
+                $("#value").html("%" + value + " Arasındakileri Raporla");
+                $("#value").attr("value", value);
+                _this.limit = value;
+                _this.Limitle();
+            });
+            //this.ListeOlustur();
+
+            var p = {
+                TCKIMLIKNO: session.TCKIMLIKNO,
+                OTURUM: session.OTURUM
+            };
+            var list = [];
+            WebPost(this, "OgrenciRaporlari", "KullaniciTipiGetir", p, "#app", "Yükleniyor...", function (data, parent) {
+                if (data != null) {
+                    $.each(data, function (j, el) {
+                        list.push(this.ID_KULLANICITIPI)
+                    });
+                    parent.ListKullaniciTipi = list;
+                    if (list.indexOf(4) > -1)
+                        parent.tcogrenci = session.TCKIMLIKNO;
+                } else {
+                    Alert_Warning("Kullanıcı Bulunamadı..!");
+                }
+            });
+        },
+
+        methods: {
+            SubeSelected(item) {
+                this.idsube = item;
+                this.idkademe3 = 0;
+                this.idsinif = 0;
+                this.divOgrenci = 0;
+                this.divAc = 0;
+                this.Sifirla();
+            },
+            Kademe3Selected(item) {
+                this.idkademe3 = item;
+                this.idsinif = 0;
+                this.divOgrenci = 0;
+                this.divAc = 0;
+                this.Sifirla();
+               
+            },
+            SinifSelected(item) {
+                this.idsinif = item;
+                this.divOgrenci = 0;
+                this.divAc = 0;
+                this.Sifirla();
+            },
+            OgrenciSelected(item) {
+                this.tcogrenci = item;
+                this.Sifirla();
+
+                var _this = this;
+                _this.$nextTick(function () {
+                    _this.divOgrenci = 1;
+                    _this.divAc = 0;
+                });
+            },
+
+
+
+
+            DonemSelected(item) {
+                this.DONEM = item;
+                this.divAc = 0;
+                if (this.divOdevTakibi == 1) {
+                    this.OdevTakibiGetir();
+                }
+            },
+
+
+
+
+            VerilisTarihiSelected(item) {               
+                this.ITEM.VERILIS_TARIHI = item;
+            },
+            SaatSelected(item) {
+                this.ITEM.SAAT = item;
+            },
+
+            distinct(data, key) {
+                var distList = [];
+                $.each(data, function (j, item) {
+                    if (distList.indexOf(item[key]) == -1) {
+                        distList.push(item[key]);
+                    }
+                });
+                return distList;
+            },
+            getObjects(obj, key, val) {
+                var objects = [];
+                for (var i in obj) {
+                    if (!obj.hasOwnProperty(i)) continue;
+                    if (typeof obj[i] == 'object') {
+                        objects = objects.concat(this.getObjects(obj[i], key, val));
+                    } else if (i == key && obj[key] == val) {
+                        objects.push(obj);
+                    }
+                }
+                return objects;
+            },
+
+
+
+            LinkSil(j) {
+                this.count++;
+                console.log(j);
+                this.UNITE.LINKLIST.splice(j, 1);
+            },
+
+            Sifirla() {
+                this.divAcYazili = 0;
+                this.divAcDeneme = 0;
+                this.divAcKonu = 0;
+                this.divAraKarne = 0;
+                this.divGelisimRaporu = 0;
+                this.divGelisimRaporuOO = 0;
+                this.divAcYazili = 0;
+                this.divAcDeneme = 0;
+                this.divAcKonu = 0;
+                this.divKonuFiltre = 0;
+                this.divOdevTakibi = 0;
+                this.divOdevTakibiFiltre = 0;
+
+                this.htmlDeneme = "",
+
+                    $("#cmbRaporTur").val(0);
+
+                $("#cmbRaporTur").selectpicker('refresh');
+            },
+
+            UniteGetir() {
+                this.JSONUNITE = [];
+                console.log(tblSorular);
+                if (tblSorular != null) {
+                    tblSorular.rows().remove().draw();
+                    tblSorular.destroy();
+                }
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    ID_DERS: this.ID_DERS,
+                    ID_KADEME3: this.ID_KADEME3
+                };
+                WebPost(this, "ProgramHazirla", "DersUniteKazanimGetir", p, '', '', function (data, parent) {
+                    if (data != null) {
+                        parent.JSONUNITE = JSON.parse(data);
+                        console.log(parent.JSONUNITE);
+                        //DOM update olmasını bekleyip update olunca listeyi oluşturuyor.
+                        //Vue.nextTick(function () {
+                        //    parent.ListeOlustur();
+                        //})
+                    }
+                    else {
+                        Alert_Warning("Liste Bulunamadı!");
+                    }
+                })
+            },
+            ListeOlustur() {
+                tblSorular = $('#tblSorular').DataTable(
+                    {
+                        "columnDefs": [{ "width": "25%", "targets": 0 }],
+                        "aoColumnDefs": [{ "aTargets": [0] }],
+                        "aaSorting": [[0, 'asc']],
+                        language: {
+                            "url": "./Utility/dil.json"
+                        }
+                    });
+            },
+
+            GeriDeneme() {
+                this.Tbl = 1;
+                this.divAcDeneme = 0;
+            },
+
+
+            Limitle() {
+
+                var _this = this;
+                var idetutsiniflist = _this.idetutsiniflist;
+
+                var kazanim = JSON.parse(JSON.stringify(this.KAZANIMLAR));
+                
+                _this.KAZANIMLIST = $.each(kazanim, function (j, ders) {
+                    ders.UNITELER = $.grep(ders.UNITELER, function (unite) {
+                        return unite.UNITEYUZDE <= _this.limit[1]
+                            && unite.UNITEYUZDE >= _this.limit[0]
+                    });
+                });
+
+            },
+
+
+            KazanimListele() {
+
+                var p = { TCKIMLIKNO: session.TCKIMLIKNO, OTURUM: session.OTURUM, OGRTCKIMLIKNO: this.tcogrenci };
+                if (this.idsube == "" || this.idsinif == "" || this.idkademe3 == "" || this.tcogrenci == "") {
+                    Alert_Warning("Sınıf , Şube,Kademe ve Öğrenci Seçimlerini Yapınız...");
+                    return;
+                }
+                WebPost(this, "ProgramHazirla", "KazanimListele", p, '', '', function (data, parent) {
+                    vue.KAZANIMLIST = JSON.parse(data);
+                    vue.KAZANIMLAR = JSON.parse(data);
+                })
+            },
+
+            OdevEkleDuzelt(UNITE) {
+                console.log(UNITE);
+                this.UNITEGERCEK = { ID_DERSUNITE: 0, AD: '', ID_DERS: 0, KOD: '', LINKLIST: [{ LINK: '' }] };
+                this.UNITEGERCEK = UNITE;
+                this.UNITE = JSON.parse(JSON.stringify(UNITE));
+                $("#unitedty").modal();
+               
+
+            },
+            OdevEkleDuzelt1(UNITE) {
+                console.log(UNITE);
+                this.UNITEGERCEK = { ID_DERSUNITE: 0, AD: '', ID_DERS: 0, KOD: '', LINKLIST: [{ LINK: '' }] };
+                this.UNITEGERCEK = UNITE;
+                this.UNITE = JSON.parse(JSON.stringify(UNITE));
+                $("#unitedty1").modal();
+
+
+            },
+            UniteGuncelle() {
+               
+                LINKLIST = JSON.stringify(this.UNITE.LINKLIST);
+                    var p = {
+                        TCKIMLIKNO: session.TCKIMLIKNO,
+                        OTURUM: session.OTURUM,
+                        ID_DERS: this.ID_DERS,
+                        ID_KADEME3: this.idkademe3,
+                        //KOD: this.UNITE.KOD,
+                        AD: this.UNITE.UNITEAD,  
+                        KOD: this.UNITE.UNITEKOD,
+                        //AD: this.UNITE.AD,
+                        TC_OGRENCI: this.tcogrenci,
+                        ID_DERSUNITE: this.UNITE.ID_DERSUNITE,
+                        LINKLIST: JSON.stringify(this.UNITE.LINKLIST),
+                        SQLJSON: JSON.stringify(this.ITEM)
+                };
+                console.log(p.LINKLIST);
+                if (this.ITEM.VERILIS_TARIHI == "") {
+                    Alert_Warning("Tarih Seçimi zorunludur");
+                    return;
+                }
+                
+                    if (p.AD != "" && p.KOD != "") {
+                        console.log(p);
+                        WebPost(this, "ProgramHazirla", "ProgramEkle", p, '', '', function (data, parent) {
+                            if (data == true) {
+                                Alert_Info("Program Ekleme İşlemi Başarılı");
+                                $("#unitedty").modal("hide");
+                                Vue.nextTick(function () {
+                                    
+                                   // parent.UNITEGERCEK.CALISMASAYISI++;
+                                    //parent.UNITEGERCEK = {};
+                                    parent.ITEM.HEDEFSORU = "";
+                                    parent.KazanimListele();
+                                    parent.UniteGetir();
+                                })
+                            }
+                            else {
+                                Alert_Warning("Program Ekleme işlemi Başarısız");
+                            }
+                        })
+                    }
+                    else {
+                        Alert_Warning("Alanları boş geçmeyin!");
+                    }
+              
+            },
+
+            UniteGuncelle1() {
+
+                LINKLIST = JSON.stringify(this.UNITE.LINKLIST);
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    ID_DERS: this.ID_DERS,
+                    ID_KADEME3: this.idkademe3,
+                    //KOD: this.UNITE.KOD,
+                    AD: this.UNITE.UNITEAD,
+                    KOD: this.UNITE.UNITEKOD,
+                    //AD: this.UNITE.AD,
+                    TC_OGRENCI: this.tcogrenci,
+                    ID_DERSUNITE: this.UNITE.ID_DERSUNITE,
+                    LINKLIST: JSON.stringify(this.UNITE.LINKLIST),
+                    SQLJSON: JSON.stringify(this.ITEM)
+                };
+                console.log(p.LINKLIST);
+                if (this.ITEM.VERILIS_TARIHI == "") {
+                    Alert_Warning("Tarih Seçimi zorunludur");
+                    return;
+                }
+
+                if (p.AD != "" && p.KOD != "") {
+                    console.log(p);
+                    WebPost(this, "ProgramHazirla", "ProgramSil", p, '', '', function (data, parent) {
+                        if (data == true) {
+                            Alert_Info("Program Ekleme İşlemi Başarılı");
+                            $("#unitedty1").modal("hide");
+                            Vue.nextTick(function () {
+
+                               // parent.UNITEGERCEK.CALISMASAYISI = parent.UNITEGERCEK.CALISMASAYISI - parent.count;
+                                //parent.UNITEGERCEK = {};
+                                parent.ITEM.HEDEFSORU = "";
+                                parent.KazanimListele();
+                                parent.UniteGetir();
+                            })
+                        }
+                        else {
+                            Alert_Warning("Program Ekleme işlemi Başarısız");
+                        }
+                    })
+                }
+                else {
+                    Alert_Warning("Alanları boş geçmeyin!");
+                }
+
+            },
+
+            DetayGoster(k) {
+
+                this.SECILIKAZANIM = k;
+                this.$nextTick(function () {
+                    $('#kazanim_modal').modal();
+                });
+            }
+
+
+        },
+    });
+</script>
+<script src="../../../Scripts/PublicMethods.js"></script>
+<script src="../../../Scripts/Rapor/amcharts.js"></script>

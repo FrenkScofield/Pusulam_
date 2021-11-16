@@ -1,0 +1,292 @@
+﻿<head>
+    <script src="/Scripts/Tools.js"></script>
+    <script src="../../../assets/global/plugins/nouislider/jquery.nouislider.js"></script>
+
+</head>
+<style>
+    td {
+        vertical-align: middle !important;
+    }
+
+    .row {
+        margin-top: 10px !important;
+    }
+</style>
+<div class="page-head">
+    <div class="page-title col-md-12">
+        <h1>
+            Genel Kurul <small>Periyot Ekle</small>
+            <span onclick="YardimGoster(ID_MENU);" class="pull-right" style="cursor:pointer;"><img src="assets/global/img/info.gif" class="info-image-icon" /> </span>
+        </h1>
+    </div>
+</div>
+<div class="row" id="app">
+    <div class="row" id="app" style="margin-top:0px!important;">
+        <div class="col-md-12">
+            <div class="portlet light">
+                <div class="row">
+                    <c-donem controller="GenelKurul"
+                             @OnChange="DonemSelected">
+                    </c-donem>
+                </div>
+
+                <div class="row">
+                    <div class="form-group" style="margin-top:10px;">
+                        <div class="col-md-12 text-right">
+                            <button type="button" class="btn yellow" @click="MailGonder">Mevcut Periyot Mail Gönder</button>
+                            <button type="button" class="btn blue" @click="EkleModal">Periyot Ekle</button>
+                            <!--<button type="button" class="btn green" @click="SinavListele">Sınav Listele</button>-->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="portlet light">
+                <div class="row" v-if="LISTE.length>0">
+                    <table class="table table-striped table-bordered table-hover table-checkable">
+                        <thead>
+                            <tr>
+                                <!--<th></th>-->
+                                <th>Başlangıç</th>
+                                <th>Bitiş</th>
+                                <th style="width:82px;">İŞLEM</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="odd gradeX" v-for="(u, index) in LISTE">
+                                <!--<td>{{index + 1}}. Periyot</td>-->
+                                <td>
+                                    {{u.BASLANGIC}}
+                                </td>
+                                <td>
+                                    {{u.BITIS}}
+                                </td>
+                                <td>
+                                    <a style='width:140px;' @click='PeriyotMailGonder(u.ID_PERIYOT)' class='btn blue'> MAİL GÖNDER <i class='fa fa-envelope-o'></i></a>
+                                    <a style='width:140px; margin-top:10px;' @click='DuzenleModal(u.ID_PERIYOT, u.BASLANGIC, u.BITIS)' class='btn yellow'> DÜZENLE <i class='fa fa-pencil'></i></a>
+                                    <a style='width:140px; margin-top:10px;' @click='Sil(u.ID_PERIYOT)' class='btn red'> SİL <i class='fa fa-trash-o'></i></a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+
+            </div>
+        </div>
+        <div id="ekle_modal" class="modal fade in" tabindex="-1" data-replace="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                        <h4 class="modal-title">Periyot Ekle</h4>
+                    </div>
+
+                    <div class="modal-body" style="padding-bottom:0px;" v-if="ITEM!=null">
+                        <div class="form-body form-horizontal">
+                            <div class="row" style="margin:0px;">
+                                <input type="text" id="bas" style="cursor:pointer!important;" v-model="ITEM.BASLANGIC" class="TarihSecici form-control form-control-inline date-picker" readonly placeholder="Başlangıç Seçiniz..">
+                            </div>
+                            <div class="row" style="margin:0px;">
+                                <input type="text" id="bit" style="cursor:pointer!important;" v-model="ITEM.BITIS" class="TarihSecici form-control form-control-inline date-picker" readonly placeholder="Bitiş Seçiniz..">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn green" @click="PeriyotEkle()">{{ITEM==null || ITEM.ID_PERIYOT==0?'Ekle':'Güncelle'}}</button>
+                        <button type="button" class="btn default" data-dismiss="modal">Kapat</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../../../VueComponents/Genel.js?v=4"></script>
+<script src="VueComponents/Filtre.js"></script>
+
+<script>
+    var vue = new Vue({
+        el: "#app",
+        name: "PeriyotEkle.html",
+
+        data: {
+            TCKIMLIKNO: '',
+            OTURUM: '',
+            controller: 'GenelKurul',
+            DONEM: '',
+            LISTE: [],
+            ITEM: null
+
+        },
+
+        mounted() {
+            //this.Listele();
+        },
+
+        methods: {
+            DonemSelected(DONEM) {
+                this.DONEM = DONEM;
+                this.Listele();
+            },
+
+            PeriyotEkle() {
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    DONEM: this.DONEM,
+                    SQLJSON: JSON.stringify(this.ITEM)
+                };
+                WebPost(this, this.controller, "PeriyotEkle", p, '', '', function (data, parent) {
+                    if (JSON.parse(data)) {
+                        vue.LISTE = JSON.parse(data);
+                        vue.$nextTick(function () {
+                            $('#ekle_modal').modal('hide');
+                        });
+                    }
+                    else {
+                        vue.LISTE = [];
+                    }
+                });
+            },
+
+            Sil(ID) {
+                Alert_Confirm("Emin misiniz?", "Periyot silinecek.", function () {
+                    var p = {
+                        TCKIMLIKNO: session.TCKIMLIKNO,
+                        OTURUM: session.OTURUM,
+                        DONEM: vue.DONEM,
+                        ID_PERIYOT: ID
+                    };
+                    console.log(p)
+                    WebPost(vue, vue.controller, "PeriyotSil", p, '', '', function (data, parent) {
+                        if (JSON.parse(data)) {
+                            vue.LISTE = JSON.parse(data);
+                        }
+                        else {
+                            vue.LISTE = [];
+                        }
+                    });
+                });
+            },
+
+            Listele() {
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    DONEM: this.DONEM
+                };
+
+                WebPost(this, this.controller, "PeriyotListele", p, '', '', function (data, parent) {
+                    if (JSON.parse(data)) {
+                        vue.LISTE = JSON.parse(data);
+                    }
+                    else {
+                        vue.LISTE = [];
+                    }
+                    console.log(vue.LISTE.length);
+                });
+            },
+
+            EkleModal() {
+                this.ITEM = new Object();
+                this.ITEM.BASLANGIC = '';
+                this.ITEM.BITIS = '';
+                this.ITEM.ID_PERIYOT = 0;
+                $('#ekle_modal').modal();
+
+                vue.$nextTick(function () {
+                    $('.TarihSecici').each(function () {
+                        $(this).datepicker({
+                            format: 'dd.mm.yyyy',
+                            language: 'tr',
+                            autoclose: true
+                        }).on(
+                            'changeDate', () => {
+                                var day1 = $(this).datepicker('getDate').getDate();
+                                var month1 = $(this).datepicker('getDate').getMonth() + 1;
+                                var year1 = $(this).datepicker('getDate').getFullYear();
+                                var fullDate = (day1 < 10 ? '0' + day1 : day1) + "." + (month1 < 10 ? '0' + month1 : month1) + "." + year1;
+
+                                var tur = $(this).attr('id');
+
+                                if (tur == 'bas') {
+                                    vue.ITEM.BASLANGIC = fullDate;
+                                } else if (tur == 'bit') {
+                                    vue.ITEM.BITIS = fullDate;
+                                }
+                            }
+                        );
+                    });
+                });
+            },
+
+            MailGonder() {
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM
+                };
+
+                WebPost(this, this.controller, "MevcutPeriyotMailGonder", p, '', '', function (data) {
+                    if (data.d != null) {
+                        alert(data.d);
+                    }
+                    else {
+                        alert("Bir hata oluştu!");
+                    }
+                });
+            },
+
+            PeriyotMailGonder(ID) {
+                Alert_Confirm("Emin misiniz?", "Seçili periyot için mail gönderilecek.", function () {
+                    var p = {
+                        TCKIMLIKNO: session.TCKIMLIKNO,
+                        OTURUM: session.OTURUM,
+                        ID_PERIYOT: ID
+                    };
+
+                    WebPost(vue, vue.controller, "PeriyotMailGonder", p, '', '', function (data) {
+                        if (data != null) {
+                            alert(data);
+                        }
+                        else {
+                            alert("Bir hata oluştu!");
+                        }
+                    });
+                });
+            },
+
+            DuzenleModal(ID, BASLANGIC, BITIS) {
+                this.ITEM = new Object();
+                this.ITEM.BASLANGIC = BASLANGIC;
+                this.ITEM.BITIS = BITIS;
+                this.ITEM.ID_PERIYOT = ID;
+                $('#ekle_modal').modal();
+
+                vue.$nextTick(function () {
+                    $('.TarihSecici').each(function () {
+                        $(this).datepicker({
+                            format: 'dd.mm.yyyy',
+                            language: 'tr',
+                            autoclose: true
+                        }).on(
+                            'changeDate', () => {
+                                var day1 = $(this).datepicker('getDate').getDate();
+                                var month1 = $(this).datepicker('getDate').getMonth() + 1;
+                                var year1 = $(this).datepicker('getDate').getFullYear();
+                                var fullDate = (day1 < 10 ? '0' + day1 : day1) + "." + (month1 < 10 ? '0' + month1 : month1) + "." + year1;
+
+                                var tur = $(this).attr('id');
+
+                                if (tur == 'bas') {
+                                    vue.ITEM.BASLANGIC = fullDate;
+                                } else if (tur == 'bit') {
+                                    vue.ITEM.BITIS = fullDate;
+                                }
+                            }
+                        );
+                    });
+                });
+            }
+        }
+    });
+</script>
+<script src="Scripts/PublicMethods.js"></script>

@@ -1,0 +1,577 @@
+﻿<link href="assets/global/plugins/bootstrap-fileinput/bootstrap-fileinput.css" rel="stylesheet" type="text/css" />
+<!--<link href="assets/global/plugins/bootstrap-wysihtml5/bootstrap-wysihtml5.css" rel="stylesheet" type="text/css" />-->
+
+<div class="page-head">
+    <div class="page-title col-md-12">
+        <h1>
+            Duyuru Yönetimi  <span onclick="YardimGoster(ID_MENU);" class="pull-right" style="cursor:pointer;"><img src="assets/global/img/info.gif" class="info-image-icon" /> </span>
+        </h1>
+    </div>
+</div>
+
+<div class="row" id="app">
+
+    <div class="col-md-12">
+        <div class="portlet light">
+            <div class="row">
+                <div v-if="YUKLEMETAMAM">
+                    <div class="row form-group" style="margin-left: 5px;">
+                        <c-sube-multi controller="DuyuruYonetimi"
+                                      :idset="ID_SUBELIST"
+                                      @OnChange="SubeSelected">
+                        </c-sube-multi>
+                    </div>
+                    <div class="row form-group" style="margin-left: 5px;">
+                        <c-kullanici-tipi-multi controller="DuyuruYonetimi"
+                                                :idset="ID_KULLANICITIPILIST"
+                                                @OnChange="KullaniciTipiSelected">
+                        </c-kullanici-tipi-multi>
+                    </div>
+                    <div class="row form-group" style="margin-left: 5px;" v-if="ID_KULLANICITIPILIST.indexOf(4) > -1 || ID_KULLANICITIPILIST.indexOf(5) > -1">
+                        <c-kademe-multi controller="DuyuruYonetimi"
+                                        :idsubelist="ID_SUBELIST"
+                                        :idset="ID_KADEMELIST"
+                                        @OnChange="KademeSelected">
+                        </c-kademe-multi>
+                    </div>
+                    <div class="row form-group" style="margin-left: 5px;" v-if="ID_KULLANICITIPILIST.indexOf(4) > -1 || ID_KULLANICITIPILIST.indexOf(5) > -1">
+                        <c-kademe3-multi controller="DuyuruYonetimi"
+                                         :idsubelist="ID_SUBELIST"
+                                         :idkademelist="ID_KADEMELIST"
+                                         :idset="ID_KADEME3LIST"
+                                         @OnChange="Kademe3Selected">
+                        </c-kademe3-multi>
+                    </div>
+                    <div class="row form-group" style="margin-left: 5px;" v-if="ID_KULLANICITIPILIST.indexOf(4) > -1 || ID_KULLANICITIPILIST.indexOf(5) > -1">
+                        <c-sinif-multi controller="DuyuruYonetimi"
+                                       :idsubelist="ID_SUBELIST"
+                                       :idkademelist="ID_KADEMELIST"
+                                       :idkademe3list="ID_KADEME3LIST"
+                                       :idset="ID_SINIFLIST"
+                                       @OnChange="SinifSelected">
+                        </c-sinif-multi>
+                    </div>
+                    <div class="row form-group" style="margin-left: 5px;">
+
+
+                        <c-tarih lbl="Başlangıç Tarihi"
+                                 :tarih="BAS_TARIH"
+                                 @change-date="BasTarihSelected">
+                        </c-tarih>
+                    </div>
+                    <div class="row form-group" style="margin-left: 5px;">
+                        <c-tarih lbl="Bitiş Tarihi"
+                                 :tarih="BIT_TARIH"
+                                 @change-date="BitTarihSelected">
+                        </c-tarih>
+
+                    </div>
+                </div>
+                <div class="row form-group" style="margin-left: 5px;">
+                    <div class="form-md-line-input">
+                        <label class="control-label col-md-3"> Başlık </label>
+                        <div class="col-md-9">
+                            <input type="text" v-model="BASLIK" class="form-control" placeholder="Duyuru Başlığını Giriniz.." />
+                        </div>
+                    </div>
+                </div>
+                <div class="row form-group" style="margin-left: 5px;">
+
+                    <div class="form-md-line-input">
+                        <label class="control-label col-md-3">Duyuru Metni </label>
+                        <div class="col-md-9">
+                            <textarea id="editor" v-model="ICERIK">{{ICERIK}}</textarea>
+                        </div>
+                    </div>
+                    <!--<div class="form-md-line-input">
+                        <label class="control-label col-md-3"> Duyuru Metni </label>
+                        <div class="col-md-9" style="/*padding-top: 15px; padding-bottom: 15px; background-color: #F5F5F5;*/ background-color: rgb(245, 245, 245); padding: 0px; width: 72%; margin-left: 15px;">
+                            <textarea id="editor" v-model="ICERIK" placeholder="" class="form-control" rows="10" autofocus></textarea>
+                        </div>
+                    </div>-->
+
+                </div>
+
+                <div class=" row form-group" id="DYBDiv" style="margin-left: 5px;">
+                    <label class="control-label col-md-3">
+                        Duyuru Banner Görseli :
+                    </label>
+                    <div class="col-md-9">
+                        <!--<div class="row">
+        <div class="form-md-line-input">
+            <label class="control-label col-md-3">Dosyalar </label>
+            <div class="col-md-9">
+                <div class="fileinput fileinput-new" data-provides="fileinput">
+                    <div class="input-group" style="width:100%!important;">
+                        <div class="form-control uneditable-input input-fixed input-medium" data-trigger="fileinput" style="width:100%!important;">
+                            <i class="fa fa-file fileinput-exists"></i>&nbsp;
+                            <span class="fileinput-filename"> </span>
+                        </div>
+                        <span class="input-group-addon btn default btn-file">
+                            <span class="fileinput-new"> Dosya Seç </span>
+                            <span class="fileinput-exists"> Değiştir </span>
+                            <input type="file" name="..." id="upload_file" accept="image/*">
+                        </span>
+                        <a href="javascript:;" class="input-group-addon btn red fileinput-exists" data-dismiss="fileinput"> Sil </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>-->
+                        <form class="col-md-12">
+                            <label class="col-md-3" style="    margin-top: 10px;"> Web Görsel </label>
+
+
+                            <div class="col-md-9">
+                                <div class="fileinput fileinput-new col-md-6" data-provides="fileinput">
+                                    <input type="hidden">
+                                    <span class="btn default btn-file">
+                                        <span class="fileinput-new">Web Görsel Seç</span><span class="fileinput-exists">Değiştir</span>
+                                            <input id="upload_file" type="file" name="upload_file" accept="image/*" style="margin-top: 3px" />
+                                    </span>
+                                    <span class="fileinput-filename"></span>&nbsp; <a href="#" @click="FOTOGRAF=''" class="close fileinput-exists" data-dismiss="fileinput"></a>
+                                </div>
+                                <div style="height:80px!important;" v-if="FOTOGRAF!=''">
+                                    <a :href="'https://okyanusdata.s3-eu-west-1.amazonaws.com/pusulam/Yonetim/DuyuruYonetimi/'+FOTOGRAF" target="_blank">
+                                        <img style="height: 100% !important;" :src="'https://okyanusdata.s3-eu-west-1.amazonaws.com/pusulam/Yonetim/DuyuruYonetimi/'+FOTOGRAF" />
+                                    </a>
+                                </div>
+                            </div>
+                        </form>
+                        
+
+                        <form class="col-md-12" id="testForm">
+                            <label class="col-md-3" style="    margin-top: 10px;"> Mobil Görsel </label>
+
+                            <div class="col-md-9">
+                                <div class="fileinput fileinput-new col-md-6" data-provides="fileinput">
+                                    <input type="hidden">
+                                    <span class="btn default btn-file">
+                                        <span class="fileinput-new">Mobil Görsel Seç</span><span class="fileinput-exists">Değiştir</span>
+
+                                        <input id="upload_file_mobil" type="file" name="upload_file_mobil" accept="image/*" style="margin-top: 3px" />
+                                    </span>
+                                    <span class="fileinput-filename"></span>&nbsp; <a href="#" class="close fileinput-exists" @click="FOTOGRAF_MOBIL=''" data-dismiss="fileinput"></a>
+                                </div>
+                                <div style="height:80px!important;" v-if="FOTOGRAF_MOBIL!=''">
+                                    <a :href="'https://okyanusdata.s3-eu-west-1.amazonaws.com/pusulam/Yonetim/DuyuruYonetimi/'+FOTOGRAF_MOBIL" target="_blank">
+                                        <img style="height: 100% !important;" :src="'https://okyanusdata.s3-eu-west-1.amazonaws.com/pusulam/Yonetim/DuyuruYonetimi/'+FOTOGRAF_MOBIL" />
+                                    </a>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="row form-group" id="DYBDiv2" style="margin-left: 5px;">
+                    <label class="control-label col-md-3">
+                    </label>
+                    <div class="control-label col-md-9" style="text-align: left">
+                        Eklenecek Fotoğraf Boyutları : Genişlik =864 * Yükseklik= 340 px
+                    </div>
+                </div>
+                <div class="row form-group" id="DosyaDiv" style="margin-left: 5px;">
+                    <label id="lblBilgi" class="control-label col-md-3">
+                    </label>
+                    <div class="col-md-9">
+                        <!--:onsubmit="uploadFile('file')"-->
+                        <form class="inbox-compose form-horizontal col-md-12" id="Form1" action="#" method="post" enctype="multipart/form-data">
+                            <div class="inbox-compose-attachment">
+                                <!-- The fileupload-buttonbar contains buttons to add/delete files and start/cancel the upload -->
+                                <span class="btn btn-info fileinput-button">
+                                    <i class="fa fa-plus"></i><span>
+                                        Dosya Ekle...
+                                    </span>
+                                    <input type="file" name="files[]" id="file" filename="Ornek" multiple>
+                                </span>
+                                <!-- The table listing the files available for upload/download -->
+                                <table role="presentation" class="table table-striped margin-top-10 col-md-6">
+                                    <tbody class="files" id="Dosyalar">
+                                        <tr class="template-upload fade in" v-for="(u,index) in DOSYALIST">
+                                            <td class="name">
+                                                <a :href="'https://okyanusdata.s3-eu-west-1.amazonaws.com/pusulam/Yonetim/DuyuruYonetimi/'+u" target="_blank"> Ek Dosya - {{index + 1 }}</a>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="form-group" style="margin-top:10px;">
+                    <div class="col-md-12 text-right">
+                        <button type="button" class="btn blue" @click="DuyuruKaydet">Kaydet</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../../../VueComponents/Genel.js?v=4"></script>
+<script src="VueComponents/Filtre.js"></script>
+<script src="assets/global/plugins/ckeditor/ckeditor.js"></script>
+<script>
+    var vue = new Vue({
+
+        el: "#app",
+        name: "DuyuruYonetimi",
+
+        data: {
+            TCKIMLIKNO: undefined,
+            OTURUM: undefined,
+            controller: 'DuyuruYonetimi',
+            ID_DUYURU: 0,
+            YUKLEMETAMAM: false,
+            ID_SUBELIST: [],
+            ID_KADEMELIST: [],
+            ID_KADEME3LIST: [],
+            ID_KULLANICITIPILIST: [],
+            ID_SINIFLIST: [],
+            BAS_TARIH: '',
+            BIT_TARIH: '',
+            BASLIK: '',
+            ICERIK: '',
+            FOTOGRAF: '',
+            FOTOGRAF_MOBIL: '',
+            DOSYALIST: [],
+            BANNER:0
+        },
+
+        mounted() {
+            this.$nextTick(function () {
+                CKEDITOR.replace('editor');
+                //Editor değiştiğinde model güncellensin
+                CKEDITOR.instances['editor'].on('change', function () {
+                    vue.ICERIK = CKEDITOR.instances['editor'].getData();
+                });
+            })
+            this.TCKIMLIKNO = session.TCKIMLIKNO;
+            this.OTURUM = session.OTURUM;
+            $('.page-content-body').css("background-color", "transparent");
+            $('.page-content-body').css("padding", "0px");
+
+            var _this = this;
+
+            this.$nextTick(function () {
+                if (parseInt(getParameterByName("ID_DUYURU")) > 0) {
+                    _this.ID_DUYURU = parseInt(getParameterByName("ID_DUYURU"));
+                    var p = {
+                        TCKIMLIKNO: session.TCKIMLIKNO,
+                        OTURUM: session.OTURUM,
+                        ID_DUYURU: _this.ID_DUYURU,
+                    };
+                    WebPost(this, this.controller, "DuyuruDetay", p, '', '', function (data, parent) {
+                        console.log(JSON.parse(data))
+                        if (data == "[]") {
+                            _this.ID_DUYURU = 0;
+                        }
+                        else {
+                            var jsonData = JSON.parse(data)[0];
+                            _this.ID_SUBELIST = JSON.parse(jsonData.ID_SUBELIST);
+                            _this.ID_KULLANICITIPILIST = JSON.parse(jsonData.ID_KULLANICITIPILIST);
+                            _this.ID_KADEMELIST = JSON.parse(jsonData.ID_KADEMELIST);
+                            _this.ID_KADEME3LIST = JSON.parse(jsonData.ID_KADEME3LIST);
+                            _this.ID_SINIFLIST = JSON.parse(jsonData.ID_SINIFLIST);
+                            _this.DOSYALIST = JSON.parse(jsonData.DOSYALIST);
+                            vue.$nextTick(() => {
+                                _this.YUKLEMETAMAM = true;
+                            });
+                            vue.BAS_TARIH = jsonData.BAS_TARIH;
+                            vue.BIT_TARIH = jsonData.BIT_TARIH;
+                            vue.BASLIK = jsonData.BASLIK;
+                            vue.ICERIK = jsonData.ICERIK;
+                            vue.FOTOGRAF = jsonData.FOTOGRAF;
+                            vue.FOTOGRAF_MOBIL = jsonData.FOTOGRAF_MOBIL;
+                            vue.BANNER = jsonData.BANNER;
+                            //$("#editor").data("wysihtml5").editor.setValue(vue.ICERIK);
+
+                        }
+                    });
+                }
+                else
+                    _this.YUKLEMETAMAM = true;
+            });
+
+            //$('#editor').wysihtml5();
+
+            //$('#editor').on('shown', function () {
+            //    $('#textarea').wysihtml5();
+            //});
+
+            //$('#editor').on('hidden', function () {
+            //    $('.wysihtml5-sandbox, .wysihtml5-toolbar').remove();
+            //    $('#textarea').show();
+            //});
+
+
+            //$('#file').change(function () {
+            //    _this.uploadFile("file");
+            //});
+            //$('#upload_file').change(function () {
+            //    _this.uploadFile("upload_file");
+            //});
+            //$('#upload_file_mobil').change(function () {
+            //    _this.uploadFile("upload_file_mobil");
+            //});
+        },
+
+        methods: {
+            SubeSelected(val) {
+                this.ID_SUBELIST = val;
+            },
+            KullaniciTipiSelected(val) {
+                this.ID_KULLANICITIPILIST = val;
+            },
+            KademeSelected(val) {
+                this.ID_KADEMELIST = val;
+            },
+            Kademe3Selected(val) {
+                this.ID_KADEME3LIST = val;
+            },
+            SinifSelected(val) {
+                this.ID_SINIFLIST = val;
+            },
+            BasTarihSelected(val) {
+                this.BAS_TARIH = val;
+            },
+            BitTarihSelected(val) {
+                this.BIT_TARIH = val;
+
+            },
+            DuyuruKaydet() {
+
+                if (strToDate(this.BIT_TARIH) < strToDate(this.BAS_TARIH)) {
+                    Alert_Warning("Başlangıç Tarihi Bitiş Tarihinden Büyük Olamaz..")
+                    return;
+                }
+
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    ID_KULLANICITIPILIST: JSON.stringify(this.ID_KULLANICITIPILIST),
+                    ID_SUBELIST: JSON.stringify(this.ID_SUBELIST),
+                    BASLIK: this.BASLIK,
+                    ICERIK: $("#editor").val(),
+                    BAS_TARIH: this.BAS_TARIH,
+                    BIT_TARIH: this.BIT_TARIH,
+                    ID_KADEMELIST: JSON.stringify(this.ID_KADEMELIST),
+                    ID_KADEME3LIST: JSON.stringify(this.ID_KADEME3LIST),
+                    ID_SINIFLIST: JSON.stringify(this.ID_SINIFLIST),
+                    BANNER: this.BANNER,
+                    FOTOGRAF: "",
+                    FOTOGRAF_MOBIL: "",
+                }
+                
+                vue.Kaydet(p);
+
+               
+
+
+            },
+        
+            Kaydet(p) {
+                var metodAdi = this.ID_DUYURU == 0 ? "DuyuruEkle" : "DuyuruGuncelle";
+                var p = { TCKIMLIKNO: session.TCKIMLIKNO, OTURUM: session.OTURUM, SQLJSON: JSON.stringify(p), ID_DUYURU: this.ID_DUYURU };
+
+                WebPost(this, this.controller, metodAdi, p, '', '', function (data, parent) {
+                    parent.ID_DUYURU == 0
+                        ? Alert_Info("Duyuru Eklendi")
+                        : Alert_Info("Duyuru Güncellendi");
+                    if (data > 0) {
+                        let file = document.getElementById("file")
+                        if ('files' in file) {
+                            var formData = new FormData();
+                            for (var i = 0; i < file.files.length; i++) {
+                                formData.append("file", file.files[i]);
+                            }
+                            formData.append("TCKIMLIKNO", session.TCKIMLIKNO);
+                            formData.append("OTURUM", session.OTURUM);
+                            formData.append("ID_DUYURU", data);
+                            if (file.files.length >0) {
+                                $.ajax({
+                                    url: vue.controller + '/DuyuruDosya',
+                                    processData: false,
+                                    contentType: false,
+                                    data: formData,
+                                    type: 'POST'
+                                }).done(function (result) {
+                                    App.unblockUI('#app');
+                                    if (result != null) {
+                                        vue.Kaydedildi();
+                                    }
+                                    else
+                                        Alert_Error("Dosya Yüklenirken Hata Oluştu")
+                                })
+                            }
+                           
+                        }
+                        let mobilBanner = document.getElementById("upload_file_mobil");
+                        if ('files' in mobilBanner) {
+                            var formData = new FormData();
+                            for (var i = 0; i < mobilBanner.files.length; i++) {
+                                formData.append("file", mobilBanner.files[i]);
+                            }
+                            formData.append("TCKIMLIKNO", session.TCKIMLIKNO);
+                            formData.append("OTURUM", session.OTURUM);
+                            formData.append("ID_DUYURU", data);
+                            formData.append("MOBIL_BANNER", 1)
+                            if (mobilBanner.files.length>0) {
+                                $.ajax({
+                                    url: vue.controller + '/DuyuruBanner',
+                                    processData: false,
+                                    contentType: false,
+                                    data: formData,
+                                    type: 'POST'
+                                }).done(function (result) {
+                                    App.unblockUI('#app');
+                                    if (result != null) {
+                                        //vue.Kaydedildi();
+                                    }
+                                    else
+                                        Alert_Error("Dosya Yüklenirken Hata Oluştu")
+                                })
+                            }
+                           
+
+                        }
+                        let webBanner = document.getElementById("upload_file");
+                        if ('files' in webBanner) {
+
+                            var formData = new FormData();
+                            for (var i = 0; i < webBanner.files.length; i++) {
+                                formData.append("file", webBanner.files[i]);
+                            }
+                            formData.append("TCKIMLIKNO", session.TCKIMLIKNO);
+                            formData.append("OTURUM", session.OTURUM);
+                            formData.append("ID_DUYURU", data);
+                            formData.append("MOBIL_BANNER", 0)
+                            if (webBanner.files.length>0) {
+                                $.ajax({
+                                    url: vue.controller + '/DuyuruBanner',
+                                    processData: false,
+                                    contentType: false,
+                                    data: formData,
+                                    type: 'POST'
+                                }).done(function (result) {
+                                    App.unblockUI('#app');
+                                    if (result != null) {
+                                        //vue.Kaydedildi();
+                                    }
+                                    else
+                                        Alert_Error("Dosya Yüklenirken Hata Oluştu")
+                                })
+                            }    
+                        }
+                    }
+                });
+            },
+
+            uploadFile(idDiv, tip) {
+                Metronic.blockUI({
+                    target: "#app",
+                    boxed: true,
+                    message: "Yükleniyor ..."
+                });
+
+                var myFileList = document.getElementById(idDiv).files;
+
+                if (idDiv == "file") {
+                    $("#Dosyalar").html("");
+                    ListeTemizle(this.DOSYALIST);
+                }
+                $.each(myFileList, function (j, el) {
+                    var dosyaadi = el.name;
+                    var ext = dosyaadi.split('.').pop();
+                    if (tip == "image") {
+                        if (ext === "png" || ext === "jpg" || ext === "img") {
+                            var not = "sorun yok :)";
+                        }
+                        else {
+                            alert("Sadece png ve jpg tipinde dosya ekleyebilirsiniz.");
+                            return "";
+                        }
+                    }
+
+                    var dosyauzantisi = el.name.split('.').pop();
+
+                    var xhr = new XMLHttpRequest();
+                    var formData = new FormData();
+
+                    // FormData nesnesine bizim dosya ekleyin
+                    formData.append('my_uploaded_file', el);
+
+                    var guid = newGuid();
+                    var myFileName = guid + "." + dosyauzantisi;
+                    xhr.open('POST', "/FileUpload.ashx?name=" + myFileName + "&path=" + "~/site/Ortak/DuyuruFoto/", true);
+
+                    // ve dosyayı gönder
+                    xhr.send(formData);
+
+                    if (idDiv == "file") {
+                        //var row =   '<tr class="template-upload fade in">' +
+                        //            '<td class="name" width="30%"><span>' + dosyaadi + '</span></td>' +
+                        //            '<td class="size" width="20%"><span>Boyut :' + bytesToSize(el.size) + '</span></td>';
+                        //row +=      '<td><p class="size" id="Ileti' + j + '">Yükleniyor...</p>';
+                        //row +=      '<div class="progress progress-striped active" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">';
+                        //row +=      '<div class="progress-bar progress-bar-success" style="width:0%;" id="prg' + j + '"></div></div></td></tr>';
+                        //$("#Dosyalar").append($(row));
+
+
+                        xhr.upload.onprogress = function (e) {
+                            if (e.lengthComputable) {
+                                var rastgele = Math.floor((Math.random() * 50) + 1);
+                                $("#prg" + j).css("width", rastgele + "%");
+                            }
+                        };
+                    }
+                    xhr.onreadystatechange = function () {
+                        if (xhr.readyState == 4 && xhr.status == 200) {
+                            if (idDiv == "file") {
+                                $("#prg" + j).attr("style", "width:75%;");
+                                if (xhr.responseText === "Yasak") {
+                                    $("#prg" + j).css("width", "0%");
+                                    $("#Ileti" + j).html("Yasaklı dosya tipi");
+                                    //document.getElementById('Ekle').removeAttribute('disabled');
+                                    //$("#Ekle").html("Kaydet");
+                                }
+                                else {
+                                    if (idDiv == "file") {
+                                        vue.DOSYALIST.push(myFileName);
+                                    }
+                                }
+                            }
+                            else if (idDiv == "upload_file") {
+                                vue.FOTOGRAF = myFileName;
+                            }
+                            else if (idDiv == "upload_file_mobil") {
+                                vue.FOTOGRAF_MOBIL = myFileName;
+                            }
+
+                        }
+                        else if (xhr.readyState == 4 && xhr.status == 404 && idDiv == "file") {
+
+                            $("#Ileti" + j).html("Yüklenemedi");
+                            $('#prg' + j).css("width", '1%');
+                            //document.getElementById('Ekle').removeAttribute('disabled');
+                            //$("#Ekle").html("Kaydet");
+                        }
+                        else if (xhr.status == 500 && idDiv == "file") {
+                            $("#Ileti" + j).html("Hata");
+                            $('#prg' + j).css("width", '1%');
+                            //document.getElementById('Ekle').removeAttribute('disabled');
+                            //$("#Ekle").html("Kaydet");
+                        }
+                        else {
+                            return "";
+                        }
+                    };
+
+                });
+                Metronic.unblockUI("#app");
+            },
+        }
+    });
+</script>
+<script src="Scripts/PublicMethods.js"></script>
+<script src="assets/global/plugins/bootstrap-fileinput/bootstrap-fileinput.js" type="text/javascript"></script>

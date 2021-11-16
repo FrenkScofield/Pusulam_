@@ -1,0 +1,261 @@
+﻿
+<div class="page-head">
+    <div class="page-title col-md-12">
+        <h1>
+            Ünite Tarama <small> Öğrenci Sınıf Karne </small> <span onclick="YardimGoster(ID_MENU);" class="pull-right" style="cursor:pointer;"><img src="assets/global/img/info.gif" class="info-image-icon" /> </span>
+        </h1>
+    </div>
+</div>
+
+<div class="row" id="app">
+    <div class="col-md-12">
+        <div class="portlet box green-haze dd-item" style="border:none">
+            <div class="portlet-title dd-handle" data-toggle='collapse' data-target='#filters' style="cursor:pointer;">
+                <div class="caption">
+                    <i class="icon-magnifier"></i>
+                    <span class="caption-subject bold uppercase"> Filtreler </span>
+                    <span class="caption-helper"></span>
+                </div>
+                <div class='actions'>
+                    <a href='javascript:;' class='btn btn-default btn-sm' style='border:none;'>
+                        <i class='fa fa-chevron-down'></i>
+                    </a>
+                </div>
+            </div>
+            <div class="portlet-body form collapse in" id="filters">
+                <form role="form" style="padding:12px 20px">
+                    <div class="form-body form-group-lg form-horizontal row" style="padding: 0px;margin-top: 0px !important;">
+
+                        <div class="portlet light col-md-12" id="FiltreDivVeli" style="margin:0px; border-bottom-style: solid;border-bottom-width: 3px;border-bottom-color: rgb(0, 173, 239);">
+
+                            <div class="portlet-body">
+                                <div class="form-inline">
+                                    <div class="row">
+                                        <c-donem :controller="controller"
+                                                 @OnChange="DonemSelected">
+                                        </c-donem>
+                                    </div>
+                                    <div class="row">
+                                        <c-sube :controller="controller"
+                                                :idset="ID_SUBE"
+                                                @OnChange="SubeSelected">
+                                        </c-sube>
+                                    </div>
+                                    <div class="row">
+                                        <c-kademe3 :controller="controller"
+                                                   :idsube="ID_SUBE"
+                                                :idset="ID_KADEME3"
+                                                   @OnChange="Kademe3Selected">
+                                        </c-kademe3>
+                                    </div>
+                                    <div class="row">
+                                        <c-unite-tarama-sinav :controller="controller"
+                                                              :donem="DONEM"
+                                                              :idkademe3="ID_KADEME3"
+                                                :idset="ID_UNITETARAMASINAV"
+                                                              @OnChange="UtoSinavSelected">
+                                        </c-unite-tarama-sinav>
+                                    </div>
+                                    <div class="row">
+                                        <c-sinif-multi :controller="controller"
+                                                       :donem="DONEM"
+                                                       :idkademe3="ID_KADEME3"
+                                                       :idsube="ID_SUBE"
+                                                :idset="ID_SINIFLIST"
+                                                       @OnChange="SinifSelected">
+                                        </c-sinif-multi>
+                                    </div>
+                                    <div class="row">
+                                        <input type="button"
+                                               class="btn btn-success blue"
+                                               style="float:right; margin-right: 45px;"
+                                               @click="Listele"
+                                               :disabled="ID_SINIFLIST.length == 0"
+                                               value="LİSTELE">
+                                        <input type="button"
+                                               class="btn btn-success blue"
+                                               style="float:right; margin-right: 45px;"
+                                               @click="SinifKarne"
+                                               :disabled="ID_SINIFLIST.length == 0"
+                                               value="SINIF KARNE">
+                                    </div>
+                                </div>
+
+
+                            </div>
+                        </div>
+
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+
+
+    <div class="col-md-12" v-if="LISTE.length>0">
+        <div class="portlet box green-haze dd-item" style="border:none">
+            <div class="portlet-title dd-handle" data-toggle='collapse' data-target='#filters' style="cursor:pointer;">
+                <div class="caption">
+                    <i class="icon-magnifier"></i>
+                    <span class="caption-subject bold uppercase"> Öğrenci Listesi </span>
+                    <span class="caption-helper"></span>
+                </div>
+                <div class='actions'>
+                    <a href='javascript:;' class='btn btn-default btn-sm' style='border:none;'>
+                        <i class='fa fa-chevron-down'></i>
+                    </a>
+                </div>
+            </div>
+            <div class="portlet-body form collapse in" id="filters">
+                <form role="form" style="padding:12px 20px">
+                    <div class="form-body form-group-lg form-horizontal row" style="padding: 0px;margin-top: 0px !important;">
+
+                        <div class="portlet light col-md-12" style="margin:0px; border-bottom-style: solid;border-bottom-width: 3px;border-bottom-color: rgb(0, 173, 239);">
+
+                            <div class="portlet-body">
+                                <div class="form-inline">
+
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <th>Kampüs</th>
+                                                <th>Sınıf</th>
+                                                <th>TC Kimlik No</th>
+                                                <th>Ad</th>
+                                                <th>Soyad</th>
+                                                <th>İşlemler</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr v-for="u in LISTE">
+                                                <td> {{u.SUBEAD}} </td>
+                                                <td> {{u.SINIFAD}} </td>
+                                                <td> {{u.TCKIMLIKNO}} </td>
+                                                <td> {{u.AD}} </td>
+                                                <td> {{u.SOYAD}} </td>
+                                                <td> <button class="btn yellow" @click="Karne(u.TCKIMLIKNO)" :disabled="!u.GIRDI">Karne</button> </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+
+                                </div>
+
+
+                            </div>
+                        </div>
+
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+</div>
+<script src="../../../VueComponents/Filtre.js"></script>
+<script src="../../../VueComponents/UniteTarama/Filtreler.js"></script>
+<script>
+    var vue = new Vue({
+        el: "#app",
+        name: "UtoKarneListesi",
+
+        data: {
+            TCKIMLIKNO: undefined,
+            OTURUM: undefined,
+            controller: 'UtoKarneListesi',
+
+            DONEM: "",
+            ID_SUBE: 0,
+            ID_KADEME3: 0,
+            ID_UNITETARAMASINAV: 0,
+            ID_SINIFLIST: [],
+
+            LISTE: [],
+
+        },
+
+        mounted() {
+            this.TCKIMLIKNO = session.TCKIMLIKNO;
+            this.OTURUM = session.OTURUM;
+        },
+
+        methods: {
+            DonemSelected(item) {
+                this.DONEM = item;
+                this.ID_SUBE = 0;
+                this.ID_KADEME3 = 0;
+                this.ID_UNITETARAMASINAV = 0;
+                ListeTemizle(this.ID_SINIFLIST);
+                ListeTemizle(this.LISTE);
+            },
+            SubeSelected(item) {
+                this.ID_SUBE = item;
+                this.ID_KADEME3 = 0;
+                this.ID_UNITETARAMASINAV = 0;
+                ListeTemizle( this.ID_SINIFLIST );
+                ListeTemizle(this.LISTE);
+            },
+            Kademe3Selected(item) {
+                this.ID_KADEME3 = item;
+                this.ID_UNITETARAMASINAV = 0;
+                ListeTemizle( this.ID_SINIFLIST );
+                ListeTemizle(this.LISTE);
+            },
+            UtoSinavSelected(item) {
+                this.ID_UNITETARAMASINAV = item;
+                ListeTemizle(this.LISTE);
+            },
+            SinifSelected(item) {
+                this.ID_SINIFLIST = item;
+                ListeTemizle(this.LISTE);
+            },
+
+            Listele() {
+
+                var p = {
+                    TCKIMLIKNO: this.TCKIMLIKNO,
+                    OTURUM: this.OTURUM,
+                    ID_UNITETARAMASINAV: this.ID_UNITETARAMASINAV,
+                    ID_SINIFLIST: JSON.stringify(this.ID_SINIFLIST),
+                };
+                ListeTemizle(this.LISTE);
+                WebPost(this, this.controller, "SinavOgrenciListele", p, "", "", function (data, parent) {
+                    if (data != null) {
+                        parent.LISTE = JSON.parse(data);
+                    } else {
+                        Alert_Warning("Sınav Bulunamadı..!");
+                    }
+                });
+            },
+
+            Karne(tc) {
+                if (this.ID_UNITETARAMASINAV > 0) {
+                    window.open('/Rapor.aspx?rapor=Sinav.UniteTaramaKarne&raporTur=pdf&p=' + this.TCKIMLIKNO + ';' + this.OTURUM + ';' + tc + ";" + this.ID_UNITETARAMASINAV, '_blank');
+                }
+                else {
+                    Alert_Warning("Ünite Tarama Sınavını Seçiniz.")
+                }
+            },
+
+            SinifKarne() {
+                if (this.ID_UNITETARAMASINAV > 0) {
+                    window.open('/Rapor.aspx?rapor=Sinav.UniteTaramaTopluKarne&raporTur=pdf&p=' + session.TCKIMLIKNO + ';' + session.OTURUM + ';' + JSON.stringify(this.ID_SINIFLIST) + ";" + this.ID_UNITETARAMASINAV, '_blank');
+                }
+                else {
+                    Alert_Warning("Ünite Tarama Sınavını Seçiniz.")
+                }
+            },
+        },
+        watch: {
+            LISTE(val) {
+                this.LISTE = Array.isArray(val) ? val : [];
+            },
+            ID_SINIFLIST(val) {
+                this.ID_SINIFLIST = Array.isArray(val) ? val : [];
+            }
+        }
+    });
+</script>
+<script src="../../../Scripts/PublicMethods.js"></script>
+<script src="../../../Scripts/Rapor/amcharts.js"></script>

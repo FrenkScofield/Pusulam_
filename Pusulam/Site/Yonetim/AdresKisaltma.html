@@ -1,0 +1,241 @@
+﻿<link href="assets/global/plugins/bootstrap-fileinput/bootstrap-fileinput.css" rel="stylesheet" type="text/css" />
+<div class="page-head">
+    <!-- BEGIN PAGE TITLE -->
+    <div class="page-title col-md-12">
+        <h1>
+            Adres Kısaltma  <span onclick="YardimGoster(ID_MENU);" class="pull-right" style="cursor:pointer;"><img src="assets/global/img/info.gif" class="info-image-icon" /> </span>
+        </h1>
+    </div>
+    <!-- END PAGE TITLE -->
+</div>
+
+<div class="row" id="app">
+    <div class="col-md-12">
+        <div class="portlet box blue-hoki dd-item" style="border:none">
+            <div class="portlet-title dd-handle" data-toggle='collapse' data-target='#filters' style="cursor:pointer;">
+                <div class="caption">
+                    <i class="icon-list"></i>
+                    <span class="caption-subject bold uppercase"> Adres Kısaltma İşlemleri </span>
+                    <span class="caption-helper"></span>
+                </div>
+                <div class='actions'>
+                    <a href='javascript:;' class='btn btn-default btn-sm' style='border:none;'> <i class='fa fa-chevron-down'></i> </a>
+                </div>
+            </div>
+            <!-- BEGIN PORTLET-->
+            <div class="portlet-body form collapse in" id="filters">
+                <form role="form" style="padding:12px 20px">
+                    <div class="row">
+                        <div class="row">
+                            <div class="form-md-line-input">
+                                <label class="control-label col-md-3" style="vertical-align:middle;">AD </label>
+                                <div class="col-md-9">
+                                    <input type="text" class="form-control" v-model="AD" placeholder="Adı Giriniz..." />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-md-line-input">
+                                <label class="control-label col-md-3" style="vertical-align:middle;">URL ADRES </label>
+                                <div class="col-md-9">
+                                    <input type="text" class="form-control" v-model="URL" placeholder="URL Adresini Giriniz..." />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-md-line-input">
+                                <label class="control-label col-md-3" style="vertical-align:middle;">KISA URL</label>
+                                <div class="col-md-9">
+                                    <input type="text" class="form-control" v-model="URL_KISA" placeholder="KISA URL Adresini Giriniz..." />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row" style="margin:5px;">
+                            <button type="button" style="float:right" class="btn blue" @click="Kaydet">Kaydet</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-12">
+        <div class="portlet light">
+            <div class="portlet-title">
+                <div class="caption">
+                    <i class="icon-list font-green"></i>
+                    <span class="caption-subject bold font-green uppercase"> URL Listesi </span>
+                    <span class="caption-helper"></span>
+                </div>
+            </div>
+            <div class="portlet-body form">
+
+                <div class="row form-group">
+
+                    <div class="row" style="margin:5px;">
+                        <div class="form-md-line-input">
+                            <label class="control-label col-md-2" style="vertical-align:middle;">FİLTRE </label>
+                            <div class="col-md-9">
+                                <input type="text" class="form-control" v-model="FILTRE" placeholder="Filtre Giriniz..." />
+                            </div>
+                            <div class="col-md-1">
+                                <button type="button" style="float:right" class="btn green" @click="Listele">Listele</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <form role="form" v-if="LISTE.length>0">
+                    <div class="portlet light bordered">
+                        <div class="portlet-body" style="overflow-x:auto;">
+
+                            <table class="table table-bordered table-striped">
+                                <thead>
+                                    <tr>
+                                        <th> AD </th>
+                                        <th> URL </th>
+                                        <th> KISA URL </th>
+                                        <th> TIKLANMA SAYISI </th>
+                                        <th> İŞLEMLER </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="u in LISTE">
+                                        <td> {{u.AD}} </td>
+                                        <td> {{u.URL}} </td>
+                                        <td> {{u.URL_KISA}} </td>
+                                        <!--<a :href="u.URL_KISA" target="_blank"> </a>-->
+                                        <td> {{u.TIKLANMA_SAYISI}} </td>
+                                        <td> <button type="button" style="float:right" class="btn red" @click="AktifPasif(u.ID_KISAURL)"><i class="fa fa-trash"></i></button> </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+</div>
+<script src="VueComponents/Genel.js"></script>
+<script>
+    var vue = new Vue({
+
+        el: "#app",
+        name: "AdresKisaltma",
+
+        data: {
+            TCKIMLIKNO: undefined,
+            OTURUM: undefined,
+            controller: 'AdresKisaltma',
+
+            FILTRE: null,
+            AD: "",
+            URL: "",
+            URL_KISA: "",
+            LISTE: [],
+
+            YOL: "https://okyn.us/KisaUrl",
+        },
+
+        mounted() {
+            this.TCKIMLIKNO = session.TCKIMLIKNO;
+            this.OTURUM = session.OTURUM;
+
+            this.Listele();            
+        },
+
+        methods: {
+
+            Listele() {
+
+                var veri = {
+                    DATA: {
+                        FILTRE: this.FILTRE,
+                    }
+                }
+
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    SQLJSON: JSON.stringify(veri),
+                };
+                
+                WebPost(this, this.YOL, "UrlListe", p, '', '', function (data, parent) {
+                    parent.LISTE = data.URL;
+                });
+            },
+            Kaydet() {
+                
+                if (this.AD == "" || this.URL == "") {
+                    Alert_Warning("Eksik Bilgileri Tamamlayınız.")
+                    return;
+                }
+
+                var veri = {
+                    DATA: {
+                        ANAHTAR: "DA1C5122-5D87-4",
+                        URL: [{
+                            AD: this.AD,
+                            URL: this.URL,
+                            URL_KISA: this.URL_KISA,
+                        }],
+                    }
+                }
+
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    SQLJSON: JSON.stringify(veri),
+                };
+
+                WebPost(this, this.YOL, "UrlEkle", p, '', '', function (data, parent) {
+                    if (data == 'Girdiğiniz Kısa Url Sistemde Mevcuttur!') {
+                        Alert_Warning(data);
+                    } else {
+                        Alert_Info("Url Eklenmiştir.");
+                        parent.Listele();
+                    }
+                });
+            },
+            AktifPasif(id) {
+
+                var veri = {
+                    DATA: {
+                        URL: {
+                            ID_KISAURL: id,
+                        },
+                    }
+                }
+
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    SQLJSON: JSON.stringify(veri),
+                };
+
+                WebPost(this, this.YOL, "UrlAktifPasif", p, '', '', function (data,parent) {
+                    if (data) {
+                        Alert_Info("Url Silinmiştir.");
+                        parent.Listele();
+                    } else {
+                        Alert_Warning("Url Eklenmesi Sırasında Hata Oluştu..!");
+                    }
+                });
+            },
+        },
+        watch: {
+            LISTE(val) {
+                this.LISTE = Array.isArray(val) ? val : [];
+            }
+        }
+    });
+
+
+
+</script>
+<script src="Scripts/PublicMethods.js"></script>
+<script src="assets/global/plugins/bootstrap-fileinput/bootstrap-fileinput.js" type="text/javascript"></script>

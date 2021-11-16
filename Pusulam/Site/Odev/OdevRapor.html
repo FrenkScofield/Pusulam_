@@ -1,0 +1,169 @@
+﻿<link href="assets/global/plugins/bootstrap-fileinput/bootstrap-fileinput.css" rel="stylesheet" type="text/css" />
+<style>
+    td {
+        vertical-align: middle !important;
+    }
+
+    .row {
+        margin-top: 10px !important;
+    }
+</style>
+<div class="page-head">
+    <!-- BEGIN PAGE TITLE -->
+    <div class="page-title col-md-12">
+        <h1>
+            Ödev Rapor <span onclick="YardimGoster(ID_MENU);" class="pull-right" style="cursor:pointer;"><img src="assets/global/img/info.gif" class="info-image-icon" /> </span>
+        </h1>
+    </div>
+    <!-- END PAGE TITLE -->
+</div>
+
+<div class="row" id="app">
+    <div class="col-md-12">
+        <div class="portlet box blue-hoki dd-item" style="border:none">
+            <!-- BEGIN PORTLET-->
+            <div class="portlet-body form">
+                <form role="form" style="padding:12px 20px">
+                    <div class="row">
+                        <c-sube :controller="controller"
+                                @OnChange="SubeSelected">
+                        </c-sube>
+                    </div>
+
+                    <div class="row">
+                        <c-kademe :controller="controller"
+                                  :idsube="ID_SUBE"
+                                  @OnChange="KademeSelected">
+                        </c-kademe>
+                    </div>
+
+                    <div class="row">
+                        <c-kademe3 :controller="controller"
+                                   :idsube="ID_SUBE"
+                                   :idkademe="ID_KADEME"
+                                   @OnChange="Kademe3Selected">
+                        </c-kademe3>
+                    </div>
+
+                    <div class="row">
+                        <c-odev-tur :controller="controller"
+                                    :idkademe="ID_KADEME"
+                                    @OnChange="OdevTurSelected">
+                        </c-odev-tur>
+                    </div>
+
+                    <div class="row">
+                        <c-sinif :controller="controller"
+                                 :idsube="ID_SUBE"
+                                 :idkademe3="ID_KADEME3"
+                                 dersvarsasadecekur="true"
+                                 @OnChange="SinifSelected">
+                        </c-sinif>
+                    </div>
+
+                    <div class="row">
+                        <c-ogrenci :controller="controller"
+                                   :idsinif="ID_SINIF"
+                                   @OnChange="OgrenciSelected">
+                        </c-ogrenci>
+                    </div>
+
+                    <div class="row">
+                        <c-tarih tarihid="t_baslangic"
+                                 label="Başlangıç Tarihi"
+                                 gun="-30"
+                                 @change-date="BaslangicTarihiSelected">
+                        </c-tarih>
+                    </div>
+
+                    <div class="row">
+                        <c-tarih tarihid="t_bitis"
+                                 label="Bitiş Tarihi"
+                                 gun="0"
+                                 @change-date="BitisTarihiSelected">
+                        </c-tarih>
+                    </div>
+
+                    <div class="row">
+                        <div class="form-group" style="margin-top:10px;">
+                            <div class="col-md-12 text-right">
+                                <button type="button" class="btn green" @click="Rapor">Rapor</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="VueComponents/Filtre.js"></script>
+<script src="VueComponents/FiltreEk.js"></script>
+
+<script>
+    var vue = new Vue({
+
+        el: "#app",
+        name: "OdevRapor",
+
+        data: {
+            controller: 'OdevRapor',
+            ID_SUBE: 0,
+            ID_KADEME: 0,
+            ID_KADEME3: 0,
+            ID_ODEVTUR: 0,
+            ID_SINIF: 0,
+            TC_OGRENCI: '',
+            BASLANGIC_TARIHI: '',
+            BITIS_TARIHI: '',
+        },
+
+        mounted() {
+        },
+
+        methods: {
+            SubeSelected(val) {
+                this.ID_SUBE = val;
+            },
+
+            KademeSelected(val) {
+                this.ID_KADEME = val;
+            },
+
+            Kademe3Selected(val) {
+                this.ID_KADEME3 = val;
+            },
+
+            OdevTurSelected(val) {
+                this.ID_ODEVTUR = val;
+            },
+
+            SinifSelected(val) {
+                this.ID_SINIF = val;
+            },
+
+            OgrenciSelected(val) {
+                this.TC_OGRENCI = val;
+            },
+
+            BaslangicTarihiSelected(val) {
+                this.BASLANGIC_TARIHI = val;
+            },
+
+            BitisTarihiSelected(val) {
+                this.BITIS_TARIHI = val;
+            },
+
+            Rapor() {
+                window.open("Rapor.aspx?raporTur=PDF&rapor=Odev.OdevOgrenciRapor&p="
+                    + session.TCKIMLIKNO + ";"
+                    + session.OTURUM + ";"
+                    + this.ID_ODEVTUR + ";"
+                    + this.ID_SINIF + ";"
+                    + this.TC_OGRENCI + ";"
+                    + this.BASLANGIC_TARIHI + ";"
+                    + this.BITIS_TARIHI);
+            }
+        },
+    });
+</script>
+<script src="Scripts/PublicMethods.js"></script>

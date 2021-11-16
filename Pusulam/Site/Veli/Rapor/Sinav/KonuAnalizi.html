@@ -1,0 +1,504 @@
+﻿<head>
+    <script src="/Scripts/Tools.js"></script>
+    <script src="/Scripts/Rapor/amcharts.js"></script>
+    <script src="/Scripts/Rapor/jquery.easypiechart.js"></script>
+    <script src="/Scripts/Rapor/light.js"></script>
+    <script src="/Scripts/Rapor/serial.js"></script>
+    <script src="/Scripts/Rapor/pie.js"></script>
+</head>
+<style>
+    .progressbar {
+        width: 400px;
+        height: 30px;
+    }
+
+    .progressbarlabel {
+        width: 300px;
+        height: 21px;
+        position: absolute;
+        text-align: center;
+        font-size: small;
+    }
+
+    #chartdiv {
+        width: 100%;
+        height: 500px;
+        font-size: 11px;
+    }
+</style>
+
+
+<div class="page-head">
+    <!-- BEGIN PAGE TITLE -->
+    <div class="page-title col-md-12">
+        <h1>
+            Sınav Konu Analiz <small>Sınav Sonuç Konu Analizleri</small> <span onclick="YardimGoster(ID_MENU);" class="pull-right" style="cursor:pointer;"><img src="assets/global/img/info.gif" class="info-image-icon" /> </span>
+        </h1>
+    </div>
+    <!-- END PAGE TITLE -->
+</div>
+
+<div class="row" id="app">
+
+    <div class="col-md-12">
+        <div class="portlet box green-haze dd-item" style="border:none">
+            <div class="portlet-title dd-handle" data-toggle='collapse' data-target='#filters' style="cursor:pointer;">
+                <div class="caption">
+                    <i class="icon-magnifier"></i>
+                    <span class="caption-subject bold uppercase"> Filtreler </span>
+                    <span class="caption-helper"></span>
+                </div>
+                <div class='actions'>
+                    <a href='javascript:;' class='btn btn-default btn-sm' style='border:none;'>
+                        <i class='fa fa-chevron-down'></i>
+                    </a>
+                </div>
+            </div>
+            <div class="portlet-body form collapse in" id="filters">
+                <form role="form" style="padding:12px 20px">
+                    <div class="form-body form-group-lg form-horizontal row" style="padding: 0px;margin-top: 0px !important;">
+
+                        <div class="portlet light col-md-12" id="FiltreDivOgretmen" style="margin:0px; border-bottom-style: solid;border-bottom-width: 3px;border-bottom-color: rgb(0, 173, 239);"
+                             v-if="ListKullaniciTipi.indexOf(4)==-1 && ListKullaniciTipi.indexOf(5)==-1">
+                            <div class="portlet-body">
+                                <div class="form-inline">
+                                    <c-sube controller="VeliKonuAnalizi"
+                                            @OnChange="SubeSelected">
+                                    </c-sube>
+                                    <c-kademe3 controller="VeliKonuAnalizi"
+                                               :idsube="idsube"
+                                               @OnChange="Kademe3Selected">
+                                    </c-kademe3>
+                                    <c-sinif controller="VeliKonuAnalizi"
+                                             :idsube="idsube"
+                                             :idkademe3="idkademe3"
+                                             @OnChange="SinifSelected">
+                                    </c-sinif>
+                                    <c-ogrenci controller="VeliKonuAnalizi"
+                                               :idsinif="idsinif"
+                                               @OnChange="OgrenciSelected">
+                                    </c-ogrenci>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="portlet light col-md-12" id="FiltreDivVeli" style="margin:0px; border-bottom-style: solid;border-bottom-width: 3px;border-bottom-color: rgb(0, 173, 239);"
+                             v-if="ListKullaniciTipi.indexOf(5)>-1">
+
+                            <div class="portlet-body">
+                                <div class="form-inline">
+                                    <c-ogrenci-veli controller="VeliKonuAnalizi"
+                                                    :tc="TCKIMLIKNO"
+                                                    @OnChange="OgrenciVeliSelected">
+                                    </c-ogrenci-veli>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="portlet light col-md-12" id="FiltreDivOgrenci" style="margin:0px; border-bottom-style: solid;border-bottom-width: 3px;border-bottom-color: rgb(0, 173, 239);"
+                             v-if="ListKullaniciTipi.indexOf(4)>-1 || divOgrenci==1">
+                            <div class="portlet-body">
+                                <div class="form-inline">
+                                    <c-donem controller="VeliKonuAnalizi"
+                                             @OnChange="DonemSelected">
+                                    </c-donem>
+                                    <c-sinav-turu-tc controller="VeliKonuAnalizi"
+                                                     :tc="tcogrenci"
+                                                     :idkademe3="idkademe3"
+                                                     :donem="DONEM"
+                                                     @OnChange="SinavTuruSelected">
+                                    </c-sinav-turu-tc>
+                                    <c-sinav-multi controller="VeliKonuAnalizi"
+                                                   :idsinavturu="idsinavturu"
+                                                   :donem="DONEM"
+                                                   :tc="tcogrenci"
+                                                   @OnChange="SinavSelected">
+                                    </c-sinav-multi>
+                                    <input style="float:right;margin: 10px;" type="button" class="btn btn-success" v-on:click="Raporla" value="Raporla">
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="portlet light" id="Tablodiv" style="min-height: 100px;padding:0px;" v-show="divAc==1">
+        <div class="row">
+            <div class="col-md-12" style="float:right;display:inherit" id="ExcelButon">
+                <input style="float:right;margin: 10px;" type="button" class="btn btn-success" onclick="Glb_Print('tablobaslik');" value="Yazdır">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-8" style="overflow:auto">
+                <table id="tablobaslik" class="table table-striped table-bordered table-hover table-checkable" style="margin-bottom:0px; color:#111">
+                    <thead id="thead"></thead>
+                    <tbody id="tbody"></tbody>
+                </table>
+            </div>
+            <div class="col-md-4" style="overflow:auto">
+                <c-ders-multi :dersler="dersler"
+                              @OnChange="DersSelected">
+                </c-ders-multi>
+                <div id="chartdiv"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="/VueComponents/KonuAnaliziFiltreleri.js?v=3"></script>
+<script>
+    var vue = new Vue({
+        el: "#app",
+        name: "KonuAnaliz.html",
+
+        data: {
+            dID_SINAVPUANTURU: 0,
+            TCKIMLIKNO: '',
+            DONEM: '',
+            t1: [],
+            dersler: [],
+            gdata: [],
+            seciliDers: [],
+            ID_SINAVS: [],
+            idsube: 0,
+            idkademe3: 0,
+            idsinif: 0,
+            tcogrenci: '',
+            idsinavturu: 0,
+            idkullanicitur: 0,
+            ListKullaniciTipi: [],
+            divOgrenci: 0,
+            divAc: 0
+        },
+
+        mounted() {
+            var p = {
+                TCKIMLIKNO: session.TCKIMLIKNO,
+                OTURUM: session.OTURUM
+            };
+            var list = [];
+            WebPost(this, "VeliKonuAnalizi", "KullaniciTipiGetir", p, "#app", "Yükleniyor...", function (data, parent) {
+                if (data != null) {
+                    $.each(data, function (j, el) {
+                        list.push(this.ID_KULLANICITIPI)
+                    });
+                    parent.ListKullaniciTipi = list;
+                } else {
+                    Alert_Warning("Kullanıcı Bulunamadı..!");
+                }
+            });
+        },
+
+        methods: {
+            Raporla: function (event) {
+                $('#filters').collapse('hide');
+                this.Getir();
+            },
+
+            SubeSelected(item) {
+                this.idsube = item;
+                this.idkademe3 = 0;
+                this.idsinif = 0;
+                this.divAc = 0;
+                this.divOgrenci = 0;
+            },
+
+            Kademe3Selected(item) {
+                this.idkademe3 = item;
+                this.idsinif = 0;
+                this.divAc = 0;
+                this.divOgrenci = 0;
+            },
+
+            SinifSelected(item) {
+                this.idsinif = item;
+                this.tcogrenci = "";
+                this.divAc = 0;
+                this.divOgrenci = 0;
+            },
+
+            OgrenciSelected(item) {
+                this.tcogrenci = item;
+                this.divOgrenci = 1;
+                this.divAc = 0;
+            },
+
+            OgrenciVeliSelected(item) {
+                this.tcogrenci = item;
+                this.divOgrenci = 1;
+                //this.divAc = 0;
+                if (this.ListKullaniciTipi.indexOf(5) > -1 && this.tcogrenci.length > 0) {
+                    this.Getir();
+                }
+            },
+
+            DonemSelected(item) {
+                this.DONEM = item;
+                if (this.ListKullaniciTipi.indexOf(4) > -1) {
+                    this.tcogrenci = session.TCKIMLIKNO;
+                    this.Getir();
+                }
+                //this.divAc = 0;
+            },
+
+            SinavTuruSelected(item) {
+                this.idsinavturu = item;
+                this.divAc = 0;
+            },
+
+            SinavSelected(item) {
+                this.ID_SINAVS = item;
+                this.divAc = 0;
+                //this.Getir();
+            },
+
+            DersSelected(ders) {
+                this.seciliDers = ders;
+                if (ders.length == 0)
+                    this.Listele();
+                else
+                    this.ListeleDers();
+            },
+
+            Getir() {
+                if ((this.tcogrenci == undefined || this.tcogrenci == "0")
+                    || (this.DONEM == undefined || this.DONEM == "0")
+                    || (this.ID_SINAVS == undefined || this.ID_SINAVS == "0")) {
+                    Alert_Warning("Öğrenci ve Sınav seçmeniz gerekmektedir.");
+                    this.divAc = 0;
+                    return;
+                }
+
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    TC_OGRENCI: this.tcogrenci,
+                    DONEM: this.DONEM,
+                    ID_SINAVS: JSON.stringify(this.ID_SINAVS)
+                };
+                //$("#tbody").html('');
+                //$("#chartdiv").html('');
+                WebPost(this, "VeliKonuAnalizi", "KonuAnalizi", p, "#FiltreDivOgrenci", "", function (data, parent) {
+                    if (data != null) {
+                        console.log(data)
+                        console.log(data[0])
+                        parent.t1 = JSON.parse(data)[0].t1;
+                        parent.gdata = parent.t1;
+                        parent.Listele();
+
+                    } else {
+                        Alert_Warning("Sınav Bulunamadı..!");
+                    }
+                });
+            },
+
+            Listele() {
+                //console.log(this.t1)
+                if (this.t1 == undefined) {
+                    return;
+                }
+                var veri = "";
+                var baslik = "head";
+                var thead = "<tr>";
+                var toplamsoru = parseFloat(0);
+                var toplamdogru = parseFloat(0);
+                var toplamyanlis = parseFloat(0);
+                var toplambos = parseFloat(0);
+                veri += "<tr><th colspan='3' style='text-align:center;vertical-align:middle;background-color: #A09F9D;border-bottom-width: 3px;border-bottom-color: white;'></th>";
+                veri += "<th style='text-align:center;border-bottom-color: #FFFFFF;vertical-align:middle;border-bottom-width: 3px;background-color: deepskyblue;'>Soru</td>";
+                veri += "<th style='text-align:center;border-bottom-color: #FFFFFF;vertical-align:middle;border-bottom-width: 3px;background-color: deepskyblue;'>Doğru</td>";
+                veri += "<th style='text-align:center;border-bottom-color: #FFFFFF;vertical-align:middle;border-bottom-width: 3px;background-color: deepskyblue;'>Yanlış</td>";
+                veri += "<th style='text-align:center;border-bottom-color: #FFFFFF;vertical-align:middle;border-bottom-width: 3px;background-color: deepskyblue;'>Boş</td>";
+                veri += "<th style='text-align:center;border-bottom-color: #FFFFFF;vertical-align:middle;border-bottom-width: 3px;background-color: deepskyblue;'>% Yüzde</td>";
+                veri += "</tr>";
+                veri += "<tr><th colspan='3' style='text-align:center;vertical-align:middle;background-color: #A09F9D;border-bottom-width: 3px;border-bottom-color: white;color: white;text-align:right'>TOPLAM</th>";
+                veri += "<th style='text-align:center;border-bottom-color: #FFFFFF;vertical-align:middle;border-bottom-width: 3px;background-color: deepskyblue;' id='GenelToplamSoru'>Soru</td>";
+                veri += "<th style='text-align:center;border-bottom-color: #FFFFFF;vertical-align:middle;border-bottom-width: 3px;background-color: deepskyblue;' id='GenelToplamDogru'>Doğru</td>";
+                veri += "<th style='text-align:center;border-bottom-color: #FFFFFF;vertical-align:middle;border-bottom-width: 3px;background-color: deepskyblue;' id='GenelToplamYanlis'>Yanlış</td>";
+                veri += "<th style='text-align:center;border-bottom-color: #FFFFFF;vertical-align:middle;border-bottom-width: 3px;background-color: deepskyblue;' id='GenelToplamBos'>Boş</td>";
+                veri += "<th style='text-align:center;border-bottom-color: #FFFFFF;vertical-align:middle;border-bottom-width: 3px;background-color: deepskyblue;' id='GenelToplamYuzde'>% Yüzde</td>";
+                veri += "</tr>";
+                var dupes = {};
+                var listIdDers = [];
+                var listDersAd = [];
+                $.each(this.t1, function (j, el) {
+                    if (!dupes[el.DERSAD]) {
+                        dupes[el.DERSAD] = el.DERSAD;
+                        listDersAd.push({ 'DERSAD': el.DERSAD });
+                    }
+                });
+                this.dersler = listDersAd;
+                $.each(this.t1, function (j) {
+
+                    baslik = "row";
+                    if (this.KOD == '') {
+                        baslik = "head";
+                    }
+                    //else {
+                    //    //DersEkle(j, this.DERSAD, 1);
+                    //}
+
+                    //else {
+                    //    //DersEkle(j, this.DERSAD, 0);
+                    //}
+                    veri += "<tr>";
+                    if (baslik == "head") {
+                        toplamsoru += parseFloat(this.SORU);
+                        toplamdogru += parseFloat(this.DOGRU);
+                        toplamyanlis += parseFloat(this.YANLIS);
+                        toplambos += parseFloat(this.BOS);
+                        veri += "<td colspan='3' style='text-align:left;vertical-align:middle;background-color: #A09F9D;color: white;font-size: 20px;'>" + this.DERSAD + "</td>";
+                        veri += "<td style='text-align:center;vertical-align:middle;background-color: #079DE8;color: white;font-size: 20px;'>" + this.SORU + "</td>";
+                        veri += "<td style='text-align:center;vertical-align:middle;background-color: #079DE8;color: white;font-size: 20px;'>" + this.DOGRU + "</td>";
+                        veri += "<td style='text-align:center;vertical-align:middle;background-color: #079DE8;color: white;font-size: 20px;'>" + this.YANLIS + "</td>";
+                        veri += "<td style='text-align:center;vertical-align:middle;background-color: #079DE8;color: white;font-size: 20px;'>" + this.BOS + "</td>";
+                        if (parseFloat(this.YUZDE) >= 0 && parseFloat(this.YUZDE) < 10)
+                            veri += "<td style='text-align:center;vertical-align:middle;background-color: #F31D13;color: white;font-size: 20px;'>" + this.YUZDE + "</td>";
+                        else if (parseFloat(this.YUZDE) >= 10 && parseFloat(this.YUZDE) < 20)
+                            veri += "<td style='text-align:center;vertical-align:middle;background-color: #F34713;color: white;font-size: 20px;'>" + this.YUZDE + "</td>";
+                        else if (parseFloat(this.YUZDE) >= 20 && parseFloat(this.YUZDE) < 30)
+                            veri += "<td style='text-align:center;vertical-align:middle;background-color: #F37013;color: white;font-size: 20px;'>" + this.YUZDE + "</td>";
+                        else if (parseFloat(this.YUZDE) >= 30 && parseFloat(this.YUZDE) < 40)
+                            veri += "<td style='text-align:center;vertical-align:middle;background-color: #F39913;color: white;font-size: 20px;'>" + this.YUZDE + "</td>";
+                        else if (parseFloat(this.YUZDE) >= 40 && parseFloat(this.YUZDE) < 50)
+                            veri += "<td style='text-align:center;vertical-align:middle;background-color: #F1CD1C;color: white;font-size: 20px;'>" + this.YUZDE + "</td>";
+                        else if (parseFloat(this.YUZDE) >= 50 && parseFloat(this.YUZDE) < 60)
+                            veri += "<td style='text-align:center;vertical-align:middle;background-color: #E4DE1C;color: white;font-size: 20px;'>" + this.YUZDE + "</td>";
+                        else if (parseFloat(this.YUZDE) >= 60 && parseFloat(this.YUZDE) < 70)
+                            veri += "<td style='text-align:center;vertical-align:middle;background-color: #D6EC1B;color: white;font-size: 20px;'>" + this.YUZDE + "</td>";
+                        else if (parseFloat(this.YUZDE) >= 70 && parseFloat(this.YUZDE) < 80)
+                            veri += "<td style='text-align:center;vertical-align:middle;background-color: #BDF11C;color: white;font-size: 20px;'>" + this.YUZDE + "</td>";
+                        else if (parseFloat(this.YUZDE) >= 80 && parseFloat(this.YUZDE) < 90)
+                            veri += "<td style='text-align:center;vertical-align:middle;background-color: #95F11C;color: white;font-size: 20px;'>" + this.YUZDE + "</td>";
+                        else if (parseFloat(this.YUZDE) >= 90 && parseFloat(this.YUZDE) <= 100)
+                            veri += "<td style='text-align:center;vertical-align:middle;background-color: #1CF140;color: white;font-size: 20px;'>" + this.YUZDE + "</td>";
+
+                        veri += "</tr>";
+                    }
+                    else {
+                        veri += "<td colspan='3' style='text-align:left;vertical-align:middle;'>" + this.KONUAD + "</td>";
+                        veri += "<td style='text-align:center;vertical-align:middle;'>" + this.SORU + "</td>";
+                        veri += "<td style='text-align:center;vertical-align:middle;'>" + this.DOGRU + "</td>";
+                        veri += "<td style='text-align:center;vertical-align:middle;'>" + this.YANLIS + "</td>";
+                        veri += "<td style='text-align:center;vertical-align:middle;'>" + this.BOS + "</td>";
+                        veri += "<td style='text-align:center;vertical-align:middle;'>" + this.YUZDE + "</td>";
+                        veri += "</tr>";
+                    }
+                });
+                $("#tbody").html(veri);
+                $("#GenelToplamSoru").html(toplamsoru);
+                $("#GenelToplamDogru").html(toplamdogru);
+                $("#GenelToplamYanlis").html(toplamyanlis);
+                $("#GenelToplamBos").html(toplambos);
+                $("#GenelToplamYuzde").html(((toplamdogru.toFixed(2) / toplamsoru).toFixed(4) * 100).toFixed(2));
+                var datapro = [];
+                var eleman = { "durum": "Doğru", "yuzde": ((toplamdogru.toFixed(2) / toplamsoru).toFixed(4) * 100).toFixed(2), "color": "#DDD" };
+                datapro.push(eleman);
+                var eleman = { "durum": "Yanlış", "yuzde": ((toplamyanlis.toFixed(2) / toplamsoru).toFixed(4) * 100).toFixed(2), "color": "#CCC" };
+                datapro.push(eleman);
+                var eleman = { "durum": "Boş", "yuzde": ((toplambos.toFixed(2) / toplamsoru).toFixed(4) * 100).toFixed(2), "color": "#BBB" };
+                datapro.push(eleman);
+                AmChartPieOlustur("chartdiv", datapro, "yuzde", "durum", false, "Doğru:" + toplamdogru + " Yanlış:" + toplamyanlis + " Boş:" + toplambos + " Doğru Yüzdesi:" + ((toplamdogru.toFixed(2) / toplamsoru).toFixed(4) * 100).toFixed(2));
+
+                this.divAc = 1;
+            },
+
+            ListeleDers() {
+                var veri = "";
+                var baslik = "head";
+                var thead = "<tr>";
+                var toplamsoru = parseFloat(0);
+                var toplamdogru = parseFloat(0);
+                var toplamyanlis = parseFloat(0);
+                var toplambos = parseFloat(0);
+                veri += "<tr><th colspan='3' style='text-align:center;vertical-align:middle;background-color: #A09F9D;border-bottom-width: 3px;border-bottom-color: white;color: white;text-align:right'>TOPLAM</th>";
+                veri += "<th style='text-align:center;border-bottom-color: #FFFFFF;vertical-align:middle;border-bottom-width: 3px;background-color: deepskyblue;' id='GenelToplamSoru'>Soru</td>";
+                veri += "<th style='text-align:center;border-bottom-color: #FFFFFF;vertical-align:middle;border-bottom-width: 3px;background-color: deepskyblue;' id='GenelToplamDogru'>Doğru</td>";
+                veri += "<th style='text-align:center;border-bottom-color: #FFFFFF;vertical-align:middle;border-bottom-width: 3px;background-color: deepskyblue;' id='GenelToplamYanlis'>Yanlış</td>";
+                veri += "<th style='text-align:center;border-bottom-color: #FFFFFF;vertical-align:middle;border-bottom-width: 3px;background-color: deepskyblue;' id='GenelToplamBos'>Boş</td>";
+                veri += "<th style='text-align:center;border-bottom-color: #FFFFFF;vertical-align:middle;border-bottom-width: 3px;background-color: deepskyblue;' id='GenelToplamYuzde'>% Yüzde</td>";
+                veri += "</tr>";
+                veri += "<tr><th colspan='3' style='text-align:center;vertical-align:middle;background-color: #A09F9D;border-bottom-width: 3px;border-bottom-color: white;'></th>";
+                veri += "<th style='text-align:center;border-bottom-color: #FFFFFF;vertical-align:middle;border-bottom-width: 3px;background-color: deepskyblue;'>Soru</td>";
+                veri += "<th style='text-align:center;border-bottom-color: #FFFFFF;vertical-align:middle;border-bottom-width: 3px;background-color: deepskyblue;'>Doğru</td>";
+                veri += "<th style='text-align:center;border-bottom-color: #FFFFFF;vertical-align:middle;border-bottom-width: 3px;background-color: deepskyblue;'>Yanlış</td>";
+                veri += "<th style='text-align:center;border-bottom-color: #FFFFFF;vertical-align:middle;border-bottom-width: 3px;background-color: deepskyblue;'>Boş</td>";
+                veri += "<th style='text-align:center;border-bottom-color: #FFFFFF;vertical-align:middle;border-bottom-width: 3px;background-color: deepskyblue;'>% Yüzde</td>";
+                veri += "</tr>";
+                var tt1 = this.t1;
+                $(this.seciliDers).each(function (k, sd) {
+                    console.log(sd)
+                    $.each(tt1, function (j, el) {
+                        console.log(sd + '  :  ' + el.DERSAD);
+                        if (sd == el.DERSAD) {
+                            baslik = "row";
+                            if (el.KOD == '')
+                                baslik = "head";
+                            veri += "<tr>";
+                            if (baslik == "head") {
+                                toplamsoru += parseFloat(el.SORU);
+                                toplamdogru += parseFloat(el.DOGRU);
+                                toplamyanlis += parseFloat(el.YANLIS);
+                                toplambos += parseFloat(el.BOS);
+                                veri += "<td colspan='3' style='text-align:left;vertical-align:middle;background-color: #A09F9D;color: white;font-size: 20px;'>" + el.DERSAD + "</td>";
+                                veri += "<td style='text-align:center;vertical-align:middle;background-color: #079DE8;color: white;font-size: 20px;'>" + el.SORU + "</td>";
+                                veri += "<td style='text-align:center;vertical-align:middle;background-color: #079DE8;color: white;font-size: 20px;'>" + el.DOGRU + "</td>";
+                                veri += "<td style='text-align:center;vertical-align:middle;background-color: #079DE8;color: white;font-size: 20px;'>" + el.YANLIS + "</td>";
+                                veri += "<td style='text-align:center;vertical-align:middle;background-color: #079DE8;color: white;font-size: 20px;'>" + el.BOS + "</td>";
+                                if (parseFloat(el.YUZDE) >= 0 && parseFloat(el.YUZDE) < 10)
+                                    veri += "<td style='text-align:center;vertical-align:middle;background-color: #F31D13;color: white;font-size: 20px;'>" + el.YUZDE + "</td>";
+                                else if (parseFloat(el.YUZDE) >= 10 && parseFloat(el.YUZDE) < 20)
+                                    veri += "<td style='text-align:center;vertical-align:middle;background-color: #F34713;color: white;font-size: 20px;'>" + el.YUZDE + "</td>";
+                                else if (parseFloat(el.YUZDE) >= 20 && parseFloat(el.YUZDE) < 30)
+                                    veri += "<td style='text-align:center;vertical-align:middle;background-color: #F37013;color: white;font-size: 20px;'>" + el.YUZDE + "</td>";
+                                else if (parseFloat(el.YUZDE) >= 30 && parseFloat(el.YUZDE) < 40)
+                                    veri += "<td style='text-align:center;vertical-align:middle;background-color: #F39913;color: white;font-size: 20px;'>" + el.YUZDE + "</td>";
+                                else if (parseFloat(el.YUZDE) >= 40 && parseFloat(el.YUZDE) < 50)
+                                    veri += "<td style='text-align:center;vertical-align:middle;background-color: #F1CD1C;color: white;font-size: 20px;'>" + el.YUZDE + "</td>";
+                                else if (parseFloat(el.YUZDE) >= 50 && parseFloat(el.YUZDE) < 60)
+                                    veri += "<td style='text-align:center;vertical-align:middle;background-color: #E4DE1C;color: white;font-size: 20px;'>" + el.YUZDE + "</td>";
+                                else if (parseFloat(el.YUZDE) >= 60 && parseFloat(el.YUZDE) < 70)
+                                    veri += "<td style='text-align:center;vertical-align:middle;background-color: #D6EC1B;color: white;font-size: 20px;'>" + el.YUZDE + "</td>";
+                                else if (parseFloat(el.YUZDE) >= 70 && parseFloat(el.YUZDE) < 80)
+                                    veri += "<td style='text-align:center;vertical-align:middle;background-color: #BDF11C;color: white;font-size: 20px;'>" + el.YUZDE + "</td>";
+                                else if (parseFloat(el.YUZDE) >= 80 && parseFloat(el.YUZDE) < 90)
+                                    veri += "<td style='text-align:center;vertical-align:middle;background-color: #95F11C;color: white;font-size: 20px;'>" + el.YUZDE + "</td>";
+                                else if (parseFloat(el.YUZDE) >= 90 && parseFloat(el.YUZDE) <= 100)
+                                    veri += "<td style='text-align:center;vertical-align:middle;background-color: #1CF140;color: white;font-size: 20px;'>" + el.YUZDE + "</td>";
+
+                                veri += "</tr>";
+                            }
+                            else {
+                                veri += "<td colspan='3' style='text-align:left;vertical-align:middle;'>" + el.KONUAD + "</td>";
+                                veri += "<td style='text-align:center;vertical-align:middle;'>" + el.SORU + "</td>";
+                                veri += "<td style='text-align:center;vertical-align:middle;'>" + el.DOGRU + "</td>";
+                                veri += "<td style='text-align:center;vertical-align:middle;'>" + el.YANLIS + "</td>";
+                                veri += "<td style='text-align:center;vertical-align:middle;'>" + el.BOS + "</td>";
+                                veri += "<td style='text-align:center;vertical-align:middle;'>" + el.YUZDE + "</td>";
+                                veri += "</tr>";
+                            }
+                        }
+                    });
+                });
+                $("#tbody").html(veri);
+                $("#GenelToplamSoru").html(toplamsoru);
+                $("#GenelToplamDogru").html(toplamdogru);
+                $("#GenelToplamYanlis").html(toplamyanlis);
+                $("#GenelToplamBos").html(toplambos);
+                $("#GenelToplamYuzde").html(((toplamdogru.toFixed(2) / toplamsoru).toFixed(4) * 100).toFixed(2));
+                var datapro = [];
+                var eleman = { "durum": "Doğru", "yuzde": ((toplamdogru.toFixed(2) / toplamsoru).toFixed(4) * 100).toFixed(2), "color": "#DDD" };
+                datapro.push(eleman);
+                var eleman = { "durum": "Yanlış", "yuzde": ((toplamyanlis.toFixed(2) / toplamsoru).toFixed(4) * 100).toFixed(2), "color": "#CCC" };
+                datapro.push(eleman);
+                var eleman = { "durum": "Boş", "yuzde": ((toplambos.toFixed(2) / toplamsoru).toFixed(4) * 100).toFixed(2), "color": "#BBB" };
+                datapro.push(eleman);
+                AmChartPieOlustur("chartdiv", datapro, "yuzde", "durum", false, "Doğru:" + toplamdogru + " Yanlış:" + toplamyanlis + " Boş:" + toplambos + " Doğru Yüzdesi:" + ((toplamdogru.toFixed(2) / toplamsoru).toFixed(4) * 100).toFixed(2));
+
+            },
+        },
+    });
+</script>
+<script src="/Scripts/PublicMethods.js"></script>

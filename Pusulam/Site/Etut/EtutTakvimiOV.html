@@ -1,0 +1,423 @@
+﻿<link href="assets/global/plugins/icheck/skins/all.css" rel="stylesheet" />
+<link href="assets/global/plugins/bootstrap-fileinput/bootstrap-fileinput.css" rel="stylesheet" type="text/css" />
+<style type="text/css">
+    .HaftalikGorunum tr:hover {
+        color: #333333;
+        font-weight: bolder;
+    }
+
+    .etkinlik:hover {
+        background-color: #0B88CE;
+        color: #FFF;
+    }
+
+    #takvim td {
+        text-align: center;
+    }
+
+    #takvim .container {
+        position: relative;
+        width: 130px;
+        height: 100px;
+        overflow-x: hidden;
+    }
+
+    .gun {
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        margin-top: 80px;
+        width: 20px;
+        text-align: center;
+        color: #777;
+        font-weight: bold;
+    }
+
+    .gun2 {
+        bottom: 0;
+        right: 0;
+        margin-top: 80px;
+        width: 37px;
+        text-align: center;
+        float: right;
+        font-size: xx-large;
+        color: White;
+        height: 24px;
+        text-align: right;
+    }
+
+    .etkinlik {
+        background-color: rgb(255, 255, 255);
+        color: rgb(114, 110, 110);
+        -webkit-border-radius: 3px;
+        -moz-border-radius: 3px;
+        border-radius: 3px;
+        margin: 3px;
+        cursor: pointer;
+        font-size: 12px;
+        border-style: solid;
+        border-width: thin;
+        border-color: #D8D8D8;
+        overflow-wrap: break-word;
+        font-weight: lighter;
+    }
+
+    #cbx_kullanicitip li {
+        display: inline;
+        float: left;
+        width: 160px;
+        overflow: hidden;
+    }
+
+    #cbx_kullanicitip label, input {
+        min-height: 15px;
+        height: 15px;
+        font-size: 12px;
+    }
+
+    .portlet.calendar .fc-button {
+        -webkit-box-shadow: none;
+        -moz-box-shadow: none;
+        box-shadow: none;
+        text-shadow: none;
+        border: 0;
+        padding: 6px 10px 31px 5px;
+        margin-left: 2px;
+        border-top-style: none;
+        border-bottom-style: none;
+        border-right-style: solid;
+        border-left-style: solid;
+        border-color: #ddd;
+        background: transparent;
+        color: #fff;
+        top: 0px;
+    }
+
+    .row {
+        margin-top: 0px !important;
+    }
+
+    .modal-dialog {
+        margin-top: 100px !important;
+    }
+
+    #TakvimEtkinlikModal .table-striped > tbody > tr:nth-of-type(odd) {
+        background-color: #50575D !important;
+        color: white;
+    }
+
+    #TakvimEtkinlikModal .table-striped > tbody > tr:nth-of-type(even) {
+        background-color: #676F75 !important;
+        color: white;
+    }
+
+    textarea {
+        resize: none;
+    }
+</style>
+
+<div class="page-head">
+    <div class="page-title col-md-12">
+        <h1>
+            Etüt Takvimi
+             <span onclick="YardimGoster(ID_MENU);" class="pull-right" style="cursor:pointer;"><img src="assets/global/img/info.gif" class="info-image-icon" /> </span>
+        </h1>
+    </div>
+</div>
+
+<div id="app" class="row">
+    <div class="col-md-12" v-if="ListKullaniciTipi.indexOf(5)>-1">
+        <div class="portlet box green-haze dd-item" style="border:none">
+            <div class="portlet-title dd-handle" data-toggle='collapse' data-target='#filters' style="cursor:pointer;">
+                <div class="caption">
+                    <i class="icon-magnifier"></i>
+                    <span class="caption-subject bold uppercase"> Filtreler </span>
+                    <span class="caption-helper"></span>
+                </div>
+                <div class='actions'>
+                    <a href='javascript:;' class='btn btn-default btn-sm' style='border:none;'>
+                        <i class='fa fa-chevron-down'></i>
+                    </a>
+                </div>
+            </div>
+            <div class="portlet-body form collapse in" id="filters">
+                <form role="form" style="padding:12px 20px">
+                    <div class="row">
+                        <div class="portlet light  col-md-12" id="FiltreDivVeli" style="margin:0px; border-bottom-style: solid;border-bottom-width: 3px;border-bottom-color: rgb(0, 173, 239);"
+                             v-if="ListKullaniciTipi.indexOf(5)>-1">
+                            <div class="portlet-body">
+                                <div class="form-inline">
+                                    <c-ogrenci-veli controller="EtutTakvimiOV"
+                                                    :tc="TCKIMLIKNO"
+                                                    @OnChange="OgrenciVeliSelected">
+                                    </c-ogrenci-veli>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-12">
+        <div class="portlet light" id="Tablodiv" style="min-height:100px">
+            <div class="portlet-body">
+                <div class="portlet box calendar">
+                    <div class="row" style="padding-left:10px!important; padding-right:10px!important; line-height:34px;">
+                        <div class="col-md-9">
+                            <input type="text" id="BasTarih" class="form-control form-control-inline input-small date-picker" name="from" readonly style="text-align:center;">
+                        </div>
+
+                        <div class="col-md-3" style="vertical-align:middle;">
+                            <div class="pull-right" style="vertical-align:middle;">
+                                <i class="fa fa-4x fa-angle-left" style="cursor: pointer; vertical-align:middle;" @click="Undo()"></i>
+                                <button type="button" class="btn btn-success" @click="Bugun()" style="margin-left:10px; margin-right:10px;">BUGÜN</button>
+                                <i class="fa fa-4x fa-angle-right" style="cursor: pointer; vertical-align:middle;" @click="Redo()"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row" style="margin:0px!important;">
+                        <div class="m-grid m-grid-responsive-xs m-grid-demo margin-top-10" id="Liste"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="EtutDetayModal" tabindex="-1" role="dialog"
+         aria-hidden="true" style="display: none;">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                    <h4 class="modal-title">Etüt Detay</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-horizontal">
+
+                        <table data-height="700" class="table table-striped table-bordered  table-checkable" data-width="100%" style="margin-bottom:0px; color:#111; width:100%;">
+                            <tbody>
+                                <tr>
+                                    <td>Etüt</td>
+                                    <td>{{seciliEtut.ETUT}}</td>
+                                </tr>
+                                <tr v-if="seciliEtut.UNITELIST!=null">
+                                    <td>Konu</td>
+                                    <td>
+                                        <div v-for="j in seciliEtut.UNITELIST">
+                                            {{j.UNITEAD}}
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Tarih</td>
+                                    <td>{{seciliEtut.TARIH}} <div v-if="!sabitEtut">{{seciliEtut.SAAT}}</div></td>
+
+                                </tr>
+                                <tr>
+                                    <td>Yer</td>
+                                    <td>{{seciliEtut.YER}}</td>
+                                </tr>
+                                <tr>
+                                    <td>Ders</td>
+                                    <td>{{seciliEtut.DERSAD}}</td>
+                                </tr>
+                                <!--<tr>
+                                    <td>Öğretmen</td>
+                                    <td>{{seciliEtut.ADSOYAD}}</td>
+                                </tr>-->
+                            </tbody>
+                        </table>
+
+
+
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">
+                        Kapat
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+<script src="../../VueComponents/SinavIstatistikFiltreleri.js?v=3"></script>
+<script>
+
+
+
+    var vue = new Vue({
+        el: "#app",
+        name: "EtutTakvimiOV.html",
+
+        data: {
+            TCKIMLIKNO: '',
+            tcOgrenci: '',
+
+            ListKullaniciTipi: [],
+            seciliEtut: [],
+            sabitEtut: false,
+
+            tabid: 1,
+        },
+
+        mounted() {
+
+            $("#BasTarih").datepicker({
+                format: 'dd.mm.yyyy',
+                language: 'tr'
+            });
+
+            this.TCKIMLIKNO = session.TCKIMLIKNO;
+            var list = [];
+
+            var p = {
+                TCKIMLIKNO: session.TCKIMLIKNO,
+                OTURUM: session.OTURUM
+            };
+            WebPost(this, "EtutTakvimiOV", "KullaniciTipiGetir", p, "#app", "Yükleniyor...", function (data, parent) {
+
+
+                var d = new Date();
+                var BasTarih = d.getDate() + "." + (d.getMonth() + 1) + "." + d.getFullYear();
+                $("#BasTarih").datepicker("setDate", BasTarih);
+
+                $('#BasTarih').datepicker().on('changeDate', function (ev) {
+                    var BasTarih = $("#BasTarih").val();
+                    parent.TakvimGetir();
+                });
+
+                if (data != null) {
+                    $.each(data, function (j, el) {
+                        list.push(this.ID_KULLANICITIPI)
+                    });
+                    parent.ListKullaniciTipi = list;
+                    if (list.indexOf(4) > -1)
+                        parent.tcOgrenci = session.TCKIMLIKNO;
+
+                    parent.TakvimGetir();
+                } else {
+                    Alert_Warning("Kullanıcı Bulunamadı..!");
+                }
+            });
+
+        },
+
+        methods: {
+            getObjects(obj, key, val) {
+                var objects = [];
+                for (var i in obj) {
+                    if (!obj.hasOwnProperty(i)) continue;
+                    if (typeof obj[i] == 'object') {
+                        objects = objects.concat(this.getObjects(obj[i], key, val));
+                    } else if (i == key && obj[key] == val) {
+                        objects.push(obj);
+                    }
+                }
+                return objects;
+            },
+            OgrenciVeliSelected(item) {
+                vue.tcOgrenci = item;
+            },
+
+
+            SinavEtutListe(idEtut, sabitEtut) {
+                vue.sabitEtut = sabitEtut == 1 ? true : false;
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    ID_ETUT: idEtut == undefined || idEtut == null ? 0 : idEtut,
+                    SABITETUT: vue.sabitEtut,
+                };
+                WebPost(this, "EtutTakvimiOV", "EtutDetay", p, "#app", "Yükleniyor...", function (data, parent) {
+                    vue.seciliEtut = JSON.parse(data)[0];
+                    console.log(data);
+                });
+
+            },
+
+            TakvimGetir() {
+                var BasTarih = $("#BasTarih").val();
+                $("#Liste").empty();
+                var row = "";
+
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    BAS_TARIH: BasTarih,
+                    TC_OGRENCI: vue.tcOgrenci,
+                    //ID_KULLANICITIPI: JSON.stringify(this.ListKullaniciTipi),
+                };
+
+                WebPost(vue, "EtutTakvimiOV", "TakvimGetir", p, '', '', function (data, parent) {
+                    if (data != null) {
+                        $.each(JSON.parse(data), function (index, value) {
+                            if (index % 7 == 0) {
+                                row += "<div class='m-grid-row'>";
+                            }
+
+                            var Detay = "<div>";
+                            $.each(this.Liste, function (indexSub, valueSub) {
+                                Detay += '<div onclick="EtutDetay(' + valueSub.ID_ETUT + ',' + valueSub.SABITETUT + ')" style="cursor:pointer; width:100%; padding-left:10px; padding-right:10px; border-bottom: solid 1px #fff; background-color:' + valueSub.RENK + ';"><font style="color:white; font-size: 12px;">' + valueSub.AD + '</font></div>';
+                            });
+                            Detay += "</div>";
+
+                            var bgColor = (value.Bugun == true) ? "aliceblue" : "white";
+                            var bgColorHeader = (value.Bugun == true) ? "#045f67" : "#36c6d3";
+
+                            row += "<div class='m-grid-col' style='background-color: " + bgColor + " ;WORD-WRAP: break-word;'><h6 style='background-color: " + bgColorHeader + "; color: white; text-align: center; font-weight: 500; padding: 2px; margin:0px!important; padding:8px!important;'>" + value.GUN + ' ' + value.AYAD + ' ' + value.YIL + '<br />' + value.GUNAD + "</h6> " + Detay + " </div>";
+
+                            if (index % 7 == 6) {
+                                row += "</div>";
+                            }
+                        });
+
+                        $("#Liste").html(row);
+                    } else {
+                        Alert_Warning("Bir sorun oluştu. Daha sonra tekrar deneyiniz...");
+                    }
+                });
+            },
+            Bugun() {
+                var d = new Date();
+                var BasTarih = d.getDate() + "." + (d.getMonth() + 1) + "." + d.getFullYear();
+                $("#BasTarih").datepicker("setDate", BasTarih);
+            },
+            Undo() {
+                var date = $("#BasTarih").datepicker('getDate');
+                var d = new Date(date);
+                d.setDate(1);
+                d.setMonth(d.getMonth() - 1);
+
+                var BasTarih = d.getDate() + "." + (d.getMonth() + 1) + "." + d.getFullYear();
+                $("#BasTarih").datepicker("setDate", BasTarih);
+            },
+            Redo() {
+                var date = $("#BasTarih").datepicker('getDate');
+                var d = new Date(date);
+                d.setDate(1);
+                d.setMonth(d.getMonth() + 1);
+
+                var BasTarih = d.getDate() + "." + (d.getMonth() + 1) + "." + d.getFullYear();
+                $("#BasTarih").datepicker("setDate", BasTarih);
+            },
+        },
+
+        watch: {
+            tcOgrenci() {
+                this.TakvimGetir();
+            },
+        },
+
+    });
+    function EtutDetay(idEtut, sabitEtut) {
+        vue.SinavEtutListe(idEtut, sabitEtut);
+        $("#EtutDetayModal").modal("toggle");
+    }
+
+</script>
+
+<script src="assets/global/plugins/icheck/icheck.min.js"></script>
+<script src="../../../Scripts/PublicMethods.js"></script>

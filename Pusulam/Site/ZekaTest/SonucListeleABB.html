@@ -1,0 +1,537 @@
+﻿<link href="assets/global/plugins/bootstrap-fileinput/bootstrap-fileinput.css" rel="stylesheet" type="text/css" />
+<style>
+    td {
+        vertical-align: middle !important;
+    }
+</style>
+
+<div class="page-head">
+    <!-- BEGIN PAGE TITLE -->
+    <div class="page-title col-md-12">
+        <h1 style="line-height:24px; vertical-align:middle;">
+            Zeka Test <small>Sonuç Listesi</small>  <span onclick="YardimGoster(ID_MENU);" class="pull-right" style="cursor:pointer;"><img src="assets/global/img/info.gif" class="info-image-icon" /> </span>
+        </h1>
+    </div>
+    <!-- END PAGE TITLE -->
+</div>
+
+<div class="row" id="app">
+    <div class="col-md-12">
+        <div class="portlet box green-haze dd-item" style="border: none; margin-bottom:0px!important;">
+            <div class="portlet-title dd-handle" data-toggle='collapse' data-target='#filters' style="cursor:pointer;">
+                <div class="caption">
+                    <i class="icon-magnifier"></i>
+                    <span class="caption-subject bold uppercase"> Filtreler </span>
+                    <span class="caption-helper"></span>
+                </div>
+                <div class='actions'>
+                    <a href='javascript:;' class='btn btn-default btn-sm' style='border:none;'>
+                        <i class='fa fa-chevron-down'></i>
+                    </a>
+                </div>
+            </div>
+            <div class="portlet-body form collapse in" id="filters">
+                <div class="portlet light col-md-12" style="margin:0px; border-bottom-style: solid;border-bottom-width: 3px;border-bottom-color: rgb(0, 173, 239);">
+                    <div class="portlet-body" style="padding:0px!important;">
+                        <div class="form-inline">
+                            <div class="row" style="line-height:36px!important;">
+                                <div class="form-md-line-input">
+                                    <label class="control-label col-md-2">Test Tarihi: </label>
+                                    <div class="col-md-5">
+                                        <button id="btn_TestTarih1" type="button" class="dropdown-toggle btn grey-cararra" data-toggle="dropdown" role="button" title="Seçiniz.." style="width:100%;">
+                                            <span id="txt_TestTarih1" class="filter-option pull-left">Başlangıç Seçiniz..</span>
+                                            <span class="bs-caret" style="float:right;">
+                                                <span class="caret"></span>
+                                            </span>
+                                        </button>
+                                    </div>
+                                    <div class="col-md-5">
+                                        <button id="btn_TestTarih2" type="button" class="dropdown-toggle btn grey-cararra" data-toggle="dropdown" role="button" title="Seçiniz.." style="width:100%;">
+                                            <span id="txt_TestTarih2" class="filter-option pull-left">Bitiş Seçiniz..</span>
+                                            <span class="bs-caret" style="float:right;">
+                                                <span class="caret"></span>
+                                            </span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <c-aktif-pasif @OnChange="DurumSelected">
+                                </c-aktif-pasif>
+                            </div>
+                            <div class="row">
+                                <input style="float: right; margin: 10px;" type="button" class="btn btn-success" @click="Filtrele()" value="Filtrele">
+                                <input style="float: right; margin: 10px;" type="button" class="btn btn-success yellow" @click="Excel()" value="Excel">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-12" style="margin-top:20px;">
+        <div class="portlet light bordered">
+            <div class="portlet-body">
+                <table class="table table-striped table-bordered table-checkable" id="table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>TCKİMLİKNO</th>
+                            <th>AD</th>
+                            <th>SOYAD</th>
+                            <th>DOĞUM TARİHİ</th>
+                            <th>TEST TARİHİ</th>
+                            <th>KAYIT EDEN</th>
+                            <th>KRONOLOJİK YAŞ</th>
+                            <th>TEST</th>
+                            <th>TOPLAM PUAN</th>
+                            <th>İŞLEM</th>
+                            <th>Veli Raporu</th>
+                            <th>Uzman Raporu</th>
+                            <th>KYE_KULLANICI</th>
+                            <th>DURUM</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div id="detay_modal" class="modal fade" tabindex="-1" data-replace="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                    <h4 class="modal-title">Puan Gör</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-body form-horizontal" id="modal-loading" style="display:none;">
+                        <div class="row" style="margin:0px; text-align:center; padding:50px;">
+                            <img src="../../assets/layouts/layout4/img/loading-spinner-blue.gif" />
+                        </div>
+                    </div>
+                    <div class="form-body form-horizontal" id="modal-body">
+                        <div class="row" style="margin:0px;" v-if="DATA!=null">
+                            <table class="table table-striped table-bordered table-hover table-checkable" id="ogrencitable" v-for="KATEGORI in DATA.KATEGORILIST">
+                                <thead>
+                                    <tr>
+                                        <th colspan="2">{{KATEGORI.KATEGORI}}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="odd gradeX" v-for="u in KATEGORI.SORULIST">
+                                        <td :style="'text-align:left; width:25%; ' + (u.KALIN?'font-weight:800;':'')">{{u.SORU}}</td>
+                                        <td><input type="text" class="form-control" :style="(u.KALIN?'font-weight:800;':'')" v-model="u.PUAN" onkeyup="this.value=this.value.replace(/[^\d]/,'')" /></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <table class="table table-striped table-bordered table-hover table-checkable">
+                                <tbody>
+                                    <tr>
+                                        <td style="width:25%; text-align:left;">Veli Raporu</td>
+                                        <td v-if="DATA.DOSYA!=null" style="line-height:34px;">
+                                            <a :href="'/Dosyalar/ZekaTest/'+DATA.DOSYA[0].URL" target="_blank">Veli Raporu İndir</a>
+                                            <button style="margin:auto;" type="button" class="btn red pull-right" @click="DosyaSil(DATA.DOSYA[0].ID_ZEKATESTOGRENCIDOSYA)">Veli Raporu Sil</button>
+                                        </td>
+                                        <td v-else>
+                                            <div class="fileinput fileinput-new" data-provides="fileinput">
+                                                <span class="fileinput-preview thumbnail" style="max-width: 1000px; max-height: 1000px;"> </span>
+                                                <span>
+                                                    <span class="btn default btn-file">
+                                                        <span class="fileinput-new yellow"> Veli Raporu Yükle </span>
+                                                        <span class="fileinput-exists"> Değiştir </span>
+                                                        <input type="file" name="..." id="Dosya" data-preview-file-type="text">
+                                                    </span>
+                                                    <a href="javascript:;" class="btn red fileinput-exists" data-dismiss="fileinput"> Sil </a>
+                                                    <!--<a href="javascript:;" @click="DosyaKaydet()" class="btn green fileinput-exists" data-dismiss="modal"> Yükle </a>-->
+                                                </span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr v-if="DATA.ID_ZEKATEST==1">
+                                        <td style="width:25%; text-align:left;">Uzman Raporu</td>
+                                        <td v-if="DATA.DOSYAUZMAN!=null" style="line-height:34px;">
+                                            <a :href="'/Dosyalar/ZekaTest/'+DATA.DOSYAUZMAN[0].URL" target="_blank">Uzman Raporu İndir</a>
+                                            <button style="margin:auto;" type="button" class="btn red pull-right" @click="DosyaSilUzman(DATA.DOSYAUZMAN[0].ID_ZEKATESTOGRENCIDOSYA)">Uzman Raporu Sil</button>
+                                        </td>
+                                        <td v-else>
+                                            <div class="fileinput fileinput-new" data-provides="fileinput">
+                                                <span class="fileinput-preview thumbnail" style="max-width: 1000px; max-height: 1000px;"> </span>
+                                                <span>
+                                                    <span class="btn default btn-file">
+                                                        <span class="fileinput-new yellow"> Uzman Raporu Yükle </span>
+                                                        <span class="fileinput-exists"> Değiştir </span>
+                                                        <input type="file" name="..." id="UzmanDosya" data-preview-file-type="text">
+                                                    </span>
+                                                    <a href="javascript:;" class="btn red fileinput-exists" data-dismiss="fileinput"> Uzman Raporu Sil </a>
+                                                    <!--<a href="javascript:;" @click="DosyaKaydet()" class="btn green fileinput-exists" data-dismiss="modal"> Yükle </a>-->
+                                                </span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer" id="modal-footer">
+                    <button type="button" class="btn green" @click="Kaydet()">Güncelle</button>
+                    <button type="button" class="btn default" data-dismiss="modal">Kapat</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="VueComponents/ZekaTest/Filtreler.js"></script>
+<script>
+    var vue = new Vue({
+        el: "#app",
+        name: "SonucListeleABB.html",
+
+        data: {
+            table: null,
+            DATA: null,
+            TESTTARIHI1: '',
+            TESTTARIHI2: '',
+            SEARCH: '',
+            ORDERCOL: '',
+            ORDERDIR: '',
+            DURUM: 0,
+            ID_ZEKATESTOGRENCIZEKATEST: 0
+        },
+
+        mounted() {
+            vue = this;
+            vue.Listele();
+
+            $('#btn_TestTarih1').datepicker({
+                format: 'dd.mm.yyyy',
+                language: 'tr',
+                autoclose: true
+            }).on(
+                'changeDate', () => {
+                    var day1 = $('#btn_TestTarih1').datepicker('getDate').getDate();
+                    var month1 = $('#btn_TestTarih1').datepicker('getDate').getMonth();
+                    var year1 = $('#btn_TestTarih1').datepicker('getDate').getFullYear();
+                    var fullDate = day1 + "." + (month1 + 1) + "." + year1;
+                    $('#txt_TestTarih1').html(fullDate);
+
+                    this.TESTTARIHI1 = fullDate;
+                    this.$forceUpdate();
+                }
+            );
+
+            $('#btn_TestTarih2').datepicker({
+                format: 'dd.mm.yyyy',
+                language: 'tr',
+                autoclose: true
+            }).on(
+                'changeDate', () => {
+                    var day1 = $('#btn_TestTarih2').datepicker('getDate').getDate();
+                    var month1 = $('#btn_TestTarih2').datepicker('getDate').getMonth();
+                    var year1 = $('#btn_TestTarih2').datepicker('getDate').getFullYear();
+                    var fullDate = day1 + "." + (month1 + 1) + "." + year1;
+                    $('#txt_TestTarih2').html(fullDate);
+
+                    this.TESTTARIHI2 = fullDate;
+                    this.$forceUpdate();
+                }
+            );
+        },
+
+        methods: {
+            DurumSelected(DURUM) {
+                this.DURUM = DURUM;
+            },
+
+            Filtrele() {
+                this.Listele();
+            },
+
+            Listele() {
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                };
+
+                if (vue.TESTTARIHI1 != "") {
+                    p.TESTTARIHI1 = vue.TESTTARIHI1;
+                }
+
+                if (vue.TESTTARIHI2 != "") {
+                    p.TESTTARIHI2 = vue.TESTTARIHI2;
+                }
+
+                p.DURUM = this.DURUM;
+
+                if (this.table != null) {
+                    this.table.destroy();
+                }
+
+                this.table = $('#table').DataTable(
+                    {
+                        "processing": true,
+                        "serverSide": true,
+                        "order": [[5, 'DESC']],
+                        "columnDefs": [
+                            {
+                                "targets": 0,
+                                "visible": false,
+                                "searchable": false,
+                                "orderable": false
+                            },
+                            {
+                                "targets": 10,
+                                "searchable": false,
+                                "orderable": false
+                            },
+                            {
+                                "targets": 11,
+                                "searchable": false,
+                                "orderable": false
+                            },
+                            {
+                                "targets": 12,
+                                "searchable": false,
+                                "orderable": false
+                            },
+                            {
+                                "targets": 13,
+                                "visible": false,
+                                "searchable": false,
+                                "orderable": false
+                            }
+                        ],
+                        "ajax": {
+                            "url": "/ZekaTestSonucListeleABB/SonucListeleABB",
+                            "type": 'POST',
+                            "data": function (d) {
+                                vue.SEARCH = d.search.value;
+                                vue.ORDERCOL = d.order[0].column;
+                                vue.ORDERDIR = d.order[0].dir;
+                                p.SQLJSON = JSON.stringify(d);
+                                return p;
+                            },
+                            "dataFilter": function (data) {
+                                var json = JSON.parse(JSON.parse(data));
+                                json.data = JSON.parse(json.data);
+                                return JSON.stringify(json);
+                            },
+                        },
+                        "columns": [
+                            { "data": "RowNumber" },
+                            { "data": "TCKIMLIKNO" },
+                            { "data": "AD" },
+                            { "data": "SOYAD" },
+                            { "data": "DOGUMTARIHI" },
+                            { "data": "TESTTARIHI" },
+                            { "data": "KYE_ADSOYAD" },
+                            { "data": "YAS" },
+                            { "data": "TEST" },
+                            { "data": "TOPLAMPUAN" },
+                            {
+                                "data": "ID",
+                                "render": function (data, type, row, meta) {
+                                    return type === 'display' && data != null ?
+                                        '<button style="margin:auto;" type="button" class="btn green" onclick="SoruListele(' + data + ')">Detay Gör / Düzenle</button>' :
+                                        data;
+                                }
+                            },
+                            {
+                                "data": "DOSYA",
+                                "render": function (data, type, row, meta) {
+                                    return type === 'display' && data != null ?
+                                        '<a href="/Dosyalar/ZekaTest/' + data + '" target="_blank">İndir</a>' :
+                                        data;
+                                }
+                            },
+                            {
+                                "data": "DOSYAUZMAN",
+                                "render": function (data, type, row, meta) {
+                                    return type === 'display' && data != null ?
+                                        '<a href="/Dosyalar/ZekaTest/' + data + '" target="_blank">İndir</a>' :
+                                        data;
+                                }
+                            },
+                            { "data": "KYE_KULLANICI" },
+                            {
+                                "data": "AKTIF",
+                                "render": function (data, type, row, meta) {
+                                    return type === 'display' && data != null ?
+                                        '<button style="margin:auto;" type="button" class="btn ' + (data ? 'red' : 'green') + '" onclick="' + (data ? 'PasifYap' : 'AktifYap') + '(' + row.ID + ')">' + (data ? 'Pasif Yap' : 'Aktif Yap') + '</button>' :
+                                        data;
+                                }
+                            },
+                        ],
+                        language: {
+                            "url": "./Utility/dil.json"
+                        }
+                    });
+            },
+
+            Excel() {
+                window.open('/Rapor.aspx?rapor=ZekaTest.ZekaTestRapor&raporTur=XLS&p=' + session.TCKIMLIKNO + ';' + session.OTURUM + ';' + vue.TESTTARIHI1 + ';' + vue.TESTTARIHI2 + ';' + vue.SEARCH + ';' + vue.ORDERCOL + ';' + vue.ORDERDIR + ';' + this.DURUM, '_blank');
+            },
+
+            Kaydet() {
+                var DATA = {};
+                DATA.KATEGORILIST = this.DATA.KATEGORILIST;
+                DATA.SORULIST = this.DATA.SORULIST;
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    ID_ZEKATESTOGRENCIZEKATEST: this.ID_ZEKATESTOGRENCIZEKATEST,
+                    SQLJSON_SORU: JSON.stringify(DATA)
+                };
+                vue.ShowLoading(true);
+                WebPost(vue, "ZekaTestSonucListeleABB", "Guncelle", p, '#app', '', function (data, parent) {
+                    if (data != null) {
+                        var ID = data;
+
+                        if (vue.DATA.DOSYA == null) {
+                            var dosya = document.getElementById('Dosya').files;
+                            if (dosya.length > 0) {
+                                vue.DosyaKaydet(ID);
+                            } else {
+                                vue.Filtrele();
+                                Alert_Info("Başarılı bir şekilde kaydedildi.")
+                                vue.ShowLoading(false);
+                            }
+                        }
+                        if (vue.DATA.DOSYAUZMAN == null && vue.DATA.ID_ZEKATEST == 1) {
+                            var dosya = document.getElementById('UzmanDosya').files;
+                            if (dosya.length > 0) {
+                                vue.DosyaKaydetUzman(ID);
+                            } else {
+                                vue.Filtrele();
+                                Alert_Info("Başarılı bir şekilde kaydedildi.")
+                                vue.ShowLoading(false);
+                            }
+                        }
+                        if (vue.DATA.DOSYA != null && (vue.DATA.DOSYAUZMAN != null || vue.DATA.ID_ZEKATEST != 1)) {
+                            vue.Filtrele();
+                            Alert_Info("Başarılı bir şekilde kaydedildi.")
+                            vue.ShowLoading(false);
+                        }
+
+                    }
+                    else {
+                        Alert_Info("Bir hata oluştu.")
+                        vue.ShowLoading(false);
+                    }
+                })
+            },
+
+            DosyaSil(ID) {
+                this.DATA.DOSYA = null;
+            },
+
+            DosyaSilUzman(ID) {
+                this.DATA.DOSYAUZMAN = null
+            },
+
+            DosyaKaydet(ID) {
+                var dosyaadi = '';
+                var _this = this;
+                var dosya = document.getElementById('Dosya').files;
+                dosyaadi = $("#Dosya").val().replace(/^.*[\\\/]/, '');
+                if (dosya.length == 0) {
+                    Alert_Info('Lütfen Dosya Seçiniz.');
+                    vue.ShowLoading(false);
+                    return;
+                }
+
+                DosyaYukleZekaTest(dosya[0], "ZekaTest", ID, 1, function (response) {
+                    vue.Filtrele();
+                    vue.ShowLoading(false);
+                    $('#detay_modal').modal('hide');
+                    Alert_Info("Başarılı bir şekilde kaydedildi.")
+                });
+            },
+
+            DosyaKaydetUzman(ID) {
+                var dosyaadi = '';
+                var _this = this;
+                var dosya = document.getElementById('UzmanDosya').files;
+                dosyaadi = $("#UzmanDosya").val().replace(/^.*[\\\/]/, '');
+                if (dosya.length == 0) {
+                    Alert_Info('Lütfen Dosya Seçiniz.');
+                    vue.ShowLoading(false);
+                    return;
+                }
+
+                DosyaYukleZekaTest(dosya[0], "ZekaTest", ID, 2, function (response) {
+                    vue.Filtrele();
+                    vue.ShowLoading(false);
+                    $('#detay_modal').modal('hide');
+                    Alert_Info("Başarılı bir şekilde kaydedildi.")
+                });
+            },
+
+            ShowLoading(x) {
+                if (x) {
+                    $('#modal-body').hide();
+                    $('#modal-footer').hide();
+                    $('#modal-loading').show();
+                } else {
+                    $('#modal-loading').hide();
+                    $('#modal-body').show();
+                    $('#modal-footer').show();
+                }
+            }
+        }
+    });
+
+    function SoruListele(ID) {
+        vue.ID_ZEKATESTOGRENCIZEKATEST = ID;
+        var p = {
+            TCKIMLIKNO: session.TCKIMLIKNO,
+            OTURUM: session.OTURUM,
+            ID_ZEKATESTOGRENCIZEKATEST: ID
+        };
+
+        vue.DATA = null;
+        vue.SIL = false;
+
+        WebPost(vue, "ZekaTestSonucListeleABB", "SoruListeleABB", p, '#app', '', function (data, parent) {
+            if (data != null) {
+                vue.DATA = JSON.parse(data);
+
+                $('#detay_modal').modal({
+                    backdrop: 'static',
+                    keyboard: false
+                });
+            }
+        })
+    }
+
+    function PasifYap(ID) {
+        var p = {
+            TCKIMLIKNO: session.TCKIMLIKNO,
+            OTURUM: session.OTURUM,
+            ID_ZEKATESTOGRENCIZEKATEST: ID
+        };
+
+        WebPost(vue, "ZekaTestSonucListeleABB", "PasifYapABB", p, '#app', '', function (data, parent) {
+            vue.Filtrele();
+        })
+    }
+
+    function AktifYap(ID) {
+        var p = {
+            TCKIMLIKNO: session.TCKIMLIKNO,
+            OTURUM: session.OTURUM,
+            ID_ZEKATESTOGRENCIZEKATEST: ID
+        };
+
+        WebPost(vue, "ZekaTestSonucListeleABB", "AktifYapABB", p, '#app', '', function (data, parent) {
+            vue.Filtrele();
+        })
+    }
+
+</script>
+<script src="assets/global/plugins/bootstrap-fileinput/bootstrap-fileinput.js" type="text/javascript"></script>
+<script src="Scripts/PublicMethods.js"></script>

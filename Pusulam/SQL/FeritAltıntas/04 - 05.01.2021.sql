@@ -1,0 +1,5545 @@
+﻿
+USE Pusulam
+
+
+GO
+PRINT N'Disabling all DDL triggers...'
+GO
+DISABLE TRIGGER ALL ON DATABASE
+GO
+PRINT N'Creating [dbo].[DisOgrenci]...';
+
+
+GO
+CREATE TABLE [dbo].[DisOgrenci] (
+    [ID_DIS_OGRENCI] INT            IDENTITY (1, 1) NOT NULL,
+    [TCKIMLIKNO]     VARCHAR (11)   NOT NULL,
+    [AD]             VARCHAR (200)  NOT NULL,
+    [SOYAD]          VARCHAR (200)  NOT NULL,
+    [ID_KADEME3]     INT            NOT NULL,
+    [DONEM]          INT            NOT NULL,
+    [EPOSTA]         NVARCHAR (320) NULL,
+    [VELI_AD_SOYAD]  VARCHAR (300)  NULL,
+    [VELI_TELEFON]   VARCHAR (15)   NULL,
+    [SIFRE]          VARCHAR (7)    NOT NULL,
+    [KYE_TCKIMLIKNO] VARCHAR (11)   NULL,
+    [AKTIF]          BIT            NULL,
+    CONSTRAINT [PK_DisOgrenci] PRIMARY KEY CLUSTERED ([ID_DIS_OGRENCI] ASC)
+);
+
+
+GO
+PRINT N'Creating [dbo].[DF_Table_1_ID_DONEM]...';
+
+
+GO
+ALTER TABLE [dbo].[DisOgrenci]
+    ADD CONSTRAINT [DF_Table_1_ID_DONEM] DEFAULT ((0)) FOR [DONEM];
+
+
+GO
+PRINT N'Creating [dbo].[DF_DisOgrenci_AKTIF]...';
+
+
+GO
+ALTER TABLE [dbo].[DisOgrenci]
+    ADD CONSTRAINT [DF_DisOgrenci_AKTIF] DEFAULT ((1)) FOR [AKTIF];
+
+
+GO
+PRINT N'Creating [dbo].[DF_DisOgrenci_SIFRE]...';
+
+
+GO
+ALTER TABLE [dbo].[DisOgrenci]
+    ADD CONSTRAINT [DF_DisOgrenci_SIFRE] DEFAULT ('okyanus') FOR [SIFRE];
+
+
+GO
+PRINT N'Creating [dbo].[DF_Table_1_GRUPID]...';
+
+
+GO
+ALTER TABLE [dbo].[DisOgrenci]
+    ADD CONSTRAINT [DF_Table_1_GRUPID] DEFAULT ((0)) FOR [ID_KADEME3];
+
+
+GO
+PRINT N'Altering [dbo].[sp_Login]...';
+
+
+GO
+
+ALTER procedure [dbo].[sp_Login]
+	@TCKIMLIKNO			VARCHAR(11) = NULL,
+	@OTURUM				VARCHAR(50) = NULL
+AS
+
+BEGIN
+
+
+BEGIN TRY    
+	    DECLARE @MSG			VARCHAR(4000)
+	    DECLARE @ErrorSeverity	INT
+		DECLARE @ErrorState		INT
+		IF	(NOT EXISTS(SELECT TCKIMLIKNO FROM [dbo].[v3Kullanici] WHERE TCKIMLIKNO = @TCKIMLIKNO AND OTURUM = @OTURUM AND AKTIF = 1) 
+			AND 
+			NOT EXISTS (SELECT TOP 1 1 FROM OkyanusIletisim.dbo.LoginLog WHERE KYE_TCKIMLIKNO = @TCKIMLIKNO AND OTURUM = @OTURUM AND LOGOUT = 0))
+			AND 
+			NOT EXISTS(SELECT TCKIMLIKNO FROM DisOgrenci WHERE TCKIMLIKNO=@TCKIMLIKNO)
+			
+		BEGIN		
+			
+			SELECT 
+			@ErrorSeverity	= ERROR_SEVERITY(),
+			@ErrorState		= ERROR_STATE()
+
+			SELECT @MSG = 'Hatalı Kullanıcı Adı ya da Şifre'
+
+			RAISERROR (@MSG,		-- Message text.
+					   16,			-- Severity.
+					   @ErrorState	-- State.
+					   );
+			
+		END
+		ELSE
+		BEGIN
+			DECLARE @OV BIT=0
+			IF EXISTS(SELECT TOP 1 1 FROM v3SubeYetki WHERE TCKIMLIKNO=@TCKIMLIKNO AND ID_KULLANICITIPI IN (4))
+			BEGIN
+				SET @OV=1
+			END
+			
+			INSERT INTO OkyanusIletisim.dbo.LoginLog(KYE_TCKIMLIKNO, OTURUM, ID_UYGULAMA, DEVICE_ID, FCM_TOKEN)VALUES(@TCKIMLIKNO, @OTURUM, 4, 'Pusulam', '')
+
+			IF EXISTS(SELECT TCKIMLIKNO FROM DisOgrenci WHERE TCKIMLIKNO=@TCKIMLIKNO)
+				BEGIN
+					SELECT 
+						AD,
+						SOYAD,
+						TCKIMLIKNO,
+						0 AS CINSIYET,
+						GETDATE() AS DOGUMTARIHI,
+						@OTURUM AS OTURUM,
+						0 KADEME,
+						1 AS OV,
+						1 AS DISOGRENCI
+					FROM DisOgrenci
+					WHERE TCKIMLIKNO=@TCKIMLIKNO
+				END
+		ELSE		
+		BEGIN
+			-- Login Bilgileri
+			SELECT
+				K.AD, 
+				K.SOYAD, 
+				K.TCKIMLIKNO,
+				K.CINSIYET,
+				K.DOGUMTARIHI,
+				K.OTURUM,
+				--kk.ID_KADEME as KADEME,
+				0 KADEME,
+				@OV AS OV,
+				0 AS DISOGRENCI
+			FROM		[dbo].v3Kullanici				K
+			--INNER JOIN	OkyanusDB.dbo.v4KullaniciKademe	kk	on	kk.TCKIMLIKNO = k.TCKIMLIKNO	
+			WHERE K.TCKIMLIKNO = @TCKIMLIKNO AND K.AKTIF = 1
+			END			
+		END
+		
+END TRY
+		BEGIN CATCH
+			
+			SELECT 
+				@ErrorSeverity	= ERROR_SEVERITY(),
+				@ErrorState		= ERROR_STATE()
+							
+			SELECT @MSG = /*'Prosedür: ' + ISNULL(ERROR_PROCEDURE(), '') + ', Satır: ' + CAST(ERROR_LINE() as varchar) + ', Hata: ' +*/ ERROR_MESSAGE()
+			
+			RAISERROR (@MSG , -- Message text.
+					   @ErrorSeverity, -- Severity.
+					   @ErrorState -- State.
+					   );
+		END CATCH;
+	
+END
+GO
+PRINT N'Altering [dbo].[sp_OturumKontrol]...';
+
+
+GO
+ALTER procedure [dbo].[sp_OturumKontrol]
+	@TCKIMLIKNO			VARCHAR(11)		= NULL,
+	@OTURUM				VARCHAR(36)		= NULL,
+	@ID_MENU			INT				= NULL,
+	@return_variable	INT				= NULL		
+AS
+BEGIN
+		
+		BEGIN TRY    
+		
+			DECLARE @ErrorSeverity INT;
+			DECLARE @ErrorState INT;
+			DECLARE @MSG VARCHAR(4000)
+			
+			SELECT 
+				@ErrorSeverity	= ERROR_SEVERITY(),
+				@ErrorState		= ERROR_STATE()
+			
+			--IF 1 = (SELECT AKTIF FROM OkyanusDB.dbo.v3Kullanici WHERE TCKIMLIKNO = @TCKIMLIKNO)
+			--BEGIN
+			--RETURN 1
+			--END
+			--ELSE
+			--BEGIN
+			--	SELECT @MSG = 'Oturum Sonlandırıldı!'
+				
+			--	RAISERROR (@MSG , -- Message text.
+			--		   16, -- Severity.
+			--		   1 -- State.
+			--		   );
+			--END
+
+			SET @return_variable = (SELECT COUNT(TCKIMLIKNO) FROM OkyanusDB.[dbo].[v3Kullanici] WHERE TCKIMLIKNO = @TCKIMLIKNO AND AKTIF = 1 and LOWER([OTURUM]) = LOWER(@OTURUM))  
+
+			IF @return_variable IS NULL OR @return_variable = 0
+			BEGIN
+				SET @return_variable = (SELECT COUNT(*) FROM OkyanusIletisim.dbo.LoginLog WHERE KYE_TCKIMLIKNO = @TCKIMLIKNO AND LOWER([OTURUM]) = LOWER(@OTURUM) AND LOGOUT = 0)				
+			END
+			IF @return_variable > 0
+			AND (EXISTS(SELECT DISTINCT	 M.ID_MENU
+						FROM Menu							M
+						INNER JOIN MenuYetki				Y	ON Y.ID_MENU			= M.ID_MENU  
+						INNER JOIN OkyanusDB.DBO.v4KullaniciSubeTurKademe	KT	ON KT.ID_KULLANICITIPI = Y.ID_KULLANICITIPI
+						INNER JOIN OkyanusDB.dbo.v3KademeBilgi				KB	ON	KB.ID_KADEME = Y.ID_KADEME AND KB.ID_KADEME3 = KT.ID_KADEME
+						WHERE KT.TCKIMLIKNO = @TCKIMLIKNO	AND	M.GIZLI = 0 --AND M.ID_MENU = @ID_MENU
+
+						UNION ALL
+							
+						SELECT DISTINCT	 M.ID_MENU
+						FROM Menu							M
+						INNER  JOIN MenuKullaniciYetki		KY	ON M.ID_MENU		= KY.ID_MENU	
+						INNER  JOIN v3SubeYetki				SY	ON SY.TCKIMLIKNO	= @TCKIMLIKNO
+						WHERE KY.TCKIMLIKNO = @TCKIMLIKNO	AND M.GIZLI=0 /*AND M.ID_MENU = @ID_MENU*/) OR  dbo.fn_GenelHak(@TCKIMLIKNO) = 1 )
+			OR EXISTS(SELECT TCKIMLIKNO FROM DisOgrenci WHERE TCKIMLIKNO=@TCKIMLIKNO )			
+
+			BEGIN
+				RETURN 1
+			END
+			ELSE
+			BEGIN
+				SELECT @MSG = 'Oturum Sonlandırıldı!'
+			
+				RAISERROR (@MSG , -- Message text.
+					   16, -- Severity.
+					   1 -- State.
+					   );
+			END
+			 
+		END TRY
+		BEGIN CATCH
+			
+			SELECT 
+				@ErrorSeverity	= ERROR_SEVERITY(),
+				@ErrorState		= ERROR_STATE()
+			
+			SELECT @MSG = 'Oturum Sonlandırıldı!'
+			
+			RAISERROR (@MSG , -- Message text.
+					   @ErrorSeverity, -- Severity.
+					   @ErrorState -- State.
+					   );
+		END CATCH;
+		
+END
+GO
+PRINT N'Altering [dbo].[sp_SinavSonuclari]...';
+
+
+GO
+ALTER procedure [dbo].[sp_SinavSonuclari]
+	@ISLEM				INT				= NULL,
+	@TCKIMLIKNO			VARCHAR(11)		= NULL,
+	@TC_OGRENCI			VARCHAR(11)		= NULL,
+	@OTURUM				VARCHAR(36)		= NULL,
+	@IL					VARCHAR(36)		= NULL,
+	@ILCE				VARCHAR(36)		= NULL,
+	@ID_MENU			INT				= NULL,
+	@DONEM				char(4)			= NULL,
+	@ID_KADEME3			INT				= NULL,
+	@ID_SINAVTURU		INT				= NULL,
+	@ID_SINAV			INT				= NULL,
+	@ID_DERS			INT				= NULL,
+	@ID_SUBE			INT				= NULL,
+	@ID_SINIF			INT				= NULL,
+	@DOSYAADI			varchar(100)	= NULL,
+	@DOSYAGUID			varchar(50)		= NULL,
+	@ID_SINAVDOSYA		int				= NULL,
+	@SQLJSON			NVARCHAR(MAX)	= NULL		
+AS
+BEGIN
+
+BEGIN TRY    
+	DECLARE @MSG			VARCHAR(4000)
+	DECLARE @ErrorSeverity	INT
+	DECLARE @ErrorState		INT
+		
+	DECLARE @return_variable INT
+	EXEC @return_variable = [dbo].[sp_OturumKontrol] @OTURUM = @OTURUM, @TCKIMLIKNO = @TCKIMLIKNO, @ID_MENU = @ID_MENU
+	IF @return_variable = 0
+	BEGIN
+		SET @return_variable = (SELECT TCKIMLIKNO FROM DisOgrenci WHERE TCKIMLIKNO=@TC_OGRENCI)
+	END
+	IF @return_variable = 1
+	BEGIN
+	
+		DECLARE  @OZELSINAVGOR BIT=0
+		IF EXISTS ( SELECT TOP 1 * FROM OkyanusDB.DBO.v3SubeYetki WHERE TCKIMLIKNO= @TCKIMLIKNO AND ID_KULLANICITIPI IN (1,60) ) -- ADMİN VEYA ÖD İSE ÖZEL SINAVLARI GÖRECEK
+		BEGIN
+			SET @OZELSINAVGOR=1
+		END
+						
+		IF (@ISLEM = 1 OR @ISLEM = 2)	--	SINAV SONUÇLARI
+		BEGIN
+						
+			DROP TABLE IF EXISTS #T1
+			DROP TABLE IF EXISTS #T2
+			DROP TABLE IF EXISTS #T3
+			DROP TABLE IF EXISTS #T4
+			DROP TABLE IF EXISTS #T5
+
+			DROP TABLE IF EXISTS #TT
+			DROP TABLE IF EXISTS #KONU
+			
+			DECLARE @GENEL INT = 999
+
+			SELECT @ID_SINIF=ID_SINIF,@ID_SUBE=ID_SUBE FROM v3Ogrenci WHERE TCKIMLIKNO =@TC_OGRENCI		
+			IF EXISTS(SELECT TCKIMLIKNO FROM DisOgrenci WHERE TCKIMLIKNO=@TC_OGRENCI)
+			BEGIN
+				SELECT  distinct 
+					 SOT.TCKIMLIKNO
+					,DO.AD+' '+DO.SOYAD ADSOYAD
+					,K.AD AS SINIF
+					--,SS.SUBEAD
+					,'' AS SUBEAD
+					,S.AD SINAVAD
+					,CONVERT(VARCHAR, S.SINAVTARIH ,105) SINAVTARIH
+					,(SELECT STUFF((SELECT   ',' +CAST(K.KITAPCIK AS VARCHAR)	FROM SinavOgrenci K WITH(NOLOCK) WHERE K.TCKIMLIKNO = SOT.TCKIMLIKNO and k.ID_SINAV = s.ID_SINAV FOR XML PATH(''), TYPE).value('.', 'VARCHAR(MAX)'), 1, 1, '')) KITAPCIK
+					,OP.PUAN
+					,PT.KOD PUANTURU
+					--,UPPER(ST.KISAAD+' SINAV SONUÇ BELGESİ') AS SINAVTURU
+					,UPPER(S.RAPORBASLIK) AS SINAVTURU
+					--,UPPER(ST.AD) AS SINAVTURUUZUN
+					,'Testlerdeki Doğru ve Yanlış Sayıları' AS SINAVTURUUZUN
+					,ST.ID_SINAVTURU
+					,VD.ACIKLAMA DONEM
+					,OP.SINIFSIRA,OP.OKULSIRA,OP.ILCESIRA,OP.ILSIRA,OP.GENELSIRA
+					,S.PUANGIZLE
+					,SINIFKATILIM	= SOT.KATILIM_SINIF
+					,SUBEKATILIM	= SOT.KATILIM_OKUL
+					,ILCEKATILIM	= SOT.KATILIM_ILCE
+					,ILKATILIM		= SOT.KATILIM_IL
+					,GENELKATILIM	= SOT.KATILIM_GENEL
+					,ISNULL(PT.ID_SINAVPUANTURU,0) ID_SINAVPUANTURU
+					,ID_KADEME = 0
+
+				INTO #T11
+				FROM SinavOgrenciToplam			SOT WITH(NOLOCK)
+				LEFT JOIN vw_SinavOgrenciPuan	OP  WITH(NOLOCK)	ON	OP.TCKIMLIKNO		= SOT.TCKIMLIKNO AND OP.ID_SINAV = SOT.ID_SINAV
+				LEFT JOIN SinavPuanTuru			PT  WITH(NOLOCK)	ON	PT.ID_SINAVPUANTURU	= OP.ID_SINAVPUANTURU
+				JOIN Sinav						S   WITH(NOLOCK)	ON	S.ID_SINAV			= SOT.ID_SINAV
+				JOIN SinavTuru					ST  WITH(NOLOCK)	ON	ST.ID_SINAVTURU		= S.ID_SINAVTURU
+				JOIN DisOgrenci					DO  WITH(NOLOCK)	ON	DO.TCKIMLIKNO		= SOT.TCKIMLIKNO
+				--JOIN vw_SubeSinifGrupKademeTum	SS  WITH(NOLOCK)	ON	SS.ID_KADEME3		= DO.ID_KADEME3
+				JOIN v3Kademe3					K	WITH(NOLOCK)	ON	K.ID_KADEME3		= DO.ID_KADEME3
+				JOIN v3AktifDonem				VD  WITH(NOLOCK)	ON  VD.DONEM			= S.DONEM
+				WHERE	SOT.TCKIMLIKNO	= @TC_OGRENCI
+					AND	SOT.ID_SINAV	= @ID_SINAV
+			END
+			ELSE
+			BEGIN
+				SELECT  distinct 
+				 SOT.TCKIMLIKNO
+				,VK.AD+' '+VK.SOYAD ADSOYAD
+				,SINIF
+				,SS.SUBEAD
+				,S.AD SINAVAD
+				,CONVERT(VARCHAR, S.SINAVTARIH ,105) SINAVTARIH
+				,(SELECT STUFF((SELECT   ',' +CAST(K.KITAPCIK AS VARCHAR)	FROM SinavOgrenci K WITH(NOLOCK) WHERE K.TCKIMLIKNO = SOT.TCKIMLIKNO and k.ID_SINAV = s.ID_SINAV FOR XML PATH(''), TYPE).value('.', 'VARCHAR(MAX)'), 1, 1, '')) KITAPCIK
+				,OP.PUAN
+				,PT.KOD PUANTURU
+				--,UPPER(ST.KISAAD+' SINAV SONUÇ BELGESİ') AS SINAVTURU
+				,UPPER(S.RAPORBASLIK) AS SINAVTURU
+				--,UPPER(ST.AD) AS SINAVTURUUZUN
+				,'Testlerdeki Doğru ve Yanlış Sayıları' AS SINAVTURUUZUN
+				,ST.ID_SINAVTURU
+				,VD.ACIKLAMA DONEM
+				,OP.SINIFSIRA,OP.OKULSIRA,OP.ILCESIRA,OP.ILSIRA,OP.GENELSIRA
+				,S.PUANGIZLE
+				,SINIFKATILIM	= SOT.KATILIM_SINIF
+				,SUBEKATILIM	= SOT.KATILIM_OKUL
+				,ILCEKATILIM	= SOT.KATILIM_ILCE
+				,ILKATILIM		= SOT.KATILIM_IL
+				,GENELKATILIM	= SOT.KATILIM_GENEL
+				,ISNULL(PT.ID_SINAVPUANTURU,0) ID_SINAVPUANTURU
+				,ID_KADEME = SS.ID_KADEME
+			INTO #T1
+			FROM SinavOgrenciToplam			SOT WITH(NOLOCK)
+			LEFT JOIN vw_SinavOgrenciPuan	OP  WITH(NOLOCK)	ON	OP.TCKIMLIKNO		= SOT.TCKIMLIKNO AND OP.ID_SINAV = SOT.ID_SINAV
+			LEFT JOIN SinavPuanTuru			PT  WITH(NOLOCK)	ON	PT.ID_SINAVPUANTURU	= OP.ID_SINAVPUANTURU
+			JOIN Sinav						S   WITH(NOLOCK)	ON	S.ID_SINAV			= SOT.ID_SINAV
+			JOIN SinavTuru					ST  WITH(NOLOCK)	ON	ST.ID_SINAVTURU		= S.ID_SINAVTURU
+			JOIN v3Kullanici				VK  WITH(NOLOCK)	ON	VK.TCKIMLIKNO		= SOT.TCKIMLIKNO
+			JOIN V3Ogrenci					VO  WITH(NOLOCK)	ON	VO.TCKIMLIKNO		= SOT.TCKIMLIKNO
+			JOIN vw_SubeSinifGrupKademeTum	SS  WITH(NOLOCK)	ON	SS.ID_SINIF			= VO.ID_SINIF
+			JOIN v3AktifDonem				VD  WITH(NOLOCK)	ON  VD.DONEM			= S.DONEM
+			WHERE	SOT.TCKIMLIKNO	= @TC_OGRENCI
+				AND	SOT.ID_SINAV	= @ID_SINAV
+			END
+			SELECT 
+				 DERSAD					= SD.TAKMAAD
+				,TOPLAMSORU				= (SELECT SUM(DOGRU+YANLIS+BOS) FROM vw_SinavOgrenciBolum SB WITH(NOLOCK) WHERE SB.TCKIMLIKNO = B.TCKIMLIKNO	AND SB.ID_SINAVDERS = B.ID_SINAVDERS )
+				,DOGRU					= B.DOGRU
+				,YANLIS					= B.YANLIS
+				,BOS					= B.BOS
+				,NET					= B.NET
+				,PUAN					= B.PUAN
+				,OLCEKSINAVI			= S.OLCEKSINAVI
+				,TCKIMLIKNO				= B.TCKIMLIKNO
+				,BOLUMNO				= SD.BOLUMNO
+				,YUZDENET				= B.YUZDENET
+			
+				,SINIFNETORTALAMA		= B.NET_SINIFORT
+				,SINIFDOGRUORTALAMA		= B.DOGRU_SINIFORT 
+				,SINIFYUZDENETORTALAMA	= B.YUZDENET_SINIFORT
+
+				,SUBENETORTALAMA		= B.NET_OKULORT
+
+				,GENELDOGRUORTALAMA		= B.DOGRU_GENELORT
+				,GENELNETORTALAMA		= B.NET_GENELORT
+				,GENELYUZDENETORTALAMA	= B.YUZDENET_GENELORT
+				,YUZDEBASARI			= YUZDENET 
+				
+				,SINIFSIRA				= B.NET_SINIFSIRA
+				,OKULSIRA				= B.NET_OKULSIRA
+				,ILCESIRA				= B.NET_ILCESIRA
+				,ILSIRA					= B.NET_ILSIRA
+				,GENELSIRA				= B.NET_GENELSIRA
+			
+				,B.ID_SINAV
+			INTO #T2 
+			FROM vw_SinavOgrenciBolum	B  WITH(NOLOCK)
+			JOIN SinavOgrenciToplam		T  WITH(NOLOCK)	ON	T.TCKIMLIKNO		= B.TCKIMLIKNO 
+														AND T.ID_SINAV			= B.ID_SINAV
+			JOIN Sinav					S  WITH(NOLOCK)	ON	S.ID_SINAV			= B.ID_SINAV
+			JOIN SinavDers				SD WITH(NOLOCK)	ON	SD.ID_SINAVDERS		= B.ID_SINAVDERS
+			JOIN v3SinavDers			D  WITH(NOLOCK)	ON	D.ID_DERS			= SD.ID_DERS		
+			WHERE	B.ID_SINAV	= @ID_SINAV
+				AND B.TCKIMLIKNO= @TC_OGRENCI
+	
+			INSERT INTO #T2 				
+				SELECT 
+				 'TOPLAM'					
+				,sum(TOPLAMSORU)
+				,ST.TD
+				,ST.TY
+				,ST.TB
+				,ST.TN 
+				,0 PUAN					
+				,T.OLCEKSINAVI			
+				,T.TCKIMLIKNO				
+				,@GENEL BOLUMNO				
+				,cast((TN/(TD+TY+TB)*100.0) as decimal(8,2))		
+				
+				,cast(avg(SINIFNETORTALAMA		 ) as decimal(8,2))	
+				,cast(avg(SINIFDOGRUORTALAMA	) as decimal(8,2))	
+				,cast(avg(SINIFYUZDENETORTALAMA	) as decimal(8,2))				
+				,cast(avg(SUBENETORTALAMA		) as decimal(8,2))				
+				,cast(avg(GENELDOGRUORTALAMA	) as decimal(8,2))	
+				,cast(avg(GENELNETORTALAMA		 ) as decimal(8,2))	
+				,cast(avg(GENELYUZDENETORTALAMA	 ) as decimal(8,2))	
+				,cast((TN/(TD+TY+TB)*100.0) as decimal(8,2))	
+				
+				,ST.TN_SINIFSIRA				
+				,ST.TN_OKULSIRA				
+				,ST.TN_ILCESIRA				
+				,ST.TN_ILSIRA					
+				,ST.TN_GENELSIRA				
+				,ST.ID_SINAV
+
+				FROM #T2 T
+				JOIN SinavOgrenciToplam	ST	ON	ST.ID_SINAV		= T.ID_SINAV
+											AND ST.TCKIMLIKNO	= T.TCKIMLIKNO
+				JOIN Sinav				S	ON	S.ID_SINAV		= T.ID_SINAV
+				--JOIN v3KademeBilgi		KB	ON	KB.ID_KADEME3	= S.ID_KADEME3
+				WHERE (SELECT TOP 1 ID_KADEME FROM OkyanusDB.dbo.v3KademeBilgi WHERE ID_KADEME3 = S.ID_KADEME3) = 4
+				GROUP BY ST.TD
+				,ST.TY
+				,ST.TB
+				,ST.TN 				
+				,T.OLCEKSINAVI			
+				,T.TCKIMLIKNO	
+				,ST.TN_SINIFSIRA				
+				,ST.TN_OKULSIRA				
+				,ST.TN_ILCESIRA				
+				,ST.TN_ILSIRA					
+				,ST.TN_GENELSIRA
+				,ST.ID_SINAV
+	
+
+
+
+			SELECT 
+				 OS.SORUNO
+				,OS.CEVAP OGRENCICEVAP
+				,OS.DOGRUCEVAP
+				,OS.DURUM
+				,OS.ID_SINAVDERS
+				,SD.TAKMAAD DERSAD
+				,SD.BOLUMNO
+			INTO #T3
+			FROM vw_SinavOgrenciSoru	OS WITH(NOLOCK)
+			JOIN SinavDers				SD WITH(NOLOCK)	ON	SD.ID_SINAVDERS	= OS.ID_SINAVDERS		
+			WHERE	OS.TCKIMLIKNO	= @TC_OGRENCI
+				AND OS.ID_SINAV		= @ID_SINAV
+			ORDER BY SD.BOLUMNO,ID_SINAVDERS,SORUNO
+
+			SELECT   
+				DERSAD
+				,BOLUMNO
+				,OGRENCI	= YUZDENET 
+				,SINIF		= SINIFYUZDENETORTALAMA
+				,GENEL		= GENELYUZDENETORTALAMA
+			INTO #T4
+			FROM #T2	B
+			WHERE BOLUMNO != @GENEL
+			ORDER BY BOLUMNO
+		
+			SELECT	
+					count(1) SORUSAYISI,
+					SOS.DURUM,
+					D.BOLUMNO,
+					d.TAKMAAD DERSAD,
+					isnull(u.KOD,'') KOD,
+					isnull(u.AD,'') KONUAD,
+					max(SB.YUZDEDOGRU) YUZDE,
+					SOS.ID_SINAV
+					,(SELECT STUFF((SELECT   ',' +CAST(K.KITAPCIK AS VARCHAR)	FROM SinavOgrenci K WITH(NOLOCK) WHERE K.TCKIMLIKNO = @TC_OGRENCI and k.ID_SINAV = SOS.ID_SINAV FOR XML PATH(''), TYPE).value('.', 'VARCHAR(MAX)'), 1, 1, '')) KITAPCIK
+			into #KONU
+			from vw_SinavOgrenciSoru	SOS WITH(NOLOCK) 
+			JOIN vw_SinavOgrenciBolum	SB  WITH(NOLOCK)	ON	SB.ID_SINAVDERS = SOS.ID_SINAVDERS AND SB.TCKIMLIKNO	= SOS.TCKIMLIKNO
+			JOIN SinavDers				D   WITH(NOLOCK)	ON	D.ID_SINAVDERS	= SOS.ID_SINAVDERS AND D.ID_SINAV		= SOS.ID_SINAV
+			JOIN v3SinavDersUnite		U	WITH(NOLOCK)	ON  U.KOD			= SOS.KOD
+			WHERE  SOS.TCKIMLIKNO=@TC_OGRENCI AND SOS.ID_SINAV=@ID_SINAV
+			GROUP BY SOS.DURUM,d.TAKMAAD,u.kod,u.AD,D.ID_SINAVDERS,SOS.ID_SINAV,D.BOLUMNO
+			ORDER BY d.TAKMAAD
+
+			SELECT DISTINCT
+					KONUAD,
+					DERSAD,
+					BOLUMNO,
+					KOD,						
+					YUZDE AS BOLUMYUZDE
+					,ISNULL([D],0) DOGRU,ISNULL([Y],0) YANLIS,ISNULL([B],0) BOS,ID_SINAV,
+					ISNULL( 
+								CAST(((100 /
+									CAST(
+											(	 CAST(ISNULL([D],0) AS INT)
+												+CAST(ISNULL([Y],0) AS INT)
+												+CAST(ISNULL([B],0) AS INT)) 
+										AS DECIMAL(11,2) 
+									))
+									* CAST([D] AS INT)  
+								) AS DECIMAL(11,2)) 
+						,0) AS YUZDE
+						,KITAPCIK
+			INTO #TT
+			FROM ( SELECT * FROM #KONU  )AS GTABLO
+			PIVOT ( SUM(SORUSAYISI) FOR DURUM IN ([D],[Y],[B]) ) AS p
+			order by ID_SINAV,DERSAD,KOD
+
+			SELECT	
+				KONUAD,
+				BOLUMNO,
+				DERSAD,
+				KOD,
+				CAST(AVG(BOLUMYUZDE)AS DECIMAL(11,2)) BOLUMYUZDE,
+				SUM(DOGRU+YANLIS+BOS) SORU,
+				SUM(DOGRU) DOGRU,
+				SUM(YANLIS) YANLIS,
+				SUM(BOS) BOS,
+				CAST(AVG(YUZDE)AS DECIMAL(11,2)) YUZDE,
+				KITAPCIK
+			INTO	#T5
+			FROM	#TT
+			GROUP BY KOD,KONUAD,DERSAD,BOLUMNO,KITAPCIK
+		union 
+			SELECT  DERSAD,
+					BOLUMNO,
+					DERSAD,
+					'',
+					CAST(AVG(BOLUMYUZDE)AS DECIMAL(11,2)) BOLUMYUZDE,
+					SUM(DOGRU+YANLIS+BOS) SORU,
+					SUM(DOGRU) DOGRU,
+					SUM(YANLIS) YANLIS,
+					SUM(BOS) BOS,
+					CAST(AVG(YUZDE)AS DECIMAL(11,2)) YUZDE ,
+					KITAPCIK
+			FROM	#TT
+			GROUP BY DERSAD,BOLUMNO,KITAPCIK
+			order by BOLUMNO,kod
+
+
+			IF @ISLEM = 1	--JSON SEND
+			BEGIN
+				select(
+					select * from(
+						select 
+						(						 
+							SELECT * FROM #T1
+							ORDER BY ID_SINAVPUANTURU
+							FOR JSON AUTO
+						) as t1
+						,( 
+							SELECT * FROM #T2
+							ORDER BY BOLUMNO
+							FOR JSON AUTO
+						)as t2
+						,(
+							SELECT * 				
+								,MAXSORU=(SELECT MAX (SORUNO) FROM #T3)
+								,DERSSAYISI=(SELECT COUNT (DISTINCT BOLUMNO) FROM #T3) 
+							FROM #T3
+							ORDER BY BOLUMNO,ID_SINAVDERS,SORUNO
+							FOR JSON AUTO
+						) as t3 
+						,( 
+								
+							SELECT * FROM #T4
+							ORDER BY BOLUMNO					
+							FOR JSON AUTO
+						)as t4
+						,(
+							SELECT * FROM #T5
+							ORDER BY BOLUMNO,DERSAD,KOD
+							FOR JSON AUTO
+						) as t5 
+					) as tablo FOR JSON AUTO
+				) as tt
+			END
+			IF @ISLEM = 2	--DATASET SEND
+			BEGIN
+			IF EXISTS(SELECT TCKIMLIKNO FROM DisOgrenci WHERE TCKIMLIKNO=@TC_OGRENCI)
+			BEGIN
+				SELECT * FROM #T11
+				ORDER BY ID_SINAVPUANTURU
+			END
+			ELSE
+			BEGIN
+			SELECT * FROM #T1
+				ORDER BY ID_SINAVPUANTURU
+			END
+				SELECT * FROM #T2
+				ORDER BY BOLUMNO
+
+				SELECT * 				
+					,MAXSORU=(SELECT MAX (SORUNO) FROM #T3)
+					,DERSSAYISI=(SELECT COUNT (DISTINCT BOLUMNO) FROM #T3) 
+				FROM #T3
+				ORDER BY BOLUMNO,ID_SINAVDERS,SORUNO
+								
+				SELECT * FROM #T4
+				ORDER BY BOLUMNO
+								
+				SELECT * FROM #T5
+				ORDER BY BOLUMNO,DERSAD,KOD
+
+
+			END
+			 
+			
+			DROP TABLE IF EXISTS #T1
+			DROP TABLE IF EXISTS #T2
+			DROP TABLE IF EXISTS #T3
+			DROP TABLE IF EXISTS #T4
+			DROP TABLE IF EXISTS #T5
+
+			DROP TABLE IF EXISTS #TT
+			DROP TABLE IF EXISTS #KONU
+		END
+
+		
+
+	END
+
+	END TRY
+			BEGIN CATCH
+				SELECT 
+					@ErrorSeverity	= ERROR_SEVERITY(),
+					@ErrorState		= ERROR_STATE()
+							
+				SELECT @MSG = /*'Prosedür: ' + ISNULL(ERROR_PROCEDURE(), '') + ', Satır: ' + CAST(ERROR_LINE() as varchar) + ', Hata: ' +*/ ERROR_MESSAGE()
+			
+				RAISERROR (@MSG , -- Message text.
+							@ErrorSeverity, -- Severity.
+							@ErrorState -- State.
+							);
+			END CATCH;
+	
+	END
+GO
+PRINT N'Altering [dbo].[sp_OturumKontrolMenuYetkiLog]...';
+
+
+GO
+ALTER procedure [dbo].[sp_OturumKontrolMenuYetkiLog]
+	@TCKIMLIKNO			VARCHAR(11)		= NULL,
+	@OTURUM				VARCHAR(200)	= NULL,
+	@ID_MENU			INT				= NULL,
+	@LOGJSON			VARCHAR(MAX)	= NULL,
+	@ISLEM				INT				= NULL,
+	@PROSEDURADI		VARCHAR(200)	= NULL	
+AS
+BEGIN
+	BEGIN TRY  
+		DECLARE @ID_LOGTABLE TABLE (ID_LOG INT) 
+		DECLARE @ID_LOG INT
+		
+		INSERT INTO [dbo].[Log]
+				   ([TCKIMLIKNO]
+				   ,[OTURUM]
+				   ,[ID_MENU]
+				   ,[PROSEDURADI]
+				   ,[ISLEM]
+				   ,[PARAMETRELER])
+		OUTPUT INSERTED.ID_LOG
+        INTO @ID_LOGTABLE
+		VALUES(@TCKIMLIKNO, @OTURUM, @ID_MENU, @PROSEDURADI, @ISLEM, @LOGJSON)
+
+		SELECT @ID_LOG = MAX(ID_LOG) FROM @ID_LOGTABLE
+
+		DECLARE @ErrorSeverity INT;
+		DECLARE @ErrorState INT;
+		DECLARE @MSG VARCHAR(4000)				
+			
+		SELECT 
+			@ErrorSeverity	= ERROR_SEVERITY(),
+			@ErrorState		= ERROR_STATE()
+
+		IF EXISTS (SELECT TOP 1 1 FROM DisIslem WHERE PROSEDURADI = @PROSEDURADI AND ISLEM = @ISLEM)
+		BEGIN
+			RETURN @ID_LOG
+		END
+		ELSE
+		BEGIN
+			IF	(	(SELECT COUNT(TCKIMLIKNO) FROM OkyanusDB.[dbo].[v3Kullanici] WHERE TCKIMLIKNO = @TCKIMLIKNO AND AKTIF = 1 and LOWER([OTURUM]) = LOWER(@OTURUM))   > 0
+				OR	(SELECT COUNT(1) FROM OkyanusIletisim.dbo.LoginLog WHERE KYE_TCKIMLIKNO = @TCKIMLIKNO AND OTURUM = @OTURUM AND LOGOUT = 0) > 0)
+			AND (EXISTS(	SELECT TOP 1 1
+							FROM Menu											M
+							INNER JOIN MenuYetki								Y	ON	Y.ID_MENU			= M.ID_MENU
+							INNER JOIN OkyanusDB.DBO.v4KullaniciSubeTurKademe	KT	ON	KT.ID_KULLANICITIPI	= Y.ID_KULLANICITIPI
+							INNER JOIN OkyanusDB.dbo.v3KademeBilgi				KB	ON	KB.ID_KADEME		= Y.ID_KADEME 
+																					AND KB.ID_KADEME3		= KT.ID_KADEME
+							INNER JOIN OkyanusDB.dbo.v3Kullanici				K	ON	K.TCKIMLIKNO		= KT.TCKIMLIKNO 
+																					AND K.AKTIF				= 1
+							WHERE	KT.TCKIMLIKNO	= @TCKIMLIKNO	
+								AND	M.GIZLI			= 0
+						UNION
+							SELECT TOP 1 1
+							FROM Menu								M
+							INNER  JOIN MenuKullaniciYetki			KY	ON	M.ID_MENU		= KY.ID_MENU	
+							INNER  JOIN v3SubeYetki					SY	ON	SY.TCKIMLIKNO	= @TCKIMLIKNO
+							INNER JOIN OkyanusDB.dbo.v3Kullanici	K	ON	K.TCKIMLIKNO	= SY.TCKIMLIKNO 
+																		AND K.AKTIF			= 1
+							WHERE KY.TCKIMLIKNO	= @TCKIMLIKNO	
+								AND M.GIZLI		= 0 /*AND M.ID_MENU = @ID_MENU*/
+						) 
+					OR  dbo.fn_GenelHak(@TCKIMLIKNO) = 1 
+				)
+			BEGIN
+				RETURN @ID_LOG
+			END
+			ELSE
+			BEGIN				
+				EXEC [dbo].[sp_CustomRaiseError] @MESSAGE = 'Oturum Sonlandırıldı!', @SEVERITY = 16, @STATE = 1, @ID_LOG = @ID_LOG, @ID_LOGTUR = 3
+			END		
+		END				
+	END TRY
+	BEGIN CATCH
+		SELECT 
+			@ErrorSeverity	= ERROR_SEVERITY(),
+			@ErrorState		= ERROR_STATE()
+			
+		EXEC [dbo].[sp_CustomRaiseError] @MESSAGE = 'Oturum Sonlandırıldı!', @SEVERITY = @ErrorSeverity, @STATE = @ErrorState, @ID_LOG = @ID_LOG, @ID_LOGTUR = 2
+	END CATCH;
+END
+GO
+PRINT N'Creating [dbo].[sp_DisOgrenci]...';
+
+
+GO
+-- =============================================
+-- Author:		<Gökhan Kahraman>
+-- Create date: <24-12-2020>
+-- Description:	<dbo.DisOgrenci>
+-- =============================================
+CREATE PROCEDURE [dbo].[sp_DisOgrenci] 
+	@ISLEM				INT					= NULL,
+	@ID_MENU			INT					=NULL,
+	@SQLJSON			varchar(MAX)		='',
+	@ID_SINAV			INT					=NULL,
+	@TCKIMLIKNO			VARCHAR(11)			=NULL,
+	@OTURUM				VARCHAR(36)			= NULL
+
+AS
+BEGIN
+SET NOCOUNT ON;
+	BEGIN TRY
+		DECLARE @MSG			VARCHAR(4000)
+		DECLARE @ErrorSeverity	INT
+		DECLARE @ErrorState		INT
+		
+		DECLARE @return_variable INT
+		EXEC @return_variable = [dbo].[sp_OturumKontrol] @OTURUM = @OTURUM, @TCKIMLIKNO = @TCKIMLIKNO, @ID_MENU = @ID_MENU
+
+		IF @return_variable = 1
+		BEGIN
+			IF @ISLEM=1 --DisOgrenci Listele
+			BEGIN
+
+			SELECT 
+				DO.ID_DIS_OGRENCI
+				,DO.TCKIMLIKNO
+				,DO.AD
+				,DO.SOYAD
+				,DO.ID_KADEME3
+				,K.AD
+				,DO.DONEM
+				,D.ACIKLAMA AS DONEM_ACIKLAMA
+				,DO.EPOSTA
+				,DO.VELI_AD_SOYAD
+				,DO.SIFRE
+				,DO.KYE_TCKIMLIKNO
+				,DO.AKTIF  
+				FROM DisOgrenci AS DO
+		 JOIN OkyanusDB.dbo.v3AktifDonem AS D ON DO.DONEM=D.DONEM
+		 JOIN OkyanusDB.dbo.v3Kademe3 AS K ON DO.ID_KADEME3=K.ID_KADEME3 FOR JSON AUTO			
+			END
+
+		IF @ISLEM=2 -- DisOgrenci EXCEL YUKLE
+			BEGIN
+			--JSON kontrolü
+			If (ISJSON(@SQLJSON)=1)
+				BEGIN
+					 --TempTable Json ile dolduruluyor			
+						SELECT TCKIMLIKNO,AD,SOYAD,ID_KADEME3,DONEM,EPOSTA,VELI_AD_SOYAD,KYE_TCKIMLIKNO
+						INTO #TMP_DisOgrenci
+						FROM OPENJSON(@SQLJSON)
+						WITH(TCKIMLIKNO VARCHAR(11),AD VARCHAR(200),SOYAD VARCHAR(200),ID_KADEME3 INT,DONEM INT,EPOSTA NVARCHAR(320),VELI_AD_SOYAD VARCHAR(300),KYE_TCKIMLIKNO VARCHAR(11))
+
+					IF (SELECT COUNT(*) FROM #TMP_DisOgrenci)>0
+					BEGIN
+					--TC kimlik numarası daha önce eklenmemiş DisOgrenci tablosuna yazılıyor
+					 INSERT INTO DisOgrenci 
+								(TCKIMLIKNO,AD,SOYAD,ID_KADEME3,DONEM,EPOSTA,VELI_AD_SOYAD,KYE_TCKIMLIKNO)
+								SELECT TCKIMLIKNO,AD,SOYAD,ID_KADEME3,DONEM,EPOSTA,VELI_AD_SOYAD,KYE_TCKIMLIKNO 
+								FROM #TMP_DisOgrenci
+								WHERE TCKIMLIKNO NOT IN(SELECT TCKIMLIKNO FROM DisOgrenci) AND TCKIMLIKNO NOT IN(SELECT TCKIMLIKNO FROM v3Kullanici)
+
+					INSERT INTO Tbl_OnlineSinavOgrenci (ID_SINAV, TCKIMLIKNO, KYE_TCKIMLIKNO)
+					SELECT DISTINCT @ID_SINAV AS ID_SINAV, JSON_VALUE(VALUE,'$.TCKIMLIKNO') AS TCKIMLIKNO, @TCKIMLIKNO FROM OPENJSON(@SQLJSON) J
+					WHERE NOT EXISTS (SELECT TOP 1 1 FROM Tbl_OnlineSinavOgrenci OS WITH(NOLOCK) WHERE OS.AKTIF = 1 AND OS.ID_SINAV = @ID_SINAV AND OS.TCKIMLIKNO = JSON_VALUE(J.VALUE,'$.TCKIMLIKNO'))
+					AND JSON_VALUE(VALUE,'$.TCKIMLIKNO') NOT IN(SELECT TCKIMLIKNO FROM v3Kullanici)
+					
+					
+					CREATE TABLE #TMP_KurumIci(TCKIMLIKNO VARCHAR(50),AD VARCHAR(200),SOYAD VARCHAR(200))
+					INSERT INTO #TMP_KurumIci (TCKIMLIKNO,AD,SOYAD)
+					SELECT JSON_VALUE(VALUE,'$.TCKIMLIKNO'),JSON_VALUE(VALUE,'$.AD'),JSON_VALUE(VALUE,'$.SOYAD') FROM OPENJSON(@SQLJSON) J
+					WHERE JSON_VALUE(VALUE,'$.TCKIMLIKNO') IN(SELECT TCKIMLIKNO FROM v3Kullanici)
+					SELECT ISNULL((
+					SELECT TCKIMLIKNO,AD,SOYAD FROM #TMP_KurumIci
+					FOR JSON AUTO, INCLUDE_NULL_VALUES
+				),'[]')					
+					
+					END
+					--Temp table siliniyor
+					DROP TABLE #TMP_DisOgrenci;
+				END
+			END
+
+		END
+
+	END TRY
+
+	BEGIN CATCH
+		SELECT 
+			@ErrorSeverity	= ERROR_SEVERITY(),
+			@ErrorState		= ERROR_STATE()
+							
+		SELECT @MSG = /*'Prosedür: ' + ISNULL(ERROR_PROCEDURE(), '') + ', Satır: ' + CAST(ERROR_LINE() as varchar) + ', Hata: ' +*/ ERROR_MESSAGE()
+			
+		RAISERROR (@MSG , -- Message text.
+					@ErrorSeverity, -- Severity.
+					@ErrorState -- State.
+					);
+	END CATCH
+ 
+END
+GO
+PRINT N'Altering [dbo].[sp_Kullanici]...';
+
+
+GO
+ALTER procedure [dbo].[sp_Kullanici]
+	@ISLEM				INT				= NULL,
+	@TCKIMLIKNO			VARCHAR(11)		= NULL,
+	@OTURUM				VARCHAR(36)		= NULL,
+	@ID_MENUS			VARCHAR(150)	= NULL,
+	@ID_MENU			INT				= NULL,
+	--@ID_KADEME			INT				= NULL,
+	@ID_KADEME3			INT				= NULL,
+	@ID_SUBE			INT				= NULL,
+	@TC_YETKI			VARCHAR(11)		= NULL,
+	@ID_KULLANICITIPI	INT				= NULL,
+	@SQLJSON			VARCHAR(MAX)	= NULL		
+AS
+BEGIN
+
+BEGIN TRY    
+	DECLARE @MSG			VARCHAR(4000)
+	DECLARE @ErrorSeverity	INT
+	DECLARE @ErrorState		INT
+		
+	DECLARE @return_variable INT
+	EXEC @return_variable = [dbo].[sp_OturumKontrol] @OTURUM = @OTURUM, @TCKIMLIKNO = @TCKIMLIKNO, @ID_MENU = @ID_MENU
+	
+	IF @return_variable = 1
+	BEGIN
+		
+		IF @ISLEM = 1	--	Kullanıcıya Tipi Listele
+		BEGIN
+			IF EXISTS(SELECT TCKIMLIKNO FROM DisOgrenci WHERE TCKIMLIKNO=@TCKIMLIKNO)
+			BEGIN
+				SELECT	DISTINCT SY.ID_KULLANICITIPI
+				FROM	[dbo].[v3SubeYetki]	SY	
+				WHERE	SY.ID_KULLANICITIPI=4
+			END
+			ELSE
+			BEGIN
+				SELECT	DISTINCT SY.ID_KULLANICITIPI
+				FROM	[dbo].[v3Kullanici]	K
+				JOIN	[dbo].[v3SubeYetki]	SY	ON	K.TCKIMLIKNO=SY.TCKIMLIKNO
+				WHERE	K.TCKIMLIKNO=@TCKIMLIKNO AND K.AKTIF=1
+			END
+		END
+			
+	END
+
+	END TRY
+			BEGIN CATCH
+			
+				SELECT 
+					@ErrorSeverity	= ERROR_SEVERITY(),
+					@ErrorState		= ERROR_STATE()
+							
+				SELECT @MSG = /*'Prosedür: ' + ISNULL(ERROR_PROCEDURE(), '') + ', Satır: ' + CAST(ERROR_LINE() as varchar) + ', Hata: ' +*/ ERROR_MESSAGE()
+			
+				RAISERROR (@MSG , -- Message text.
+							@ErrorSeverity, -- Severity.
+							@ErrorState -- State.
+							);
+			END CATCH;
+	
+	END
+GO
+PRINT N'Altering [dbo].[sp_Menu]...';
+
+
+GO
+ALTER procedure [dbo].[sp_Menu]
+	@ISLEM				INT				= NULL,
+	@TCKIMLIKNO			VARCHAR(11)		= NULL,
+	@TC_YETKI			VARCHAR(11)		= NULL,
+	@OTURUM				VARCHAR(36)		= NULL,
+	@ID_MENUYARDIM		INT				= 1,
+	@ID_MENU			INT				= 1,
+	@ID_KADEME			INT				= NULL,
+	@ID_KULLANICITIPI	INT				= NULL	
+AS
+BEGIN
+
+BEGIN TRY    
+	DECLARE @MSG			VARCHAR(4000)
+	DECLARE @ErrorSeverity	INT
+	DECLARE @ErrorState		INT
+		
+	DECLARE @return_variable INT
+	EXEC @return_variable = [dbo].[sp_OturumKontrol] @OTURUM = @OTURUM, @TCKIMLIKNO = @TCKIMLIKNO, @ID_MENU = @ID_MENU
+
+	DECLARE @TCKIMLIKNOTEMP VARCHAR(11) = @TCKIMLIKNO
+	
+	IF @return_variable = 1
+	BEGIN
+	
+		SELECT DISTINCT ID_KADEME INTO #KADEMELER FROM OkyanusDB.dbo.v4KullaniciKademe WHERE TCKIMLIKNO = @TCKIMLIKNOTEMP
+		IF @ISLEM = 1	--	Menü Getir
+		BEGIN	
+			IF dbo.fn_GenelHak(@TCKIMLIKNO)>0
+			BEGIN
+					SELECT DISTINCT M.ID_MENU, M.AD, M.KOD, M.URL, M.RESIM
+					FROM Menu							M
+					where M.GIZLI = 0					
+						 AND (		(@TCKIMLIKNO = '62362359264' AND ID_MENU IN (1099,1193,1200,1335,1344))
+								OR	@TCKIMLIKNO != '62362359264')				
+				UNION 				
+					SELECT -1, 'Bağlantılar', '000', '', 'icon-directions'
+					WHERE EXISTS (	SELECT * 
+									FROM OzelSayfa		OS
+									JOIN OzelSayfaYetki	Y	ON	Y.ID_OZELSAYFA = OS.ID_OZELSAYFA
+									WHERE	AKTIF				= 1
+										AND Y.ID_KULLANICITIPI	= 1) --	ADMİN
+				UNION				
+					SELECT	  -1
+							, OS.AD
+							, CASE WHEN OS.ID_OZELSAYFA		> 999	THEN '000999'		ELSE  RIGHT( '000000' + CAST(OS.ID_OZELSAYFA AS varchar),6) END
+							, OS.YOL							
+							, CASE WHEN OS.ID_OZELSAYFATURU	= 1		THEN 'icon-globe'	ELSE 'icon-doc' END
+					FROM OzelSayfa		OS
+					JOIN OzelSayfaYetki	Y	ON	Y.ID_OZELSAYFA = OS.ID_OZELSAYFA				
+					WHERE	AKTIF				= 1
+						AND Y.ID_KULLANICITIPI	= 1	--	ADMİN
+				ORDER BY M.KOD
+
+			END
+			ELSE
+			BEGIN	
+			IF EXISTS(SELECT TCKIMLIKNO FROM DisOgrenci WHERE TCKIMLIKNO=@TCKIMLIKNOTEMP)
+			BEGIN
+				SELECT DISTINCT
+					ID_MENU,
+					AD,
+					KOD,
+					URL,
+					RESIM
+				FROM MENU
+				WHERE KOD='002'		
+				UNION
+						SELECT DISTINCT
+					ID_MENU,
+					AD,
+					KOD,
+					URL,
+					RESIM
+				FROM MENU
+				WHERE ID_MENU=1333		
+			
+			END
+			ELSE
+			BEGIN						
+				SELECT DISTINCT ID_KULLANICITIPI 
+				INTO #v3SubeYetki FROM v3SubeYetki
+				WHERE TCKIMLIKNO = @TCKIMLIKNOTEMP				
+				SELECT	DISTINCT
+					 M.ID_MENU
+					,M.AD
+					,M.KOD
+					--,M.URL					
+					,URL	= CASE WHEN LEFT(M.URL, 7) = 'Dinamik' THEN eokul_v2.dbo.Fn_DinamikUrl(M.URL, @TCKIMLIKNOTEMP) ELSE M.URL END
+					,M.RESIM
+				INTO #MenuListe FROM Menu		M
+				INNER JOIN MenuYetki			Y	ON Y.ID_MENU			= M.ID_MENU  
+				INNER JOIN #v3SubeYetki			S	ON S.ID_KULLANICITIPI	= Y.ID_KULLANICITIPI
+				INNER JOIN #KADEMELER			K	ON K.ID_KADEME			= Y.ID_KADEME
+				WHERE M.GIZLI = 0
+			UNION								
+				SELECT
+					 M.ID_MENU
+					,M.AD
+					,M.KOD
+					,M.URL
+					,M.RESIM
+				FROM Menu							M
+				INNER  JOIN MenuKullaniciYetki		KY			ON M.ID_MENU		= KY.ID_MENU	
+				WHERE KY.TCKIMLIKNO = @TCKIMLIKNOTEMP	AND M.GIZLI = 0
+								
+				UNION 
+
+				SELECT -1, 'Bağlantılar', '000', '', 'icon-directions'
+				WHERE EXISTS (	SELECT * 
+								FROM OzelSayfa							OS
+								JOIN OzelSayfaYetki						Y	ON	Y.ID_OZELSAYFA		= OS.ID_OZELSAYFA
+								JOIN #KADEMELER							K	ON	K.ID_KADEME			= Y.ID_KADEME
+								JOIN #v3SubeYetki						SY	ON	SY.ID_KULLANICITIPI	= Y.ID_KULLANICITIPI 
+								JOIN OkyanusDB.dbo.vw_KullaniciYetki	KY	ON	KY.TCKIMLIKNO		= @TCKIMLIKNOTEMP
+																			AND KY.ID_KADEME3		= Y.ID_KADEME3
+								WHERE AKTIF = 1)				
+			UNION
+				SELECT	-1
+						, OS.AD
+						, CASE WHEN OS.ID_OZELSAYFA > 999 THEN '000999' ELSE  RIGHT( '000000' + CAST(OS.ID_OZELSAYFA AS varchar),6) END
+						, OS.YOL
+						, CASE WHEN OS.ID_OZELSAYFATURU	= 1 THEN 'icon-globe' ELSE 'icon-doc' END
+				FROM OzelSayfa							OS
+				JOIN OzelSayfaYetki						Y	ON	Y.ID_OZELSAYFA		= OS.ID_OZELSAYFA
+				JOIN #KADEMELER							K	ON	K.ID_KADEME			= Y.ID_KADEME
+				JOIN #v3SubeYetki						SY	ON	SY.ID_KULLANICITIPI	= Y.ID_KULLANICITIPI 
+				JOIN OkyanusDB.dbo.vw_KullaniciYetki	KY	ON	KY.TCKIMLIKNO		= @TCKIMLIKNOTEMP
+															AND KY.ID_KADEME3		= Y.ID_KADEME3
+				WHERE OS.AKTIF = 1
+			UNION	-- CORPUS STUDIO
+				SELECT TOP 1
+					ID_MENU				= -1,
+					AD					= 'Corpus.Study',
+					KOD					= '-00',
+					URL					= '',
+					RESIM				= 'icon-list'
+
+				FROM Pusulam.dbo.CurpusStudy
+				WHERE TCKIMLIKNO =  @TCKIMLIKNO
+
+				UNION
+				SELECT
+					ID_MENU				= -1,
+					AD					= 'Corpus.Study',
+					KOD					= '-00001',
+					URL					= 'https://okyanus.corpus.study/okul-kontrol.php?token='+TOKEN,
+					RESIM				= 'icon-list'
+
+				FROM Pusulam.dbo.CurpusStudy
+				WHERE TCKIMLIKNO =  @TCKIMLIKNO AND YONETIM = 0
+			UNION	-- CORPUS STUDIO YÖNETİM
+				SELECT
+					ID_MENU				= -1,
+					AD					= 'Corpus.Study Yönetim',
+					KOD					= '-00002',
+					URL					= 'https://okyanus.corpus.study/yonetim/ogrt-kontrol.php?token='+TOKEN,
+					RESIM				= 'icon-list'
+				FROM Pusulam.dbo.CurpusStudy
+				WHERE TCKIMLIKNO =  @TCKIMLIKNO AND YONETIM = 1
+			UNION	-- RehberlikOnline
+				SELECT TOP 1
+					ID_MENU				= -1,
+					AD					= 'Rehberlik Online',
+					KOD					= '-01',
+					URL					= '',
+					RESIM				= 'icon-list'
+
+				FROM Pusulam.dbo.RehberlikOnlineLink
+				WHERE TCKIMLIKNO =  @TCKIMLIKNO
+			UNION
+				SELECT
+					ID_MENU				= -1,
+					AD					= TESTADI,
+					KOD					= '-01' + RIGHT('000'+ CAST(ROW_NUMBER() OVER(ORDER BY TESTADI) AS varchar) ,3 ) ,
+					URL					= LINK,
+					RESIM				= 'icon-globe'
+
+				FROM Pusulam.dbo.RehberlikOnlineLink
+				WHERE TCKIMLIKNO =  @TCKIMLIKNO
+			ORDER BY M.KOD
+
+
+
+				--UPDATE #MenuListe SET URL = '#Ogrenci/Hedefler/MevcutDurum'
+				--WHERE 
+				--	ID_MENU = 1 
+				--AND EXISTS(SELECT ID_KADEME			FROM #KADEMELER			WHERE ID_KADEME			= 5)
+				--AND EXISTS(SELECT ID_KULLANICITIPI	FROM #v3SubeYetki		WHERE ID_KULLANICITIPI	= 4)
+				--
+				--UPDATE #MenuListe SET URL = '#Ogrenci/Hedefler/MevcutDurumOO'
+				--WHERE 
+				--		ID_MENU = 1 
+				--	AND EXISTS(SELECT ID_KADEME			FROM #KADEMELER			WHERE ID_KADEME			= 4)
+				--	AND EXISTS(SELECT ID_KULLANICITIPI	FROM #v3SubeYetki		WHERE ID_KULLANICITIPI	= 4)
+
+				IF @TCKIMLIKNO = '98765432101'	--	GARANTİ BBVA
+				BEGIN
+
+					SELECT	DISTINCT
+						 M.ID_MENU
+						,M.AD
+						,M.KOD
+						,M.URL
+						,M.RESIM
+					FROM Menu		M
+					WHERE M.ID_MENU = 1316
+					
+				END 
+				ELSE
+				BEGIN
+					SELECT * FROM #MenuListe
+					ORDER BY KOD
+				END
+				END
+				DROP TABLE #v3SubeYetki
+				DROP TABLE #MenuListe
+			END
+		END
+		
+		IF @ISLEM = 2	--	Menü Getir YETKİ SAYFASI
+		BEGIN
+			SELECT 
+					M.ID_MENU,
+					replicate('-', LEN(KOD)-3)+AD AD,
+					YETKILI = (SELECT COUNT(*) FROM MenuYetki Y WHERE Y.ID_KULLANICITIPI=@ID_KULLANICITIPI AND Y.ID_MENU=M.ID_MENU AND Y.ID_KADEME = @ID_KADEME)
+			FROM Menu		M
+			WHERE GIZLI = 0 AND (OZEL = 0 /*OR dbo.fn_GenelHak(@TCKIMLIKNO)>0*/)
+			ORDER BY KOD 
+		END
+		
+		
+		IF @ISLEM = 3	--	Kullanıcı Menü Getir YETKİ SAYFASI
+		BEGIN
+			SELECT 
+					M.ID_MENU,
+					replicate('-', LEN(KOD)-3)+AD AD,
+					YETKILI = (SELECT COUNT(*) FROM MenuKullaniciYetki Y WHERE Y.TCKIMLIKNO=@TC_YETKI AND Y.ID_MENU=M.ID_MENU)
+			FROM Menu		M
+			WHERE GIZLI = 0 AND (OZEL = 0 OR dbo.fn_GenelHak(@TCKIMLIKNO)>0)
+			ORDER BY KOD 
+		END
+		
+		
+		IF @ISLEM = 4	--	Menü Yardım Getir
+		BEGIN
+			SELECT 
+					YARDIMHTML
+			FROM Menu		M
+			WHERE ID_MENU=@ID_MENUYARDIM
+		END
+
+		DROP TABLE IF EXISTS #KADEMELER
+	END
+
+END TRY
+		BEGIN CATCH
+			
+			SELECT 
+				@ErrorSeverity	= ERROR_SEVERITY(),
+				@ErrorState		= ERROR_STATE()
+							
+			SELECT @MSG = /*'Prosedür: ' + ISNULL(ERROR_PROCEDURE(), '') + ', Satır: ' + CAST(ERROR_LINE() as varchar) + ', Hata: ' +*/ ERROR_MESSAGE()
+			
+			RAISERROR (@MSG , -- Message text.
+						@ErrorSeverity, -- Severity.
+						@ErrorState -- State.
+						);
+		END CATCH;
+	
+END
+GO
+PRINT N'Altering [dbo].[sp_OnlineSinav]...';
+
+
+GO
+ALTER PROC [dbo].[sp_OnlineSinav]
+	@ISLEM							INT				= NULL,
+	@TCKIMLIKNO						VARCHAR(11)		= NULL,
+	@OTURUM							VARCHAR(36)		= NULL,
+	@ID_MENU						INT				= NULL,
+
+	@ID_SORU						INT				= NULL,
+	@ID_SINAV						INT				= NULL,
+	@ID_DERS						INT				= NULL,
+	@ID_SINAVTURU					INT				= NULL,
+	@ID_SINAVANAHTAR				INT				= NULL,
+	@ID_CEVAP						INT				= NULL,
+	@ID_ONLINESINAVOGRENCI			INT				= NULL,
+	@SINAVOTURUM					INT				= NULL,
+	@ID_ONLINESINAVOGRENCIOTURUM	INT				= NULL,
+	@CEVAPANAHTARI					BIT				= NULL,
+	@KYE_TARIH						DATETIME		= NULL,
+	@TC_EKLEYEN						VARCHAR(MAX)	= NULL,
+	@TC_OGRENCI						VARCHAR(MAX)	= NULL,
+	@ID_SINIFLIST					VARCHAR(MAX)	= NULL,
+	@ID_SUBELIST					VARCHAR(MAX)	= NULL,
+	@TC_OGRENCILIST					VARCHAR(MAX)	= NULL,
+	@JSON							VARCHAR(MAX)	= NULL,
+	@SQLJSON						VARCHAR(MAX)	= NULL,
+	@DIS_OGRENCI					BIT				=0
+AS
+BEGIN
+
+	DECLARE @PROCNAME VARCHAR(MAX) = (SELECT OBJECT_NAME(@@PROCID))
+	DECLARE @LOGJSON VARCHAR(MAX)
+	SET @LOGJSON = (
+		SELECT	 ISLEM						= @ISLEM	
+				,TCKIMLIKNO					= @TCKIMLIKNO
+				,OTURUM						= @OTURUM
+				,ID_MENU					= @ID_MENU
+								
+				,ID_SORU					= @ID_SORU
+				,TC_EKLEYEN					= @TC_EKLEYEN
+				,KYE_TARIH					= @KYE_TARIH
+				,ID_SINAV					= @ID_SINAV
+				,ID_DERS					= @ID_DERS
+				,ID_SINAVTURU				= @ID_SINAVTURU
+				,ID_ONLINESINAVOGRENCI		= @ID_ONLINESINAVOGRENCI
+				,ID_ONLINESINAVOGRENCIOTURUM= @ID_ONLINESINAVOGRENCIOTURUM
+				,SINAVOTURUM				= @SINAVOTURUM
+				,CEVAPANAHTARI				= @CEVAPANAHTARI
+				,[JSON]						= @JSON
+				,SQLJSON					= @SQLJSON
+				,ID_SINIFLIST				= @ID_SINIFLIST
+				,TC_OGRENCILIST				= @TC_OGRENCILIST
+				,TC_OGRENCI					= @TC_OGRENCI
+				,ID_SINAVANAHTAR			= @ID_SINAVANAHTAR
+				,ID_CEVAP					= @ID_CEVAP
+				,ID_SUBELIST				= @ID_SUBELIST
+		FOR JSON PATH, WITHOUT_ARRAY_WRAPPER	   
+	)	
+	
+	DECLARE @_ID_LOG INT = 0
+
+	BEGIN TRY    
+		DECLARE @_DESTEK_KONTROL INT
+
+		IF @ISLEM IN (12,13,14)
+		BEGIN
+			SET @_ID_LOG = 1
+		END
+		IF EXISTS(SELECT TCKIMLIKNO FROM DisOgrenci WHERE TCKIMLIKNO=@TCKIMLIKNO)
+		BEGIN
+			SET @_ID_LOG=1
+		END
+		ELSE
+			EXEC @_ID_LOG = dbo.sp_OturumKontrolMenuYetkiLog @OTURUM = @OTURUM, @TCKIMLIKNO = @TCKIMLIKNO, @ID_MENU = @ID_MENU, @LOGJSON = @LOGJSON, @ISLEM = @ISLEM, @PROSEDURADI = @PROCNAME
+		
+		IF @_ID_LOG > 0
+		BEGIN
+		
+			DECLARE  @OZELSINAVGOR BIT=0
+			IF EXISTS ( SELECT TOP 1 1 
+						FROM OkyanusDB.DBO.v3SubeYetki 
+						WHERE	TCKIMLIKNO		 = @TCKIMLIKNO 
+							AND ID_KULLANICITIPI IN (1,60)
+			) -- ADMİN VEYA ÖD İSE ÖZEL SINAVLARI GÖRECEK			
+				SET @OZELSINAVGOR=1
+			
+			DECLARE @QUERY NVARCHAR(MAX) = NULL
+
+			IF @ISLEM = 1	--	Sınav Listele
+			BEGIN
+				SELECT
+				(
+					SELECT *, CONVERT(decimal(4,2), (CONVERT(decimal(4,2), XTABLE.DOGRU)/CONVERT(decimal(4,2), (XTABLE.DOGRU + XTABLE.BOS + XTABLE.YANLIS))*100.0)) AS PERFORMANS  
+					FROM
+					(
+						SELECT 
+							SOA.ID_SINAV
+							,ISNULL(OSO.ID_ONLINESINAVOGRENCI,0) AS ID_ONLINESINAVOGRENCI
+							,(
+								SELECT DISTINCT AD + ', ' AS [text()] 
+								FROM v3Sinavders 
+								WHERE ID_DERS IN 
+									(
+										SELECT SUBSD.ID_DERS 
+										FROM		SoruBankasi.dbo.SoruDetay	SUBSD 
+										INNER JOIN	SoruBankasi.dbo.SinavSoru	SUBSS	ON SUBSS.ID_SORU = SUBSD.ID_SORU
+										WHERE SUBSS.ID_SINAV=SOA.ID_SINAV
+									) 
+								For XML PATH ('')
+							) AS DERS
+							,V.AD AS SINAVTURU
+							,S.AD AS ADI
+							,ISNULL(OSO.GIRIS_SAYISI, 0) AS GIRIS
+							,ISNULL(CONVERT(VARCHAR, OSO.BAS_TARIH, 104), '-') AS SONGIRIS
+							,cast(ISNULL(OSO.DURUM, 0) as int) AS DURUM
+							,CAST(DATEPART(HOUR,OSO.BIT_TARIH-OSO.BAS_TARIH) AS VARCHAR)+':'+CAST(DATEPART(MINUTE,OSO.BIT_TARIH-OSO.BAS_TARIH) AS VARCHAR)+':'+CAST(DATEPART(SECOND,OSO.BIT_TARIH-OSO.BAS_TARIH) AS VARCHAR) AS SURE
+							,COUNT(C.DEGER) AS DOGRU
+							,(SELECT COUNT(*) - COUNT(C.DEGER) FROM OnlineSinavOgrenciCevap SUBOC WHERE SUBOC.ID_ONLINESINAVOGRENCI=OSO.ID_ONLINESINAVOGRENCI) AS YANLIS
+							,(
+								SELECT COUNT(*) - (COUNT(C.DEGER) + (SELECT COUNT(*) - COUNT(C.DEGER) FROM OnlineSinavOgrenciCevap SUBOC WHERE SUBOC.ID_ONLINESINAVOGRENCI=OSO.ID_ONLINESINAVOGRENCI))
+								FROM SoruBankasi.dbo.Soru SUBS
+								INNER JOIN SoruBankasi.dbo.SinavSoru SUBSS ON SUBSS.ID_SORU=SUBS.ID_SORU
+								INNER JOIN SoruBankasi.dbo.Cevap	 SUBC  ON SUBC.ID_SORU=SUBS.ID_SORU
+								WHERE SUBSS.ID_SINAV=SOA.ID_SINAV AND SUBSS.KITAPCIK='A' AND (
+																(SUBS.ID_SORUTUR=2)						--	AÇIK UÇLU
+															OR (SUBS.ID_SORUTUR=3)						--	DOĞRU YANLIŞ
+															OR (SUBS.ID_SORUTUR=4 AND SUBC.DEGER='1')	--	TEST
+															OR (SUBS.ID_SORUTUR=5 AND SUBC.DEGER<>'')	--	EŞLEŞTİRME
+															OR (SUBS.ID_SORUTUR=6)						--	BOŞLUK DOLDURMA
+															)
+							) AS BOS,
+							CASE WHEN (S.BAS_TARIH<=CAST(GETDATE() AS DATE) AND S.BAS_SAAT<=convert(varchar(10), GETDATE(), 108))
+								  AND ((S.BIT_TARIH=CAST(GETDATE() AS DATE) AND S.BIT_SAAT>=convert(varchar(10), GETDATE(), 108))
+										OR 
+										(S.BIT_TARIH>CAST(GETDATE() AS DATE))
+									)
+							THEN 1 ELSE 0 END AS DEVAM
+						FROM		SoruBankasi.dbo.SinavOgrenciAtama	SOA
+						INNER JOIN	SoruBankasi.dbo.Sinav				S	ON S.ID_SINAV=SOA.ID_SINAV 
+						INNER JOIN	SoruBankasi.dbo.Varlik				V	ON V.ID_VARLIK=S.ID_SINAVTUR
+						INNER JOIN	SoruBankasi.dbo.SinavSoru			SS	ON SS.ID_SINAV=S.ID_SINAV AND SS.KITAPCIK='A'
+						INNER JOIN	SoruBankasi.dbo.Soru				SOR	ON SOR.ID_SORU=SS.ID_SORU 
+						INNER JOIN	SoruBankasi.dbo.SoruDetay			SD	ON SD.ID_SORU=SS.ID_SORU 
+						LEFT  JOIN	OnlineSinavOgrenci					OSO ON OSO.TCKIMLIKNO=SOA.TCKIMLIKNO AND OSO.ID_ONLINESINAV=SOA.ID_SINAV
+						LEFT  JOIN	OnlineSinavOgrenciCevap				OC	ON OC.ID_ONLINESINAVOGRENCI=OSO.ID_ONLINESINAVOGRENCI AND OC.ID_SORU=SOR.ID_SORU
+						LEFT  JOIN	SoruBankasi.dbo.Cevap				C	ON C.ID_SORU=SOR.ID_SORU AND (
+																												(SOR.ID_SORUTUR=2 AND OC.CEVAPNO=C.CEVAPNO AND CAST(OC.CEVAP AS VARCHAR)=CAST(C.DEGER AS VARCHAR))		--	AÇIK UÇLU
+																											OR (SOR.ID_SORUTUR=3 AND OC.CEVAPNO=C.CEVAPNO AND CAST(OC.CEVAP AS VARCHAR)=CAST(C.DEGER AS VARCHAR))		--	DOĞRU YANLIŞ
+																											OR (SOR.ID_SORUTUR=4 AND C.DEGER='1' AND CAST(OC.CEVAP AS VARCHAR)=CAST(C.CEVAPNO AS VARCHAR))				--	TEST
+																											OR (SOR.ID_SORUTUR=5 AND OC.CEVAPNO=C.CEVAPNO AND CAST(OC.CEVAP AS VARCHAR)=CAST(C.DEGER AS VARCHAR))		--	EŞLEŞTİRME
+																											OR (SOR.ID_SORUTUR=6 AND OC.CEVAPNO=C.CEVAPNO AND CAST(OC.CEVAP AS VARCHAR)=CAST(C.DEGER AS VARCHAR))		--	BOŞLUK DOLDURMA
+																											)
+						WHERE	(@ID_SINAV IS NULL OR SOA.ID_SINAV=@ID_SINAV) 
+							
+							AND ID_SORUTUR<>1 
+							AND ID_USTSORU IS NULL 
+							AND SOA.TCKIMLIKNO=@TCKIMLIKNO
+							AND (@ID_SINAVTURU IS NULL OR @ID_SINAVTURU = 0 OR S.ID_SINAVTUR=@ID_SINAVTURU) 
+							AND (@ID_DERS IS NULL OR @ID_DERS = 0 OR SD.ID_DERS=@ID_DERS) --@TCKIMLIKNO AND 
+						GROUP BY SOA.ID_SINAV, S.BAS_TARIH, S.BAS_SAAT, S.BIT_TARIH, S.BIT_SAAT, OSO.ID_ONLINESINAVOGRENCI, V.AD, S.AD, OSO.DURUM, OSO.GIRIS_SAYISI, OSO.BAS_TARIH, OSO.BIT_TARIH
+					) XTABLE
+					FOR JSON PATH, INCLUDE_NULL_VALUES
+				) AS JSON
+			END
+
+			IF @ISLEM = 2	--	Soru Listesi Getir 
+			BEGIN
+				SELECT
+				(
+					SELECT 
+						S.ID_SORU
+						,S.ID_SORUTUR
+						,S.ID_USTSORU
+						,SORUNO= ROW_NUMBER() OVER (ORDER BY SS.SORUNO)
+						,(SELECT
+							(
+								SELECT
+									SORUNO= ROW_NUMBER() OVER (ORDER BY SS.SORUNO)
+									,(
+										 SELECT 
+											 ID_SORU=ISNULL(ID_SORU,0)
+											,ID_USTSORU=ISNULL(ID_USTSORU,0)
+											,ID_SORUTUR=ISNULL(ID_SORUTUR,0)
+											,SUBV.AD AS SORUTUR
+											,KOD=ISNULL(KOD,0)
+											,ID_SINAVGRUP=ISNULL(ID_SINAVGRUP,0)
+											,ID_DERS=ISNULL(ID_DERS,0)
+											,UNITE=ISNULL(UNITE,0)
+											,ID_ZORLUKTUR =ISNULL(ID_ZORLUKTUR,0)
+										 FROM SoruBankasi.dbo.SoruDetay SUBSD 
+										 INNER JOIN SoruBankasi.dbo.Varlik SUBV ON SUBV.ID_VARLIK=SUBS.ID_SORUTUR
+										 Where ID_SORU=SUBS.ID_SORU 
+										 FOR JSON PATH
+									 ) AS Soru,
+									(SELECT * FROM SoruBankasi.dbo.SoruHtml  Where ID_SORU=SUBS.ID_SORU FOR JSON PATH)AS SoruHtmlListesi,
+									(	
+										SELECT C.*
+										FROM SoruBankasi.dbo.Cevap C
+										Where C.ID_SORU=SUBS.ID_SORU ORDER BY ID_CEVAP,C.CEVAPNO,LEN(DEGER) DESC FOR JSON PATH
+									)AS CevapListesi,
+									(SELECT * FROM SoruBankasi.dbo.SoruCozum Where ID_SORU=SUBS.ID_SORU FOR JSON PATH)AS CozumListesi
+								FROM SoruBankasi.dbo.Soru SUBS 
+								WHERE SUBS.ID_SORU = S.ID_SORU OR SUBS.ID_USTSORU = S.ID_SORU
+								FOR JSON AUTO, INCLUDE_NULL_VALUES 
+							) AS SoruPaketList
+						)AS SoruPaketList
+					FROM SoruBankasi.dbo.Soru S
+					INNER JOIN SoruBankasi.dbo.SinavSoru SS ON SS.ID_SORU=S.ID_SORU
+					WHERE ID_SINAV=@ID_SINAV AND SS.KITAPCIK='A' AND ID_SORUTUR<>1 AND ID_USTSORU IS NULL
+					FOR JSON PATH, INCLUDE_NULL_VALUES
+				) AS J
+			END
+
+			IF @ISLEM = 3	--	Soru Getir
+			BEGIN
+				SELECT
+				(
+					SELECT 
+						 SORUNO = ROW_NUMBER() OVER(ORDER BY ID_SORU ASC)
+						,(
+							 SELECT 
+								 ID_SORU=ISNULL(ID_SORU,0)
+								,ID_USTSORU=ISNULL(ID_USTSORU,0)
+								,ID_SORUTUR=ISNULL(ID_SORUTUR,0)
+								,KOD=ISNULL(KOD,0)
+								,ID_SINAVGRUP=ISNULL(ID_SINAVGRUP,0)
+								,ID_DERS=ISNULL(ID_DERS,0)
+								,UNITE=ISNULL(UNITE,0)
+								,ID_ZORLUKTUR =ISNULL(ID_ZORLUKTUR,0)
+							 FROM SoruBankasi.dbo.SoruDetay Where ID_SORU=S.ID_SORU 
+							 FOR JSON PATH
+						 ) AS Soru,
+						(SELECT * FROM SoruBankasi.dbo.SoruHtml  Where ID_SORU=S.ID_SORU FOR JSON PATH)AS SoruHtmlListesi,
+						(SELECT * FROM SoruBankasi.dbo.Cevap	 Where ID_SORU=S.ID_SORU ORDER BY  LEN(DEGER) DESC, CEVAPNO ASC FOR JSON PATH)AS CevapListesi,
+						(SELECT * FROM SoruBankasi.dbo.SoruCozum Where ID_SORU=S.ID_SORU FOR JSON PATH)AS CozumListesi
+					FROM SoruBankasi.dbo.Soru S 
+					WHERE S.ID_SORU = @ID_SORU OR S.ID_USTSORU = @ID_SORU
+					FOR JSON AUTO, INCLUDE_NULL_VALUES 
+				) AS SoruPaketList
+			END
+
+			IF @ISLEM = 4	--	Sınav Türü Getir
+			BEGIN
+				SELECT
+				(
+					SELECT ID_VARLIK, AD FROM SoruBankasi.dbo.Varlik V
+					WHERE ID_VARLIKTUR=5
+					FOR JSON PATH
+				) J
+			END
+
+			IF @ISLEM = 5	--	Giriş Ekle
+			BEGIN
+				IF NOT EXISTS(SELECT ID_ONLINESINAVOGRENCI FROM [OnlineSinavOgrenci] WHERE TCKIMLIKNO=@TCKIMLIKNO AND ID_ONLINESINAV=@ID_SINAV)
+				BEGIN
+					declare @ID table(ID int)
+					INSERT INTO [dbo].[OnlineSinavOgrenci]
+							   ([TCKIMLIKNO]
+							   ,[ID_ONLINESINAV]
+							   ,[DURUM]
+							   ,[GIRIS_SAYISI]
+							   ,[BAS_TARIH]
+							   ,[BIT_TARIH])
+						OUTPUT inserted.ID_ONLINESINAVOGRENCI into @ID 
+						 VALUES
+								(@TCKIMLIKNO
+								,@ID_SINAV
+								,0
+								,1
+								,GETDATE()
+								,NULL)
+					select ID from @ID
+				END
+				ELSE
+				BEGIN
+					UPDATE [dbo].[OnlineSinavOgrenci] SET [GIRIS_SAYISI]=[GIRIS_SAYISI]+1, [BAS_TARIH]=GETDATE(), [BIT_TARIH]=NULL WHERE TCKIMLIKNO=@TCKIMLIKNO AND ID_ONLINESINAV=@ID_SINAV
+					SELECT ID_ONLINESINAVOGRENCI FROM [OnlineSinavOgrenci] WHERE TCKIMLIKNO=@TCKIMLIKNO AND ID_ONLINESINAV=@ID_SINAV
+				END
+
+			END
+
+			IF @ISLEM = 6	--	Sınavı Bitir
+			BEGIN
+				DELETE FROM [dbo].[OnlineSinavOgrenciCevap] WHERE ID_ONLINESINAVOGRENCI=@ID_ONLINESINAVOGRENCI
+			
+				INSERT INTO [dbo].[OnlineSinavOgrenciCevap]
+						   ([ID_SORU]
+						   ,[ID_ONLINESINAVOGRENCI]
+						   ,[CEVAPNO]
+						   ,[CEVAP])
+				SELECT ID_SORU, @ID_ONLINESINAVOGRENCI, CEVAPNO, CEVAP FROM OPENJSON(@JSON)
+				WITH(
+					 ID_SORU	INT				'$.ID_SORU' 
+					,CEVAPNO	INT				'$.CEVAPNO' 
+					,CEVAP		VARCHAR(MAX)	'$.CEVAP' 
+				)
+
+				UPDATE OnlineSinavOgrenci SET DURUM=1, BIT_TARIH=GETDATE() WHERE ID_ONLINESINAVOGRENCI=@ID_ONLINESINAVOGRENCI
+			END
+
+			IF @ISLEM = 7	--	Soru Listesi Getir Cevaplı
+			BEGIN
+				SELECT
+				(
+					SELECT 
+						S.ID_SORU
+						,S.ID_SORUTUR
+						,S.ID_USTSORU
+						,SORUNO= ROW_NUMBER() OVER (ORDER BY SS.SORUNO)
+						,(SELECT
+							(
+								SELECT
+									SORUNO= ROW_NUMBER() OVER (ORDER BY SS.SORUNO)
+									,(
+										 SELECT 
+											 ID_SORU=ISNULL(ID_SORU,0)
+											,ID_USTSORU=ISNULL(ID_USTSORU,0)
+											,ID_SORUTUR=ISNULL(ID_SORUTUR,0)
+											,SUBV.AD AS SORUTUR
+											,KOD=ISNULL(KOD,0)
+											,ID_SINAVGRUP=ISNULL(ID_SINAVGRUP,0)
+											,ID_DERS=ISNULL(ID_DERS,0)
+											,UNITE=ISNULL(UNITE,0)
+											,ID_ZORLUKTUR =ISNULL(ID_ZORLUKTUR,0)
+										 FROM SoruBankasi.dbo.SoruDetay SUBSD 
+										 INNER JOIN SoruBankasi.dbo.Varlik SUBV ON SUBV.ID_VARLIK=SUBS.ID_SORUTUR
+										 Where ID_SORU=SUBS.ID_SORU 
+										 FOR JSON PATH
+									 ) AS Soru,
+									(SELECT * FROM SoruBankasi.dbo.SoruHtml  Where ID_SORU=SUBS.ID_SORU FOR JSON PATH)AS SoruHtmlListesi,
+									(	
+										SELECT C.*, OC.CEVAP, SECILI = CASE WHEN SUBS.ID_SORUTUR=4 THEN (CASE WHEN C.ID_CEVAP=(SELECT ID_CEVAP FROM SoruBankasi.dbo.Cevap WHERE ID_SORU=C.ID_SORU AND CEVAPNO=OC.CEVAP) THEN 1 ELSE 0 END) ELSE 0 END
+										FROM SoruBankasi.dbo.Cevap C
+										LEFT JOIN OnlineSinavOgrenciCevap OC ON OC.ID_SORU=C.ID_SORU AND (SUBS.ID_SORUTUR=4 OR (SUBS.ID_SORUTUR<>4 AND OC.CEVAPNO=C.CEVAPNO)) AND OC.ID_ONLINESINAVOGRENCI=@ID_ONLINESINAVOGRENCI
+										Where C.ID_SORU=SUBS.ID_SORU ORDER BY ID_CEVAP,C.CEVAPNO,LEN(DEGER) DESC FOR JSON PATH
+									)AS CevapListesi,
+									(SELECT * FROM SoruBankasi.dbo.SoruCozum Where ID_SORU=SUBS.ID_SORU FOR JSON PATH)AS CozumListesi
+								FROM SoruBankasi.dbo.Soru SUBS 
+								WHERE SUBS.ID_SORU = S.ID_SORU OR SUBS.ID_USTSORU = S.ID_SORU
+								FOR JSON AUTO, INCLUDE_NULL_VALUES 
+							) AS SoruPaketList
+						)AS SoruPaketList
+					FROM SoruBankasi.dbo.Soru S
+					INNER JOIN SoruBankasi.dbo.SinavSoru SS ON SS.ID_SORU=S.ID_SORU
+					WHERE ID_SINAV=@ID_SINAV AND SS.KITAPCIK='A' AND ID_SORUTUR<>1 AND ID_USTSORU IS NULL
+					FOR JSON PATH, INCLUDE_NULL_VALUES
+				) AS J
+			END
+
+			-- YENİ ONLINE SINAV
+
+			IF @ISLEM = 8	--	ONLINE SINAV DETAY						
+			BEGIN
+
+				SELECT ISNULL((
+					SELECT DISTINCT 
+						 S.ID_SINAV
+						,CEVAPGOR		= ISNULL(OSD.CEVAPGOR,0)
+						,ACIKLANMATARIH	= CONVERT(varchar,ISNULL(OSD.ACIKLANMATARIH,DATEADD(WEEK,2,GETDATE())),104)
+						,ACIKLANMASAAT	= CONVERT(char(5),ISNULL(OSD.ACIKLANMATARIH,DATEADD(WEEK,2,GETDATE())),108)
+						,OSDO.ID_ONLINESINAVDETAYOTURUM
+						,OTURUM			= ISNULL(SOD.OTURUM,1)
+						,BASTARIH		= CONVERT(varchar,ISNULL(OSDO.BASTARIH,GETDATE()),104)
+						,BASSAAT		= CONVERT(char(5),ISNULL(OSDO.BASTARIH,DATEADD(HOUR,ISNULL(SOD.OTURUM,1),GETDATE())),108)
+						,BITTARIH		= CONVERT(varchar,ISNULL(OSDO.BITTARIH,DATEADD(WEEK,1,GETDATE())),104)
+						,BITSAAT		= CONVERT(char(5),ISNULL(OSDO.BITTARIH,DATEADD(WEEK,1,DATEADD(HOUR,ISNULL(SOD.OTURUM,1),GETDATE()))),108)
+						,SURE			= ISNULL(OSDO.SURE,100)
+					FROM Sinav								S	 WITH(NOLOCK) 
+					LEFT JOIN Tbl_OnlineSinavDetay			OSD	 WITH(NOLOCK) ON	OSD.ID_SINAV			= S.ID_SINAV
+																			  AND	OSD.AKTIF				= 1 
+					LEFT JOIN SinavDers						SD	 WITH(NOLOCK) ON	SD.ID_SINAV				= S.ID_SINAV
+					LEFT JOIN SinavOptikDers				SOD	 WITH(NOLOCK) ON	SOD.ID_SINAVDERS		= SD.ID_SINAVDERS
+					LEFT JOIN Tbl_OnlineSinavDetayOturum	OSDO WITH(NOLOCK) ON	OSDO.ID_ONLINESINAVDETAY= OSD.ID_ONLINESINAVDETAY
+																			  AND	OSDO.OTURUM				= ISNULL(SOD.OTURUM,1)
+					WHERE	S.ID_SINAV	= @ID_SINAV
+					FOR JSON AUTO, INCLUDE_NULL_VALUES
+				),'[]')
+
+			END
+
+			IF @ISLEM = 9	--	ONLINE SINAV DETAY KAYDET				
+			BEGIN
+
+				UPDATE Tbl_OnlineSinavDetay SET
+					AKTIF = 0
+				WHERE	ID_SINAV = JSON_VALUE (@SQLJSON, '$.ID_SINAV') 
+					AND AKTIF	 = 1
+
+				
+				DROP TABLE IF EXISTS #TEMP9
+
+				SELECT	 ID_SINAV
+						,BASTARIH		= CAST(CAST(BASTARIH		+ ' ' +BASSAAT		+':00' AS datetime2) AS smalldatetime)
+						,BITTARIH		= CAST(CAST(BITTARIH		+ ' ' +BITSAAT		+':00' AS datetime2) AS smalldatetime)
+						,ACIKLANMATARIH = CAST(CAST(ACIKLANMATARIH	+ ' ' +ACIKLANMASAAT+':00' AS datetime2) AS smalldatetime)
+						,SURE
+						,CEVAPGOR
+						,OTURUM
+				INTO #TEMP9
+				FROM OPENJSON(@SQLJSON)
+				WITH(
+					ID_SINAV		INT,
+					CEVAPGOR		BIT,
+					ACIKLANMATARIH	VARCHAR(MAX),
+					ACIKLANMASAAT	VARCHAR(MAX),
+					OSDO			NVARCHAR(MAX) AS JSON
+				) AS J
+				CROSS APPLY OPENJSON(J.OSDO)
+				WITH(
+					OTURUM		INT,
+					BASTARIH	VARCHAR(MAX),
+					BASSAAT		VARCHAR(MAX),
+					BITTARIH	VARCHAR(MAX),
+					BITSAAT		VARCHAR(MAX),
+					SURE		INT		
+				)
+
+				DECLARE @INSTABLE9 TABLE (ID INT)
+
+				DECLARE @ACIKLANMATARIH smalldatetime = (
+					SELECT IIF(MAX(ACIKLANMATARIH) > MAX(BITTARIH), MAX(ACIKLANMATARIH), MAX(BITTARIH) )
+					FROM #TEMP9
+				)
+				
+				INSERT INTO Tbl_OnlineSinavDetay (ID_SINAV, ACIKLANMATARIH, CEVAPGOR, KYE_TCKIMLIKNO)
+				OUTPUT inserted.ID_ONLINESINAVDETAY  INTO @INSTABLE9 (ID)
+				SELECT TOP 1 ID_SINAV, @ACIKLANMATARIH, CEVAPGOR, @TCKIMLIKNO FROM #TEMP9
+				
+				DECLARE @ID_ONLINESINAVDETAY INT = (SELECT TOP 1 ID FROM @INSTABLE9)
+				
+				INSERT INTO Tbl_OnlineSinavDetayOturum (ID_ONLINESINAVDETAY, OTURUM, BASTARIH, BITTARIH, SURE)
+				SELECT @ID_ONLINESINAVDETAY, OTURUM, BASTARIH, BITTARIH, SURE FROM #TEMP9
+
+				DROP TABLE IF EXISTS #TEMP9
+
+			END
+
+			IF @ISLEM = 10	--	OGRENCI ATAMA							
+			BEGIN
+
+				IF EXISTS (SELECT TOP 1 1 FROM OPENJSON(@TC_OGRENCILIST))
+				BEGIN
+					INSERT INTO Tbl_OnlineSinavOgrenci (ID_SINAV, TCKIMLIKNO, KYE_TCKIMLIKNO)
+					SELECT DISTINCT @ID_SINAV, VALUE AS TCKIMLIKNO, @TCKIMLIKNO FROM OPENJSON(@TC_OGRENCILIST) J
+					WHERE NOT EXISTS (SELECT TOP 1 1 FROM Tbl_OnlineSinavOgrenci OS WITH(NOLOCK) WHERE OS.AKTIF = 1 AND OS.ID_SINAV = @ID_SINAV AND OS.TCKIMLIKNO = J.VALUE)
+				END
+				ELSE
+				BEGIN
+					INSERT INTO Tbl_OnlineSinavOgrenci (ID_SINAV, TCKIMLIKNO, KYE_TCKIMLIKNO)
+					SELECT DISTINCT @ID_SINAV, SO.TCKIMLIKNO, @TCKIMLIKNO
+					FROM OPENJSON(@ID_SINIFLIST)		S
+					JOIN OkyanusDB.dbo.vw_SinifOgrenci	SO  WITH(NOLOCK)	ON	SO.ID_SINIF	= S.VALUE
+					WHERE NOT EXISTS (SELECT TOP 1 1 FROM Tbl_OnlineSinavOgrenci OS WITH(NOLOCK) WHERE OS.AKTIF = 1 AND OS.ID_SINAV = @ID_SINAV AND OS.TCKIMLIKNO = SO.TCKIMLIKNO)
+				END
+
+			END
+
+			IF @ISLEM = 11	--	OGRENCI ATAMA LİSTE						
+			BEGIN
+
+			IF(@DIS_OGRENCI=1)
+			BEGIN
+					SELECT ISNULL((
+					SELECT DISTINCT 
+						 K.TCKIMLIKNO
+						,ADSOYAD		= K.AD + ' ' + K.SOYAD
+						,TARIH			= CONVERT(VARCHAR, OSO.KYE_TARIH, 104 )
+						,OGRENCISAYISI	= COUNT(1)
+						,OGRENCILIST	= ISNULL((
+							SELECT DISTINCT 
+								 DO.TCKIMLIKNO
+								,ADSOYAD	= DO.AD + ' ' + DO.SOYAD
+								,'' AS SUBEAD
+								,'' AS SINIFAD
+							FROM Tbl_OnlineSinavOgrenci				SO	WITH(NOLOCK)
+							JOIN DisOgrenci	DO	WITH(NOLOCK)	ON	DO.TCKIMLIKNO	= SO.TCKIMLIKNO
+							WHERE	SO.KYE_TCKIMLIKNO	= K.TCKIMLIKNO
+								AND SO.KYE_TARIH		= OSO.KYE_TARIH
+								AND	SO.AKTIF			= 1
+ 								AND DO.DONEM			= (SELECT OkyanusDB.dbo.fn_AktifDonem())
+							FOR JSON PATH
+						),'[]')
+						,OSO.KYE_TARIH
+					FROM Tbl_OnlineSinavOgrenci	OSO	WITH(NOLOCK)	
+					JOIN v3Kullanici			K	WITH(NOLOCK)	ON	K.TCKIMLIKNO	= OSO.KYE_TCKIMLIKNO
+					WHERE	OSO.ID_SINAV	= @ID_SINAV
+						AND OSO.AKTIF		= 1
+						AND K.AKTIF			= 1
+					GROUP BY OSO.KYE_TARIH, K.TCKIMLIKNO, K.AD, K.SOYAD
+					FOR JSON PATH, INCLUDE_NULL_VALUES
+				),'[]')
+			END
+
+			ELSE
+			BEGIN
+				SELECT ISNULL((
+					SELECT DISTINCT 
+						 K.TCKIMLIKNO
+						,ADSOYAD		= K.AD + ' ' + K.SOYAD
+						,TARIH			= CONVERT(VARCHAR, OSO.KYE_TARIH, 104 )
+						,OGRENCISAYISI	= COUNT(1)
+						,OGRENCILIST	= ISNULL((
+							SELECT DISTINCT 
+								 SK.TCKIMLIKNO
+								,ADSOYAD	= SK.AD + ' ' + SK.SOYAD
+								,SK.SUBEAD
+								,SK.SINIFAD
+							FROM Tbl_OnlineSinavOgrenci				SO	WITH(NOLOCK)
+							JOIN OkyanusDB.dbo.vw_OgrenciDetayTum	SK	WITH(NOLOCK)	ON	SK.TCKIMLIKNO	= SO.TCKIMLIKNO
+							WHERE	SO.KYE_TCKIMLIKNO	= K.TCKIMLIKNO
+								AND SO.KYE_TARIH		= OSO.KYE_TARIH
+								AND	SO.AKTIF			= 1
+								AND SK.ID_SINIF			> 0
+								AND SK.DONEM			= (SELECT OkyanusDB.dbo.fn_AktifDonem())
+							FOR JSON PATH
+						),'[]')
+						,OSO.KYE_TARIH
+					FROM Tbl_OnlineSinavOgrenci	OSO	WITH(NOLOCK)	
+					JOIN v3Kullanici			K	WITH(NOLOCK)	ON	K.TCKIMLIKNO	= OSO.KYE_TCKIMLIKNO
+					WHERE	OSO.ID_SINAV	= @ID_SINAV
+						AND OSO.AKTIF		= 1
+						AND K.AKTIF			= 1
+					GROUP BY OSO.KYE_TARIH, K.TCKIMLIKNO, K.AD, K.SOYAD
+					FOR JSON PATH, INCLUDE_NULL_VALUES
+				),'[]')
+			END
+
+			
+
+			END
+
+			IF @ISLEM = 12	--	ÖĞRENCİ YENİ ONLINE SINAV LİSTESİ		
+			BEGIN
+			
+				CREATE TABLE #TEMP12SINAV (ID_SINAV INT)
+
+				SET @QUERY = (	SELECT DEGER 
+								FROM Parametre		P 	WITH(NOLOCK)	
+								JOIN ParametreDeger PD	WITH(NOLOCK)	ON	PD.ID_PARAMETREDEGER = P.ID_PARAMETREDEGER 
+								WHERE P.ID_PARAMETRE = 1) -- Öğrenci Online Sınav Listesi
+
+				INSERT INTO #TEMP12SINAV
+				EXEC (@QUERY)
+				
+				SELECT ISNULL((
+					SELECT DISTINCT
+						 S.ID_SINAV
+						,SINAVTURU	= ST.AD
+						,SINAVAD	= S.AD
+						,OTURUM		= IIF((GETDATE() > SD.ACIKLANMATARIH AND S.DURUM = 2),  0, SDO.OTURUM)--SDO.OTURUM
+						,ACIKLANDI	= CAST(IIF( (GETDATE() > SD.ACIKLANMATARIH AND S.DURUM = 2), 1 , 0) AS bit )
+						,DEVAM		= CAST(CASE WHEN	GETDATE() BETWEEN SDO.BASTARIH AND SDO.BITTARIH 
+													AND GETDATE() < DATEADD(MINUTE, SDO.SURE, ISNULL(SOO.BASTARIH,GETDATE())) THEN 1 
+												ELSE 0 
+											END 
+										AS BIT)
+						,COZULDU	= CAST( IIF(C.ID_ONLINESINAVOGRENCI IS NULL, 0 , 1) AS bit)
+						,PERFORMANS	= CASE 
+										WHEN GETDATE() BETWEEN SDO.BASTARIH AND SDO.BITTARIH	THEN '--' 
+										WHEN GETDATE() < SDO.BASTARIH							THEN 'Sınav Henüz Başlamadı' 
+										WHEN GETDATE() > SD.ACIKLANMATARIH  AND S.DURUM != 2	THEN 'Açıklanması Bekleniyor' 
+										ELSE CAST((	SELECT CAST(CAST(sum(SOT.TN) AS decimal(8,2)) / CAST(sum(SOT.TD + SOT.TY + SOT.TB) AS decimal(8,2)) * 100.0  AS decimal(8,2))
+													FROM SinavOgrenciToplam SOT	WITH(NOLOCK)
+													WHERE	SOT.TCKIMLIKNO	= SO.TCKIMLIKNO
+														AND	SOT.ID_SINAV	= S.ID_SINAV
+											 	) AS VARCHAR)
+									END
+						,SDO.BITTARIH
+					FROM Sinav								S	WITH(NOLOCK)	
+					JOIN #TEMP12SINAV						TS					ON	TS.ID_SINAV				= S.ID_SINAV
+					JOIN Tbl_OnlineSinavDetay				SD	WITH(NOLOCK)	ON	SD.ID_SINAV				= S.ID_SINAV
+					JOIN Tbl_OnlineSinavDetayOturum			SDO	WITH(NOLOCK)	ON	SDO.ID_ONLINESINAVDETAY	= SD.ID_ONLINESINAVDETAY 
+																				AND SDO.OTURUM				= IIF((GETDATE() > SD.ACIKLANMATARIH   AND S.DURUM = 2),  1, SDO.OTURUM)
+					JOIN SinavTuru							ST	WITH(NOLOCK)	ON	ST.ID_SINAVTURU			= S.ID_SINAVTURU
+					JOIN Tbl_OnlineSinavOgrenci				SO	WITH(NOLOCK)	ON	SO.ID_SINAV				= SD.ID_SINAV
+					LEFT JOIN Tbl_OnlineSinavOgrenciOturum	SOO	WITH(NOLOCK)	ON	SOO.TCKIMLIKNO			= SO.TCKIMLIKNO
+																				AND SOO.ID_SINAV			= S.ID_SINAV
+																				AND SOO.OTURUM				= SDO.OTURUM
+
+					LEFT JOIN Tbl_OnlineSinavOgrenciCevap	C	WITH(NOLOCK)	ON	C.ID_ONLINESINAVOGRENCI	= SO.ID_ONLINESINAVOGRENCI
+																				AND C.AKTIF					= 1
+																				AND EXISTS (SELECT TOP 1 1 
+																							FROM SinavAnahtar	GSA
+																							JOIN SinavDers		GSD ON GSD.ID_SINAVDERS = GSA.ID_SINAVDERS
+																							JOIN SinavOptikDers GSO ON GSO.ID_SINAVDERS = GSD.ID_SINAVDERS
+																							WHERE	GSO.OTURUM		= SDO.OTURUM
+																								AND GSD.ID_SINAV	= SO.ID_SINAV
+																								AND C.ID_SINAVANAHTAR = GSA.ID_SINAVANAHTAR
+																				)
+					WHERE	SO.TCKIMLIKNO	= @TCKIMLIKNO
+						AND SD.AKTIF		= 1
+						AND SO.AKTIF		= 1
+						AND S.ONLINESINAV	= 1
+					ORDER BY SDO.BITTARIH DESC
+					FOR JSON PATH
+				),'[]')
+				DROP TABLE IF EXISTS #TEMP12SINAV
+
+			END
+
+			IF @ISLEM = 13	--	ÖĞRENCİ YENİ ONLINE SINAV DETAY			
+			BEGIN
+
+				IF @SINAVOTURUM IS NULL 
+					SET @SINAVOTURUM = 0
+
+				IF	@SINAVOTURUM > 0
+					AND NOT EXISTS (SELECT TOP 1 1 
+									FROM Tbl_OnlineSinavOgrenci			O	WITH(NOLOCK)	
+									JOIN Tbl_OnlineSinavOgrenciOturum	OO	WITH(NOLOCK)	ON	OO.TCKIMLIKNO	= O.TCKIMLIKNO
+									WHERE	O.TCKIMLIKNO	= @TCKIMLIKNO
+										AND O.AKTIF			= 1
+										AND OO.ID_SINAV		= @ID_SINAV
+										AND OO.OTURUM		= @SINAVOTURUM
+									)
+					AND EXISTS (SELECT TOP 1 1
+								FROM Tbl_OnlineSinavDetay		D	WITH(NOLOCK)	
+								JOIN Tbl_OnlineSinavDetayOturum	DO	WITH(NOLOCK)	ON	DO.ID_ONLINESINAVDETAY	= D.ID_ONLINESINAVDETAY
+								WHERE	D.ID_SINAV	= @ID_SINAV
+									AND D.AKTIF		= 1
+									AND DO.OTURUM	= @SINAVOTURUM
+									AND GETDATE() BETWEEN DO.BASTARIH AND DO.BITTARIH
+								)
+				BEGIN
+					INSERT INTO  Tbl_OnlineSinavOgrenciOturum (TCKIMLIKNO, ID_SINAV, OTURUM )
+					VALUES (@TCKIMLIKNO, @ID_SINAV, @SINAVOTURUM)
+				END 
+							
+																
+
+				DECLARE @BASLAMA_TARIHI DATETIME;
+				DECLARE @BITIS_TARIHI DATETIME;
+				DECLARE @GIRIS_TARIHI DATETIME;
+
+				DECLARE @SINAV_SONLANMA_SAATI DATETIME;
+				DECLARE @SURE INT = 0;
+				DECLARE @SINAV_BITISE_KALAN INT =0;
+				DECLARE @KALAN VARCHAR(MAX) =NULL;
+				SELECT @BASLAMA_TARIHI = OSDO.BASTARIH,@BITIS_TARIHI=OSDO.BITTARIH,@GIRIS_TARIHI=OSOO.BASTARIH,@SURE=OSDO.SURE
+				FROM Sinav								S		WITH(NOLOCK)	
+				JOIN Tbl_OnlineSinavDetay				OSD		WITH(NOLOCK)	ON	OSD.ID_SINAV				= S.ID_SINAV
+				JOIN Tbl_OnlineSinavDetayOturum			OSDO	WITH(NOLOCK)	ON	OSDO.ID_ONLINESINAVDETAY	= OSD.ID_ONLINESINAVDETAY
+																				AND (	OSDO.OTURUM				= @SINAVOTURUM
+																					OR	0						= @SINAVOTURUM)
+				JOIN Tbl_OnlineSinavOgrenci				OSO		WITH(NOLOCK)	ON	OSO.ID_SINAV				= S.ID_SINAV
+				LEFT JOIN Tbl_OnlineSinavOgrenciOturum	OSOO	WITH(NOLOCK)	ON	OSOO.TCKIMLIKNO				= OSO.TCKIMLIKNO
+																				AND OSOO.ID_SINAV				= S.ID_SINAV
+																				AND OSOO.OTURUM					= OSDO.OTURUM
+				WHERE	S.ID_SINAV		= @ID_SINAV
+					AND OSO.TCKIMLIKNO	= @TCKIMLIKNO
+					AND OSD.AKTIF		= 1
+					AND OSO.AKTIF		= 1
+					AND S.AKTIF			= 1
+					AND S.OZEL			= 0
+						
+				SET @SINAV_SONLANMA_SAATI	= DATEADD(MINUTE,@SURE,@GIRIS_TARIHI)
+				SET @SINAV_BITISE_KALAN		= DATEDIFF(MINUTE,GETDATE(),@BITIS_TARIHI)
+				
+				IF @SINAV_SONLANMA_SAATI < @BITIS_TARIHI
+					SET @SINAV_BITISE_KALAN = DATEDIFF(MINUTE,GETDATE(),@SINAV_SONLANMA_SAATI)
+
+				IF  @SINAV_BITISE_KALAN >= @SURE  
+				BEGIN
+					SET @SINAV_SONLANMA_SAATI	= DATEADD(MINUTE,@SURE ,@GIRIS_TARIHI)
+					SET @SINAV_BITISE_KALAN		= DATEDIFF(MINUTE,GETDATE(),@SINAV_SONLANMA_SAATI)
+				END
+				SET @KALAN	= CAST(CAST( @SINAV_BITISE_KALAN AS VARCHAR ) 
+							+ ':' 
+							+ IIF(@SINAV_BITISE_KALAN > -1
+									,CAST((DATEDIFF(SECOND,GETDATE(), DATEADD(MINUTE, @SINAV_BITISE_KALAN, @BITIS_TARIHI)) % 60) AS varchar)
+									,'00')
+								AS varchar)
+
+				SELECT ISNULL((
+					SELECT DISTINCT
+						 S.ID_SINAV
+						,DEVAM			= CAST(CASE WHEN GETDATE() BETWEEN OSDO.BASTARIH AND OSDO.BITTARIH AND GETDATE() < DATEADD(MINUTE, OSDO.SURE, OSOO.BASTARIH) THEN 1 ELSE 0 END AS bit )
+						,ACIKLANDI		= CAST(CASE WHEN GETDATE() > OSD.ACIKLANMATARIH AND S.DURUM = 2 THEN 1 ELSE 0 END AS bit )
+					--KALANSURE		= CAST((DATEDIFF(SECOND,GETDATE(), DATEADD(MINUTE, OSDO.SURE, OSOO.BASTARIH)) / 60) AS varchar) + ':' + CAST((DATEDIFF(SECOND,GETDATE(), DATEADD(MINUTE, OSDO.SURE, OSOO.BASTARIH)) % 60) AS varchar)
+						,KALANSURE      = @KALAN	
+						,ID_SINAVDERS	= SD.ID_SINAVDERS
+						,BOLUMNO		= DENSE_RANK() OVER( ORDER BY SD.BOLUMNO)
+						,TAKMAAD		= SD.TAKMAAD
+						,SORUNO			= SA.SORUNO
+						,ID_SINAVANAHTAR= SA.ID_SINAVANAHTAR
+						,DOGRUCEVAP		= IIF(GETDATE() > OSD.ACIKLANMATARIH, SBDC.ID_CEVAP, NULL)
+						,SORUHTML		= CASE WHEN SBSH.SORUHTML IS NULL THEN '' ELSE 'SoruBankasi/'+ SBSH.SORUHTML END
+						,OGRENCICEVAP	= ISNULL(OSOC.ID_CEVAP, NULL)
+						,COZUMLIST		= JSON_QUERY(
+											IIF(GETDATE() < OSD.ACIKLANMATARIH, 
+												NULL,
+												(SELECT	 SC.ID_COZUM
+														,COZUMHTML	= CASE WHEN SC.COZUMHTML  IS NULL THEN '' ELSE 'SoruBankasi/'+ SC.COZUMHTML  END
+												FROM SoruBankasi.dbo.SoruCozum SC WITH(NOLOCK)	
+												WHERE SC.ID_SORU = SBSH.ID_SORU
+												ORDER BY SC.SIRA
+												FOR JSON PATH)
+											))
+						,CEVAPNO		= SBC.CEVAPNO
+						,ID_CEVAP		= SBC.ID_CEVAP
+						,CEVAPHTML		= CASE WHEN SBC.CEVAPHTML IS NULL THEN '' ELSE 'SoruBankasi/'+ SBC.CEVAPHTML END
+						,DEGER			= CAST(IIF(GETDATE() > OSD.ACIKLANMATARIH, SBC.DEGER, NULL) AS BIT)
+						,OGRENCICEVAP	= CAST(IIF( OSOC.ID_CEVAP = SBC.ID_CEVAP , 1, 0) AS bit)
+					FROM Sinav								S		WITH(NOLOCK)	
+					JOIN Tbl_OnlineSinavDetay				OSD		WITH(NOLOCK)	ON	OSD.ID_SINAV				= S.ID_SINAV
+					JOIN Tbl_OnlineSinavDetayOturum			OSDO	WITH(NOLOCK)	ON	OSDO.ID_ONLINESINAVDETAY	= OSD.ID_ONLINESINAVDETAY
+																					AND (	OSDO.OTURUM				= @SINAVOTURUM
+																						OR	0						= @SINAVOTURUM)
+					JOIN SinavKitapcik						SK		WITH(NOLOCK)	ON	SK.ID_SINAV					= S.ID_SINAV
+																					AND SK.AD						= 'A'
+					JOIN SinavDers							SD		WITH(NOLOCK)	ON	SD.ID_SINAV					= S.ID_SINAV
+					JOIN SinavOptikDers						SOD		WITH(NOLOCK)	ON	SOD.ID_SINAVDERS			= SD.ID_SINAVDERS 
+																					AND SOD.OTURUM					= OSDO.OTURUM
+					JOIN SinavAnahtar						SA		WITH(NOLOCK)	ON	SA.ID_SINAVDERS				= SD.ID_SINAVDERS 
+																					AND SA.ID_SINAVKITAPCIK			= SK.ID_SINAVKITAPCIK
+					JOIN SoruBankasi.dbo.SoruHtml			SBSH	WITH(NOLOCK)	ON	SBSH.ID_SORU				= SA.ID_SORUBANKASI
+					JOIN SoruBankasi.dbo.Cevap				SBC		WITH(NOLOCK)	ON	SBC.ID_SORU					= SBSH.ID_SORU
+					JOIN SoruBankasi.dbo.Cevap				SBDC	WITH(NOLOCK)	ON	SBDC.ID_SORU				= SBSH.ID_SORU
+																					AND SBDC.DEGER					= '1'
+					JOIN Tbl_OnlineSinavOgrenci				OSO		WITH(NOLOCK)	ON	OSO.ID_SINAV				= S.ID_SINAV
+					LEFT JOIN Tbl_OnlineSinavOgrenciOturum	OSOO	WITH(NOLOCK)	ON	OSOO.TCKIMLIKNO				= OSO.TCKIMLIKNO
+																					AND OSOO.ID_SINAV				= S.ID_SINAV
+																					AND OSOO.OTURUM					= OSDO.OTURUM
+					LEFT JOIN Tbl_OnlineSinavOgrenciCevap	OSOC	WITH(NOLOCK)	ON	OSOC.ID_ONLINESINAVOGRENCI	= OSO.ID_ONLINESINAVOGRENCI
+																					AND OSOC.ID_SINAVANAHTAR		= SA.ID_SINAVANAHTAR
+																					AND OSOC.AKTIF					= 1
+					WHERE	S.ID_SINAV		= @ID_SINAV
+						AND OSO.TCKIMLIKNO	= @TCKIMLIKNO
+						AND OSD.AKTIF		= 1
+						AND OSO.AKTIF		= 1
+						AND SK.AD			= 'A'
+						AND S.AKTIF			= 1
+						AND S.OZEL			= 0
+					ORDER BY BOLUMNO, SA.SORUNO, SBC.CEVAPNO
+					FOR JSON AUTO, INCLUDE_NULL_VALUES
+				),'[]')
+
+			END
+
+			IF @ISLEM = 14	--	ÖĞRENCİ YENİ ONLINE SINAV SORU İŞARETLE	
+			BEGIN
+
+				IF NOT EXISTS(SELECT TOP 1 1 FROM SinavAnahtar WHERE ID_SINAVANAHTAR = @ID_SINAVANAHTAR)
+				BEGIN
+					RAISERROR('Sınav güncellendiği için cevabınızı kaydedemiyoruz. Lüten sınavı yeniden açınız !!!',16,1)
+					RETURN
+				END
+				ELSE
+				BEGIN
+
+					SET @ID_ONLINESINAVOGRENCI = ISNULL((
+						SELECT TOP 1 ID_ONLINESINAVOGRENCI
+						FROM Tbl_OnlineSinavOgrenci			O	WITH(NOLOCK)	
+						JOIN Tbl_OnlineSinavDetay			D	WITH(NOLOCK)	ON	D.ID_SINAV				= O.ID_SINAV
+						JOIN Tbl_OnlineSinavDetayOturum		DO	WITH(NOLOCK)	ON	DO.ID_ONLINESINAVDETAY	= D.ID_ONLINESINAVDETAY
+						JOIN Tbl_OnlineSinavOgrenciOturum	OO	WITH(NOLOCK)	ON	OO.TCKIMLIKNO			= O.TCKIMLIKNO
+																				AND OO.ID_SINAV				= O.ID_SINAV
+																				AND OO.OTURUM				= DO.OTURUM
+						WHERE	O.TCKIMLIKNO	= @TCKIMLIKNO
+							AND O.ID_SINAV		= @ID_SINAV
+							AND DO.OTURUM		= @SINAVOTURUM
+							AND O.AKTIF			= 1
+							AND D.AKTIF			= 1
+							AND GETDATE() BETWEEN DO.BASTARIH AND DO.BITTARIH
+							AND GETDATE() < DATEADD(MINUTE, DO.SURE, OO.BASTARIH)
+					),0)
+
+					IF @ID_ONLINESINAVOGRENCI > 0
+					BEGIN
+
+						UPDATE Tbl_OnlineSinavOgrenciCevap SET
+							AKTIF = 0
+						WHERE	ID_ONLINESINAVOGRENCI	= @ID_ONLINESINAVOGRENCI
+							AND	ID_SINAVANAHTAR			= @ID_SINAVANAHTAR
+							AND AKTIF					= 1
+
+						IF @ID_CEVAP IS NOT NULL
+							INSERT INTO Tbl_OnlineSinavOgrenciCevap (ID_ONLINESINAVOGRENCI, ID_SINAVANAHTAR, ID_CEVAP)  
+							VALUES (@ID_ONLINESINAVOGRENCI, @ID_SINAVANAHTAR, @ID_CEVAP)
+
+					END
+
+					SELECT ISNULL(@ID_ONLINESINAVOGRENCI,0)
+
+				END
+
+			END
+
+			IF @ISLEM = 15	--	ÖĞRENCİ YENİ ONLINE SINAV PERFORMANS	
+			BEGIN
+			
+				DECLARE @TABLE TABLE(RESULT VARCHAR(MAX))
+
+				INSERT INTO @TABLE
+				EXEC sp_OnlineSinav @TCKIMLIKNO = @TCKIMLIKNO, @OTURUM = @OTURUM, @ID_SINAV = @ID_SINAV, @ISLEM = 13
+								
+				SELECT (
+					SELECT ISNULL((
+						SELECT DISTINCT
+							 SINAVTURU		= ST.AD
+							,SINAVAD		= S.AD
+							,SONGIRIS		= (	SELECT TOP 1 CONVERT(varchar, OSOC.KYE_TARIH, 104) + ' ' + CONVERT(varchar, OSOC.KYE_TARIH, 108)
+												FROM Tbl_OnlineSinavOgrenci			OSO  WITH(NOLOCK) 
+												JOIN Tbl_OnlineSinavOgrenciCevap	OSOC WITH(NOLOCK) ON	OSOC.ID_ONLINESINAVOGRENCI = OSO.ID_ONLINESINAVOGRENCI
+												WHERE	OSO.AKTIF	= 1
+													AND OSOC.AKTIF	= 1
+												ORDER BY OSOC.ID_ONLINESINAVOGRENCICEVAP DESC
+												)
+							,DOGRU			= SOT.TD
+							,YANLIS			= SOT.TY
+							,BOS			= SOT.TB
+							,NET			= SOT.TN
+							,NETPERFORMANS	= CAST(CAST(SOT.TN AS decimal(8,2)) / CAST((SOT.TD + SOT.TY + SOT.TB) AS decimal(8,2)) * 100.0  AS decimal(8,2))
+							--,DOGRUPERFORMANS	= CAST(CAST(SOT.TD AS decimal(8,2)) / CAST((SOT.TD + SOT.TY + SOT.TB) AS decimal(8,2)) * 100.0  AS decimal(8,2))
+							--,YANLISPERFORMANS	= CAST(CAST(SOT.TY AS decimal(8,2)) / CAST((SOT.TD + SOT.TY + SOT.TB) AS decimal(8,2)) * 100.0  AS decimal(8,2))
+							--,BOSPERFORMANS	= CAST(CAST(SOT.TB AS decimal(8,2)) / CAST((SOT.TD + SOT.TY + SOT.TB) AS decimal(8,2)) * 100.0  AS decimal(8,2))
+							,DERSPERFORMANS	= JSON_QUERY(
+													ISNULL((	SELECT	 SD.BOLUMNO
+																	,SD.TAKMAAD
+																	,YUZDENET
+															FROM SinavDers				SD	 WITH(NOLOCK) 
+															JOIN vw_SinavOgrenciBolum	SOB	 WITH(NOLOCK)	ON	SOB.ID_SINAVDERS	= SD.ID_SINAVDERS
+																											AND SOB.TCKIMLIKNO		= SOT.TCKIMLIKNO
+															WHERE SD.ID_SINAV = S.ID_SINAV
+															ORDER BY BOLUMNO
+															FOR JSON PATH
+													),'[]')
+												)
+						FROM Tbl_OnlineSinavDetay		OSD	 WITH(NOLOCK) 
+						JOIN Tbl_OnlineSinavDetayOturum	DO	 WITH(NOLOCK) ON	DO.ID_ONLINESINAVDETAY	= OSD.ID_ONLINESINAVDETAY
+						JOIN SinavOgrenciToplam			SOT	 WITH(NOLOCK) ON	SOT.ID_SINAV	= OSD.ID_SINAV
+						JOIN Sinav						S	 WITH(NOLOCK) ON	S.ID_SINAV		= SOT.ID_SINAV
+						JOIN SinavTuru					ST	 WITH(NOLOCK) ON	ST.ID_SINAVTURU	= S.ID_SINAVTURU
+						WHERE	SOT.ID_SINAV		= @ID_SINAV
+							AND SOT.TCKIMLIKNO		= @TCKIMLIKNO
+							AND OSD.AKTIF			= 1
+							AND S.AKTIF				= 1
+							AND S.OZEL				= 0
+							AND DO.BITTARIH			< GETDATE()
+							AND OSD.ACIKLANMATARIH	< GETDATE()
+						FOR JSON PATH, INCLUDE_NULL_VALUES
+					),'[]') AS PERFORMANS,
+					JSON_QUERY((	
+						SELECT RESULT 
+						FROM @TABLE
+					))  AS SINAV
+					FOR JSON PATH
+				)
+
+			END
+
+			IF @ISLEM = 16	--	ÖĞRENCİ ATAMA KALDIRMA					
+			BEGIN
+
+				UPDATE O SET
+					AKTIF = 0
+				FROM Tbl_OnlineSinavOgrenci	O  WITH(NOLOCK) 
+				WHERE	ID_SINAV		= @ID_SINAV
+					AND	KYE_TCKIMLIKNO	= @TC_EKLEYEN
+					AND KYE_TARIH		= @KYE_TARIH
+					AND NOT EXISTS (SELECT TOP 1 1 
+									FROM Tbl_OnlineSinavOgrenciCevap C  WITH(NOLOCK) 
+									WHERE	C.ID_ONLINESINAVOGRENCI = O.ID_ONLINESINAVOGRENCI 
+										AND C.AKTIF					= 1)
+
+				SELECT COUNT(DISTINCT TCKIMLIKNO)
+				FROM Tbl_OnlineSinavOgrenci			O  WITH(NOLOCK) 
+				JOIN Tbl_OnlineSinavOgrenciCevap	C  WITH(NOLOCK) ON	C.ID_ONLINESINAVOGRENCI = O.ID_ONLINESINAVOGRENCI					
+				WHERE	O.ID_SINAV		= @ID_SINAV
+					AND	O.KYE_TCKIMLIKNO= @TC_EKLEYEN
+					AND O.KYE_TARIH		= @KYE_TARIH
+					AND O.AKTIF			= 1
+					AND C.AKTIF			= 1
+
+			END
+
+			IF @ISLEM = 17	--	SINAV DETAY RAPOR						
+			BEGIN
+			
+				DECLARE @OGRENCI17 BIT = IIF(EXISTS(SELECT TOP 1 1 
+													FROM v3SubeYetki	SY  WITH(NOLOCK) 
+													WHERE	SY.TCKIMLIKNO		= @TCKIMLIKNO
+														AND SY.ID_KULLANICITIPI = 4				--	ÖĞRENCİ
+													),1,0) 
+					IF EXISTS(SELECT TCKIMLIKNO FROM DisOgrenci WHERE TCKIMLIKNO=@TCKIMLIKNO)
+					BEGIN
+						SET @OGRENCI17=1
+					END												
+
+				IF @OGRENCI17 = 1
+					SET @CEVAPANAHTARI = 1
+				ELSE IF NOT EXISTS(	SELECT TOP 1 1 
+									FROM v3SubeYetki	SY  WITH(NOLOCK) 
+									WHERE	SY.TCKIMLIKNO		= @TCKIMLIKNO
+										AND SY.ID_KULLANICITIPI = 1				--	ADMİN
+									)
+				BEGIN
+					RETURN
+					SET @CEVAPANAHTARI = 0
+				END
+
+				DROP TABLE IF EXISTS #TEMP17
+
+				SELECT DISTINCT
+					 S.ID_SINAV
+					,SINAVAD		= S.AD						
+					,SD.ID_SINAVDERS
+					,BOLUMNO		= DENSE_RANK() OVER( ORDER BY SD.BOLUMNO)
+					,TAKMAAD		= UPPER(SD.TAKMAAD)
+					,SA.SORUNO
+					,SA.ID_SINAVANAHTAR
+					,DOGRUCEVAP		= IIF(GETDATE() > OSD.ACIKLANMATARIH, SBDC.ID_CEVAP, NULL)
+					,SORUHTML		= CASE WHEN SBSH.SORUHTML IS NULL THEN '' ELSE 'SoruBankasi/'+ SBSH.SORUHTML END						
+					,SBC.CEVAPNO
+					,CEVAPAD		= CASE	WHEN SBC.CEVAPNO = 1 THEN 'A'
+											WHEN SBC.CEVAPNO = 2 THEN 'B'
+											WHEN SBC.CEVAPNO = 3 THEN 'C'
+											WHEN SBC.CEVAPNO = 4 THEN 'D'
+											WHEN SBC.CEVAPNO = 5 THEN 'E'
+											ELSE ''
+										END
+					,SBC.ID_CEVAP
+					,CEVAPHTML		= CASE WHEN SBC.CEVAPHTML IS NULL THEN '' ELSE 'SoruBankasi/'+ SBC.CEVAPHTML END
+					,DEGER			= CAST(IIF(GETDATE() > OSD.ACIKLANMATARIH 
+											or EXISTS(	SELECT TOP 1 1 
+														FROM v3SubeYetki	SY  WITH(NOLOCK) 
+														WHERE	SY.TCKIMLIKNO		= @TCKIMLIKNO
+															AND SY.ID_KULLANICITIPI = 1				--	ADMİN
+											), SBC.DEGER, NULL) AS BIT)
+				INTO #TEMP17
+				FROM Sinav								S		WITH(NOLOCK)	
+				JOIN Tbl_OnlineSinavDetay				OSD		WITH(NOLOCK)	ON	OSD.ID_SINAV				= S.ID_SINAV
+				JOIN Tbl_OnlineSinavDetayOturum			OSDO	WITH(NOLOCK)	ON	OSDO.ID_ONLINESINAVDETAY	= OSD.ID_ONLINESINAVDETAY
+				JOIN SinavKitapcik						SK		WITH(NOLOCK)	ON	SK.ID_SINAV					= S.ID_SINAV
+																				AND SK.AD						= 'A'
+				JOIN SinavDers							SD		WITH(NOLOCK)	ON	SD.ID_SINAV					= S.ID_SINAV
+				JOIN SinavOptikDers						SOD		WITH(NOLOCK)	ON	SOD.ID_SINAVDERS			= SD.ID_SINAVDERS 
+																				AND SOD.OTURUM					= OSDO.OTURUM
+				JOIN SinavAnahtar						SA		WITH(NOLOCK)	ON	SA.ID_SINAVDERS				= SD.ID_SINAVDERS 
+																				AND SA.ID_SINAVKITAPCIK			= SK.ID_SINAVKITAPCIK
+				JOIN SoruBankasi.dbo.SoruHtml			SBSH	WITH(NOLOCK)	ON	SBSH.ID_SORU				= SA.ID_SORUBANKASI
+				JOIN SoruBankasi.dbo.Cevap				SBC		WITH(NOLOCK)	ON	SBC.ID_SORU					= SBSH.ID_SORU
+				JOIN SoruBankasi.dbo.Cevap				SBDC	WITH(NOLOCK)	ON	SBDC.ID_SORU				= SBSH.ID_SORU
+																				AND SBDC.DEGER					= '1'
+				WHERE	S.ID_SINAV			= @ID_SINAV
+					AND OSD.AKTIF			= 1
+					AND SK.AD				= 'A'
+					AND S.AKTIF				= 1
+					AND (S.OZEL=0	OR	@OZELSINAVGOR=1)
+					AND (@OGRENCI17					= 0
+						OR	(	@OGRENCI17			= 1
+							AND S.DURUM				= 2
+							AND OSD.ACIKLANMATARIH	< GETDATE()						
+						))
+				ORDER BY BOLUMNO, SA.SORUNO, SBC.CEVAPNO
+
+
+				SELECT DISTINCT
+					 ID_SINAV
+					,SINAVAD
+				FROM #TEMP17
+					
+				SELECT DISTINCT
+					 ID_SINAVDERS
+					,BOLUMNO
+					,TAKMAAD
+					,SORUNO
+					,ID_SINAVANAHTAR
+					,SORUHTML
+					,CEVAPNO
+					,CEVAPAD
+					,CEVAPHTML
+				FROM #TEMP17
+					
+				SELECT DISTINCT
+					 ID_SINAVDERS
+					,BOLUMNO
+					,TAKMAAD
+					,SORUNO
+					,CEVAP	= CASE	WHEN CEVAPNO = 1 THEN 'A'
+									WHEN CEVAPNO = 2 THEN 'B'
+									WHEN CEVAPNO = 3 THEN 'C'
+									WHEN CEVAPNO = 4 THEN 'D'
+									WHEN CEVAPNO = 5 THEN 'E'
+									ELSE ''
+								END
+				FROM #TEMP17
+				WHERE	DEGER			= 1
+					AND @CEVAPANAHTARI	= 1
+
+				DROP TABLE IF EXISTS #TEMP17
+
+
+			END
+
+			IF @ISLEM = 18	--	ONLINE SINAV ONIZLEME					
+			BEGIN
+
+				DECLARE @OGRENCI18 BIT = IIF(EXISTS(SELECT TOP 1 1 
+													FROM v3SubeYetki	SY  WITH(NOLOCK) 
+													WHERE	SY.TCKIMLIKNO		= @TCKIMLIKNO
+														AND SY.ID_KULLANICITIPI = 4				--	ÖĞRENCİ
+													),1,0) 
+				IF EXISTS(SELECT TCKIMLIKNO FROM DisOgrenci WHERE TCKIMLIKNO=@TCKIMLIKNO)
+					BEGIN
+						SET @OGRENCI18=1
+					END					
+
+				
+				IF @OGRENCI18 = 0 AND NOT EXISTS(	SELECT TOP 1 1 
+													FROM v3SubeYetki	SY WITH(NOLOCK) 
+													WHERE	SY.TCKIMLIKNO		= @TCKIMLIKNO
+														AND SY.ID_KULLANICITIPI = 1				--	ADMİN
+													)
+				BEGIN
+					SELECT '[]'
+				END
+				
+
+
+				SELECT ISNULL((
+					SELECT DISTINCT
+						 S.ID_SINAV
+						,S.AD						
+						,SD.ID_SINAVDERS
+						,BOLUMNO		= DENSE_RANK() OVER( ORDER BY SD.BOLUMNO)
+						,SD.TAKMAAD
+						,SA.SORUNO
+						,SA.ID_SINAVANAHTAR
+						,DOGRUCEVAP		= IIF(GETDATE() > OSD.ACIKLANMATARIH, SBDC.ID_CEVAP, NULL)
+						,SORUHTML		= CASE WHEN SBSH.SORUHTML IS NULL THEN '' ELSE 'SoruBankasi/'+ SBSH.SORUHTML END						
+						,SBC.CEVAPNO
+						,SBC.ID_CEVAP
+						,CEVAPHTML		= CASE WHEN SBC.CEVAPHTML IS NULL THEN '' ELSE 'SoruBankasi/'+ SBC.CEVAPHTML END
+						,DEGER			= CAST(IIF(GETDATE() > OSD.ACIKLANMATARIH, SBC.DEGER, NULL) AS BIT)
+					FROM Sinav								S		WITH(NOLOCK)	
+					JOIN Tbl_OnlineSinavDetay				OSD		WITH(NOLOCK)	ON	OSD.ID_SINAV				= S.ID_SINAV
+					JOIN Tbl_OnlineSinavDetayOturum			OSDO	WITH(NOLOCK)	ON	OSDO.ID_ONLINESINAVDETAY	= OSD.ID_ONLINESINAVDETAY
+					JOIN SinavKitapcik						SK		WITH(NOLOCK)	ON	SK.ID_SINAV					= S.ID_SINAV
+																					AND SK.AD						= 'A'
+					JOIN SinavDers							SD		WITH(NOLOCK)	ON	SD.ID_SINAV					= S.ID_SINAV
+					JOIN SinavOptikDers						SOD		WITH(NOLOCK)	ON	SOD.ID_SINAVDERS			= SD.ID_SINAVDERS 
+																					AND SOD.OTURUM					= OSDO.OTURUM
+					JOIN SinavAnahtar						SA		WITH(NOLOCK)	ON	SA.ID_SINAVDERS				= SD.ID_SINAVDERS 
+																					AND SA.ID_SINAVKITAPCIK			= SK.ID_SINAVKITAPCIK
+					JOIN SoruBankasi.dbo.SoruHtml			SBSH	WITH(NOLOCK)	ON	SBSH.ID_SORU				= SA.ID_SORUBANKASI
+					JOIN SoruBankasi.dbo.Cevap				SBC		WITH(NOLOCK)	ON	SBC.ID_SORU					= SBSH.ID_SORU
+					JOIN SoruBankasi.dbo.Cevap				SBDC	WITH(NOLOCK)	ON	SBDC.ID_SORU				= SBSH.ID_SORU
+																					AND SBDC.DEGER					= '1'
+					WHERE	S.ID_SINAV					= @ID_SINAV
+						AND OSD.AKTIF					= 1
+						AND SK.AD						= 'A'
+						AND S.AKTIF						= 1
+						AND (S.OZEL=0	OR	@OZELSINAVGOR=1)
+						AND (@OGRENCI18					= 0
+							OR	(	@OGRENCI18			= 1
+								AND S.DURUM				= 2
+								AND OSD.ACIKLANMATARIH	< GETDATE()						
+							))
+					ORDER BY BOLUMNO, SA.SORUNO, SBC.CEVAPNO
+					FOR JSON AUTO, INCLUDE_NULL_VALUES
+				),'[]')
+				
+
+			END
+
+			IF @ISLEM = 19	--	ONLINE SINAV ÖĞR OTURUM	SIFIRLAMA LİSTE	
+			BEGIN
+
+				SELECT ISNULL((
+					SELECT	 TCKIMLIKNO	= OD.TCKIMLIKNO
+							,AD			= OD.AD
+							,SOYAD		= OD.SOYAD
+							,SUBEAD		= OD.SUBEAD
+							,SINIFAD	= OD.SINIFAD
+							,OTURUMLIST.ID_ONLINESINAVOGRENCIOTURUM
+							,BASTARIH	= CONVERT(VARCHAR, OTURUMLIST.BASTARIH,104) + ' ' + CONVERT(VARCHAR, OTURUMLIST.BASTARIH,108)
+							,OTURUM		= ISNULL(SDO.OTURUM,0)
+					FROM Tbl_OnlineSinavDetay				SD			WITH(NOLOCK) 
+					JOIN Tbl_OnlineSinavDetayOturum			SDO			WITH(NOLOCK) ON	SDO.ID_ONLINESINAVDETAY	= SD.ID_ONLINESINAVDETAY 
+					JOIN Tbl_OnlineSinavOgrenci				SO			WITH(NOLOCK) ON	SO.ID_SINAV				= SD.ID_SINAV
+					JOIN OkyanusDB..v3Ogrenci				O			WITH(NOLOCK) ON	O.TCKIMLIKNO			= SO.TCKIMLIKNO
+					JOIN OkyanusDB..vw_OgrenciDetayTum		OD			WITH(NOLOCK) ON	OD.TCKIMLIKNO			= O.TCKIMLIKNO
+																					 AND OD.ID_SINIF			= O.ID_SINIF
+					LEFT JOIN Tbl_OnlineSinavOgrenciOturum	OTURUMLIST	WITH(NOLOCK) ON	OTURUMLIST.TCKIMLIKNO	= SO.TCKIMLIKNO
+																					 AND OTURUMLIST.ID_SINAV	= SO.ID_SINAV
+																					 AND OTURUMLIST.OTURUM		= SDO.OTURUM
+																					 AND GETDATE() BETWEEN SDO.BASTARIH AND SDO.BITTARIH
+					WHERE	SD.ID_SINAV	= @ID_SINAV
+						AND	SO.AKTIF	= 1
+						AND SD.AKTIF	= 1
+					ORDER BY SUBEAD, SINIFAD, AD, SOYAD, TCKIMLIKNO, SDO.OTURUM
+					FOR JSON AUTO, INCLUDE_NULL_VALUES, ROOT('OGRENCILIST')
+				),'{OGRENCILIST:[]}')
+				
+
+			END
+
+			IF @ISLEM = 20	--	ONLINE SINAV ÖĞR OTURUM	SIFIRLAMA 		
+			BEGIN
+
+				--UPDATE SOC SET
+				--	SOC.AKTIF = 0
+				DELETE SOC
+				FROM Tbl_OnlineSinavOgrenciOturum	OO  WITH(NOLOCK) 
+				JOIN Tbl_OnlineSinavOgrenci			SO  WITH(NOLOCK) 	ON	SO.ID_SINAV					= OO.ID_SINAV 
+																		AND SO.TCKIMLIKNO				= OO.TCKIMLIKNO
+				JOIN Tbl_OnlineSinavOgrenciCevap	SOC WITH(NOLOCK) 	ON	SOC.ID_ONLINESINAVOGRENCI	= SO.ID_ONLINESINAVOGRENCI
+				JOIN vw_SinavDersOturum				SDO WITH(NOLOCK) 	ON	SDO.ID_SINAV				= SO.ID_SINAV
+																		AND SDO.OTURUM					= OO.OTURUM
+				JOIN SinavAnahtar					SA  WITH(NOLOCK) 	ON	SA.ID_SINAVDERS				= SDO.ID_SINAVDERS
+																		AND SA.ID_SINAVANAHTAR			= SOC.ID_SINAVANAHTAR
+				WHERE	ID_ONLINESINAVOGRENCIOTURUM	= @ID_ONLINESINAVOGRENCIOTURUM
+					AND	SO.AKTIF					= 1
+					AND	SOC.AKTIF					= 1
+
+				DELETE FROM Tbl_OnlineSinavOgrenciOturum
+				WHERE ID_ONLINESINAVOGRENCIOTURUM = @ID_ONLINESINAVOGRENCIOTURUM				
+
+			END
+
+			IF @ISLEM = 21	--	ONLINE SINAV ÇIKTI						
+			BEGIN
+					
+				DECLARE @OGRENCI21 BIT = IIF(EXISTS(SELECT TOP 1 1 
+													FROM v3SubeYetki	SY WITH(NOLOCK) 
+													WHERE	SY.TCKIMLIKNO		= @TCKIMLIKNO
+														AND SY.ID_KULLANICITIPI = 4				--	ÖĞRENCİ
+													),1,0) 
+				IF EXISTS(SELECT TCKIMLIKNO FROM DisOgrenci WHERE TCKIMLIKNO=@TCKIMLIKNO)
+					BEGIN
+						SET @OGRENCI21=1
+					END					
+				
+				IF @OGRENCI21 = 0 AND NOT EXISTS(	SELECT TOP 1 1 
+													FROM v3SubeYetki	SY WITH(NOLOCK) 
+													WHERE	SY.TCKIMLIKNO		= @TCKIMLIKNO
+														AND SY.ID_KULLANICITIPI = 1				--	ADMİN
+													)
+				BEGIN
+					SELECT '[]'
+				END
+				
+
+
+				SELECT ISNULL((
+					SELECT DISTINCT
+						 S.ID_SINAV
+						,S.AD						
+						,SD.ID_SINAVDERS
+						,BOLUMNO		= DENSE_RANK() OVER( ORDER BY SD.BOLUMNO)
+						,SD.TAKMAAD
+						,SA.SORUNO
+						,SA.ID_SINAVANAHTAR
+						,DOGRUCEVAP		= IIF(GETDATE() > OSD.ACIKLANMATARIH, SBDC.ID_CEVAP, NULL)
+						,SORUHTML		= CASE WHEN SBSH.SORUHTML IS NULL THEN '' ELSE 'SoruBankasi/'+ SBSH.SORUHTML END						
+						,CEVAP			= CASE	WHEN SBDC.CEVAPNO = 1 THEN 'A'
+												WHEN SBDC.CEVAPNO = 2 THEN 'B'
+												WHEN SBDC.CEVAPNO = 3 THEN 'C'
+												WHEN SBDC.CEVAPNO = 4 THEN 'D'
+												WHEN SBDC.CEVAPNO = 5 THEN 'E'
+												ELSE ''
+										END
+						,SBC.CEVAPNO
+						,SBC.ID_CEVAP
+						,CEVAPHTML		= CASE WHEN SBC.CEVAPHTML IS NULL THEN '' ELSE 'SoruBankasi/'+ SBC.CEVAPHTML END
+						,DEGER			= CAST(IIF(GETDATE() > OSD.ACIKLANMATARIH, SBC.DEGER, NULL) AS BIT)
+					FROM Sinav								S		WITH(NOLOCK)	
+					JOIN Tbl_OnlineSinavDetay				OSD		WITH(NOLOCK)	ON	OSD.ID_SINAV				= S.ID_SINAV
+					JOIN Tbl_OnlineSinavDetayOturum			OSDO	WITH(NOLOCK)	ON	OSDO.ID_ONLINESINAVDETAY	= OSD.ID_ONLINESINAVDETAY
+					JOIN SinavKitapcik						SK		WITH(NOLOCK)	ON	SK.ID_SINAV					= S.ID_SINAV
+																					AND SK.AD						= 'A'
+					JOIN SinavDers							SD		WITH(NOLOCK)	ON	SD.ID_SINAV					= S.ID_SINAV
+					JOIN SinavOptikDers						SOD		WITH(NOLOCK)	ON	SOD.ID_SINAVDERS			= SD.ID_SINAVDERS 
+																					AND SOD.OTURUM					= OSDO.OTURUM
+					JOIN SinavAnahtar						SA		WITH(NOLOCK)	ON	SA.ID_SINAVDERS				= SD.ID_SINAVDERS 
+																					AND SA.ID_SINAVKITAPCIK			= SK.ID_SINAVKITAPCIK
+					JOIN SoruBankasi.dbo.SoruHtml			SBSH	WITH(NOLOCK)	ON	SBSH.ID_SORU				= SA.ID_SORUBANKASI
+					JOIN SoruBankasi.dbo.Cevap				SBC		WITH(NOLOCK)	ON	SBC.ID_SORU					= SBSH.ID_SORU
+					LEFT JOIN SoruBankasi.dbo.Cevap			SBDC	WITH(NOLOCK)	ON	SBDC.ID_SORU				= SBSH.ID_SORU
+																					AND SBDC.DEGER					= '1'
+																					AND (GETDATE()					> OSD.ACIKLANMATARIH
+																						OR EXISTS(	SELECT TOP 1 1 
+																									FROM v3SubeYetki	SY WITH(NOLOCK) 
+																									WHERE	SY.TCKIMLIKNO		= @TCKIMLIKNO
+																										AND SY.ID_KULLANICITIPI = 1				--	ADMİN
+																									)																						
+																						)
+																					AND @CEVAPANAHTARI				= 1
+
+					WHERE	S.ID_SINAV					= @ID_SINAV
+						AND OSD.AKTIF					= 1
+						AND SK.AD						= 'A'
+						AND S.AKTIF						= 1
+						AND (S.OZEL=0	OR	@OZELSINAVGOR=1)
+						AND (@OGRENCI21					= 0
+							OR(	@OGRENCI21				= 1
+							AND	EXISTS (SELECT TOP 1 1
+										FROM Tbl_OnlineSinavOgrenci	SO WITH(NOLOCK) 
+										WHERE TCKIMLIKNO	= @TCKIMLIKNO
+											AND SO.ID_SINAV	= S.ID_SINAV
+											AND SO.AKTIF	= 1
+							)
+						))
+						AND (@OGRENCI21					= 0
+							OR	(	@OGRENCI21			= 1
+								AND S.DURUM				= 2
+								AND OSD.ACIKLANMATARIH	< GETDATE()						
+							))
+					ORDER BY BOLUMNO, SA.SORUNO, SBC.CEVAPNO
+					FOR JSON AUTO, INCLUDE_NULL_VALUES
+				),'[]')
+				
+
+			END
+
+			IF @ISLEM = 22	--	ONLINE SINAV OTURUM OGRENCI LISTE		
+			BEGIN
+				SELECT ISNULL((
+					SELECT SO.TCKIMLIKNO
+						,K.AD
+						,K.SOYAD
+						,SOO.OTURUM
+						,SUBE	= SB.AD
+						,SINIF	= S.AD
+						,TARIH	=  CONVERT(VARCHAR(MAX), SOO.BASTARIH, 104) + ' ' + CONVERT(VARCHAR(MAX), SOO.BASTARIH, 108)
+					FROM Sinav							SNV WITH(NOLOCK)
+					JOIN Tbl_OnlineSinavOgrenci			SO	WITH(NOLOCK)	ON	SO.ID_SINAV		= SNV.ID_SINAV 
+																			AND SO.AKTIF		= 1
+					JOIN Tbl_OnlineSinavOgrenciOturum	SOO WITH(NOLOCK)	ON	SOO.TCKIMLIKNO	= SO.TCKIMLIKNO 
+																			AND SOO.ID_SINAV	= SO.ID_SINAV
+					JOIN OkyanusDB.dbo.v3Kullanici		K	WITH(NOLOCK)	ON	K.TCKIMLIKNO	= SOO.TCKIMLIKNO
+					JOIN OkyanusDB.dbo.v3OgrenciTum		O	WITH(NOLOCK)	ON	O.TCKIMLIKNO	= K.TCKIMLIKNO 
+																			AND O.DONEM			= SNV.DONEM
+					JOIN OkyanusDB.dbo.v3Sube			SB	WITH(NOLOCK)	ON	SB.ID_SUBE		= O.ID_SUBE
+					JOIN OkyanusDB.dbo.v3SinifTum		S	WITH(NOLOCK)	ON	S.ID_SINIF		= O.ID_SINIF 
+																			AND S.DONEM			= SNV.DONEM
+					WHERE	SNV.AKTIF = 1 
+						AND SNV.ID_SINAV = @ID_SINAV
+						AND (	(O.ID_SUBE	IN (select value from openjson (@ID_SUBELIST)))
+							OR	(0			IN (select value from openjson (@ID_SUBELIST))) 
+							OR	@ID_SUBELIST='[]'
+							)
+					ORDER BY SB.AD, S.AD, K.AD, K.SOYAD, SOO.OTURUM
+					FOR JSON PATH
+				), '[]')
+			END
+		END
+
+	
+	END TRY
+	BEGIN CATCH
+		DECLARE @_ErrorSeverity INT;
+		DECLARE @_ErrorState INT;
+
+		SELECT 
+			@_ErrorSeverity	= ERROR_SEVERITY(),
+			@_ErrorState		= ERROR_STATE()
+				
+		DECLARE @_MSG VARCHAR(4000)
+		SELECT @_MSG = ERROR_MESSAGE()
+
+		EXEC [dbo].[sp_CustomRaiseError] @MESSAGE = @_MSG, @SEVERITY = @_ErrorSeverity, @STATE = @_ErrorState, @ID_LOG = @_ID_LOG, @ID_LOGTUR = 2
+	END CATCH;
+END
+GO
+PRINT N'Altering [dbo].[sp_OptikIslemleri]...';
+
+
+GO
+ALTER procedure [dbo].[sp_OptikIslemleri]
+	@ISLEM				INT				= 0,
+	@TCKIMLIKNO			VARCHAR(11)		= NULL,
+	@OTURUM				VARCHAR(36)		= NULL,
+	@ID_MENU			INT				= NULL,
+	@ID_SINAVDOSYA		INT				= NULL,
+	@ID_SINAV			INT				= NULL,
+	@ID_SUBE			INT				= NULL	
+AS
+
+--SET XACT_ABORT ON
+
+BEGIN
+
+BEGIN TRY    
+
+/*
+
+	Değiştiren Adı		: Kadir Cengiz
+	Değiştirilen Tarih	: 11.09.20202
+	
+	--	sp Alter 
+		--	
+	--	ONLINE SINAV DA OPTIK ÇOKLU KITAPCIK
+
+*/
+	--		EXEC sp_SinavDegerlendir
+	--BEGIN TRAN
+	DECLARE @MSG			VARCHAR(4000)
+	DECLARE @ErrorSeverity	INT
+	DECLARE @ErrorState		INT
+	DECLARE @ID				INT				= NULL
+	DECLARE @SINAVOTURUM	TINYINT			= NULL
+	DECLARE @SQL			VARCHAR(max)	= NULL
+	DECLARE @DOSYAYOL		VARCHAR(max)	= NULL
+	DECLARE @DOSYAGUID		VARCHAR(50)		= NULL
+	DECLARE @ID_KADEME		INT				= NULL
+	DECLARE @ONLINESINAV	BIT				= NULL
+
+	SET @ONLINESINAV = (SELECT ONLINESINAV FROM Sinav WHERE ID_SINAV = @ID_SINAV)
+
+	IF	(	@ONLINESINAV = 1 
+		AND NOT EXISTS(SELECT TOP 1 1 FROM SinavDosya WHERE ID_SINAV = @ID_SINAV AND OTURUM = 1 AND AKTIF = 1 AND AD = 'ONLINE' ))
+			INSERT INTO SinavDosya (AD, GUID, ID_SINAV, ID_SUBE, KYE_TCKIMLIKNO)
+			VALUES ('ONLINE', '', @ID_SINAV, 0, '32051057542')
+	IF	(	@ONLINESINAV = 1 
+		AND EXISTS (SELECT TOP 1 1 FROM SinavDers SD JOIN SinavOptikDers OD ON OD.ID_SINAVDERS = SD.ID_SINAVDERS WHERE SD.ID_SINAV = @ID_SINAV AND OD.OTURUM = 2)
+		AND NOT EXISTS(SELECT TOP 1 1 FROM SinavDosya WHERE ID_SINAV = @ID_SINAV AND OTURUM = 2 AND AKTIF = 1 AND AD = 'ONLINE' ))
+			INSERT INTO SinavDosya (AD, GUID, ID_SINAV, OTURUM, ID_SUBE, KYE_TCKIMLIKNO)
+			VALUES ('ONLINE', '', @ID_SINAV, 2, 0, '32051057542')
+
+		
+	SET @ID_KADEME=(SELECT DISTINCT ID_KADEME FROM OkyanusDB.dbo.v3KademeBilgi WHERE ID_KADEME3 = (SELECT ID_KADEME3 FROM Sinav WHERE ID_SINAV=@ID_SINAV))
+	IF @ISLEM = 0	--	Sınav Dosya İşleme
+	BEGIN
+
+		UPDATE Sinav SET DURUM = 1, DEGERLENDIRILIYOR = 1 where ID_SINAV = @ID_SINAV
+
+
+		DECLARE @BASLANGIC1 INT, @BASLANGIC2 INT, @BASLANGIC3 INT, @BASLANGIC4 INT, @BASLANGIC5 INT, @BASLANGIC6 INT
+		DECLARE @OPTIKKARAKTERSAYISI1 INT, @OPTIKKARAKTERSAYISI2 INT, @OPTIKKARAKTERSAYISI3 INT, @OPTIKKARAKTERSAYISI4 INT, @OPTIKKARAKTERSAYISI5 INT, @OPTIKKARAKTERSAYISI6 INT
+
+		SET @BASLANGIC1 = (SELECT BASLANGIC from SinavOptikSabit where ID_SINAV = @ID_SINAV and ID_SINAVOPTIK = 1)
+		SET @BASLANGIC2 = (SELECT BASLANGIC from SinavOptikSabit where ID_SINAV = @ID_SINAV and ID_SINAVOPTIK = 2)
+		SET @BASLANGIC3 = (SELECT BASLANGIC from SinavOptikSabit where ID_SINAV = @ID_SINAV and ID_SINAVOPTIK = 3)
+		SET @BASLANGIC4 = (SELECT BASLANGIC from SinavOptikSabit where ID_SINAV = @ID_SINAV and ID_SINAVOPTIK = 4)
+		SET @BASLANGIC5 = (SELECT BASLANGIC from SinavOptikSabit where ID_SINAV = @ID_SINAV and ID_SINAVOPTIK = 5)
+		SET @BASLANGIC6 = (SELECT BASLANGIC from SinavOptikSabit where ID_SINAV = @ID_SINAV and ID_SINAVOPTIK = 6)
+
+		SET @OPTIKKARAKTERSAYISI1 = (SELECT OPTIKKARAKTERSAYISI from SinavOptikSabit where ID_SINAV = @ID_SINAV and ID_SINAVOPTIK = 1)
+		SET @OPTIKKARAKTERSAYISI2 = (SELECT OPTIKKARAKTERSAYISI from SinavOptikSabit where ID_SINAV = @ID_SINAV and ID_SINAVOPTIK = 2)
+		SET @OPTIKKARAKTERSAYISI3 = (SELECT OPTIKKARAKTERSAYISI from SinavOptikSabit where ID_SINAV = @ID_SINAV and ID_SINAVOPTIK = 3)
+		SET @OPTIKKARAKTERSAYISI4 = (SELECT OPTIKKARAKTERSAYISI from SinavOptikSabit where ID_SINAV = @ID_SINAV and ID_SINAVOPTIK = 4)
+		SET @OPTIKKARAKTERSAYISI5 = (SELECT OPTIKKARAKTERSAYISI from SinavOptikSabit where ID_SINAV = @ID_SINAV and ID_SINAVOPTIK = 5)
+		SET @OPTIKKARAKTERSAYISI6 = (SELECT OPTIKKARAKTERSAYISI from SinavOptikSabit where ID_SINAV = @ID_SINAV and ID_SINAVOPTIK = 6)
+
+		DECLARE @YANLISSAYISI DECIMAL(18, 2)
+		SET @YANLISSAYISI = (SELECT ISNULL(YANLISSAYISI, 0) FROM Sinav	WHERE ID_SINAV = @ID_SINAV)
+
+
+		DROP TABLE IF EXISTS #SinavDers
+
+		SELECT	 SD.ID_SINAV
+				,SD.ID_SINAVDERS
+				,OD.BASLANGIC
+				,OD.OPTIKKARAKTERSAYISI
+				,OD.OTURUM
+		INTO #SinavDers 
+		FROM SinavDers		SD
+		JOIN SinavOptikDers	OD	ON	OD.ID_SINAVDERS	= SD.ID_SINAVDERS
+		WHERE SD.ID_SINAV = @ID_SINAV
+
+		PRINT '1: ' + CONVERT( VARCHAR(24), GETDATE(), 121)
+
+
+		--IF @ONLINESINAV = 0
+		BEGIN
+			IF (SELECT COUNT(1) FROM SinavKitapcik WHERE ID_SINAV = @ID_SINAV) = 1 
+			BEGIN
+				
+				PRINT '5: ' + CONVERT( VARCHAR(24), GETDATE(), 121)
+
+				UPDATE SOT SET LINE=ISNULL(STUFF(LINE, @BASLANGIC4, @OPTIKKARAKTERSAYISI4,'A'),'') 
+				FROM SinavOptikTemp SOT 
+				INNER JOIN SinavDosya SD ON SD.ID_SINAVDOSYA=SOT.ID_SINAVDOSYA 
+				WHERE SD.ID_SINAV = @ID_SINAV
+
+				PRINT '6: ' + CONVERT( VARCHAR(24), GETDATE(), 121)
+
+			END
+			ELSE
+			BEGIN
+				
+				PRINT '7: ' + CONVERT( VARCHAR(24), GETDATE(), 121)
+
+				DROP TABLE IF EXISTS #KITAPCIKSIZLAR
+
+				SELECT 
+				ID_SINAVOPTIKTEMP, LINE, RN = ROW_NUMBER() OVER (ORDER BY ID_SINAVOPTIKTEMP) 
+				INTO #KITAPCIKSIZLAR
+				FROM SinavOptikTemp	  SOT
+				INNER JOIN SinavDosya SD ON SD.ID_SINAVDOSYA=SOT.ID_SINAVDOSYA
+				WHERE 
+						SD.ID_SINAV = @ID_SINAV
+					AND SUBSTRING(LINE, @BASLANGIC4, @OPTIKKARAKTERSAYISI4)=' '
+		
+
+				PRINT '8: ' + CONVERT( VARCHAR(24), GETDATE(), 121)
+
+				IF (SELECT COUNT(*) FROM #KITAPCIKSIZLAR)>0
+				BEGIN
+					
+					PRINT '9: ' + CONVERT( VARCHAR(24), GETDATE(), 121)
+					
+					DROP TABLE IF EXISTS #KITAPCIKLAR
+
+					SELECT ROW_NUMBER() OVER (ORDER BY AD) AS RN, SK.ID_SINAVKITAPCIK, AD, SD.ID_SINAVDERS, SOD.BASLANGIC, SOD.OPTIKKARAKTERSAYISI, STUFF((SELECT ''+CEVAP FROM SinavAnahtar WHERE ID_SINAVKITAPCIK=SK.ID_SINAVKITAPCIK AND ID_SINAVDERS=SD.ID_SINAVDERS ORDER BY SORUNO FOR XML PATH('')),1,0,'') CEVAPLAR
+					INTO #KITAPCIKLAR 
+					FROM SinavKitapcik			SK
+					INNER JOIN SinavDers		SD ON SD.ID_SINAV=SK.ID_SINAV
+					INNER JOIN SinavOptikDers	SOD ON SOD.ID_SINAVDERS=SD.ID_SINAVDERS
+					WHERE SK.ID_SINAV=@ID_SINAV
+
+					PRINT '10: ' + CONVERT( VARCHAR(24), GETDATE(), 121)
+
+					DECLARE @COUNTER INT = 1
+					DECLARE @COUNTKITAPCIKSIZLAR INT=(SELECT COUNT(*) FROM #KITAPCIKSIZLAR)
+					WHILE @COUNTER <= @COUNTKITAPCIKSIZLAR
+					BEGIN
+						
+						PRINT '11: ' + CONVERT( VARCHAR(24), GETDATE(), 121)
+
+						DECLARE @KSIZLINE VARCHAR(MAX)
+						DECLARE @KSIZID_SINAVOPTIKTEMP INT
+						SELECT @KSIZID_SINAVOPTIKTEMP=ID_SINAVOPTIKTEMP ,@KSIZLINE=LINE FROM #KITAPCIKSIZLAR WHERE RN=@COUNTER
+
+						DECLARE @KITAPCIKDOGRUSAYISI TABLE (KITAPCIK VARCHAR(1), DOGRUSAYISI INT)
+												
+						DECLARE @COUNTER2 INT = 1
+						DECLARE @COUNTKITAPCIKLAR INT=(SELECT COUNT(*) FROM #KITAPCIKLAR)
+						WHILE @COUNTER2 <= @COUNTKITAPCIKLAR
+						BEGIN
+							
+							PRINT '12: ' + CONVERT( VARCHAR(24), GETDATE(), 121)
+
+							INSERT INTO @KITAPCIKDOGRUSAYISI(KITAPCIK, DOGRUSAYISI)
+							VALUES 
+							(
+								(SELECT AD FROM #KITAPCIKLAR WHERE RN=@COUNTER2)
+								,(
+									SELECT SUM(DS) FROM (SELECT dbo.fn_SayiBul2(
+												 RTRIM(SUBSTRING(@KSIZLINE,K.BASLANGIC,K.OPTIKKARAKTERSAYISI))
+												,K.CEVAPLAR
+											) AS DS
+										FROM #KITAPCIKLAR K WHERE RN=@COUNTER2) XTABLE
+								)
+							)
+							SET @COUNTER2 += 1
+						END
+						
+						PRINT '13: ' + CONVERT( VARCHAR(24), GETDATE(), 121)
+
+						DECLARE @KITAPCIK CHAR
+						DECLARE @DOGRUSAYISI INT 
+		
+						SELECT TOP 1 @KITAPCIK = KITAPCIK, @DOGRUSAYISI=SUM(DOGRUSAYISI) FROM @KITAPCIKDOGRUSAYISI GROUP BY KITAPCIK ORDER BY SUM(DOGRUSAYISI) DESC
+						UPDATE SinavOptikTemp SET LINE = ISNULL(STUFF(LINE,@BASLANGIC4,@OPTIKKARAKTERSAYISI4,@KITAPCIK),'') WHERE ID_SINAVOPTIKTEMP=@KSIZID_SINAVOPTIKTEMP
+
+						DELETE FROM @KITAPCIKDOGRUSAYISI
+						SET @COUNTER += 1
+
+						PRINT '14: ' + CONVERT( VARCHAR(24), GETDATE(), 121)
+
+					END
+					DROP TABLE IF EXISTS #KITAPCIKLAR
+
+					PRINT '15: ' + CONVERT( VARCHAR(24), GETDATE(), 121)
+
+				END
+
+				DROP TABLE IF EXISTS #KITAPCIKSIZLAR
+
+				PRINT '16: ' + CONVERT( VARCHAR(24), GETDATE(), 121)
+
+			END
+		END
+		
+
+			PRINT '17: ' + CONVERT( VARCHAR(24), GETDATE(), 121)
+
+			DROP TABLE IF EXISTS #SinavOgrenci
+
+			CREATE TABLE #SinavOgrenci(
+				 ID_SINAVOGRENCI int NOT NULL IDENTITY(1,1)
+				,[ID_SINAV] INT
+				,[TCKIMLIKNO] VARCHAR(MAX)
+				,[AD] VARCHAR(MAX)
+				,[SOYAD] VARCHAR(MAX)
+				,[KITAPCIK] VARCHAR(MAX)
+				,[SUBENO] VARCHAR(MAX)
+				,[SINIF] VARCHAR(MAX)
+				,[ID_SINAVDOSYA] INT
+				,[ID_SINAVOPTIKTEMP] INT
+				,[ONLINESINAV] BIT
+				)
+				
+			DECLARE @GUID NVARCHAR(MAX) = NEWID()
+
+			DECLARE @TBL_OGRENCI TABLE(ID_SINAVOGRENCI INT, ID_SINAVOPTIKTEMP INT, ID_SINAV INT, ID_SINAVDOSYA INT, TCKIMLIKNO VARCHAR(MAX), ONLINESINAV BIT)
+
+			--IF @ONLINESINAV = 0
+			BEGIN
+				INSERT INTO #SinavOgrenci
+					([ID_SINAV]
+					,[TCKIMLIKNO]
+					,[AD]
+					,[SOYAD]
+					,[KITAPCIK]
+					,[SUBENO]
+					,[SINIF]
+					,[ID_SINAVDOSYA]
+					,[ID_SINAVOPTIKTEMP]
+					,[ONLINESINAV])
+				OUTPUT INSERTED.ID_SINAVOGRENCI, INSERTED.ID_SINAVOPTIKTEMP, INSERTED.ID_SINAV, INSERTED.ID_SINAVDOSYA, INSERTED.TCKIMLIKNO,0 INTO @TBL_OGRENCI
+				SELECT 
+				 @ID_SINAV
+				,RTRIM(SUBSTRING(LINE, @BASLANGIC1, @OPTIKKARAKTERSAYISI1))
+				,RTRIM(SUBSTRING(LINE, @BASLANGIC2, @OPTIKKARAKTERSAYISI2))
+				,RTRIM(SUBSTRING(LINE, @BASLANGIC3, @OPTIKKARAKTERSAYISI3))
+				,RTRIM(SUBSTRING(LINE, @BASLANGIC4, @OPTIKKARAKTERSAYISI4))
+				,RTRIM(SUBSTRING(LINE, @BASLANGIC5, @OPTIKKARAKTERSAYISI5))
+				,RTRIM(SUBSTRING(LINE, @BASLANGIC6, @OPTIKKARAKTERSAYISI6))
+				,SD.ID_SINAVDOSYA 
+				,S.ID_SINAVOPTIKTEMP
+				,ONLINESINAV = 0
+				FROM SinavOptikTemp	S
+				JOIN SinavDosya		SD	ON	SD.ID_SINAVDOSYA = S.ID_SINAVDOSYA 
+				WHERE	SD.ID_SINAV = @ID_SINAV 
+					AND SD.AKTIF	= 1
+					AND SD.AD		!= 'ONLINE'
+			--END
+			--ELSE
+			--BEGIN
+
+				INSERT INTO #SinavOgrenci
+					([ID_SINAV]
+					,[TCKIMLIKNO]
+					,[AD]
+					,[SOYAD]
+					,[KITAPCIK]
+					,[SUBENO]
+					,[SINIF]
+					,[ID_SINAVDOSYA]
+					,[ID_SINAVOPTIKTEMP]
+					,[ONLINESINAV])
+				OUTPUT INSERTED.ID_SINAVOGRENCI, INSERTED.ID_SINAVOPTIKTEMP, INSERTED.ID_SINAV, INSERTED.ID_SINAVDOSYA, INSERTED.TCKIMLIKNO,1 INTO @TBL_OGRENCI
+				SELECT 
+					 @ID_SINAV
+					,SO.TCKIMLIKNO
+					,K.AD
+					,K.SOYAD
+					,'A'
+					,SB.SUBENO
+					,''
+					,SD.ID_SINAVDOSYA
+					,0
+					,ONLINESINAV = 1
+				FROM Tbl_OnlineSinavOgrenci SO
+				JOIN v3Ogrenci				O	ON	O.TCKIMLIKNO	= SO.TCKIMLIKNO
+				JOIN v3Sube					SB	ON	SB.ID_SUBE		= O.ID_SUBE
+				JOIN v3Kullanici			K	ON	K.TCKIMLIKNO	= O.TCKIMLIKNO
+				JOIN SinavDosya				SD	ON	SD.ID_SINAV		= SO.ID_SINAV
+				WHERE	SO.AKTIF	= 1
+					AND SD.AKTIF	= 1
+					AND SO.ID_SINAV = @ID_SINAV
+					AND SD.AD		= 'ONLINE'
+					AND NOT EXISTS (SELECT TOP 1 1 FROM @TBL_OGRENCI T WHERE T.TCKIMLIKNO = O.TCKIMLIKNO)					
+					AND EXISTS (SELECT TOP 1 1 
+								FROM Tbl_OnlineSinavOgrenciCevap SC 
+								WHERE	SC.ID_ONLINESINAVOGRENCI= SO.ID_ONLINESINAVOGRENCI
+									AND SC.AKTIF = 1
+								)
+								PRINT 1
+				INSERT INTO #SinavOgrenci
+					([ID_SINAV]
+					,[TCKIMLIKNO]
+					,[AD]
+					,[SOYAD]
+					,[KITAPCIK]
+					,[SUBENO]
+					,[SINIF]
+					,[ID_SINAVDOSYA]
+					,[ID_SINAVOPTIKTEMP]
+					,[ONLINESINAV])
+				OUTPUT INSERTED.ID_SINAVOGRENCI, INSERTED.ID_SINAVOPTIKTEMP, INSERTED.ID_SINAV, INSERTED.ID_SINAVDOSYA, INSERTED.TCKIMLIKNO,1 INTO @TBL_OGRENCI
+				SELECT 
+					 @ID_SINAV
+					,SO.TCKIMLIKNO
+					,O.AD
+					,O.SOYAD
+					,'A'
+					,'5'
+					,''
+					,SD.ID_SINAVDOSYA
+					,0
+					,ONLINESINAV = 1
+				FROM Tbl_OnlineSinavOgrenci SO
+				JOIN DisOgrenci				O	ON	O.TCKIMLIKNO	= SO.TCKIMLIKNO
+				JOIN SinavDosya				SD	ON	SD.ID_SINAV		= SO.ID_SINAV
+				WHERE	SO.AKTIF	= 1
+					AND SD.AKTIF	= 1
+					AND SO.ID_SINAV = @ID_SINAV
+					AND SD.AD		= 'ONLINE'
+					AND NOT EXISTS (SELECT TOP 1 1 FROM @TBL_OGRENCI T WHERE T.TCKIMLIKNO = O.TCKIMLIKNO)					
+					AND EXISTS (SELECT TOP 1 1 
+								FROM Tbl_OnlineSinavOgrenciCevap SC 
+								WHERE	SC.ID_ONLINESINAVOGRENCI= SO.ID_ONLINESINAVOGRENCI
+									AND SC.AKTIF = 1
+								)
+								PRINT 2
+
+
+
+			END
+
+			
+			PRINT '18: ' + CONVERT( VARCHAR(24), GETDATE(), 121)
+
+			--------------------------------------------------------------------------------------------------
+
+			DROP TABLE IF EXISTS #SinavOgrenciCevapBolum
+
+			CREATE TABLE #SinavOgrenciCevapBolum(
+				ID_SINAVOGRENCICEVAPBOLUM INT NOT NULL IDENTITY(1, 1)
+					,[ID_SINAVOGRENCI] INT
+					,[ID_SINAVDERS] INT
+					,[CEVAPLAR] VARCHAR(MAX)
+					,[DOGRU] INT
+					,[YANLIS] INT
+					,[BOS] INT
+					,[NET] DECIMAL(18, 2)
+					,[YUZDEDOGRU] DECIMAL(18, 2)
+					,[YUZDENET] DECIMAL(18, 2)
+					,[PUAN] DECIMAL(18, 3)
+					,TCKIMLIKNO VARCHAR(MAX)
+					)
+
+			--IF @ONLINESINAV = 0
+			BEGIN
+				INSERT INTO #SinavOgrenciCevapBolum
+						([ID_SINAVOGRENCI]
+						,[ID_SINAVDERS]
+						,[CEVAPLAR]
+						,[DOGRU]
+						,[YANLIS]
+						,[BOS]
+						,[NET]
+						,[YUZDEDOGRU]
+						,[YUZDENET]
+						,[PUAN]
+						,TCKIMLIKNO)
+				SELECT	 TEMP.ID_SINAVOGRENCI
+						,SD.ID_SINAVDERS
+						,SUBSTRING(SOT.LINE,SDT.BASLANGIC,SDT.OPTIKKARAKTERSAYISI) as CEVAPLAR
+						,0,0,0,0,0,0,0, TEMP.TCKIMLIKNO
+				FROM @TBL_OGRENCI TEMP
+				INNER JOIN SinavOptikTemp	SOT		WITH (NOLOCK) on SOT.ID_SINAVOPTIKTEMP = TEMP.ID_SINAVOPTIKTEMP
+				INNER JOIN SinavDosya		SDO		WITH (NOLOCK) on SDO.ID_SINAVDOSYA = TEMP.ID_SINAVDOSYA
+				INNER JOIN SinavDers		SD		WITH (NOLOCK) on SD.ID_SINAV = TEMP.ID_SINAV
+				INNER JOIN #SinavDers		SDT					  on SDT.ID_SINAVDERS = SD.ID_SINAVDERS and SDT.OTURUM=SDO.OTURUM
+				WHERE TEMP.ONLINESINAV = 0
+			--END
+			--ELSE
+			--BEGIN
+				INSERT INTO #SinavOgrenciCevapBolum
+						([ID_SINAVOGRENCI]
+						,[ID_SINAVDERS]
+						,[CEVAPLAR]
+						,[DOGRU]
+						,[YANLIS]
+						,[BOS]
+						,[NET]
+						,[YUZDEDOGRU]
+						,[YUZDENET]
+						,[PUAN]
+						,TCKIMLIKNO)
+				SELECT	 TEMP.ID_SINAVOGRENCI
+						,SD.ID_SINAVDERS
+						,'' as CEVAPLAR
+						,0,0,0,0,0,0,0, TEMP.TCKIMLIKNO
+				FROM @TBL_OGRENCI		TEMP
+				JOIN SinavDosya		SDO	WITH (NOLOCK)	ON	SDO.ID_SINAVDOSYA	= TEMP.ID_SINAVDOSYA
+				JOIN SinavDers		SD	WITH (NOLOCK)	ON	SD.ID_SINAV			= TEMP.ID_SINAV
+				JOIN #SinavDers		SDT					ON	SDT.ID_SINAVDERS	= SD.ID_SINAVDERS 
+														AND	SDT.OTURUM			= SDO.OTURUM
+				WHERE TEMP.ONLINESINAV = 1
+			END
+
+
+			PRINT '19: ' + CONVERT( VARCHAR(24), GETDATE(), 121)	
+-----------------------------------------------------------------------------------------
+
+
+			---------------------------
+			--SinavOgrenciCevapInsert--
+			---------------------------
+			DECLARE @SORUDOGRU	INT=1,
+					@SORUBOS	INT=2,
+					@SORUxDOGRU	INT=3,
+					@SORUIPTAL	INT=4
+			
+			DROP TABLE IF EXISTS #Temp
+			DROP TABLE IF EXISTS #Temp2
+
+
+			DROP TABLE IF EXISTS #SinavSoruIslem
+
+			SELECT DISTINCT SS.ID_SINAVANAHTAR, SS.ID_SORUISLEM 
+			INTO #SinavSoruIslem FROM SinavSoruIslem	SS
+			JOIN SinavAnahtar	SA	ON	SA.ID_SINAVANAHTAR	= SS.ID_SINAVANAHTAR
+			JOIN SinavKitapcik	SK	ON	SK.ID_SINAVKITAPCIK	= SA.ID_SINAVKITAPCIK
+			WHERE SK.ID_SINAV = @ID_SINAV
+			
+			DROP TABLE IF EXISTS #ASSISLEM
+
+			SELECT I.* 
+			INTO #ASSISLEM
+			FROM SinavDers SD
+			JOIN SinavKitapcik	SK	ON	SK.ID_SINAV			= SD.ID_SINAV
+			JOIN SinavAnahtar	SA	ON	SA.ID_SINAVDERS		= SD.ID_SINAVDERS
+									AND SA.ID_SINAVKITAPCIK = SK.ID_SINAVKITAPCIK
+			JOIN SinavSoruIslem  I	ON	I.ID_SINAVANAHTAR	= SA.ID_SINAVANAHTAR
+			WHERE	SD.ID_SINAV		= @ID_SINAV
+				AND SK.AD			= 'A'
+				AND I.ID_SORUISLEM	= 3
+
+			IF EXISTS(SELECT TOP 1 1 FROM #ASSISLEM)
+			BEGIN
+				DELETE FROM I
+				FROM SinavDers SD
+				JOIN SinavKitapcik	SK	ON	SK.ID_SINAV			= SD.ID_SINAV
+				JOIN SinavAnahtar	SA	ON	SA.ID_SINAVDERS		= SD.ID_SINAVDERS
+										AND SA.ID_SINAVKITAPCIK = SK.ID_SINAVKITAPCIK
+				JOIN SinavSoruIslem  I	ON	I.ID_SINAVANAHTAR	= SA.ID_SINAVANAHTAR
+				WHERE	SD.ID_SINAV		= @ID_SINAV
+					AND I.ID_SORUISLEM	= 3
+		
+				INSERT INTO SinavSoruIslem (ID_SINAVANAHTAR,ID_SORUISLEM,OGRENCICEVAP) 					
+					SELECT A.ID_SINAVANAHTAR						
+						,I.ID_SORUISLEM
+						,I.OGRENCICEVAP 
+					FROM #ASSISLEM			I
+					JOIN SinavAnahtar		SA	ON	I.ID_SINAVANAHTAR =SA.ID_SINAVANAHTAR
+					JOIN SinavDers			SD	ON	SD.ID_SINAVDERS = SA.ID_SINAVDERS
+					JOIN SinavAnahtar		A	ON	A.ID_SINAVDERS	= SD.ID_SINAVDERS AND A.SORUNO_A = SA.SORUNO_A
+			END
+			 
+			DROP TABLE IF EXISTS #ASSISLEM
+
+			SELECT	 SO.ID_SINAVOGRENCI
+					,CB.ID_SINAVOGRENCICEVAPBOLUM
+					,CB.ID_SINAVDERS
+					,CB.CEVAPLAR
+					,SK.AD
+					,SA.SORUNO
+					,SA.OPTIKKARAKTERSAYISI
+					,ANAHTAR	= SA.CEVAP
+					,SS.ID_SORUISLEM
+					,SA.ID_SINAVANAHTAR
+			INTO #Temp 
+			FROM #SinavOgrenciCevapBolum	CB  WITH (NOLOCK) 
+			INNER JOIN #SinavOgrenci		SO	WITH (NOLOCK) ON SO.ID_SINAVOGRENCI		= CB.ID_SINAVOGRENCI
+			INNER JOIN SinavKitapcik		SK	WITH (NOLOCK) ON SK.AD					= SO.KITAPCIK
+			INNER JOIN SinavAnahtar			SA	WITH (NOLOCK) ON SA.ID_SINAVKITAPCIK	= SK.ID_SINAVKITAPCIK	AND SA.ID_SINAVDERS = CB.ID_SINAVDERS
+			LEFT  JOIN #SinavSoruIslem		SS	WITH (NOLOCK) ON SS.ID_SINAVANAHTAR		= SA.ID_SINAVANAHTAR
+			WHERE SO.ID_SINAV = @ID_SINAV
+			--ORDER BY SO.ID_SINAVOGRENCI, CB.ID_SINAVDERS, SA.SORUNO
+
+			PRINT '20: ' + CONVERT( VARCHAR(24), GETDATE(), 121)
+
+			SELECT ID_SINAVOGRENCI, ID_SINAVOGRENCICEVAPBOLUM, ID_SINAVDERS, CEVAPLAR, AD, SORUNO, OPTIKKARAKTERSAYISI, ANAHTAR ,ID_SORUISLEM, ID_SINAVANAHTAR
+				,BASLANGIC_OPTIKSIRA = 
+					ISNULL((	
+						SELECT  SUM(TSUB.OPTIKKARAKTERSAYISI) 
+						FROM #Temp TSUB 
+						WHERE TSUB.ID_SINAVOGRENCICEVAPBOLUM = T.ID_SINAVOGRENCICEVAPBOLUM AND TSUB.ID_SINAVDERS = T.ID_SINAVDERS AND TSUB.SORUNO < T.SORUNO
+					), 0) + 1
+			INTO #Temp2 FROM #Temp	T
+			--ORDER BY T.ID_SINAVOGRENCI, T.ID_SINAVDERS, T.SORUNO
+
+			PRINT '21: ' + CONVERT( VARCHAR(24), GETDATE(), 121)
+
+			DROP TABLE IF EXISTS #K
+
+			SELECT DISTINCT SS.ID_SINAVANAHTAR, SS.ID_SORUISLEM, SI.OGRENCICEVAP 
+			INTO #K FROM #SinavSoruIslem SS
+			JOIN SinavSoruIslem SI	ON	SI.ID_SINAVANAHTAR = SS.ID_SINAVANAHTAR
+			WHERE SS.ID_SORUISLEM = @SORUxDOGRU
+
+			PRINT '22: ' + CONVERT( VARCHAR(24), GETDATE(), 121)
+
+			DROP TABLE IF EXISTS #SinavOgrenciCevap
+
+			CREATE TABLE #SinavOgrenciCevap
+			(
+				 [ID_SINAVOGRENCICEVAPBOLUM]	INT
+				,[SORUNO]						INT
+				,[CEVAP]				VARCHAR(MAX)
+				,[DURUM]				VARCHAR(MAX)
+				,ANAHTAR				VARCHAR(MAX)
+				,ID_SORUISLEM					INT
+				,ID_SINAVANAHTAR				INT
+			)
+
+			--IF @ONLINESINAV = 0
+			BEGIN
+				INSERT INTO #SinavOgrenciCevap
+								([ID_SINAVOGRENCICEVAPBOLUM]
+								,[SORUNO]
+								,[CEVAP]
+								,[DURUM]
+								,ANAHTAR
+								,ID_SORUISLEM
+								,ID_SINAVANAHTAR)
+				SELECT	 T.ID_SINAVOGRENCICEVAPBOLUM
+						,SORUNO
+						,CEVAP			= SUBSTRING(CEVAPLAR, BASLANGIC_OPTIKSIRA, OPTIKKARAKTERSAYISI)
+						,DURUM			= ''
+						,ANAHTAR		= ANAHTAR
+						,ID_SORUISLEM	= T.ID_SORUISLEM
+						,ID_SINAVANAHTAR= T.ID_SINAVANAHTAR
+				FROM #Temp2			T
+				JOIN #SinavOgrenci	SO	ON	SO.ID_SINAVOGRENCI		= T.ID_SINAVOGRENCI
+										AND SO.ONLINESINAV			= 0
+			--END
+			--ELSE
+			--BEGIN
+
+				
+				INSERT INTO #SinavOgrenciCevap
+								([ID_SINAVOGRENCICEVAPBOLUM]
+								,[SORUNO]
+								,[CEVAP]
+								,[DURUM]
+								,ANAHTAR
+								,ID_SORUISLEM
+								,ID_SINAVANAHTAR)
+				SELECT	 T.ID_SINAVOGRENCICEVAPBOLUM
+						,SORUNO
+						,CEVAP = CASE	WHEN C.CEVAPNO	= 1 THEN 'A'
+										WHEN C.CEVAPNO	= 2 THEN 'B'
+										WHEN C.CEVAPNO	= 3 THEN 'C'
+										WHEN C.CEVAPNO	= 4 THEN 'D'
+										WHEN C.CEVAPNO	= 5 THEN 'E'
+								ELSE ''
+								END
+						,DURUM			= ''
+						,ANAHTAR		= ANAHTAR
+						,ID_SORUISLEM	= T.ID_SORUISLEM
+						,ID_SINAVANAHTAR= T.ID_SINAVANAHTAR
+				FROM #Temp2								T
+				JOIN #SinavOgrenci						SO	ON	SO.ID_SINAVOGRENCI		= T.ID_SINAVOGRENCI
+															AND SO.ONLINESINAV			= 1
+				JOIN Tbl_OnlineSinavOgrenci				O	ON	O.ID_SINAV				= @ID_SINAV
+															AND O.TCKIMLIKNO			= SO.TCKIMLIKNO
+															AND O.AKTIF					= 1
+				LEFT JOIN Tbl_OnlineSinavOgrenciCevap	OC	ON	OC.ID_ONLINESINAVOGRENCI= O.ID_ONLINESINAVOGRENCI
+															AND OC.ID_SINAVANAHTAR		= T.ID_SINAVANAHTAR
+															AND OC.AKTIF				= 1
+				LEFT JOIN SoruBankasi.dbo.Cevap			C	ON	C.ID_CEVAP				= OC.ID_CEVAP 
+
+
+
+			END
+
+
+
+
+
+
+
+				UPDATE #SinavOgrenciCevap SET DURUM = CASE 
+														WHEN CEVAP = ''						THEN 'B'
+														WHEN CEVAP = ANAHTAR				THEN 'D'
+														WHEN CEVAP = '*' AND @ID_KADEME=  4	THEN 'B' --5,6,7,8 DE * GELİRSE BOŞ SAYILACAK (ÇİFT CEVAP)
+													ELSE 'Y' END
+
+
+				UPDATE SO SET DURUM = CASE
+									WHEN SO.ID_SORUISLEM	= @SORUDOGRU	THEN 'D' 
+									WHEN SO.ID_SORUISLEM	= @SORUBOS		THEN 'B'
+									WHEN SO.ID_SORUISLEM	= @SORUIPTAL	THEN 'I'
+									WHEN SO.ID_SORUISLEM	= @SORUxDOGRU	THEN 
+										CASE WHEN  SO.CEVAP IN (SELECT OGRENCICEVAP FROM #K WHERE #K.ID_SINAVANAHTAR = SO.ID_SINAVANAHTAR)	THEN 'D'
+											 ELSE  DURUM
+										END
+								ELSE DURUM
+							END
+				FROM #SinavOgrenciCevap	SO
+				WHERE SO.ID_SORUISLEM IS NOT NULL
+
+				
+			PRINT '23: ' + CONVERT( VARCHAR(24), GETDATE(), 121)
+
+
+			;WITH t2( ID_SINAVOGRENCICEVAPBOLUM, DOGRU, YANLIS, BOS, PUAN) AS
+			(
+					SELECT 
+							 OC.ID_SINAVOGRENCICEVAPBOLUM
+							,DOGRU		= SUM(CASE WHEN OC.DURUM = 'D' THEN 1 ELSE 0 END) 
+							,YANLIS		= SUM(CASE WHEN OC.DURUM = 'Y' THEN 1 ELSE 0 END) 
+							,BOS		= SUM(CASE WHEN OC.DURUM = 'B' THEN 1 ELSE 0 END)
+							,PUAN		= SUM(CASE WHEN OC.DURUM = 'D' THEN ISNULL(SA.KATSAYI, 0) ELSE 0 END)
+					FROM #SinavOgrenciCevapBolum	CB  WITH (NOLOCK) 
+					JOIN #SinavOgrenciCevap			OC	WITH (NOLOCK) ON OC.ID_SINAVOGRENCICEVAPBOLUM	= CB.ID_SINAVOGRENCICEVAPBOLUM
+					JOIN #SinavOgrenci				OG	WITH (NOLOCK) ON OG.ID_SINAVOGRENCI				= CB.ID_SINAVOGRENCI
+					JOIN SinavKitapcik				SK	WITH (NOLOCK) ON SK.AD							= OG.KITAPCIK
+					JOIN SinavAnahtar				SA	WITH (NOLOCK) ON SK.ID_SINAVKITAPCIK			= SA.ID_SINAVKITAPCIK AND SA.ID_SINAVDERS = CB.ID_SINAVDERS AND SA.SORUNO = OC.SORUNO
+					WHERE OG.ID_SINAV = @ID_SINAV
+					GROUP BY OC.ID_SINAVOGRENCICEVAPBOLUM
+			)
+			UPDATE   CB 
+			SET		 DOGRU		= t2.DOGRU
+					,YANLIS		= t2.YANLIS
+					,BOS		= t2.BOS
+					,PUAN		= t2.PUAN
+					,NET		= (CASE @YANLISSAYISI WHEN 0 THEN t2.DOGRU ELSE t2.DOGRU - t2.YANLIS / @YANLISSAYISI END)
+					,YUZDEDOGRU	= CAST(t2.DOGRU AS FLOAT) / (t2.DOGRU + t2.YANLIS + t2.BOS) * 100.0
+					,YUZDENET	= CAST((CASE @YANLISSAYISI WHEN 0 THEN t2.DOGRU ELSE t2.DOGRU - t2.YANLIS / @YANLISSAYISI END) AS FLOAT) / (t2.DOGRU + t2.YANLIS + t2.BOS) * 100.0
+			FROM #SinavOgrenciCevapBolum CB WITH (NOLOCK)
+			INNER JOIN t2 ON t2.ID_SINAVOGRENCICEVAPBOLUM = CB.ID_SINAVOGRENCICEVAPBOLUM
+
+			PRINT '24: ' + CONVERT( VARCHAR(24), GETDATE(), 121)
+
+			DROP TABLE IF EXISTS #K
+
+			
+			---------------
+			--PUAN KRİTER--
+			---------------
+			DROP TABLE IF EXISTS #KRITERLIST
+			SELECT DISTINCT  SNK.ID_SINAVPUANTURU
+							,SNK.ID_SINAVNETKRITER
+							,SNK.NET
+							,ID_DERSLIST = (
+								SELECT ID_SINAVDERS
+								FROM SinavNetKriterDers SNKD
+								WHERE SNKD.ID_SINAVNETKRITER = SNK.ID_SINAVNETKRITER
+								FOR JSON PATH
+							) 
+			INTO #KRITERLIST
+			FROM SinavNetKriterDers SNKD
+			JOIN SinavNetKriter SNK ON SNK.ID_SINAVNETKRITER = SNKD.ID_SINAVNETKRITER
+			WHERE SNKD.ID_SINAVDERS IN (SELECT ID_SINAVDERS FROM SinavDers WHERE ID_SINAV = @ID_SINAV)
+
+			
+			DROP TABLE IF EXISTS #OGRENCISINAVPUANKRITER
+			SELECT	 SO.TCKIMLIKNO
+					,SPT.ID_SINAVPUANTURU
+					,HESAPDURUM =	CASE 
+									WHEN NOT EXISTS (SELECT 1 FROM #KRITERLIST K WHERE K.ID_SINAVPUANTURU = SPT.ID_SINAVPUANTURU) THEN 1 -- PUAN TÜRÜNDE KRİTER YOK İSE
+									WHEN ( 
+											SELECT CASE WHEN EXISTS -- PUAN TÜRÜNDE KRİTER SAĞLANMAYAN BİR DURUM VAR İSE
+											(
+												SELECT 1 
+												FROM (	
+													SELECT /*SOCB.ID_SINAVOGRENCI, K.ID_SINAVNETKRITER, */CASE WHEN SUM(SOCB.NET) < K.NET THEN 0 ELSE 1 END AS DURUM													
+													FROM vw_SinavOgrenciBolum SOCB 
+													JOIN #KRITERLIST			K	ON K.ID_SINAVPUANTURU = SPT.ID_SINAVPUANTURU 
+																					AND SOCB.ID_SINAVDERS IN (SELECT JSON_Value (value, '$.ID_SINAVDERS') FROM OPENJSON(K.ID_DERSLIST))
+													WHERE	SOCB.ID_SINAV	= SO.ID_SINAV
+														AND SOCB.TCKIMLIKNO = SO.TCKIMLIKNO
+													GROUP BY SOCB.ID_SINAVOGRENCI, K.ID_SINAVNETKRITER, K.NET
+												) X WHERE X.DURUM = 1
+											) 
+											THEN 1
+											ELSE 0 
+											END
+										) = 0 THEN 0
+									ELSE 1 -- PUAN TÜRÜNDE BÜTÜN KRİTERLER SAĞLANIYOR İSE
+									END
+			INTO #OGRENCISINAVPUANKRITER
+			FROM Sinav S
+			JOIN SinavPuanTuru SPT ON SPT.ID_SINAVTURU = S.ID_SINAVTURU
+			JOIN #SinavOgrenci SO ON SO.ID_SINAV = S.ID_SINAV
+			WHERE S.ID_SINAV = @ID_SINAV
+			ORDER BY SO.TCKIMLIKNO
+
+			DROP TABLE #KRITERLIST
+			---------------
+			--PUAN KRİTER--
+			---------------
+			
+			-------------------------------
+			--SinavOgrenciSonucPuanInsert--
+			-------------------------------
+			DECLARE @ID_SINAVTURU INT, @ID_SINAVTYT INT, @ID_SINAVDEGERLENDIR INT
+			SELECT @ID_SINAVTURU = ID_SINAVTURU FROM Sinav WHERE ID_SINAV = @ID_SINAV
+			
+			DROP TABLE IF EXISTS #SinavOgrenciPuan
+			CREATE TABLE #SinavOgrenciPuan(
+							 TCKIMLIKNO VARCHAR(MAX)
+							,[ID_SINAVPUANTURU] INT
+							,[PUAN] DECIMAL(18, 3)
+							,GENELSIRA INT
+							,ILSIRA INT
+							,ILCESIRA INT
+							,OKULSIRA INT
+							,SINIFSIRA INT
+							)
+
+
+			DROP TABLE IF EXISTS #SinavSonTyt
+			CREATE TABLE #SinavSonTyt(TCKIMLIKNO VARCHAR(MAX), ID_SINAV INT, TYTPUAN DECIMAL(18, 3))
+
+			IF @ID_SINAVTURU = 3 or @ID_SINAVTURU = 4	--	YKS
+			BEGIN
+				DECLARE @ID_TYTSECIMTUR INT, @TYTBARAJ DECIMAL(18, 3)
+				SELECT @ID_TYTSECIMTUR = ISNULL(ID_TYTSECIMTUR, 1), @TYTBARAJ = ISNULL(PUAN, -999) FROM SinavTYTSecimTurKriter WHERE ID_SINAV = @ID_SINAV
+				
+				PRINT '25: ' + CONVERT( VARCHAR(24), GETDATE(), 121)
+
+				DECLARE @SINAVTARIHI DATE = (SELECT SINAVTARIH FROM Sinav WHERE ID_SINAV = @ID_SINAV)
+
+				IF @ID_TYTSECIMTUR = 1 ------ Önceki Son Tyt Sınavının TYT Puanı
+				BEGIN
+					INSERT INTO #SinavSonTyt(TCKIMLIKNO, ID_SINAV, TYTPUAN)
+					SELECT SP.TCKIMLIKNO, ID_SINAV = MAX(S.ID_SINAV), TYTPUAN = (SELECT PUAN FROM SinavOgrenciPuan WHERE ID_SINAV = MAX(S.ID_SINAV) AND TCKIMLIKNO = SP.TCKIMLIKNO)
+					FROM Sinav								S
+					INNER JOIN [dbo].[vw_SinavOgrenciPuan]	SP		WITH (NOLOCK) ON SP.ID_SINAV	=	S.ID_SINAV AND SP.ID_SINAVPUANTURU = CAST(1 AS INT)
+					INNER JOIN #SinavOgrenci				SO		WITH (NOLOCK) ON SO.TCKIMLIKNO	=	SP.TCKIMLIKNO
+					WHERE 
+						S.ID_SINAVTURU		= 2 
+					AND S.SINAVTARIH		< @SINAVTARIHI 
+					GROUP BY SP.TCKIMLIKNO
+				END
+				ELSE IF @ID_TYTSECIMTUR = 2 ------ Önceki Son Tyt Sınavının TYT Puanı (0 DAN BÜYÜK OLAN)
+				BEGIN
+					INSERT INTO #SinavSonTyt(TCKIMLIKNO, ID_SINAV, TYTPUAN)
+					SELECT SP.TCKIMLIKNO, ID_SINAV = MAX(S.ID_SINAV), TYTPUAN = (SELECT PUAN FROM SinavOgrenciPuan WHERE ID_SINAV = MAX(S.ID_SINAV) AND TCKIMLIKNO = SP.TCKIMLIKNO)
+					FROM Sinav								S
+					INNER JOIN [dbo].[vw_SinavOgrenciPuan]	SP		WITH (NOLOCK) ON SP.ID_SINAV	=	S.ID_SINAV AND SP.ID_SINAVPUANTURU = CAST(1 AS INT)
+					INNER JOIN #SinavOgrenci				SO		WITH (NOLOCK) ON SO.TCKIMLIKNO	=	SP.TCKIMLIKNO
+					WHERE 
+						S.ID_SINAVTURU		= 2 
+					AND S.SINAVTARIH		< @SINAVTARIHI 
+					AND SP.PUAN				> 0
+					GROUP BY SP.TCKIMLIKNO
+				END
+				ELSE IF @ID_TYTSECIMTUR = 3 ------ Önceki Tüm Tyt Sınavının TYT Puan Ortalamaları
+				BEGIN
+					INSERT INTO #SinavSonTyt(TCKIMLIKNO, ID_SINAV, TYTPUAN)
+					SELECT SP.TCKIMLIKNO, 0, TYTPUAN = AVG(SP.PUAN)
+					FROM Sinav								S
+					INNER JOIN [dbo].[vw_SinavOgrenciPuan]	SP		WITH (NOLOCK) ON SP.ID_SINAV	=	S.ID_SINAV AND SP.ID_SINAVPUANTURU = CAST(1 AS INT)
+					INNER JOIN #SinavOgrenci				SO		WITH (NOLOCK) ON SO.TCKIMLIKNO	=	SP.TCKIMLIKNO
+					WHERE 
+						S.ID_SINAVTURU		= 2 
+					AND S.SINAVTARIH		< @SINAVTARIHI 
+					GROUP BY SP.TCKIMLIKNO
+				END
+				
+				PRINT '28: ' + CONVERT( VARCHAR(24), GETDATE(), 121)			
+				-- #SinavOgrenciPuan
+				INSERT INTO #SinavOgrenciPuan(TCKIMLIKNO, ID_SINAVPUANTURU, PUAN)
+				SELECT 
+							yTABLE.TCKIMLIKNO
+							,yTABLE.ID_SINAVPUANTURU
+							,CASE	WHEN EXISTS(SELECT 1 FROM #OGRENCISINAVPUANKRITER WHERE ID_SINAVPUANTURU = yTABLE.ID_SINAVPUANTURU AND TCKIMLIKNO = yTABLE.TCKIMLIKNO AND HESAPDURUM = 0)
+									THEN 0
+									ELSE (
+											CASE 
+												WHEN yTABLE.TYTPUAN IS NULL 
+												THEN (yTABLE.TABANPUAN+yTABLE.SKATSAYI)
+												ELSE (
+														CASE
+														WHEN @TYTBARAJ > yTABLE.TYTPUAN
+														THEN 0
+														ELSE ((yTABLE.TABANPUAN+yTABLE.SKATSAYI)*0.6)+(yTABLE.TYTPUAN*0.4)
+														END
+													)
+											END
+										)
+							 END
+							 AS PUAN
+				FROM
+				(
+					SELECT xTABLE.TCKIMLIKNO
+							,ID_SINAVPUANTURU
+							,xTABLE.TABANPUAN
+							,SUM(xTABLE.NET*xTABLE.KATSAYI) as SKATSAYI
+							,TYT.TYTPUAN
+					FROM
+					(
+						SELECT so.TCKIMLIKNO, spt.ID_SINAVPUANTURU, stp.TABANPUAN, socb.NET, sk.KATSAYI, s.SINAVTARIH 
+						FROM #SinavOgrenci					so		WITH (NOLOCK)
+						INNER JOIN #SinavOgrenciCevapBolum	socb	WITH (NOLOCK) ON socb.ID_SINAVOGRENCI=so.ID_SINAVOGRENCI
+						INNER JOIN Sinav					s		WITH (NOLOCK) ON s.ID_SINAV=SO.ID_SINAV
+						INNER JOIN SinavPuanTuru			spt		WITH (NOLOCK) ON spt.ID_SINAVTURU=s.ID_SINAVTURU
+						INNER JOIN SinavTabanPuan			stp		WITH (NOLOCK) ON stp.ID_SINAVPUANTURU=spt.ID_SINAVPUANTURU AND stp.ID_SINAV=@ID_SINAV
+						INNER JOIN SinavDers				sd		WITH (NOLOCK) ON sd.ID_SINAVDERS=socb.ID_SINAVDERS
+						INNER JOIN SinavKatsayi				SK		WITH (NOLOCK) ON sk.ID_SINAVDERS=sd.ID_SINAVDERS AND SK.ID_SINAVPUANTURU=spt.ID_SINAVPUANTURU AND SK.ID_SINAV=S.ID_SINAV
+						WHERE so.ID_SINAV=@ID_SINAV
+					) xTABLE
+					LEFT JOIN #SinavSonTyt TYT ON TYT.TCKIMLIKNO = xTABLE.TCKIMLIKNO
+					GROUP BY xTABLE.TCKIMLIKNO, ID_SINAVPUANTURU, TABANPUAN, TYT.TYTPUAN
+					
+				) yTABLE
+
+
+				PRINT '29: ' + CONVERT( VARCHAR(24), GETDATE(), 121)
+
+			END
+			ELSE IF	@ID_SINAVTURU = 6	--	ADIM ADIM YKS
+			BEGIN
+				
+				PRINT '30: ' + CONVERT( VARCHAR(24), GETDATE(), 121)
+				
+				
+				-- #SinavOgrenciPuan
+				INSERT INTO #SinavOgrenciPuan(TCKIMLIKNO, ID_SINAVPUANTURU, PUAN)
+				SELECT xTABLE.TCKIMLIKNO, xTABLE.ID_SINAVPUANTURU
+						,CASE	WHEN EXISTS(SELECT 1 FROM #OGRENCISINAVPUANKRITER WHERE ID_SINAVPUANTURU = xTABLE.ID_SINAVPUANTURU AND TCKIMLIKNO = xTABLE.TCKIMLIKNO AND HESAPDURUM = 0)
+								THEN 0
+								ELSE (CONVERT(DECIMAL(10,3),xTABLE.TABANPUAN + SUM(xTABLE.NET*xTABLE.KATSAYI))) 
+						 END AS PUAN 
+				FROM
+				(
+					SELECT so.TCKIMLIKNO, spt.ID_SINAVPUANTURU, stp.TABANPUAN, socb.NET, sk.KATSAYI, sd.ID_SINAVDERS 
+					FROM #SinavOgrenci so WITH (NOLOCK)
+					INNER JOIN #SinavOgrenciCevapBolum socb	WITH (NOLOCK) ON socb.ID_SINAVOGRENCI=so.ID_SINAVOGRENCI
+					INNER JOIN Sinav s						WITH (NOLOCK) ON s.ID_SINAV=SO.ID_SINAV
+					INNER JOIN SinavPuanTuru spt			WITH (NOLOCK) ON spt.ID_SINAVTURU=s.ID_SINAVTURU
+					INNER JOIN SinavTabanPuan stp			WITH (NOLOCK) ON stp.ID_SINAVPUANTURU=spt.ID_SINAVPUANTURU AND stp.ID_SINAV=@ID_SINAV
+					INNER JOIN SinavDers sd					WITH (NOLOCK) ON sd.ID_SINAVDERS=socb.ID_SINAVDERS
+					INNER JOIN SinavKatsayi SK				WITH (NOLOCK) ON sk.ID_SINAVDERS=sd.ID_SINAVDERS AND SK.ID_SINAVPUANTURU=spt.ID_SINAVPUANTURU AND sk.ID_SINAV=s.ID_SINAV
+					WHERE so.ID_SINAV=@ID_SINAV
+				) xTABLE
+				GROUP BY TCKIMLIKNO, ID_SINAVPUANTURU, TABANPUAN
+
+				UPDATE SOS SET SOS.PUAN = SOS.PUAN * 0.6 + (SELECT SUBSOS.PUAN FROM #SinavOgrenciPuan SUBSOS WITH (NOLOCK) WHERE SUBSOS.TCKIMLIKNO = SOS.TCKIMLIKNO AND SUBSOS.ID_SINAVPUANTURU = 9) * 0.4
+				FROM #SinavOgrenciPuan SOS WITH (NOLOCK)
+				WHERE SOS.ID_SINAVPUANTURU IN (11, 12, 13)
+
+
+				
+
+				PRINT '32: ' + CONVERT( VARCHAR(24), GETDATE(), 121)
+
+			END
+			ELSE IF	@ID_SINAVTURU = 2	--	TYT
+			BEGIN
+				
+				PRINT '33: ' + CONVERT( VARCHAR(24), GETDATE(), 121)
+
+				
+
+				-- #SinavOgrenciPuan
+				INSERT INTO #SinavOgrenciPuan(TCKIMLIKNO, ID_SINAVPUANTURU, PUAN)
+				SELECT TCKIMLIKNO, ID_SINAVPUANTURU
+						,CASE	WHEN EXISTS(SELECT 1 FROM #OGRENCISINAVPUANKRITER WHERE ID_SINAVPUANTURU = xTABLE.ID_SINAVPUANTURU AND TCKIMLIKNO = xTABLE.TCKIMLIKNO AND HESAPDURUM = 0)
+								THEN 0
+								ELSE (CONVERT(DECIMAL(10,3),xTABLE.TABANPUAN + SUM(xTABLE.NET*xTABLE.KATSAYI)))
+						 END AS PUAN 
+				FROM
+				(
+					SELECT	   so.TCKIMLIKNO, spt.ID_SINAVPUANTURU, stp.TABANPUAN, socb.NET, sk.KATSAYI, sd.ID_SINAVDERS
+					FROM	   #SinavOgrenci so				WITH (NOLOCK)
+					INNER JOIN #SinavOgrenciCevapBolum socb	WITH (NOLOCK) ON socb.ID_SINAVOGRENCI=so.ID_SINAVOGRENCI
+					INNER JOIN Sinav s						WITH (NOLOCK) ON s.ID_SINAV=SO.ID_SINAV
+					INNER JOIN SinavPuanTuru spt			WITH (NOLOCK) ON spt.ID_SINAVTURU=s.ID_SINAVTURU
+					INNER JOIN SinavTabanPuan stp			WITH (NOLOCK) ON stp.ID_SINAVPUANTURU=spt.ID_SINAVPUANTURU AND stp.ID_SINAV=@ID_SINAV
+					INNER JOIN SinavDers sd					WITH (NOLOCK) ON sd.ID_SINAVDERS=socb.ID_SINAVDERS
+					INNER JOIN SinavKatsayi SK				WITH (NOLOCK) ON sk.ID_SINAVDERS=sd.ID_SINAVDERS AND SK.ID_SINAVPUANTURU=spt.ID_SINAVPUANTURU AND sk.ID_SINAV=s.ID_SINAV
+					WHERE so.ID_SINAV=@ID_SINAV
+				) xTABLE
+				GROUP BY TCKIMLIKNO, ID_SINAVPUANTURU, TABANPUAN
+
+
+				PRINT '34: ' + CONVERT( VARCHAR(24), GETDATE(), 121)
+
+			END
+			ELSE IF	@ID_SINAVTURU IN(8, 9)
+			BEGIN
+
+				PRINT '35: ' + CONVERT( VARCHAR(24), GETDATE(), 121)
+				
+				SELECT SD.BOLUMNO, STANDARTSAPMA = STDEV(CB.NET) 
+				INTO #StandartSapma 
+				FROM #SinavOgrenciCevapBolum	CB WITH (NOLOCK)
+				INNER JOIN SinavDers			SD WITH (NOLOCK)	ON SD.ID_SINAVDERS = CB.ID_SINAVDERS
+				WHERE SD.ID_SINAV = @ID_SINAV
+				GROUP BY SD.BOLUMNO
+				ORDER BY SD.BOLUMNO
+
+				SELECT SD.BOLUMNO, NET = AVG(CAST(CB.NET as FLOAT)) 
+				INTO #OrtalamaNet 
+				FROM #SinavOgrenciCevapBolum	CB WITH (NOLOCK)
+				INNER JOIN SinavDers			SD WITH (NOLOCK)	ON SD.ID_SINAVDERS = CB.ID_SINAVDERS
+				WHERE SD.ID_SINAV = @ID_SINAV
+				GROUP BY SD.BOLUMNO
+				ORDER BY SD.BOLUMNO
+
+				SELECT SD.ID_SINAV, SO.TCKIMLIKNO, SD.BOLUMNO, CB.KATSAYI, TASP = CASE WHEN ST.STANDARTSAPMA = 0 THEN 0 ELSE (CB.KATSAYI * (OG.NET - OT.NET) / CAST(ST.STANDARTSAPMA AS FLOAT) * 10) + 50 END
+				INTO #Tasp FROM SinavKatsayi		CB	WITH (NOLOCK)
+				INNER JOIN SinavDers				SD	WITH (NOLOCK)	ON SD.ID_SINAVDERS		= CB.ID_SINAVDERS
+				INNER JOIN #OrtalamaNet				OT	WITH (NOLOCK)	ON OT.BOLUMNO			= SD.BOLUMNO
+				INNER JOIN #StandartSapma			ST	WITH (NOLOCK)	ON ST.BOLUMNO			= SD.BOLUMNO
+				INNER JOIN #SinavOgrenci			SO	WITH (NOLOCK)	ON SO.ID_SINAV			= SD.ID_SINAV
+				INNER JOIN #SinavOgrenciCevapBolum	OG	WITH (NOLOCK)	ON OG.ID_SINAVOGRENCI	= SO.ID_SINAVOGRENCI	AND OG.ID_SINAVDERS = SD.ID_SINAVDERS
+				WHERE SD.ID_SINAV = @ID_SINAV
+				ORDER BY SO.TCKIMLIKNO, SD.BOLUMNO
+
+				IF @ID_SINAVTURU = 8 
+				BEGIN
+				
+					DROP TABLE IF EXISTS #MAX_TASP
+					DROP TABLE IF EXISTS #MUAF_TASP
+					DROP TABLE IF EXISTS #OGRTOPLAMTASP
+					DROP TABLE IF EXISTS #OgrenciDersMuaf
+
+					SELECT	 DM.TCKIMLIKNO
+							,DM.DIN_MUAF
+							,DM.INGILIZCE_MUAF 
+					INTO #OgrenciDersMuaf
+					FROM OgrenciDersMuaf	DM
+					JOIN #SinavOgrenci		SO	ON	SO.TCKIMLIKNO = DM.TCKIMLIKNO 
+
+					IF EXISTS (SELECT TOP 1 * FROM #OgrenciDersMuaf)
+					BEGIN
+						SELECT BOLUMNO, MAX(TASP) MAX_TASP
+						INTO #MAX_TASP
+						FROM #Tasp 
+						GROUP BY BOLUMNO
+
+						DECLARE	 @DIN INT = 0
+								,@ING INT = 0
+
+						SELECT @DIN = SD.BOLUMNO 
+						FROM SinavDers			SD					
+						JOIN eokul_v2.dbo.Ders	ED	ON	ED.ID_DERS = SD.ID_DERS 
+						WHERE	SD.ID_SINAV = @ID_SINAV
+							AND ED.DERSAD LIKE '%Din Kült. Ve A. B.%'
+						
+						SELECT @ING = SD.BOLUMNO 
+						FROM SinavDers			SD					
+						JOIN eokul_v2.dbo.Ders	ED	ON	ED.ID_DERS = SD.ID_DERS 
+						WHERE	SD.ID_SINAV = @ID_SINAV
+							AND ED.DERSAD LIKE '%İngilizce%'
+
+						DECLARE @DI_T_TASP		FLOAT = (SELECT SUM(ST.MAX_TASP) FROM #MAX_TASP ST WHERE ST.BOLUMNO != @DIN AND ST.BOLUMNO != @ING	)
+								,@D_T_TASP		FLOAT = (SELECT SUM(ST.MAX_TASP) FROM #MAX_TASP ST WHERE ST.BOLUMNO != @DIN							)
+								,@I_T_TASP		FLOAT = (SELECT SUM(ST.MAX_TASP) FROM #MAX_TASP ST WHERE ST.BOLUMNO != @ING							)
+								,@D_MAX_TASP	FLOAT = (SELECT MAX(ST.MAX_TASP) FROM #MAX_TASP ST WHERE ST.BOLUMNO =  @DIN							)
+								,@I_MAX_TASP	FLOAT = (SELECT MAX(ST.MAX_TASP) FROM #MAX_TASP ST WHERE ST.BOLUMNO =  @ING							)
+
+						SELECT	DISTINCT
+								DI_OGR_TASP = (SELECT SUM(ST.TASP) FROM #Tasp ST WHERE ST.BOLUMNO != @DIN AND ST.BOLUMNO != @ING AND ST.TCKIMLIKNO = T.TCKIMLIKNO	)
+								,D_OGR_TASP = (SELECT SUM(ST.TASP) FROM #Tasp ST WHERE ST.BOLUMNO != @DIN AND ST.TCKIMLIKNO = T.TCKIMLIKNO							)
+								,I_OGR_TASP = (SELECT SUM(ST.TASP) FROM #Tasp ST WHERE ST.BOLUMNO != @ING AND ST.TCKIMLIKNO = T.TCKIMLIKNO							)
+								,TCKIMLIKNO	= T.TCKIMLIKNO
+								,MUAF		=  CASE	WHEN M.INGILIZCE_MUAF	= 1 AND M.DIN_MUAF = 1	THEN 1
+													WHEN M.INGILIZCE_MUAF	= 1						THEN 2
+													WHEN M.DIN_MUAF			= 1						THEN 3
+																									ELSE 0
+												END 
+						INTO #OGRTOPLAMTASP
+						FROM #Tasp				T
+						JOIN #OgrenciDersMuaf	M	ON	M.TCKIMLIKNO = T.TCKIMLIKNO 
+					
+						SELECT	 ING = CASE	WHEN M.MUAF = 1 THEN (M.DI_OGR_TASP/@DI_T_TASP) * @I_MAX_TASP
+											WHEN M.MUAF = 2 THEN (M.I_OGR_TASP / @I_T_TASP) * @I_MAX_TASP
+											ELSE NULL
+									   END 
+								,DIN = CASE	WHEN M.MUAF = 1 THEN (M.DI_OGR_TASP/@DI_T_TASP) * @D_MAX_TASP
+											WHEN M.MUAF = 3 THEN (M.D_OGR_TASP / @D_T_TASP) * @D_MAX_TASP
+											ELSE NULL
+									   END 
+								,M.MUAF
+								,T.TCKIMLIKNO
+						INTO #MUAF_TASP
+						FROM #Tasp			T
+						JOIN #OGRTOPLAMTASP	M	ON	M.TCKIMLIKNO = T.TCKIMLIKNO 
+					
+						UPDATE T
+						SET T.TASP = MT.DIN
+						FROM #Tasp		T
+						JOIN #MUAF_TASP	MT	ON	MT.TCKIMLIKNO	= T.TCKIMLIKNO
+						WHERE	T.BOLUMNO = @DIN
+							AND MT.DIN	IS NOT NULL
+
+						UPDATE T
+						SET T.TASP = MT.ING
+						FROM #Tasp		T
+						JOIN #MUAF_TASP	MT	ON	MT.TCKIMLIKNO	= T.TCKIMLIKNO
+						WHERE	T.BOLUMNO = @ING
+							AND MT.ING	IS NOT NULL
+
+					END
+
+
+					DROP TABLE IF EXISTS #MAX_TASP
+					DROP TABLE IF EXISTS #MUAF_TASP
+					DROP TABLE IF EXISTS #OGRTOPLAMTASP
+					DROP TABLE IF EXISTS #OgrenciDersMuaf
+
+				END
+
+
+				
+				--DECLARE @MIN_TASP FLOAT, @MAX_TASP FLOAT
+				--SELECT @MIN_TASP = MIN(TASP), @MAX_TASP = MAX(TASP) FROM #Tasp
+				DECLARE @MIN_TASP FLOAT, @MAX_TASP FLOAT
+				SELECT SUM(TASP) AS TASP, TCKIMLIKNO INTO #TASPOGRENCI FROM #Tasp GROUP BY TCKIMLIKNO
+				SELECT @MIN_TASP = MIN(TASP), @MAX_TASP = MAX(TASP) FROM #TASPOGRENCI
+
+				
+								
+				-- #SinavOgrenciPuan
+				INSERT INTO #SinavOgrenciPuan(TCKIMLIKNO, ID_SINAVPUANTURU, PUAN)
+				SELECT SO.TCKIMLIKNO, PT.ID_SINAVPUANTURU
+						,PUAN = CASE	WHEN EXISTS(SELECT 1 FROM #OGRENCISINAVPUANKRITER WHERE ID_SINAVPUANTURU = PT.ID_SINAVPUANTURU AND TCKIMLIKNO = SO.TCKIMLIKNO AND HESAPDURUM = 0)
+										THEN 0
+										ELSE (SP.TABANPUAN + 400 * ((SELECT SUM(Z.TASP) FROM #TASP Z WHERE Z.TCKIMLIKNO=SO.TCKIMLIKNO) - @MIN_TASP) / (CASE (@MAX_TASP - @MIN_TASP) WHEN 0 THEN 1 ELSE (@MAX_TASP - @MIN_TASP) END))
+								END
+				FROM SinavTabanPuan			SP WITH (NOLOCK)
+				INNER JOIN Sinav			SN WITH (NOLOCK)	ON SN.ID_SINAV		= SP.ID_SINAV
+				INNER JOIN SinavPuanTuru	PT WITH (NOLOCK)	ON PT.ID_SINAVTURU	= SN.ID_SINAVTURU
+				INNER JOIN #SinavOgrenci	SO WITH (NOLOCK)	ON SO.ID_SINAV		= SN.ID_SINAV
+				where SN.ID_SINAV=@ID_SINAV
+
+
+				PRINT '36: ' + CONVERT( VARCHAR(24), GETDATE(), 121)
+
+				DROP TABLE IF EXISTS #OrtalamaNet
+				DROP TABLE IF EXISTS #StandartSapma
+				DROP TABLE IF EXISTS #Tasp
+				DROP TABLE IF EXISTS #TASPOGRENCI
+
+			END
+			ELSE IF	@ID_SINAVTURU = 12	--	BURSLULUK
+					AND EXISTS (SELECT TOP 1 ID_SINAV FROM Sinav WHERE ID_SINAV = @ID_SINAV AND OLCEKSINAVI = 1)
+			BEGIN
+				
+				PRINT '37: ' + CONVERT( VARCHAR(24), GETDATE(), 121)
+
+				-- #SinavOgrenciPuan
+				INSERT INTO #SinavOgrenciPuan(TCKIMLIKNO, ID_SINAVPUANTURU, PUAN)
+				SELECT TCKIMLIKNO, ID_SINAVPUANTURU
+						,CASE	WHEN EXISTS(SELECT 1 FROM #OGRENCISINAVPUANKRITER WHERE ID_SINAVPUANTURU = xTABLE.ID_SINAVPUANTURU AND TCKIMLIKNO = xTABLE.TCKIMLIKNO AND HESAPDURUM = 0)
+								THEN 0
+								ELSE (CONVERT(DECIMAL(10,3),SUM(xTABLE.PUAN)))
+						 END AS PUAN 
+				FROM
+				(
+					SELECT	   so.TCKIMLIKNO, spt.ID_SINAVPUANTURU, socb.ID_SINAVDERS,socb.PUAN
+					FROM	   #SinavOgrenci so				WITH (NOLOCK)
+					INNER JOIN #SinavOgrenciCevapBolum socb	WITH (NOLOCK) ON socb.ID_SINAVOGRENCI=so.ID_SINAVOGRENCI
+					INNER JOIN Sinav s						WITH (NOLOCK) ON s.ID_SINAV=SO.ID_SINAV
+					INNER JOIN SinavPuanTuru spt			WITH (NOLOCK) ON spt.ID_SINAVTURU=s.ID_SINAVTURU
+					--INNER JOIN SinavTabanPuan stp			WITH (NOLOCK) ON stp.ID_SINAVPUANTURU=spt.ID_SINAVPUANTURU AND stp.ID_SINAV=@ID_SINAV
+					--INNER JOIN SinavDers sd					WITH (NOLOCK) ON sd.ID_SINAVDERS=socb.ID_SINAVDERS
+					--INNER JOIN SinavKatsayi SK				WITH (NOLOCK) ON sk.ID_SINAVDERS=sd.ID_SINAVDERS AND SK.ID_SINAVPUANTURU=spt.ID_SINAVPUANTURU AND sk.ID_SINAV=s.ID_SINAV
+					WHERE so.ID_SINAV=@ID_SINAV
+				) xTABLE
+				GROUP BY TCKIMLIKNO, ID_SINAVPUANTURU
+
+
+				PRINT '38: ' + CONVERT( VARCHAR(24), GETDATE(), 121)
+			END
+			ELSE	-- STANDART
+			BEGIN
+				
+				PRINT '37: ' + CONVERT( VARCHAR(24), GETDATE(), 121)
+
+				
+
+				-- #SinavOgrenciPuan
+				INSERT INTO #SinavOgrenciPuan(TCKIMLIKNO, ID_SINAVPUANTURU, PUAN)
+				SELECT TCKIMLIKNO, ID_SINAVPUANTURU
+						,CASE	WHEN EXISTS(SELECT 1 FROM #OGRENCISINAVPUANKRITER WHERE ID_SINAVPUANTURU = xTABLE.ID_SINAVPUANTURU AND TCKIMLIKNO = xTABLE.TCKIMLIKNO AND HESAPDURUM = 0)
+								THEN 0
+								ELSE (CONVERT(DECIMAL(10,3),xTABLE.TABANPUAN + SUM(xTABLE.NET*xTABLE.KATSAYI)))
+						 END AS PUAN 
+				FROM
+				(
+					SELECT	   so.TCKIMLIKNO, spt.ID_SINAVPUANTURU, stp.TABANPUAN, socb.NET, sk.KATSAYI, sd.ID_SINAVDERS
+					FROM	   #SinavOgrenci so				WITH (NOLOCK)
+					INNER JOIN #SinavOgrenciCevapBolum socb	WITH (NOLOCK) ON socb.ID_SINAVOGRENCI=so.ID_SINAVOGRENCI
+					INNER JOIN Sinav s						WITH (NOLOCK) ON s.ID_SINAV=SO.ID_SINAV
+					INNER JOIN SinavPuanTuru spt			WITH (NOLOCK) ON spt.ID_SINAVTURU=s.ID_SINAVTURU
+					INNER JOIN SinavTabanPuan stp			WITH (NOLOCK) ON stp.ID_SINAVPUANTURU=spt.ID_SINAVPUANTURU AND stp.ID_SINAV=@ID_SINAV
+					INNER JOIN SinavDers sd					WITH (NOLOCK) ON sd.ID_SINAVDERS=socb.ID_SINAVDERS
+					INNER JOIN SinavKatsayi SK				WITH (NOLOCK) ON sk.ID_SINAVDERS=sd.ID_SINAVDERS AND SK.ID_SINAVPUANTURU=spt.ID_SINAVPUANTURU AND sk.ID_SINAV=s.ID_SINAV
+					WHERE so.ID_SINAV=@ID_SINAV
+				) xTABLE
+				GROUP BY TCKIMLIKNO, ID_SINAVPUANTURU, TABANPUAN
+
+
+				PRINT '38: ' + CONVERT( VARCHAR(24), GETDATE(), 121)
+			END
+
+
+			PRINT '39: ' + CONVERT( VARCHAR(24), GETDATE(), 121)
+
+		IF @ID_SINAVTURU = 12 -- BURSLULUK İSE 
+		BEGIN
+			UPDATE SO SET 				
+					 AD		= SUBSTRING(OGRENCI_ADSOYAD,0,LEN(OGRENCI_ADSOYAD)-CHARINDEX(' ',REVERSE(OGRENCI_ADSOYAD),0)+1) 
+					,SOYAD	= SUBSTRING(OGRENCI_ADSOYAD,LEN(OGRENCI_ADSOYAD)-CHARINDEX(' ',REVERSE(OGRENCI_ADSOYAD),0)+2,LEN(OGRENCI_ADSOYAD)) 
+					,SUBENO	= RIGHT('000' + SB.SUBENO, 3)
+			FROM #SinavOgrenci						SO  WITH (NOLOCK) 
+			INNER JOIN BurslulukSinavOgrenci		BS  WITH (NOLOCK)	ON	BS.ID_SINAV		= SO.ID_SINAV
+																		AND BS.TCKIMLIKNO	= SO.TCKIMLIKNO
+			INNER JOIN Sinav						SV	WITH (NOLOCK) ON	SV.ID_SINAV		= SO.ID_SINAV
+			LEFT  JOIN OKYANUSDB.DBO.v3Sube			SB	WITH (NOLOCK) ON	SB.ID_SUBE		= BS.ID_SUBE
+		END
+
+		UPDATE SO SET 
+				 AD		= KL.AD
+				,SOYAD	= KL.SOYAD
+				,SINIF	= SN.AD
+				,SUBENO	= RIGHT('000' + SB.SUBENO, 3)
+		FROM #SinavOgrenci						SO  WITH (NOLOCK) 
+		INNER JOIN Sinav						SV	WITH (NOLOCK) ON	SV.ID_SINAV		= SO.ID_SINAV
+		INNER JOIN OKYANUSDB.DBO.v3Kullanici	KL	WITH (NOLOCK) ON	KL.TCKIMLIKNO	= SO.TCKIMLIKNO
+		INNER JOIN OKYANUSDB.DBO.v3OgrenciTum	KS	WITH (NOLOCK) ON	KS.TCKIMLIKNO	= KL.TCKIMLIKNO AND KS.DONEM = SV.DONEM
+		INNER JOIN OKYANUSDB.DBO.v3SinifTum		SN	WITH (NOLOCK) ON	SN.ID_SINIF		= KS.ID_SINIF
+		INNER JOIN OKYANUSDB.DBO.v3Sube			SB	WITH (NOLOCK) ON	SB.ID_SUBE		= KS.ID_SUBE
+		
+
+		PRINT '40: ' + CONVERT( VARCHAR(24), GETDATE(), 121)
+		
+		select distinct SO.TCKIMLIKNO 
+		into #OKY_OGRENCI
+		FROM #SinavOgrenci						SO	WITH (NOLOCK) 
+		INNER JOIN Sinav						SV	WITH (NOLOCK) ON	SV.ID_SINAV		= SO.ID_SINAV
+		INNER JOIN OKYANUSDB.DBO.v3OgrenciTum	KS	WITH (NOLOCK) ON	KS.TCKIMLIKNO	= SO.TCKIMLIKNO AND KS.DONEM = SV.DONEM
+		
+
+		PRINT '41: ' + CONVERT( VARCHAR(24), GETDATE(), 121)
+
+		UPDATE SO SET 
+				 SUBENO	= RIGHT('000' + ISNULL( SB.SUBENO,SO.SUBENO), 3)
+				,SINIF	= 'OKY-'+ SO.SINIF						
+		FROM #SinavOgrenci			SO	WITH (NOLOCK) 
+		INNER JOIN SinavDosya		SD	WITH (NOLOCK) ON	SD.ID_SINAVDOSYA= SO.ID_SINAVDOSYA	
+		LEFT  JOIN v3Sube			SB	WITH (NOLOCK) ON	SB.ID_SUBE		= SD.ID_SUBE
+		WHERE SO.TCKIMLIKNO  NOT IN (SELECT DISTINCT TCKIMLIKNO	   FROM #OKY_OGRENCI)
+
+		
+		PRINT '42: ' + CONVERT( VARCHAR(24), GETDATE(), 121)
+
+		
+		
+
+		DROP TABLE IF EXISTS #OKY_OGRENCI
+		DROP TABLE IF EXISTS #SinavDers
+
+		PRINT '57: ' + CONVERT( VARCHAR(24), GETDATE(), 121)
+	
+
+	END
+
+	BEGIN		
+				
+
+		PRINT '59: ' + CONVERT( VARCHAR(24), GETDATE(), 121)
+	
+
+		----- TOPLAMLAR
+		SELECT 
+				SO.TCKIMLIKNO
+			,SO.ID_SINAV
+			,TD = SUM(CB.DOGRU)
+			,TY = SUM(CB.YANLIS)
+			,TB = SUM(CB.BOS)
+			,TN = (CASE @YANLISSAYISI WHEN 0 THEN SUM(CB.DOGRU) ELSE SUM(CB.DOGRU) - (SUM(CB.YANLIS) / @YANLISSAYISI) END)
+			,ID_SUBE		= ISNULL(SB.ID_SUBE , 0)
+			,ID_SINIF		= ISNULL(OG.ID_SINIF, 0)
+			,IL				= ISNULL(SB.IL, '')
+			,ILCE			= ISNULL(SB.ILCE, '')
+			,SINIF			= SO.SINIF
+		INTO #SinavOgrenciToplam 
+		FROM #SinavOgrenci						SO
+		INNER JOIN Sinav						SV	ON	SV.ID_SINAV				= SO.ID_SINAV
+		INNER JOIN #SinavOgrenciCevapBolum		CB	ON	CB.ID_SINAVOGRENCI		= SO.ID_SINAVOGRENCI
+		LEFT  JOIN OkyanusDB.dbo.V3Sube			SB	ON	CASt(SB.SUBENO AS INT)	= CASt(SO.SUBENO AS INT)
+		LEFT  JOIN OkyanusDB.dbo.V3OgrenciTum	OG	ON	OG.TCKIMLIKNO			= SO.TCKIMLIKNO		AND OG.DONEM = SV.DONEM
+		GROUP BY SO.TCKIMLIKNO, SO.ID_SINAV, SB.ID_SUBE, OG.ID_SINIF, SB.IL, SB.ILCE, SO.SINIF
+		----------------------------------------------------------------------------------------------------		
+
+
+	--BEGIN TRAN T_SINAV;
+
+	BEGIN
+		DELETE FROM SinavOgrenci 
+		WHERE ID_SINAV = @ID_SINAV
+
+
+		DELETE FROM SinavOgrenciToplam
+		WHERE ID_SINAV = @ID_SINAV
+
+		DELETE FROM SinavOgrenciPuan
+		WHERE ID_SINAV = @ID_SINAV
+				
+		DELETE FROM BurslulukSinavOgrenciSonuc
+		WHERE ID_SINAV = @ID_SINAV
+
+	END
+
+	PRINT '60: ' + CONVERT( VARCHAR(24), GETDATE(), 121)
+
+
+	INSERT INTO [dbo].[SinavOgrenci]
+				([ID_SINAV]
+				,[TCKIMLIKNO]
+				,[AD]
+				,[SOYAD]
+				,[KITAPCIK]
+				,[SUBENO]
+				,[SINIF]
+				,[ID_SINAVDOSYA]
+				,[ID_SINAVOPTIKTEMP]
+				,TEMP_ID_SINAVOGRENCI
+				,TEMP_GUID)
+			SELECT
+				 SO.[ID_SINAV]
+				,SO.[TCKIMLIKNO]
+				,SO.[AD]
+				,SO.[SOYAD]
+				,SO.[KITAPCIK]
+				,SO.[SUBENO]
+				,SO.[SINIF]
+				,SO.[ID_SINAVDOSYA]
+				,SO.[ID_SINAVOPTIKTEMP]
+				,SO.ID_SINAVOGRENCI
+				,@GUID
+			FROM #SinavOgrenci				SO
+
+
+	PRINT '61: ' + CONVERT( VARCHAR(24), GETDATE(), 121)
+
+
+	UPDATE CB SET CB.ID_SINAVOGRENCI = SO.ID_SINAVOGRENCI
+	FROM #SinavOgrenciCevapBolum	CB
+	JOIN SinavOgrenci				SO	ON	SO.TEMP_ID_SINAVOGRENCI = CB.ID_SINAVOGRENCI AND SO.TEMP_GUID = @GUID AND SO.ID_SINAV = @ID_SINAV
+
+	PRINT '62: ' + CONVERT( VARCHAR(24), GETDATE(), 121)
+
+	
+
+			--	PUANLAR
+			INSERT INTO SinavOgrenciPuan(ID_SINAV, TCKIMLIKNO, ID_SINAVPUANTURU, PUAN, GENELSIRA, ILSIRA, ILCESIRA, OKULSIRA, SINIFSIRA)
+			SELECT DISTINCT
+			 @ID_SINAV
+			,TCKIMLIKNO
+			,ID_SINAVPUANTURU
+			,PUAN
+			,GENELSIRA
+			,ILSIRA
+			,ILCESIRA
+			,OKULSIRA
+			,SINIFSIRA
+			FROM #SinavOgrenciPuan
+
+		
+		
+			SELECT DISTINCT
+				 SO.TCKIMLIKNO
+				,SO.ID_SINAV
+				,SC.ID_SINAVPUANTURU
+				,SC.PUAN
+				,ID_SUBE		= ISNULL(ST.ID_SUBE , 0)
+				,ID_SINIF		= ISNULL(ST.ID_SINIF, 0)
+				,IL				= ISNULL(ST.IL, '')
+				,ILCE			= ISNULL(ST.ILCE, '')
+				,SINIF			= SO.SINIF
+			INTO #SinavOgrenciPuanSiraPuan
+			FROM SinavOgrenci						SO
+			INNER JOIN Sinav						SV	ON	SV.ID_SINAV	= SO.ID_SINAV
+			INNER JOIN SinavOgrenciPuan				SC	ON	SC.ID_SINAV	= SV.ID_SINAV	AND SC.TCKIMLIKNO	= SO.TCKIMLIKNO	
+			LEFT JOIN  #SinavOgrenciToplam			ST  ON  ST.ID_SINAV	= SV.ID_SINAV	AND ST.TCKIMLIKNO	= SO.TCKIMLIKNO
+			--LEFT  JOIN OkyanusDB.dbo.V3Sube			SB	ON	CASt(SB.SUBENO AS INT)	= CASt(SO.SUBENO AS INT)
+			--LEFT  JOIN OkyanusDB.dbo.v3OgrenciTum	OG	ON	OG.TCKIMLIKNO			= SO.TCKIMLIKNO AND OG.DONEM = SV.DONEM
+			WHERE SV.ID_SINAV = @ID_SINAV	
+
+			SELECT	 *
+					,GENELSIRA		= DENSE_RANK() OVER(PARTITION BY ID_SINAV, ID_SINAVPUANTURU								ORDER BY PUAN DESC)
+					,ILSIRA			= DENSE_RANK() OVER(PARTITION BY ID_SINAV, ID_SINAVPUANTURU, IL							ORDER BY PUAN DESC)
+					,ILCESIRA		= DENSE_RANK() OVER(PARTITION BY ID_SINAV, ID_SINAVPUANTURU, IL, ILCE					ORDER BY PUAN DESC) 
+					,OKULSIRA		= DENSE_RANK() OVER(PARTITION BY ID_SINAV, ID_SINAVPUANTURU, ID_SUBE					ORDER BY PUAN DESC)
+					,SINIFSIRA		= DENSE_RANK() OVER(PARTITION BY ID_SINAV, ID_SINAVPUANTURU, ID_SUBE, ID_SINIF, SINIF	ORDER BY PUAN DESC)
+			INTO #SinavOgrenciPuanSira
+			FROM #SinavOgrenciPuanSiraPuan
+
+			UPDATE SC	set 
+					 GENELSIRA		= OG.GENELSIRA	
+					,ILSIRA			= OG.ILSIRA		
+					,ILCESIRA		= OG.ILCESIRA	
+					,OKULSIRA		= OG.OKULSIRA	
+					,SINIFSIRA		= OG.SINIFSIRA	
+			FROM SinavOgrenciPuan				SC
+			INNER JOIN SinavOgrenci				SO	ON	SO.TCKIMLIKNO = SC.TCKIMLIKNO
+			INNER JOIN #SinavOgrenciPuanSira	OG	ON	OG.TCKIMLIKNO = SO.TCKIMLIKNO AND OG.ID_SINAV = SO.ID_SINAV AND OG.ID_SINAVPUANTURU = SC.ID_SINAVPUANTURU
+			WHERE SC.ID_SINAV = @ID_SINAV
+
+			DROP TABLE #SinavOgrenciPuanSiraPuan
+			DROP TABLE #SinavOgrenciPuanSira 
+
+
+
+			INSERT INTO [dbo].[SinavOgrenciSonuc]
+							([ID_SINAVOGRENCI]
+							,[ID_SINAVPUANTURU]
+							,[PUAN]
+							,GENELSIRA
+							,ILSIRA
+							,ILCESIRA
+							,OKULSIRA
+							,SINIFSIRA)
+
+		SELECT 
+							 SO.ID_SINAVOGRENCI
+							,SP.ID_SINAVPUANTURU
+							,SP.PUAN
+							,SP.GENELSIRA
+							,SP.ILSIRA
+							,SP.ILCESIRA
+							,SP.OKULSIRA
+							,SP.SINIFSIRA
+		FROM SinavOgrenci				SO
+		INNER JOIN SinavOgrenciPuan		SP	ON	SP.TCKIMLIKNO = SO.TCKIMLIKNO AND SP.ID_SINAV = SO.ID_SINAV
+		WHERE SP.ID_SINAV = @ID_SINAV
+			--------------------------------------------------------------------
+
+
+		PRINT '64: ' + CONVERT( VARCHAR(24), GETDATE(), 121)
+
+		SELECT 
+				 SO.[ID_SINAVOGRENCI]
+				,SO.[ID_SINAVDERS]
+				,SO.[CEVAPLAR]
+				,SO.[DOGRU]
+				,SO.[YANLIS]
+				,SO.[BOS]
+				,SO.[NET]
+				,SO.[YUZDEDOGRU]
+				,SO.[YUZDENET]
+				,SO.[PUAN]
+				,SO.ID_SINAVOGRENCICEVAPBOLUM
+				,GUID = @GUID
+				,PUAN_GENELSIRA		= 0
+				,PUAN_ILSIRA		= 0
+				,PUAN_ILCESIRA		= 0
+				,PUAN_OKULSIRA		= 0
+				,PUAN_SINIFSIRA		= 0
+				,ST.IL
+				,ST.ILCE
+				,ST.ID_SUBE
+				,ST.ID_SINIF
+				,ST.SINIF
+		INTO #SinavOgrenciCevapBolumSira
+		FROM #SinavOgrenciCevapBolum	SO
+		JOIN #SinavOgrenciToplam		ST	ON	ST.TCKIMLIKNO = SO.TCKIMLIKNO
+
+
+		INSERT INTO [dbo].[SinavOgrenciCevapBolum]
+					([ID_SINAVOGRENCI]
+					,[ID_SINAVDERS]
+					,[CEVAPLAR]
+					,[DOGRU]
+					,[YANLIS]
+					,[BOS]
+					,[NET]
+					,[YUZDEDOGRU]
+					,[YUZDENET]
+					,[PUAN]
+					,TEMP_ID_SINAVOGRENCICEVAPBOLUM
+					,TEMP_GUID
+					,PUAN_GENELSIRA
+					,PUAN_ILSIRA
+					,PUAN_ILCESIRA
+					,PUAN_OKULSIRA
+					,PUAN_SINIFSIRA
+
+					,NET_GENELSIRA
+					,NET_ILSIRA
+					,NET_ILCESIRA
+					,NET_OKULSIRA
+					,NET_SINIFSIRA
+
+					,DOGRU_GENELSIRA
+					,DOGRU_ILSIRA
+					,DOGRU_ILCESIRA
+					,DOGRU_OKULSIRA
+					,DOGRU_SINIFSIRA
+					
+					
+					
+					)
+		SELECT 
+					 SO.[ID_SINAVOGRENCI]
+					,SO.[ID_SINAVDERS]
+					,SO.[CEVAPLAR]
+					,SO.[DOGRU]
+					,SO.[YANLIS]
+					,SO.[BOS]
+					,SO.[NET]
+					,SO.[YUZDEDOGRU]
+					,SO.[YUZDENET]
+					,SO.[PUAN]
+					,SO.ID_SINAVOGRENCICEVAPBOLUM
+					,@GUID
+					,PUAN_GENELSIRA		= DENSE_RANK() OVER(PARTITION BY SO.ID_SINAVDERS										ORDER BY SO.PUAN DESC)
+					,PUAN_ILSIRA		= DENSE_RANK() OVER(PARTITION BY SO.ID_SINAVDERS, SO.IL									ORDER BY SO.PUAN DESC)
+					,PUAN_ILCESIRA		= DENSE_RANK() OVER(PARTITION BY SO.ID_SINAVDERS, SO.IL, SO.ILCE						ORDER BY SO.PUAN DESC)
+					,PUAN_OKULSIRA		= DENSE_RANK() OVER(PARTITION BY SO.ID_SINAVDERS, SO.ID_SUBE							ORDER BY SO.PUAN DESC)
+					,PUAN_SINIFSIRA		= DENSE_RANK() OVER(PARTITION BY SO.ID_SINAVDERS, SO.ID_SUBE, SO.ID_SINIF, SO.SINIF		ORDER BY SO.PUAN DESC)
+					
+					,NET_GENELSIRA		= DENSE_RANK() OVER(PARTITION BY SO.ID_SINAVDERS										ORDER BY SO.NET DESC)
+					,NET_ILSIRA			= DENSE_RANK() OVER(PARTITION BY SO.ID_SINAVDERS, SO.IL									ORDER BY SO.NET DESC)
+					,NET_ILCESIRA		= DENSE_RANK() OVER(PARTITION BY SO.ID_SINAVDERS, SO.IL, SO.ILCE						ORDER BY SO.NET DESC)
+					,NET_OKULSIRA		= DENSE_RANK() OVER(PARTITION BY SO.ID_SINAVDERS, SO.ID_SUBE							ORDER BY SO.NET DESC)
+					,NET_SINIFSIRA		= DENSE_RANK() OVER(PARTITION BY SO.ID_SINAVDERS, SO.ID_SUBE, SO.ID_SINIF, SO.SINIF		ORDER BY SO.NET DESC)
+					
+					,DOGRU_GENELSIRA	= DENSE_RANK() OVER(PARTITION BY SO.ID_SINAVDERS										ORDER BY SO.DOGRU DESC)
+					,DOGRU_ILSIRA		= DENSE_RANK() OVER(PARTITION BY SO.ID_SINAVDERS, SO.IL									ORDER BY SO.DOGRU DESC)
+					,DOGRU_ILCESIRA		= DENSE_RANK() OVER(PARTITION BY SO.ID_SINAVDERS, SO.IL, SO.ILCE						ORDER BY SO.DOGRU DESC)
+					,DOGRU_OKULSIRA		= DENSE_RANK() OVER(PARTITION BY SO.ID_SINAVDERS, SO.ID_SUBE							ORDER BY SO.DOGRU DESC)
+					,DOGRU_SINIFSIRA	= DENSE_RANK() OVER(PARTITION BY SO.ID_SINAVDERS, SO.ID_SUBE, SO.ID_SINIF, SO.SINIF		ORDER BY SO.DOGRU DESC)
+			FROM #SinavOgrenciCevapBolumSira	SO
+
+
+			SELECT
+				 SO.ID_SINAV
+				,CB.ID_SINAVDERS
+				,NET_ORT		= AVG(NET)
+				,DOGRU_ORT		= AVG(CAST(DOGRU AS float))
+				,YUZDENET_ORT	= AVG(YUZDENET)
+			INTO #GENELORT
+			FROM SinavOgrenciCevapBolum		CB
+			JOIN SinavOgrenci				SO	ON	SO.ID_SINAVOGRENCI	= CB.ID_SINAVOGRENCI
+			WHERE SO.ID_SINAV = @ID_SINAV
+			GROUP BY  SO.ID_SINAV, CB.ID_SINAVDERS
+
+			SELECT
+				 SO.ID_SINAV
+				,CB.ID_SINAVDERS
+				,IL
+				,NET_ORT		= AVG(NET)
+				,DOGRU_ORT		= AVG(CAST(DOGRU AS float))
+				,YUZDENET_ORT	= AVG(YUZDENET)
+			INTO #ILORT
+			FROM SinavOgrenciCevapBolum		CB
+			JOIN SinavOgrenci				SO	ON	SO.ID_SINAVOGRENCI	= CB.ID_SINAVOGRENCI
+			LEFT JOIN #SinavOgrenciToplam	ST	ON	ST.ID_SINAV = SO.ID_SINAV AND ST.TCKIMLIKNO = SO.TCKIMLIKNO
+			WHERE SO.ID_SINAV = @ID_SINAV
+			GROUP BY  SO.ID_SINAV, CB.ID_SINAVDERS,IL
+
+			SELECT
+				 SO.ID_SINAV
+				,CB.ID_SINAVDERS
+				,IL
+				,ILCE
+				,NET_ORT		= AVG(NET)
+				,DOGRU_ORT		= AVG(CAST(DOGRU AS float))
+				,YUZDENET_ORT	= AVG(YUZDENET)
+			INTO #ILCEORT
+			FROM SinavOgrenciCevapBolum		CB
+			JOIN SinavOgrenci				SO	ON	SO.ID_SINAVOGRENCI	= CB.ID_SINAVOGRENCI
+			LEFT JOIN #SinavOgrenciToplam	ST	ON	ST.ID_SINAV = SO.ID_SINAV AND ST.TCKIMLIKNO = SO.TCKIMLIKNO
+			WHERE SO.ID_SINAV = @ID_SINAV
+			GROUP BY  SO.ID_SINAV, CB.ID_SINAVDERS,IL,ILCE
+
+			SELECT
+				 SO.ID_SINAV
+				,CB.ID_SINAVDERS
+				,ID_SUBE
+				,NET_ORT		= AVG(NET)
+				,DOGRU_ORT		= AVG(CAST(DOGRU AS float))
+				,YUZDENET_ORT	= AVG(YUZDENET)
+			INTO #OKULORT
+			FROM SinavOgrenciCevapBolum		CB
+			JOIN SinavOgrenci				SO	ON	SO.ID_SINAVOGRENCI	= CB.ID_SINAVOGRENCI
+			LEFT JOIN #SinavOgrenciToplam	ST	ON	ST.ID_SINAV = SO.ID_SINAV AND ST.TCKIMLIKNO = SO.TCKIMLIKNO
+			WHERE SO.ID_SINAV = @ID_SINAV
+			GROUP BY  SO.ID_SINAV, CB.ID_SINAVDERS,ID_SUBE
+
+			SELECT
+				 SO.ID_SINAV
+				,CB.ID_SINAVDERS
+				,ST.ID_SUBE
+				,ST.ID_SINIF
+				,ST.SINIF
+				,NET_ORT		= AVG(NET)
+				,DOGRU_ORT		= AVG(CAST(DOGRU AS float))
+				,YUZDENET_ORT	= AVG(YUZDENET)
+			INTO #SINIFORT
+			FROM SinavOgrenciCevapBolum		CB
+			JOIN SinavOgrenci				SO	ON	SO.ID_SINAVOGRENCI	= CB.ID_SINAVOGRENCI
+			LEFT JOIN #SinavOgrenciToplam	ST	ON	ST.ID_SINAV = SO.ID_SINAV AND ST.TCKIMLIKNO = SO.TCKIMLIKNO
+			WHERE SO.ID_SINAV = @ID_SINAV
+			GROUP BY  SO.ID_SINAV, CB.ID_SINAVDERS, ST.ID_SUBE, ST.ID_SINIF, ST.SINIF
+			
+
+
+			UPDATE CB SET
+				 CB.NET_GENELORT		=  G.NET_ORT
+				,CB.NET_ILORT			=  I.NET_ORT
+				,CB.NET_ILCEORT			= IC.NET_ORT
+				,CB.NET_OKULORT			=  O.NET_ORT
+				,CB.NET_SINIFORT		=  S.NET_ORT
+								
+				,CB.DOGRU_GENELORT		=  G.DOGRU_ORT
+				,CB.DOGRU_ILORT			=  I.DOGRU_ORT
+				,CB.DOGRU_ILCEORT		= IC.DOGRU_ORT
+				,CB.DOGRU_OKULORT		=  O.DOGRU_ORT
+				,CB.DOGRU_SINIFORT		=  S.DOGRU_ORT
+				
+				,CB.YUZDENET_GENELORT	=  G.YUZDENET_ORT
+				,CB.YUZDENET_ILORT		=  I.YUZDENET_ORT
+				,CB.YUZDENET_ILCEORT	= IC.YUZDENET_ORT
+				,CB.YUZDENET_OKULORT	=  O.YUZDENET_ORT
+				,CB.YUZDENET_SINIFORT	=  S.YUZDENET_ORT
+
+			FROM SinavOgrenciCevapBolum		CB
+			JOIN SinavOgrenci				SO	ON	SO.ID_SINAVOGRENCI	= CB.ID_SINAVOGRENCI
+			LEFT JOIN  #SinavOgrenciToplam	ST	ON	ST.ID_SINAV			= SO.ID_SINAV		AND ST.TCKIMLIKNO   = SO.TCKIMLIKNO
+			LEFT JOIN  #GENELORT			G	ON	 G.ID_SINAVDERS		= CB.ID_SINAVDERS 
+			LEFT JOIN  #ILORT				I	ON	 I.ID_SINAVDERS		= CB.ID_SINAVDERS	AND I.IL		= ST.IL
+			LEFT JOIN  #ILCEORT				IC	ON	IC.ID_SINAVDERS		= CB.ID_SINAVDERS	AND IC.IL		= ST.IL			AND IC.ILCE = ST.ILCE
+			LEFT JOIN  #OKULORT				O	ON	 O.ID_SINAVDERS		= CB.ID_SINAVDERS	AND O.ID_SUBE	= ST.ID_SUBE
+			LEFT JOIN  #SINIFORT			S	ON	 S.ID_SINAVDERS		= CB.ID_SINAVDERS	AND S.ID_SUBE	= ST.ID_SUBE	AND S.ID_SINIF	= ST.ID_SINIF	AND S.SINIF	= ST.SINIF
+			WHERE SO.ID_SINAV = @ID_SINAV
+
+
+
+
+			DROP TABLE #GENELORT
+			DROP TABLE #ILCEORT
+			DROP TABLE #ILORT
+			DROP TABLE #OKULORT
+			DROP TABLE #SINIFORT
+
+			DROP TABLE #SinavOgrenciCevapBolumSira
+
+			
+		
+		PRINT '65: ' + CONVERT( VARCHAR(24), GETDATE(), 121)
+
+		UPDATE CB SET CB.ID_SINAVOGRENCICEVAPBOLUM = SO.ID_SINAVOGRENCICEVAPBOLUM
+		FROM #SinavOgrenciCevap			CB
+		JOIN SinavOgrenciCevapBolum		SO	ON	SO.TEMP_ID_SINAVOGRENCICEVAPBOLUM = CB.ID_SINAVOGRENCICEVAPBOLUM AND SO.TEMP_GUID = @GUID
+		JOIN SinavDers					SD	ON	SD.ID_SINAVDERS	= SO.ID_SINAVDERS	AND SD.ID_SINAV = @ID_SINAV
+
+
+		PRINT '66: ' + CONVERT( VARCHAR(24), GETDATE(), 121)
+
+
+		INSERT INTO SinavOgrenciCevap
+							([ID_SINAVOGRENCICEVAPBOLUM]
+							,[SORUNO]
+							,[CEVAP]
+							,[DURUM])
+		SELECT
+							 [ID_SINAVOGRENCICEVAPBOLUM]
+							,[SORUNO]
+							,[CEVAP]
+							,[DURUM]
+			FROM #SinavOgrenciCevap
+
+	
+	
+		INSERT INTO [dbo].[SinavOgrenciToplam]
+           ([TCKIMLIKNO]
+           ,[ID_SINAV]
+           ,[TD]
+           ,[TY]
+           ,[TB]
+           ,[TN]
+           ,[TD_GENELSIRA]
+           ,[TD_ILSIRA]
+           ,[TD_ILCESIRA]
+           ,[TD_OKULSIRA]
+           ,[TD_SINIFSIRA]
+           ,[TN_GENELSIRA]
+           ,[TN_ILSIRA]
+           ,[TN_ILCESIRA]
+           ,[TN_OKULSIRA]
+           ,[TN_SINIFSIRA]
+		   ,KATILIM_GENEL
+		   ,KATILIM_IL
+		   ,KATILIM_ILCE
+		   ,KATILIM_OKUL
+		   ,KATILIM_SINIF)
+
+		SELECT 
+			 TCKIMLIKNO
+			,ID_SINAV
+			,TD
+			,TY
+			,TB
+			,TN
+			,TD_GENELSIRA	= DENSE_RANK() OVER(										ORDER BY TD DESC)
+			,TD_ILSIRA		= DENSE_RANK() OVER(PARTITION BY IL							ORDER BY TD DESC)
+			,TD_ILCESIRA	= DENSE_RANK() OVER(PARTITION BY ILCE						ORDER BY TD DESC)
+			,TD_OKULSIRA	= DENSE_RANK() OVER(PARTITION BY ID_SUBE					ORDER BY TD DESC)
+			,TD_SINIFSIRA	= DENSE_RANK() OVER(PARTITION BY ID_SUBE, ID_SINIF, SINIF	ORDER BY TD DESC)
+			,TN_GENELSIRA	= DENSE_RANK() OVER(										ORDER BY TN DESC)
+			,TN_ILSIRA		= DENSE_RANK() OVER(PARTITION BY IL							ORDER BY TN DESC)
+			,TN_ILCESIRA	= DENSE_RANK() OVER(PARTITION BY ILCE						ORDER BY TN DESC)
+			,TN_OKULSIRA	= DENSE_RANK() OVER(PARTITION BY ID_SUBE					ORDER BY TN DESC)
+			,TN_SINIFSIRA	= DENSE_RANK() OVER(PARTITION BY ID_SUBE, ID_SINIF, SINIF	ORDER BY TN DESC) 
+			,(SELECT COUNT(DISTINCT SUB.TCKIMLIKNO) FROM #SinavOgrenciToplam	SUB)
+			,(SELECT COUNT(DISTINCT SUB.TCKIMLIKNO) FROM #SinavOgrenciToplam	SUB	WHERE SUB.IL = SO.IL)
+			,(SELECT COUNT(DISTINCT SUB.TCKIMLIKNO) FROM #SinavOgrenciToplam	SUB	WHERE SUB.IL = SO.IL AND SUB.ILCE = SO.ILCE)
+			,(SELECT COUNT(DISTINCT SUB.TCKIMLIKNO) FROM #SinavOgrenciToplam	SUB	WHERE SUB.ID_SUBE	= SO.ID_SUBE)
+			,(SELECT COUNT(DISTINCT SUB.TCKIMLIKNO) FROM #SinavOgrenciToplam	SUB	WHERE SUB.ID_SUBE	= SO.ID_SUBE	AND SUB.ID_SINIF = SO.ID_SINIF	AND SUB.SINIF = SO.SINIF)
+		FROM #SinavOgrenciToplam	SO
+
+	PRINT '67: ' + CONVERT( VARCHAR(24), GETDATE(), 121)
+
+
+	IF (SELECT ID_SINAVTURU FROM Sinav WHERE ID_SINAV = @ID_SINAV) = 12 -- BURSLULUK İSE
+	BEGIN
+	
+			
+		DROP TABLE IF EXISTS #W_BURS
+		DROP TABLE IF EXISTS #TEMP_BURS
+		DROP TABLE IF EXISTS #BURSPUAN
+		DROP TABLE IF EXISTS #BURSDERS
+
+	
+			BEGIN	--	PUAN
+
+				SELECT TCKIMLIKNO,PUAN,BO.*,ROW_NUMBER () OVER(PARTITION BY ID_BURSORAN ORDER BY PUAN DESC) RN
+				INTO #BURSPUAN
+				FROM vw_SinavOgrenciPuan		SP
+				JOIN BurslulukSinavBursOrani	BO	ON	BO.BURSTUR		= 1	-- PUAN
+													AND BO.MIN_DEGER	<= SP.PUAN
+				WHERE SP.ID_SINAV = @ID_SINAV 
+
+				CREATE TABLE #TEMP_BURS (TCKIMLIKNO VARCHAR(11),BURSORANI INT,ID_SINAV INT ,ID_SINAVDERS INT ,BURSTUR INT)
+
+				SELECT MIN_DEGER,BURSORANI,OGRENCISAYISI,ROW_NUMBER () OVER(ORDER BY BURSORANI DESC) RN INTO #W_BURS FROM BurslulukSinavBursOrani WHERE ID_SINAV = @ID_SINAV AND BURSTUR = 1
+
+				DECLARE	 @COUNT_BURS	INT = (SELECT COUNT(1) FROM #W_BURS)
+						,@I_BURS		INT = 1
+						,@MIN_DEGER		INT
+						,@BURSORANI		INT
+						,@OGRENCISAYISI INT
+
+				WHILE (@I_BURS <= @COUNT_BURS)
+				BEGIN
+					SELECT @MIN_DEGER=MIN_DEGER,@BURSORANI=BURSORANI,@OGRENCISAYISI=OGRENCISAYISI FROM #W_BURS WHERE RN = @I_BURS
+
+					INSERT INTO #TEMP_BURS  (TCKIMLIKNO,BURSORANI,ID_SINAV,BURSTUR)
+					SELECT TOP (@OGRENCISAYISI) TCKIMLIKNO,@BURSORANI,ID_SINAV,BURSTUR
+					FROM #BURSPUAN BP				
+					WHERE	PUAN >= @MIN_DEGER
+						AND TCKIMLIKNO NOT IN (SELECT TCKIMLIKNO FROM #TEMP_BURS)
+
+					SET @I_BURS = @I_BURS +1 
+				END
+			
+				INSERT INTO BurslulukSinavOgrenciSonuc (TCKIMLIKNO,BURSORANI,ID_SINAV,BURSTUR)
+				SELECT TCKIMLIKNO,BURSORANI,@ID_SINAV,1 FROM #TEMP_BURS 
+
+			END
+
+
+			BEGIN	--	DERS
+				SELECT TCKIMLIKNO,YUZDENET,BO.*
+				INTO #BURSDERS
+				FROM vw_SinavOgrenciBolum		SB
+				JOIN BurslulukSinavBursOrani	BO	ON	BO.ID_SINAVDERS	= SB.ID_SINAVDERS
+													AND	BO.BURSTUR		= 2	-- PUAN
+													AND BO.MAX_DEGER	>= SB.YUZDENET
+													AND BO.MIN_DEGER	<= SB.YUZDENET
+				WHERE SB.ID_SINAV = @ID_SINAV
+
+				INSERT INTO BurslulukSinavOgrenciSonuc (TCKIMLIKNO,BURSORANI,ID_SINAV,ID_SINAVDERS,BURSTUR)
+				SELECT TCKIMLIKNO,BURSORANI,ID_SINAV,ID_SINAVDERS,BURSTUR
+				FROM #BURSDERS
+				ORDER BY BURSORANI DESC
+			END
+
+			
+		DROP TABLE IF EXISTS #W_BURS
+		DROP TABLE IF EXISTS #TEMP_BURS
+		DROP TABLE IF EXISTS #BURSPUAN
+		DROP TABLE IF EXISTS #BURSDERS
+
+	END
+
+	--COMMIT TRAN T_SINAV
+
+	
+	
+	UPDATE Sinav	SET DURUM = 2, DEGERLENDIRILIYOR = 0	WHERE ID_SINAV	= @ID_SINAV	
+
+
+	IF EXISTS (SELECT TOP 1 TCKIMLIKNO FROM SinavOgrenciHariciPuanSiralama WHERE ID_SINAV = @ID_SINAV)
+		EXEC [dbo].[sp_SinavHariciPuanSira] @ISLEM = 3, @DOGRULAMA = '693M161f1Sv595Y', @ID_SINAV = @ID_SINAV	-- PUAN VE SIRALAMA BILGILERINI DEĞİŞTİRİYOR
+
+
+	DROP TABLE IF EXISTS #SinavOgrenci
+	DROP TABLE IF EXISTS #SinavOgrenciCevap
+	DROP TABLE IF EXISTS #SinavOgrenciCevapBolum
+	DROP TABLE IF EXISTS #SinavSonTyt
+	DROP TABLE IF EXISTS #SinavOgrenciToplam
+
+	DROP TABLE IF EXISTS #SinavSoruIslem
+	DROP TABLE IF EXISTS #Temp
+	DROP TABLE IF EXISTS #Temp2
+	DROP TABLE IF EXISTS #OGRENCISINAVPUANKRITER
+
+	END
+	
+	END TRY
+	BEGIN CATCH
+		SELECT 
+			@ErrorSeverity	= ERROR_SEVERITY(),
+			@ErrorState		= ERROR_STATE()
+							
+		SELECT @MSG = 'Prosedür: ' + ISNULL(ERROR_PROCEDURE(), '') + ', Satır: ' + CAST(ERROR_LINE() as varchar) + ', Hata: ' + ERROR_MESSAGE() + ', ID_SINAV: ' + CAST(@ID_SINAV AS VARCHAR)
+
+		EXEC sp_HataMailiGonder @MSG,
+								@ErrorSeverity,@ErrorState,'sp_OptikIslemleri'
+
+		
+		UPDATE SinavDegerlendir SET AKTIF = 0							WHERE ID_SINAV	= @ID_SINAV
+		UPDATE Sinav			SET DURUM = 0, DEGERLENDIRILIYOR = 0	WHERE ID_SINAV	= @ID_SINAV
+		
+		--IF(@@TRANCOUNT > 0)
+		--	ROLLBACK TRAN T_SINAV
+		
+		--IF (XACT_STATE()) = -1
+		--  BEGIN
+		--	 ROLLBACK TRAN T_SINAV;
+		--  END;
+	  	
+		RAISERROR (@MSG , -- Message text.
+					@ErrorSeverity, -- Severity.
+					@ErrorState -- State.
+					);
+	END CATCH;
+	
+END
+GO
+PRINT N'Refreshing [dbo].[sp_Sinav]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_Sinav]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_Sube]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_Sube]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_Grup]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_Grup]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_Sinif]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_Sinif]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_Ogrenci]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_Ogrenci]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_Sinav2]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_Sinav2]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_Abide]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_Abide]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_AraKarne]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_AraKarne]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_AraKarneCoklu]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_AraKarneCoklu]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_AraKarneCokluEski]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_AraKarneCokluEski]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_AraKarneEski]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_AraKarneEski]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_BirimYetki]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_BirimYetki]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_BurslulukBursOraniBelirle]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_BurslulukBursOraniBelirle]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_BurslulukOgrenciIslemleri]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_BurslulukOgrenciIslemleri]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_CevapAnahtariDuzenle]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_CevapAnahtariDuzenle]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_CevapAnahtariKullaniciYetki]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_CevapAnahtariKullaniciYetki]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_Degerlendirme]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_Degerlendirme]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_DemoOgrenci]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_DemoOgrenci]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_DenemeSinavRaporlari]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_DenemeSinavRaporlari]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_DersCalismaProgrami]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_DersCalismaProgrami]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_DersUnite]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_DersUnite]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_Dokuman]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_Dokuman]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_Donem]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_Donem]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_DSNetPuanOrtalamalariOS]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_DSNetPuanOrtalamalariOS]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_Etut]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_Etut]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_EtutOgretmenRapor]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_EtutOgretmenRapor]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_EtutProgramiOV]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_EtutProgramiOV]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_EtutSabitOlustur]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_EtutSabitOlustur]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_EtutSinifRapor]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_EtutSinifRapor]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_EtutTakvimi]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_EtutTakvimi]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_FrekansSistem]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_FrekansSistem]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_FrekansSistemEksikKazanim]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_FrekansSistemEksikKazanim]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_GelisimRaporu]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_GelisimRaporu]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_GelisimRaporuLS]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_GelisimRaporuLS]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_GelisimRaporuOgrenciBelge]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_GelisimRaporuOgrenciBelge]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_GelisimRaporuOO]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_GelisimRaporuOO]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_GenelKazanimAnalizi]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_GenelKazanimAnalizi]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_GenelListeler]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_GenelListeler]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_GenelSinavRaporu]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_GenelSinavRaporu]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_GenelSoruAnalizi]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_GenelSoruAnalizi]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_HataLog]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_HataLog]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_HedefBelirlemeRapor]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_HedefBelirlemeRapor]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_KarmaListe]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_KarmaListe]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_KarmaListe3]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_KarmaListe3]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_KazanimAnalizi]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_KazanimAnalizi]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_KazanimAnaliziOO]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_KazanimAnaliziOO]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_KonuAnalizi]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_KonuAnalizi]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_KonuAnaliziCoklu]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_KonuAnaliziCoklu]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_KullaniciYetki]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_KullaniciYetki]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_LUSRapor]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_LUSRapor]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_MaddeFrekansAnalizi]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_MaddeFrekansAnalizi]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_OdevTakibi]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_OdevTakibi]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_OdulListesi]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_OdulListesi]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_OgrenciDersMuaf]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_OgrenciDersMuaf]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_OgrenciFrekansMuaf]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_OgrenciFrekansMuaf]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_OgrenciHedef]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_OgrenciHedef]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_OgrenciHedefOO]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_OgrenciHedefOO]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_OgrenciIzleme]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_OgrenciIzleme]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_OgrenciMaddeAnalizi]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_OgrenciMaddeAnalizi]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_OgrenciRaporlari]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_OgrenciRaporlari]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_OgrenciTakvim]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_OgrenciTakvim]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_OkulNetPuanOrtalamalari]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_OkulNetPuanOrtalamalari]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_OkulRapor]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_OkulRapor]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_OkulRaporEski]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_OkulRaporEski]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_OptikYukle]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_OptikYukle]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_OrtalamaListesi]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_OrtalamaListesi]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_OSYM]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_OSYM]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_ProjeDonem]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_ProjeDonem]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_ProjeDonemRapor]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_ProjeDonemRapor]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_PuanaGoreYaziliSonuclari]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_PuanaGoreYaziliSonuclari]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_RehberlikEnvanter]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_RehberlikEnvanter]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_RehberlikEnvanterTanimlama]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_RehberlikEnvanterTanimlama]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_SinavaKatilmayanOgrenciler]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_SinavaKatilmayanOgrenciler]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_SinavAnaliz]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_SinavAnaliz]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_SinavHariciPuanSira]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_SinavHariciPuanSira]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_SinavIstatistik]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_SinavIstatistik]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_SinavKatilim]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_SinavKatilim]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_SinavKonuAnalizi]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_SinavKonuAnalizi]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_SinavListele]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_SinavListele]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_SinifBazindaKazanimAnalizi]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_SinifBazindaKazanimAnalizi]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_SinifDersAnalizi]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_SinifDersAnalizi]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_SinifMaddeAnalizi]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_SinifMaddeAnalizi]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_SinifNetPuanOrtalamalari]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_SinifNetPuanOrtalamalari]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_SoruMaddeAnaliziOS]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_SoruMaddeAnaliziOS]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_Takvim]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_Takvim]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_TestMaddeAnalizi]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_TestMaddeAnalizi]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_TKTTest]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_TKTTest]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_TopluSinavSonuclari]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_TopluSinavSonuclari]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_TopluYaziliYoklamaSonuclari]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_TopluYaziliYoklamaSonuclari]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_UniteTarama]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_UniteTarama]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_UniteTaramaSinifPuanOrtalamalari]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_UniteTaramaSinifPuanOrtalamalari]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_UpgradeSoru]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_UpgradeSoru]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_v2FrekansSistemEksikKazanim]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_v2FrekansSistemEksikKazanim]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_Yardim]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_Yardim]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_YaziliYoklamaSonuclari]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_YaziliYoklamaSonuclari]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_YetenekGelisim]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_YetenekGelisim]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_YG_Karne]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_YG_Karne]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_YG_YetenekGelisim]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_YG_YetenekGelisim]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_YG_YorumEkle]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_YG_YorumEkle]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_ZekaTest]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_ZekaTest]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_OnlineSinavMailYolla]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_OnlineSinavMailYolla]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_OptikIslemleriOnline]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_OptikIslemleriOnline]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_OptikIslemleriEski]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_OptikIslemleriEski]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_Filtre]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_Filtre]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_FiltreEk]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_FiltreEk]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_ZumreCalisma]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_ZumreCalisma]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_RehberlikOnlineYukle]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_RehberlikOnlineYukle]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_OnlineDers]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_OnlineDers]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp___TASLAK_SP]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp___TASLAK_SP]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_AkilliOgretimBarkod]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_AkilliOgretimBarkod]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_AmazonChime]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_AmazonChime]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_AnaSayfa]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_AnaSayfa]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_Assessment]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_Assessment]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_AssessmentOgrenciSinavRaporu]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_AssessmentOgrenciSinavRaporu]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_AssessmentSinavaKatilmayanlar]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_AssessmentSinavaKatilmayanlar]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_AssessmentSinavOgrenciRaporu]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_AssessmentSinavOgrenciRaporu]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_AssessmentSinavSoruAnalizi]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_AssessmentSinavSoruAnalizi]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_AssessmentSinifSinavRaporu]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_AssessmentSinifSinavRaporu]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_Bulten]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_Bulten]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_CurpusStudyYukle]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_CurpusStudyYukle]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_DegerlendirmeFormu]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_DegerlendirmeFormu]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_Fatura]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_Fatura]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_FrekansEtkiListesi]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_FrekansEtkiListesi]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_FrekansSinavOgrenci]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_FrekansSinavOgrenci]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_GenelHak]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_GenelHak]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_MentalUp]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_MentalUp]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_Morpa]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_Morpa]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_OgrenciBilgiSistemi]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_OgrenciBilgiSistemi]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_OgrenciHarcama]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_OgrenciHarcama]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_OzelSayfaIslemleri]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_OzelSayfaIslemleri]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_Parametre]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_Parametre]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_RehberDanismanYoklama]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_RehberDanismanYoklama]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_SinifDersProgram]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_SinifDersProgram]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_SinifListeRaporu]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_SinifListeRaporu]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_SinifOgretmenListesi]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_SinifOgretmenListesi]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_TercihListeRapor]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_TercihListeRapor]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_UniteTaramaSinavSonucListesi]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_UniteTaramaSinavSonucListesi]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_UniteTaramaTopluKarne]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_UniteTaramaTopluKarne]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_UyariSistemleri]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_UyariSistemleri]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_v2FrekansEtkiListesi]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_v2FrekansEtkiListesi]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_v2FrekansKampus]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_v2FrekansKampus]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_v2FrekansSinif]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_v2FrekansSinif]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_v2FrekansSistem]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_v2FrekansSistem]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_VeliUniteTaramaRaporu]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_VeliUniteTaramaRaporu]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_VIU]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_VIU]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_ViuBildirimRapor]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_ViuBildirimRapor]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_ViuRandevuTakip]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_ViuRandevuTakip]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_WhatsApp]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_WhatsApp]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_YG_KotaBelirle]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_YG_KotaBelirle]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_YG_MevcutDagilim]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_YG_MevcutDagilim]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_YG_OgrenciSecimRaporu]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_YG_OgrenciSecimRaporu]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_YG_Secim]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_YG_Secim]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_YG_SecimAyar]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_YG_SecimAyar]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_YG_SecimYapmayanlar]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_YG_SecimYapmayanlar]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_Yillik]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_Yillik]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_YYS]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_YYS]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_SinavDegerlendir]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_SinavDegerlendir]';
+
+
+GO
+PRINT N'Refreshing [dbo].[sp_SinavDegerlendirTumSinavlar]...';
+
+
+GO
+EXECUTE sp_refreshsqlmodule N'[dbo].[sp_SinavDegerlendirTumSinavlar]';
+
+
+GO
+PRINT N'Reenabling DDL triggers...'
+GO
+ENABLE TRIGGER [CaptureStoredProcedureChanges] ON DATABASE
+GO
+PRINT N'Update complete.';
+
+
+GO

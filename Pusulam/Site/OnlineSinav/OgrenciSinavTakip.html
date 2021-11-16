@@ -1,0 +1,316 @@
+﻿<div class="page-head">
+    <div class="page-title col-md-12">
+        <h1>
+            Öğrenci Sınav Takip <span onclick="YardimGoster(ID_MENU);" class="pull-right" style="cursor:pointer;"><img src="assets/global/img/info.gif" class="info-image-icon" /> </span>
+        </h1>
+    </div>
+</div>
+<div class="row" id="app">
+    <div class="col-md-12">
+        <div class="portlet box blue-hoki dd-item" style="border:none">
+            <div class="portlet-title dd-handle" data-toggle='collapse' data-target='#filters' style="cursor:pointer;">
+                <div class="caption">
+                    <i class="icon-magnifier"></i>
+                    <span class="caption-subject bold uppercase"> Filtreler </span>
+                    <span class="caption-helper"></span>
+                </div>
+                <div class='actions'>
+                    <a href='javascript:;' class='btn btn-default btn-sm' style='border:none;'>
+                        <i class='fa fa-chevron-down'></i>
+                    </a>
+                </div>
+            </div>
+            <!-- BEGIN PORTLET-->
+            <div class="portlet-body form collapse in" id="filters">
+                <form role="form" style="padding:12px 20px">
+
+                    <div class="row">
+                        <label class="control-label col-md-3" style="vertical-align:middle;">Dış Öğrenci</label>
+                        <div class="col-md-9" style="height:34px; vertical-align:middle;">
+                            <div class="md-checkbox" style="margin:auto!important; width:20px!important; height:20px; margin:0px; margin-top:6px; display:block;">
+                                <input type="checkbox" v-model="disOgrenciEkle" id="disOgrenciEkle" class="md-check" v-bind:true-value="true" v-bind:false-value="false" v-on:click="disOgrenciChanged()" />
+                                <label for="disOgrenciEkle">
+                                    <span></span>
+                                    <span class="check"></span>
+                                    <span class="box"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <c-donem :controller="controller"
+                                 @OnChange="DonemSelected">
+                        </c-donem>
+                    </div>
+                    <div class="row" v-if="!disOgrenciEkle">
+                        <c-sube :controller="controller"
+                                      @OnChange="SubeSelected">
+                        </c-sube>
+                    </div>
+                    <div class="row" v-if="!disOgrenciEkle">
+                        <c-kademe3 :controller="controller"
+                                   :idsube="ID_SUBE"
+                                   :idset="ID_KADEME3"
+                                   @OnChange="Kademe3Selected">
+                        </c-kademe3>
+                    </div>
+                    <div class="row" v-if="disOgrenciEkle">
+                        <c-kademe3-tumu :controller="controller"
+                                        :idset="ID_KADEME3"
+                                        @OnChange="DisOgrenciKademe3Selected">
+                        </c-kademe3-tumu>
+                    </div>
+
+                    <div class="row">
+                        <c-sinav-turu :controller="controller"
+                                      :idkademe3="ID_KADEME3"
+                                      :idset="ID_SINAVTURU"
+                                      :donem="DONEM"
+                                      :sinavdurum=true
+                                      @OnChange="SinavTuruSelected">
+                        </c-sinav-turu>
+                    </div>
+                    <div class="row">
+                        <c-sinav :controller="controller"
+                                 :idkademe3="ID_KADEME3"
+                                 :idsinavturu="ID_SINAVTURU"
+                                 :donem="DONEM"
+                                 :onlinesinav=true
+                                 :idset="ID_SINAV"
+                                 @OnChange="SinavSelected">
+                        </c-sinav>
+                    </div>
+                    <div v-show="ID_SINAV>0  &&  !disOgrenciEkle">
+                        <!--<div class="row">
+
+                            <c-sinif-alan-multi :controller="controller"
+                                                @OnChange="SinifAlanSelected">
+                            </c-sinif-alan-multi>
+                        </div>-->
+                        <div class="row">
+                            <c-sinif :controller="controller"
+                                     :idkademe3="ID_KADEME3"
+                                     :idsube="ID_SUBE"
+                                     :idset="ID_SINIF"
+                                     @OnChange="SinifSelected">
+                            </c-sinif>
+                        </div>
+                        <div class="row" v-if="ID_SINIF> 1  ">
+                            <c-ogrenci :controller="controller"
+                                       :idsinif="ID_SINIF"
+                                       :idset="TC_OGRENCI"
+                                       @OnChange="OgrenciSelected">
+                            </c-ogrenci>
+
+
+                        </div>
+                    </div>
+                    <div class="row" v-if="disOgrenciEkle && ID_SINAV>0">
+                        <c-sinav-ogrencilist :controller="controller"
+                                             :idsinav="ID_SINAV"
+                                             :idset="TC_OGRENCI"
+                                             @OnChange="OgrenciSelected">
+                        </c-sinav-ogrencilist>
+
+                    </div>
+
+                    <div class="row">
+                        <div class="form-group" style="margin-top:10px;">
+                            <div class="col-md-12 text-right">
+                                <button type="button" class="btn green" @click="Listele" :disabled="TC_OGRENCI==''">Listele</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-12" v-if="LISTE != undefined">
+        <div class="portlet light">
+            <div class="portlet-title">
+                <div class="caption">
+                    <i class="icon-list font-green"></i>
+                    <span class="caption-subject bold font-green uppercase"> Sınav Detay </span>
+                    <span class="caption-helper"></span>
+                </div>
+            </div>
+            <div class="portlet-body form">
+                <div v-if="LISTE.length>0">
+                    <span class="badge badge-warning" style=" margin-bottom: 10px; ">
+                        Sınava Başlama Zamanı :
+                        {{LISTE[0].SINAVABASLAMAZAMANI}}
+                    </span>
+                </div>
+                <form role="form">
+                    <div class="portlet light bordered">
+                        <div class="row">
+                            <div v-if="LISTE != undefined" class="col-md-12">
+                                <table id="SinavLogTable" class="table table-striped table-bordered table-hover table-checkable" style="margin: 0px;">
+                                    <thead>
+                                        <tr style="background: #e1e5e8;">
+                                            <th>Ders Adı</th>
+                                            <th>Soru No</th>
+                                            <th>Cevap</th>
+                                            <th>Kayıt Tarihi</th>
+                                            <th>Kayıt İptal Tarihi</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr v-for="u in LISTE">
+                                            <td> {{u.TAKMAAD}} </td>
+                                            <td> {{u.SORUNO }} </td>
+                                            <td> {{u.CEVAP}} </td>
+                                            <td> {{u.KYE_TARIH}} </td>
+                                            <td> {{u.KYI_TARIH}} </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+</div>
+<script src="../../VueComponents/Filtre.js"></script>
+<script src="../../VueComponents/FiltreEk.js"></script>
+
+<script>
+    var vue = new Vue({
+        el: "#app",
+        name: "OgrenciSinavTakip",
+
+        data: {
+            TCKIMLIKNO: '',
+            OTURUM: '',
+            controller: 'OgrenciSinavTakip',
+            DONEM: '',
+            ID_SINAVTURU: 0,
+            ID_KADEME3: 0,
+            ID_SINAV: 0,
+            ID_SUBE: 0,
+            ID_SINIF: 0,
+            ID_SINIFALANLIST: [],
+            TC_OGRENCI: '',
+            disOgrenciEkle: false,
+            LISTE: undefined,
+        },
+
+        mounted() {
+
+            this.TCKIMLIKNO = session.TCKIMLIKNO;
+            this.OTURUM = session.OTURUM;
+
+        },
+
+        methods: {
+            DonemSelected(val) {
+                this.DONEM = val;
+                this.ID_SINAVTURU = 0;
+                this.ID_SINAV = 0;
+            },
+            SubeSelected(val) {
+
+                this.ID_SUBE = val;
+                this.ID_KADEME3 = 0;
+                this.ID_SINAVTURU = 0;
+                this.ID_SINAV = 0;
+
+                this.ID_SINIFALANLIST = [];
+                this.ID_SINIF = 0;
+                this.TC_OGRENCI = '';
+                this.LISTE = undefined;
+
+
+            },
+            Kademe3Selected(val) {
+                this.ID_KADEME3 = val;
+                this.ID_SINAVTURU = 0;
+                this.ID_SINAV = 0;
+                this.LISTE = undefined;
+            },
+            SinavTuruSelected(val) {
+                this.ID_SINAVTURU = val
+                this.ID_SINAV = 0;
+                this.LISTE = undefined;
+            },
+            SinavSelected(val) {
+
+                this.ID_SINAV = val;
+                this.TC_OGRENCI = '';
+                //this.LISTE = undefined;
+
+
+            },
+            SinifAlanSelected(item) {
+                this.ID_SINIFALANLIST = item;
+                this.ID_SINIF = 0;
+            },
+            SinifSelected(val) {
+                this.ID_SINIF = val;
+                this.TC_OGRENCI = '';
+            },
+            OgrenciSelected(val) {
+                this.TC_OGRENCI = val;
+
+            },
+            Listele() {
+
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    ID_SINAV: this.ID_SINAV,
+                    TC_OGRENCI: this.TC_OGRENCI
+                };
+                this.LISTE = undefined;
+
+                WebPost(this, this.controller, "OnlineSinavLog", p, '', '', function (data, parent) {
+
+                    if (data == null) {
+                        Alert_Warning("Öğrenci sınava ait cevap bulunamadı..");
+                        return;
+                    }
+
+
+                    if (data != '[]') {
+                        vue.LISTE = JSON.parse(data);
+
+                    }
+                    let sort = [
+                        [1, 'asc'],
+                        [2, 'asc'],
+                        [4, 'asc']
+                    ];
+                    let column = [
+                        {
+                            type: 'extract-date',
+                            targets: [3]
+                        }
+                    ]
+                    ListeOlustur("SinavLogTable", sort, column);
+
+                });
+
+            },
+            disOgrenciChanged() {
+                disOgrenciEkle = this.disOgrenciEkle;
+                this.LISTE = undefined;
+            },
+
+            DisOgrenciKademe3Selected(val) {
+                this.ID_KADEME3 = val;
+
+            },
+
+
+        }
+    });
+
+</script>
+<script src="Scripts/PublicMethods.js"></script>
