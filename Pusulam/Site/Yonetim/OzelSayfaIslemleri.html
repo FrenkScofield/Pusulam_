@@ -74,7 +74,14 @@
                                     <input type="text" class="form-control" v-model="SAYFA.YOL" />
                                 </div>
                             </div>
-
+                        </div>
+                        <div class="row">
+                            <div class="form-md-line-input" v-if="SAYFA.ID_OZELSAYFATURU == idUrl">
+                                <label class="control-label col-md-3" style="vertical-align:middle;">URL Parametre</label>
+                                <div class="col-md-9">
+                                    <input type="text" class="form-control" v-model="SAYFA.PARAMETRE" />
+                                </div>
+                            </div>
                         </div>
                         <div class="row">
                             <div class="fileinput fileinput-new" style="float:right; margin:25px;" data-provides="fileinput" v-if="SAYFA.ID_OZELSAYFATURU == idDosya">
@@ -127,6 +134,7 @@
                 ACIKLAMA: undefined,
                 YOL: undefined,
                 ID_OZELSAYFATURU: undefined,
+                PARAMETRE: undefined,
 
                 ID_KULLANICITIPILIST: [],
                 ID_KADEMELIST: [],
@@ -160,6 +168,7 @@
                             parent.SAYFA.AD = jObj.AD;
                             parent.SAYFA.ACIKLAMA = jObj.ACIKLAMA;
                             parent.SAYFA.YOL = jObj.YOL;
+                            parent.SAYFA.PARAMETRE = jObj.PARAMETRE;
 
                             vue.$nextTick(function () {
 
