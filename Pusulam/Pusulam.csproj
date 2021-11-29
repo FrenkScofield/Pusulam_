@@ -469,6 +469,7 @@
     <Content Include="Site\SportifKulupler\OgrenciKulupler.html" />
     <Content Include="Site\SportifKulupler\PeriyotBelirle.html" />
     <Content Include="Site\Tanimlar\DersEkleme.html" />
+    <Content Include="Site\Tkt\Aktarim.html" />
     <Content Include="Site\UniteTaramaOlcegi\UniteTaramaEtutOlustur.html" />
     <Content Include="Site\UniteTaramaOlcegi\SinifMaddeAnalizi.html" />
     <Content Include="Site\Rapor\UniteTaramaOlcegi\UtoKarneListesi.html" />
@@ -944,6 +945,7 @@
     <Compile Include="Controllers\SportifKulupler\PeriyotBelirleController.cs" />
     <Compile Include="Controllers\Tanimlar\DersEklemeController.cs" />
     <Compile Include="Controllers\Tatil\TatilController.cs" />
+    <Compile Include="Controllers\Tkt\TKTAktarimController.cs" />
     <Compile Include="Controllers\UniteTaramaOlcegi\UniteTaramaEtutOlusturController.cs" />
     <Compile Include="Controllers\UniteTaramaOlcegi\UniteTaramaSinavSonucListesiController.cs" />
     <Compile Include="Controllers\UniteTaramaOlcegi\UniteTaramaSinifMaddeAnaliziController.cs" />
