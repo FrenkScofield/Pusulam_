@@ -218,7 +218,7 @@
                     Alert_Error("Lütfen Yayından kaldırma tarihi ekleyin")
                     return;
                 }
-                if (dpYaTarih > dpYbTarih) {
+                if (Date.parse(dpYaTarih) > Date.parse(dpYbTarih)) {
                     Alert_Error("Yayınlanma tarihi bitiş tarihinden büyük olamaz.")
                     return;
                 }
