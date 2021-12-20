@@ -1380,4 +1380,11 @@
     {
         DersListele=1
     }
+    public enum sp_DersProgrami
+    {
+        PersonelListele=1,
+        DersProgram=2,
+        DersOgretmen=3,
+        DersPersonelKaydet = 4
+    }
 }

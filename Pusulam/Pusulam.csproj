@@ -469,6 +469,7 @@
     <Content Include="Site\SportifKulupler\OgrenciKulupler.html" />
     <Content Include="Site\SportifKulupler\PeriyotBelirle.html" />
     <Content Include="Site\Tanimlar\DersEkleme.html" />
+    <Content Include="Site\Tanimlar\DersProgrami.html" />
     <Content Include="Site\Tkt\Aktarim.html" />
     <Content Include="Site\UniteTaramaOlcegi\UniteTaramaEtutOlustur.html" />
     <Content Include="Site\UniteTaramaOlcegi\SinifMaddeAnalizi.html" />
@@ -943,6 +944,7 @@
     <Compile Include="Controllers\SportifKulupler\KulupBelirleController.cs" />
     <Compile Include="Controllers\SportifKulupler\KotaBelirleController.cs" />
     <Compile Include="Controllers\SportifKulupler\PeriyotBelirleController.cs" />
+    <Compile Include="Controllers\Tanimlar\DersProgramiController.cs" />
     <Compile Include="Controllers\Tanimlar\DersEklemeController.cs" />
     <Compile Include="Controllers\Tatil\TatilController.cs" />
     <Compile Include="Controllers\Tkt\TKTAktarimController.cs" />
@@ -1308,6 +1310,7 @@
     <Folder Include="App_Data\" />
     <Folder Include="img\Duyuru\" />
     <Folder Include="Scripts\Rapor\images\" />
+    <Folder Include="Site\NewFolder1\" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\licenses.licx" />

@@ -115,6 +115,7 @@
     <Compile Include="SportifKulupler\DKulupBelirle.cs" />
     <Compile Include="SportifKulupler\DKotaBelirle.cs" />
     <Compile Include="SportifKulupler\DPeriyotBelirle.cs" />
+    <Compile Include="Tanimlar\DDersProgrami.cs" />
     <Compile Include="Tanimlar\DDersEkleme.cs" />
     <Compile Include="Tkt\DTKTAktarim.cs" />
     <Compile Include="Utiliy\DBase.cs" />

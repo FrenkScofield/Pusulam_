@@ -285,6 +285,7 @@
         KullaniciYetkiIslemleri = 2420,
         DiskaynakKademeTanim = 1421,
         DersEkleme = 2424,
-        TktAktarim = 1422
+        TktAktarim = 1422,
+        DersProgrami=1424
     }
 }

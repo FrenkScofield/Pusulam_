@@ -1712,7 +1712,7 @@ Vue.component("c-kullanici-multi", {
 
 Vue.component("c-ogretmenlistesi", {
 
-    props: ['controller','id_periyot'],
+    props: ['controller', 'id_periyot'],
     template: `
                  <div class ="form-md-line-input">
                     <div class="row col-md-12">
@@ -1738,7 +1738,7 @@ Vue.component("c-ogretmenlistesi", {
         return {
             SelectedID: 0,
             Liste: [],
-            checked:false
+            checked: false
         }
     },
     methods: {
@@ -1748,14 +1748,14 @@ Vue.component("c-ogretmenlistesi", {
         },
         Listele: function () {
             var p = { TCKIMLIKNO: session.TCKIMLIKNO, OTURUM: session.OTURUM, ID_PERIYOT: this.id_periyot, DEGERLENEN: this.checked };
-            
+
             WebPost(this, this.controller, "OgretmenListele", p, '', '', function (data, parent) {
                 parent.Liste = data;
 
                 parent.SelectedID = 0;
                 parent.$emit('onchange', parent.SelectedID)
             });
-        }        
+        }
     },
     mounted() {
         this.Listele();
@@ -1774,7 +1774,7 @@ Vue.component("c-ogretmenlistesi", {
 
 Vue.component("c-kategorilistesi", {
 
-    props: ['controller','id_ogretmen'],
+    props: ['controller', 'id_ogretmen'],
     template: `
                  <div class ="form-md-line-input">
                     <label class="control-label col-md-4">
@@ -1801,11 +1801,11 @@ Vue.component("c-kategorilistesi", {
         }
     },
     mounted() {
-            var p = { TCKIMLIKNO: session.TCKIMLIKNO, OTURUM: session.OTURUM };
-            WebPost(this, this.controller, "KategoriListele", p, '', '', function (data, parent) {
-                parent.Liste = data;
-                parent.$emit('onchange', parent.SelectedID)
-            })
+        var p = { TCKIMLIKNO: session.TCKIMLIKNO, OTURUM: session.OTURUM };
+        WebPost(this, this.controller, "KategoriListele", p, '', '', function (data, parent) {
+            parent.Liste = data;
+            parent.$emit('onchange', parent.SelectedID)
+        })
     },
     updated() {
         $('.selectpicker').selectpicker('refresh');
@@ -1824,7 +1824,7 @@ Vue.component("c-kategorilistesi", {
 
 Vue.component("c-degerlendirmelistesi", {
 
-    props: ['controller','disabled'],
+    props: ['controller', 'disabled'],
     template: `
                  <div class ="form-md-line-input">
                     <label class="control-label col-md-5">
@@ -2053,7 +2053,7 @@ Vue.component("c-egitim-turu-multi", {
         GetData() {
             var p = {
                 TCKIMLIKNO: session.TCKIMLIKNO,
-                OTURUM: session.OTURUM,               
+                OTURUM: session.OTURUM,
             };
 
             ListeTemizle(this.Liste);
@@ -2089,7 +2089,73 @@ Vue.component("c-egitim-turu-multi", {
             this.SelectedID = (this.idset == undefined || this.idset == null) ? 0 : this.idset;
             this.OnChange();
         }
-       
+
+    },
+
+    updated() {
+        $('.selectpicker').selectpicker('refresh');
+    },
+});
+
+
+//Rehber Öğretmen
+Vue.component("c-ders-personel", {
+    props: ['controller', 'idset', 'id_sinif', 'id_kullanici_tipi', 'label'],
+    template: `
+                <div class ="form-md-line-input">
+                    <label class ="control-label col-md-3" style="vertical-align:middle;">{{label}} </label>
+                    <div class ="col-md-9">
+                        <select class ="selectpicker form-control" v-model="SelectedID" @change="OnChange" title="Seçiniz..." >
+                            <option v-for="u in Liste" v-bind:value="u.TCKIMLIKNO" >{{u.ADSOYAD}}</option>
+                        </select>
+                    </div>
+                </div>
+        `
+    ,
+    data: function () {
+        return {
+            TCKIMLIKNO: '',
+            Liste: [],
+            SelectedID: '0'
+        }
+    },
+    methods: {
+        OnChange() {
+            this.$emit('onchange', this.SelectedID)
+        },
+
+        GetData() {
+            if (this.id_sinif >0) {
+                var p = { TCKIMLIKNO: session.TCKIMLIKNO, OTURUM: session.OTURUM, ID_SINIF: this.id_sinif, ID_KULLANICITIPI: this.id_kullanici_tipi };
+                WebPost(this, this.controller, "SinifPersonel", p, '', '', function (data, parent) {
+                    if (data != null) {
+                        parent.Liste = JSON.parse(data);
+
+                        if (parent.Liste.length > 0) {
+
+                            var selected = parent.Liste.find(x => x.SELECTED == 1)
+                            parent.SelectedID = selected.TCKIMLIKNO;
+                            parent.OnChange();
+                        }
+                    }
+                });
+            }
+            
+        }
+    },
+
+    mounted() {
+        this.GetData();
+    },
+
+    watch: {
+        idset() {
+            this.SelectedID = (this.idset == undefined || this.idset == null) ? 0 : this.idset;
+            this.OnChange();
+        },
+        id_sinif() {
+            this.GetData();
+        }
     },
 
     updated() {
