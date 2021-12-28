@@ -29,7 +29,8 @@
         KullaniciTipiListele = 7,
         KullaniciListele = 8,
         SinifAlanListele = 9,
-        EgitimTuruListele=10
+        EgitimTuruListele=10,
+        OgretmenListele=11
     }
 
     public enum sp_FiltreEk
@@ -1378,7 +1379,10 @@
     }
     public enum sp_DersEkleme
     {
-        DersListele=1
+        DersListele = 1,
+        DuzenleModal = 2,
+        Duzenle = 3,
+        Kaydet = 4
     }
     public enum sp_DersProgrami
     {
@@ -1386,5 +1390,14 @@
         DersProgram=2,
         DersOgretmen=3,
         DersPersonelKaydet = 4
+    }
+    public enum sp_DersOgretmenleri
+    {
+        DersEkle=1,
+        DersListele=2,
+        DersSil=3,
+        DersGetir=4,
+        DersDuzenle=5
+
     }
 }

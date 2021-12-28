@@ -284,8 +284,9 @@
         DiskaynakKademeEkle = 1420,
         KullaniciYetkiIslemleri = 2420,
         DiskaynakKademeTanim = 1421,
-        DersEkleme = 2424,
         TktAktarim = 1422,
-        DersProgrami=1424
+        DersProgrami=1424,
+        DersEkleme=1425,
+        DersOgretmenleri=1426
     }
 }

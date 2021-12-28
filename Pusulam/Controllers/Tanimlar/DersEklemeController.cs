@@ -11,7 +11,7 @@ namespace Pusulam.Controllers.Tanimlar
     [GzipCompression]
     public class DersEklemeController : ApiController
     {
-        internal int ID_MENU = (int)EMenu.Tatil;
+        internal int ID_MENU = (int)EMenu.DersEkleme;
         public Object Kademe3Listele(JObject j)
         {
             try
@@ -27,6 +27,8 @@ namespace Pusulam.Controllers.Tanimlar
                 throw ex;
             }
         }
+
+       
         public Object EgitimTuruListesi(JObject j)
         {
             try
@@ -48,8 +50,54 @@ namespace Pusulam.Controllers.Tanimlar
             {
                 using (Channel2<DDersEkleme> c = new Channel2<DDersEkleme>(ID_MENU))
                 {
-                    
+
                     return c._cs.DersListele(j);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        public Object DuzenleModal(JObject j)
+        {
+            try
+            {
+                using (Channel2<DDersEkleme> c = new Channel2<DDersEkleme>(ID_MENU))
+                {
+
+                    return c._cs.DuzenleModal(j);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public Object Duzenle(JObject j)
+        {
+            try
+            {
+                using (Channel2<DDersEkleme> c = new Channel2<DDersEkleme>(ID_MENU))
+                {
+
+                    return c._cs.Duzenle(j);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        public Object Kaydet(JObject j)
+        {
+            try
+            {
+                using (Channel2<DDersEkleme> c = new Channel2<DDersEkleme>(ID_MENU))
+                {
+
+                    return c._cs.Kaydet(j);
                 }
             }
             catch (Exception ex)

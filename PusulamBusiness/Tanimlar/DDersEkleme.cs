@@ -37,7 +37,7 @@ namespace PusulamBusiness.Tanimlar
                 throw ex;
             }
         }
-      
+
         public string DersListele(JObject j)
         {
             j.Add("ISLEM", (int)sp_DersEkleme.DersListele);
@@ -51,7 +51,55 @@ namespace PusulamBusiness.Tanimlar
                     db.Open();
                 json = db.ExecuteScalar<string>("sp_DersEkleme", j.ToDictionary(), commandTimeout: 600, commandType: CommandType.StoredProcedure);
             }
-            
+
+            return json;
+        }
+        public string DuzenleModal(JObject j)
+        {
+            j.Add("ISLEM", (int)sp_DersEkleme.DuzenleModal);
+            j.Add("ID_MENU", ID_MENU);
+            j.Add("IP", getIp.GetUser_IP());
+            string json = "";
+
+            using (IDbConnection db = new SqlConnection(conStr))
+            {
+                if (db.State == ConnectionState.Closed)
+                    db.Open();
+                json = db.ExecuteScalar<string>("sp_DersEkleme", j.ToDictionary(), commandTimeout: 600, commandType: CommandType.StoredProcedure);
+            }
+
+            return json;
+        }
+        public string Duzenle(JObject j)
+        {
+            j.Add("ISLEM", (int)sp_DersEkleme.DuzenleModal);
+            j.Add("ID_MENU", ID_MENU);
+            j.Add("IP", getIp.GetUser_IP());
+            string json = "";
+
+            using (IDbConnection db = new SqlConnection(conStr))
+            {
+                if (db.State == ConnectionState.Closed)
+                    db.Open();
+                json = db.ExecuteScalar<string>("sp_DersEkleme", j.ToDictionary(), commandTimeout: 600, commandType: CommandType.StoredProcedure);
+            }
+
+            return json;
+        }
+        public string Kaydet(JObject j)
+        {
+            j.Add("ISLEM", (int)sp_DersEkleme.Kaydet);
+            j.Add("ID_MENU", ID_MENU);
+            j.Add("IP", getIp.GetUser_IP());
+            string json = "";
+
+            using (IDbConnection db = new SqlConnection(conStr))
+            {
+                if (db.State == ConnectionState.Closed)
+                    db.Open();
+                json = db.ExecuteScalar<string>("sp_DersEkleme", j.ToDictionary(), commandTimeout: 600, commandType: CommandType.StoredProcedure);
+            }
+
             return json;
         }
 

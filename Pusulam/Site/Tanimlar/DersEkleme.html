@@ -1,4 +1,12 @@
-﻿
+﻿<div class="page-head">
+    <!-- BEGIN PAGE TITLE -->
+    <div class="page-title col-md-12">
+        <h1>
+            Rapor <small>Öğrenci Raporları</small> <span onclick="YardimGoster(ID_MENU);" class="pull-right" style="cursor:pointer;"><img src="assets/global/img/info.gif" class="info-image-icon" /> </span>
+        </h1>
+    </div>
+    <!-- END PAGE TITLE -->
+</div>
 <div class="row" id="app">
     <div class="col-md-12">
         <div class="portlet box blue-hoki dd-item" style="border:none">
@@ -21,11 +29,11 @@
                         <c-kademe3 :controller="controller"
                                    @OnChange="Kademe3Selected">
                         </c-kademe3>
-                    </div>        
+                    </div>
                     <div class="row">
                         <div class="form-group" style="margin-top:10px;">
                             <div class="col-md-12 text-right">
-                                <button type="button" class="btn green" @click="Listele">Kaydet</button>
+                                <button type="button" class="btn green" @click="Listele">Listele</button>
                             </div>
                         </div>
                     </div>
@@ -33,6 +41,7 @@
             </div>
         </div>
     </div>
+
     <div class="col-md-12">
         <div class="portlet light">
             <div class="portlet-title">
@@ -40,6 +49,12 @@
                     <i class="icon-list font-green"></i>
                     <span class="caption-subject bold font-green uppercase"> Ders Listesi </span>
                     <span class="caption-helper"></span>
+
+                </div>
+                <div>
+                    <div class="text-right">
+                        <a class="text-success" style="cursor:pointer;" @click="KaydetModal">Ders Ekle</a>
+                    </div>
                 </div>
             </div>
             <!-- BEGIN PORTLET-->
@@ -66,7 +81,7 @@
                                     <tr class="odd gradeX" v-for="u in LISTE">
                                         <td>{{u.ID_DERS}}</td>
                                         <td>{{u.DERSAD}}</td>
-                                        <td>{{u.EGITIM_TURU}}</td>
+                                        <td><label v-for="b in u.EGITIM_TURU">{{b.EGITIM}}<br /></label> </td>
                                         <td v-if="!u.AKTIF" class="text-center text-danger"><i class="fa fa-close fa-lg"></i> </td>
                                         <td v-if="u.AKTIF" class="text-center text-success"><i class="fa fa-check fa-lg"></i> </td>
                                         <td v-if="!u.SNVDERS" class="text-center text-danger"><i class="fa fa-close fa-lg"></i> </td>
@@ -90,13 +105,14 @@
             <!-- END PORTLET-->
         </div>
     </div>
-    <div id="DuzenleModal" class="modal fade" tabindex="-1" data-replace="true">
+
+    <div id="KaydetModal" class="modal fade" tabindex="-1" data-replace="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
                     <h4 class="modal-title">
-                        Yetki Düzenleme İşlemleri
+                        Ders Ekleme
                     </h4>
                 </div>
                 <div class="modal-body">
@@ -104,12 +120,14 @@
                         <div class="portlet-body form">
                             <div class="row">
                                 <c-egitim-turu-multi :controller="controller"
+                                                     :idset="ID_EGITIMTURUS"
                                                      @OnChange="EgitimTuruSelected">
 
                                 </c-egitim-turu-multi>
                             </div>
                             <div class="row">
                                 <c-kademe3 :controller="controller"
+                                           :idset="ID_KADEME3"
                                            @OnChange="Kademe3Selected">
                                 </c-kademe3>
                             </div>
@@ -129,7 +147,155 @@
                                     <input type="text" class="form-control" v-model="DERSKODU" />
                                 </div>
                             </div>
-                            
+                            <div class="row">
+                                <div class="control-label col-sm-3">
+                                    <label>Aktif</label>
+                                </div>
+                                <div class="col-sm-1">
+                                    <input type="checkbox" v-model="AKTIF" />
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="control-label col-sm-3">
+                                    <label>Frekans Hesapla</label>
+                                </div>
+                                <div class="col-sm-1">
+                                    <input type="checkbox" v-model="FREKANS" />
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="control-label col-sm-3">
+                                    <label>Sınav</label>
+                                </div>
+                                <div class="col-sm-1">
+                                    <input type="checkbox" v-model="SINAV" />
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="control-label col-sm-3">
+                                    <label>NORMAL</label>
+                                </div>
+                                <div class="col-sm-1">
+                                    <input type="checkbox" v-model="NORMAL" />
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="control-label col-sm-3">
+                                    <label>KUR</label>
+                                </div>
+                                <div class="col-sm-1">
+                                    <input type="checkbox" v-model="KUR" />
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="control-label col-sm-3">
+                                    <label>VIU</label>
+                                </div>
+                                <div class="col-sm-1">
+                                    <input type="checkbox" v-model="VIU" />
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer" style="padding-top:0px!important;">
+                    <button type="button" class="btn green" @click="Duzenle">Kaydet</button>
+                    <button type="button" class="btn default" data-dismiss="modal">Kapat</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="DuzenleModal" class="modal fade" tabindex="-1" data-replace="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                    <h4 class="modal-title">
+                        Ders Düzenleme
+                    </h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-body form-horizontal">
+                        <div class="portlet-body form">
+                            <div class="row">
+                                <c-egitim-turu-multi :controller="controller"
+                                                     :idset="ID_EGITIMTURUS"
+                                                     @OnChange="EgitimTuruSelected">
+
+                                </c-egitim-turu-multi>
+                            </div>
+                            <div class="row">
+                                <c-kademe3 :controller="controller"
+                                           :idset="ID_KADEME3"
+                                           @OnChange="Kademe3Selected">
+                                </c-kademe3>
+                            </div>
+                            <div class="row">
+                                <div class="control-label col-sm-3">
+                                    <label>Ders Adı:</label>
+                                </div>
+                                <div class="control-label col-sm-9">
+                                    <input type="text" class="form-control" v-model="DERSADI" />
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="control-label col-sm-3">
+                                    <label>Ders Kodu:</label>
+                                </div>
+                                <div class="col-sm-9">
+                                    <input type="text" class="form-control" v-model="DERSKODU" />
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="control-label col-sm-3">
+                                    <label>Aktif</label>
+                                </div>
+                                <div class="col-sm-1">
+                                    <input type="checkbox" v-model="AKTIF" />
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="control-label col-sm-3">
+                                    <label>Frekans Hesapla</label>
+                                </div>
+                                <div class="col-sm-1">
+                                    <input type="checkbox" v-model="FREKANS" />
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="control-label col-sm-3">
+                                    <label>Sınav</label>
+                                </div>
+                                <div class="col-sm-1">
+                                    <input type="checkbox" v-model="SINAV" />
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="control-label col-sm-3">
+                                    <label>NORMAL</label>
+                                </div>
+                                <div class="col-sm-1">
+                                    <input type="checkbox" v-model="NORMAL" />
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="control-label col-sm-3">
+                                    <label>KUR</label>
+                                </div>
+                                <div class="col-sm-1">
+                                    <input type="checkbox" v-model="KUR" />
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="control-label col-sm-3">
+                                    <label>VIU</label>
+                                </div>
+                                <div class="col-sm-1">
+                                    <input type="checkbox" v-model="VIU" />
+                                </div>
+                            </div>
+
                         </div>
                     </div>
                 </div>
@@ -150,15 +316,22 @@
         name: "DersEkleme.html",
 
         data: {
-            ID_KADEME3: 7,
+            ID_KADEME3: 0,
             controller: "DersEkleme",
             DERSADI: "",
             DERSKODU: "",
             ID_EGITIMTURUS: [],
-            LISTE: []
-
+            LISTE: [],
+            AKTIF: 1,
+            FREKANS: 0,
+            SINAV: 0,
+            NORMAL: 0,
+            KUR: 0,
+            VIU: 0,
+            LISTE_DUZENLE: { ID_DERS: 0, AKTIF: 0, DERSADI: "", DERSKODU: "", FREKANS: 0, SINAV: 0, NORMAL: 0, KUR: 0, VIU: 0, ID_KADEME3: 0 },
+            ID_DERS: 0
         },
-         
+
         methods: {
 
             Kademe3Selected(ID_KADEME3) {
@@ -181,7 +354,71 @@
                 });
             },
             DuzenleModal(ID_DERS) {
-                $('#DuzenleModal').modal();
+                this.ID_DERS = ID_DERS
+                this.LISTE_DUZENLE = [];
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    ID_KADEME3: this.ID_KADEME3,
+                    ID_DERS: ID_DERS
+                };
+
+                WebPost(this, this.controller, 'DuzenleModal', p, '', '', function (data, parent) {
+                    parent.LISTE_DUZENLE = JSON.parse(data);
+                    parent.DERSADI = parent.LISTE_DUZENLE[0].DERSAD;
+                    parent.DERSKODU = parent.LISTE_DUZENLE[0].DERSKOD;
+                    parent.AKTIF = parent.LISTE_DUZENLE[0].AKTIF;
+                    parent.FREKANS = parent.LISTE_DUZENLE[0].FREKANS;
+                    parent.KUR = parent.LISTE_DUZENLE[0].KUR;
+                    parent.NORMAL = parent.LISTE_DUZENLE[0].NORMAL;
+                    parent.SINAV = parent.LISTE_DUZENLE[0].SNVDERS;
+                    parent.VIU = parent.LISTE_DUZENLE[0].VIU;
+                    parent.ID_EGITIMTURUS = [];
+                    for (var i = 0; i < parent.LISTE_DUZENLE[0].EGITIM_TURU.length; i++) {
+                        parent.ID_EGITIMTURUS.push(parent.LISTE_DUZENLE[0].EGITIM_TURU[i].ID_EGITIMTURU);
+                    }
+
+                    $('#DuzenleModal').modal();
+                });
+            },
+            Duzenle() {
+                if (this.DERSADI == '' || this.DERSKODU == '' || this.ID_EGITIMTURUS.length == 0 || this.ID_KADEME3 == 0) {
+                    Alert_Info('Lütfen tüm alanları doldurun!')
+                    return;
+                }
+                this.LISTE_DUZENLE = { ID_DERS: this.ID_DERS, AKTIF: this.AKTIF, DERSADI: this.DERSADI, DERSKODU: this.DERSKODU, FREKANS: this.FREKANS, SINAV: this.SINAV, NORMAL: this.NORMAL, KUR: this.KUR, VIU: this.VIU, ID_KADEME3: this.ID_KADEME3 }
+                var metot = 'Kaydet';
+                if (this.ID_DERS > 0) {
+                    metot = 'Duzenle'
+                }
+                var LIST_EGITIM = []
+                for (var i = 0; i < this.ID_EGITIMTURUS.length; i++) {
+                    LIST_EGITIM.push({ ID_EGITIMTURU: this.ID_EGITIMTURUS[i] })
+                }
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    SQLJSON: JSON.stringify(this.LISTE_DUZENLE),
+                    EGITIMJSON: JSON.stringify(LIST_EGITIM)
+                }
+                WebPost(this, this.controller, metot, p, '', '', function (data, parent) {
+                    parent.Listele();
+                });
+            },
+            KaydetModal() {
+                this.LISTE_DUZENLE = { ID_DERS: 0, AKTIF: 0, DERSADI: "", DERSKODU: "", FREKANS: 0, SINAV: 0, NORMAL: 0, KUR: 0, VIU: 0 };
+                DERSADI = "";
+                DERSKODU = "";
+                ID_EGITIMTURUS = [];
+                LISTE = [];
+                AKTIF = 0;
+                FREKANS = 0;
+                SINAV = 0;
+                NORMAL = 0;
+                KUR = 0;
+                VIU = 0;
+                $('#KaydetModal').modal();
+
             }
 
         }

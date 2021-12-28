@@ -469,6 +469,7 @@
     <Content Include="Site\SportifKulupler\OgrenciKulupler.html" />
     <Content Include="Site\SportifKulupler\PeriyotBelirle.html" />
     <Content Include="Site\Tanimlar\DersEkleme.html" />
+    <Content Include="Site\Tanimlar\DersOgretmenleri.html" />
     <Content Include="Site\Tanimlar\DersProgrami.html" />
     <Content Include="Site\Tkt\Aktarim.html" />
     <Content Include="Site\UniteTaramaOlcegi\UniteTaramaEtutOlustur.html" />
@@ -539,6 +540,7 @@
     <Content Include="SQL\FeritAltıntas\15- 21.05.2021.sql" />
     <Content Include="SQL\FeritAltıntas\14- 18.05.2021.sql" />
     <Content Include="SQL\FeritAltıntas\13- 28.04.2021.sql" />
+    <Content Include="SQL\FeritAltıntas\27- 25.12.2021.sql" />
     <Content Include="SQL\FeritAltıntas\26- 22.11.2021.sql" />
     <Content Include="SQL\GokhanKahraman\06 - 09-02-2021.sql" />
     <Content Include="SQL\GokhanKahraman\05 - 03-02-2021.sql" />
@@ -944,6 +946,7 @@
     <Compile Include="Controllers\SportifKulupler\KulupBelirleController.cs" />
     <Compile Include="Controllers\SportifKulupler\KotaBelirleController.cs" />
     <Compile Include="Controllers\SportifKulupler\PeriyotBelirleController.cs" />
+    <Compile Include="Controllers\Tanimlar\DersOgretmenleriController.cs" />
     <Compile Include="Controllers\Tanimlar\DersProgramiController.cs" />
     <Compile Include="Controllers\Tanimlar\DersEklemeController.cs" />
     <Compile Include="Controllers\Tatil\TatilController.cs" />
