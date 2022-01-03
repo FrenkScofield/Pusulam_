@@ -1400,4 +1400,15 @@
         DersDuzenle=5
 
     }
+    public enum sp_OgretmenDersleri
+    {       
+        DersListele = 1,
+        DersSil = 2
+    }
+    public enum sp_DersSaatleri
+    {
+        DersSaatleriListele = 1,
+        DersSaatleriKaydet = 2
+    }
+    
 }

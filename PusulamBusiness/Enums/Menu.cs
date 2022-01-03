@@ -287,6 +287,8 @@
         TktAktarim = 1422,
         DersProgrami=1424,
         DersEkleme=1425,
-        DersOgretmenleri=1426
+        DersOgretmenleri=1426,
+        OgretmenDersleri=1427,
+        DersSaatleri=1428
     }
 }

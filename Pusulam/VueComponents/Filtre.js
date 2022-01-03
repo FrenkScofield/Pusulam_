@@ -2259,8 +2259,7 @@ Vue.component("c-ogretmenlist", {
             var p = { TCKIMLIKNO: session.TCKIMLIKNO, OTURUM: session.OTURUM, ID_SINIF: 0, ID_SUBE: this.idsube, DONEM: this.donem,ID_DERS:0};
             WebPost(this, this.controller, "OgretmenListele", p, '', '', function (data, parent) {
                 parent.Liste = JSON.parse(data);
-                var selected = parent.Liste.find(x => x.SELECTED == 1)
-                parent.SelectedID = selected.ID_OGRETMEN;
+               
             })
         }
     },

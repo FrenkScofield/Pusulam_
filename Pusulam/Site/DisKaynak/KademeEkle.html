@@ -38,7 +38,9 @@
                                 <c-kademe3-multi :controller="controller"
                                                  @OnChange="Kademe3Selected">
                                 </c-kademe3-multi>
-
+                                <c-sinif-alan-multi controller="GenelSinavRaporu"
+                                                    @OnChange="SinifAlanSelected">
+                                </c-sinif-alan-multi>
                                 <div class="form-md-line-input">
                                     <div class="col-md-2">
                                         <input type="button" class="btn btn-primary" value="Kaydet" @click="Kaydet()">
@@ -55,6 +57,7 @@
                                 <tr>
                                     <th style="text-align:left!important;">Proje</th>
                                     <th>Grup</th>
+                                    <th>Sınıf Tür</th>
                                     <th class="text-center">Sil</th>
                                 </tr>
                             </thead>
@@ -62,6 +65,7 @@
                                 <tr v-for="u in LISTE">
                                     <td style="text-align:left!important;">{{u.PROJE}}</td>
                                     <td>{{u.AD}}</td>
+                                    <td>{{u.ALAN}}</td>
                                     <td class="col-sm-1 text-center"><a class="text-danger" @click="SilUyari(u.ID_KADEME3, u.ID_DISKAYNAK)"><i class="fa fa-trash"></i></a></td>
                                 </tr>
                             </tbody>
@@ -75,6 +79,8 @@
 
 <script src="VueComponents/KulupFiltreleri.js?v=4"></script>
 <script src="VueComponents/Genel.js?v=3"></script>
+<script src="../../../VueComponents/GenelSinavRaporuFiltreleri.js?v=18"></script>
+
 <script>
     var vue = new Vue({
         el: "#app",
@@ -86,7 +92,8 @@
             PROJELER: [],
             ID_DISKAYNAK: 0,
             KADEME3s: '',
-            LISTE: []
+            LISTE: [],
+            ALANs:[]
         },
 
         mounted() {
@@ -97,6 +104,9 @@
         methods: {
             Kademe3Selected(item) {
                 this.KADEME3s = item;
+            },
+            SinifAlanSelected(item) {
+                this.ALANs = item;
             },
             ProjeListele() {
                 var p = {
@@ -114,9 +124,10 @@
                     OTURUM: session.OTURUM,
                     ID_KADEME3s: '',
                     ID_DISKAYNAK: this.ID_DISKAYNAK,
-                    ID_KADEME3s: JSON.stringify(this.KADEME3s)
+                    ID_KADEME3s: JSON.stringify(this.KADEME3s),
+                    ALANs: JSON.stringify(this.ALANs)
                 };
-
+                
                 WebPost(this, this.controller, "Ekle", p, '', '', function (data, parent) {
                     Alert_Info("Gruplar projeye başarı ile eklendi.");
                 })
