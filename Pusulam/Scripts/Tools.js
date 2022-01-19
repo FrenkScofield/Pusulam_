@@ -766,6 +766,20 @@ function SqlWebActionSyncJSON(metod, controller, action, param, block_target, lo
 
 }
 
+function WebPostResponsuz(controller, action, param) {
+
+    $.ajax({
+        type: "post",
+        url: controller + "/" + action,
+        data: JSON.stringify(param),
+        async: true,
+        cache: false,
+        contentType: "application/json; charset=utf-8",
+        dataType: "json"
+    })
+
+}
+
 function SqlWebActionSync(metod, controller, action, param, block_target, loading_message, complete) {
 
     if (block_target == '') {

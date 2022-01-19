@@ -1,0 +1,1405 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.0\build\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props" Condition="Exists('..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.0\build\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" />
+  <Import Project="..\packages\Microsoft.Net.Compilers.1.0.0\build\Microsoft.Net.Compilers.props" Condition="Exists('..\packages\Microsoft.Net.Compilers.1.0.0\build\Microsoft.Net.Compilers.props')" />
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>
+    </ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{47356626-7BE3-4477-9B2F-3E8CD994171F}</ProjectGuid>
+    <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Pusulam</RootNamespace>
+    <AssemblyName>Pusulam</AssemblyName>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <UseIISExpress>false</UseIISExpress>
+    <IISExpressSSLPort />
+    <IISExpressAnonymousAuthentication />
+    <IISExpressWindowsAuthentication />
+    <IISExpressUseClassicPipelineMode />
+    <UseGlobalApplicationHostFile />
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+    <Use64BitIISExpress />
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DocumentationFile>bin\Pusulam.xml</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Antlr3.Runtime, Version=3.4.1.9004, Culture=neutral, PublicKeyToken=eb42632606e9261f, processorArchitecture=MSIL">
+      <HintPath>..\packages\Antlr.3.4.1.9004\lib\Antlr3.Runtime.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="AWSSDK.Chime, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
+      <HintPath>..\packages\AWSSDK.Chime.3.5.0\lib\net45\AWSSDK.Chime.dll</HintPath>
+    </Reference>
+    <Reference Include="AWSSDK.Core, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
+      <HintPath>..\packages\AWSSDK.Core.3.5.1.27\lib\net45\AWSSDK.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="AWSSDK.S3, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
+      <HintPath>..\packages\AWSSDK.S3.3.5.3.5\lib\net45\AWSSDK.S3.dll</HintPath>
+    </Reference>
+    <Reference Include="Dapper, Version=1.50.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Dapper.1.50.2\lib\net451\Dapper.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="DevExpress.Charts.v15.1.Core, Version=15.1.8.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.Data.v15.1, Version=15.1.8.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.DataAccess.v15.1, Version=15.1.8.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.Docs.v15.1, Version=15.1.8.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>bin\DevExpress.Docs.v15.1.dll</HintPath>
+    </Reference>
+    <Reference Include="DevExpress.Office.v15.1.Core, Version=15.1.8.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.Pdf.v15.1.Core, Version=15.1.8.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>bin\DevExpress.Pdf.v15.1.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="DevExpress.Pdf.v15.1.Drawing, Version=15.1.8.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>bin\DevExpress.Pdf.v15.1.Drawing.dll</HintPath>
+    </Reference>
+    <Reference Include="DevExpress.PivotGrid.v15.1.Core, Version=15.1.8.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.Printing.v15.1.Core, Version=15.1.8.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
+    <Reference Include="DevExpress.RichEdit.v15.1.Core, Version=15.1.8.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.Snap.v15.1.Core, Version=15.1.8.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>bin\DevExpress.Snap.v15.1.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="DevExpress.Sparkline.v15.1.Core, Version=15.1.8.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.Spreadsheet.v15.1.Core, Version=15.1.8.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>bin\DevExpress.Spreadsheet.v15.1.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="DevExpress.Web.ASPxThemes.v15.1, Version=15.1.8.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.Web.v15.1, Version=15.1.8.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.Xpo.v15.1, Version=15.1.8.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.XtraCharts.v15.1, Version=15.1.8.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.XtraGauges.v15.1.Core, Version=15.1.8.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.XtraReports.v15.1, Version=15.1.8.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.XtraReports.v15.1.Web, Version=15.1.8.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DotNetZip, Version=1.11.0.0, Culture=neutral, PublicKeyToken=6583c7c814667745, processorArchitecture=MSIL">
+      <HintPath>..\packages\DotNetZip.1.11.0\lib\net20\DotNetZip.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.CodeDom.Providers.DotNetCompilerPlatform, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.0\lib\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.13.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.EnterpriseServices" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Net.Http.Formatting, Version=5.2.7.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.Client.5.2.7\lib\net45\System.Net.Http.Formatting.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.Web.ApplicationServices" />
+    <Reference Include="System.Web.Cors, Version=5.2.7.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Cors.5.2.7\lib\net45\System.Web.Cors.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.DynamicData" />
+    <Reference Include="System.Web.Entity" />
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Web.Helpers, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.7\lib\net45\System.Web.Helpers.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Http, Version=5.2.7.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.Core.5.2.7\lib\net45\System.Web.Http.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Http.Cors, Version=5.2.7.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.Cors.5.2.7\lib\net45\System.Web.Http.Cors.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Optimization, Version=1.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Web.Optimization.1.1.3\lib\net40\System.Web.Optimization.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Razor.3.2.7\lib\net45\System.Web.Razor.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Services" />
+    <Reference Include="System.Web.WebPages, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.7\lib\net45\System.Web.WebPages.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Deployment, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.7\lib\net45\System.Web.WebPages.Deployment.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.7\lib\net45\System.Web.WebPages.Razor.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="WebGrease, Version=1.5.2.14234, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\WebGrease.1.5.2\lib\WebGrease.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System.Web.Http.WebHost">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.WebHost.5.2.3\lib\net45\System.Web.Http.WebHost.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="AnasayfaOutSide.html" />
+    <Content Include="Anasayfa.html" />
+    <Content Include="assets\global\css\components-md.css" />
+    <Content Include="assets\global\css\pusulam.css" />
+    <Content Include="assets\global\img\inflicted.ogg" />
+    <Content Include="assets\global\img\info.gif" />
+    <Content Include="assets\global\img\whatsapp.png" />
+    <Content Include="assets\global\plugins\amazonchime\amazon-chime-sdk.min.js" />
+    <Content Include="assets\global\plugins\bootstrap-wysihtml5\bootstrap-wysihtml5.css" />
+    <Content Include="assets\global\plugins\bootstrap-wysihtml5\bootstrap-wysihtml5.js" />
+    <Content Include="assets\global\plugins\bootstrap-wysihtml5\locales\bootstrap-wysihtml5.ar-AR.js" />
+    <Content Include="assets\global\plugins\bootstrap-wysihtml5\locales\bootstrap-wysihtml5.bg-BG.js" />
+    <Content Include="assets\global\plugins\bootstrap-wysihtml5\locales\bootstrap-wysihtml5.ca-CT.js" />
+    <Content Include="assets\global\plugins\bootstrap-wysihtml5\locales\bootstrap-wysihtml5.cs-CZ.js" />
+    <Content Include="assets\global\plugins\bootstrap-wysihtml5\locales\bootstrap-wysihtml5.da-DK.js" />
+    <Content Include="assets\global\plugins\bootstrap-wysihtml5\locales\bootstrap-wysihtml5.de-DE.js" />
+    <Content Include="assets\global\plugins\bootstrap-wysihtml5\locales\bootstrap-wysihtml5.el-GR.js" />
+    <Content Include="assets\global\plugins\bootstrap-wysihtml5\locales\bootstrap-wysihtml5.es-AR.js" />
+    <Content Include="assets\global\plugins\bootstrap-wysihtml5\locales\bootstrap-wysihtml5.es-ES.js" />
+    <Content Include="assets\global\plugins\bootstrap-wysihtml5\locales\bootstrap-wysihtml5.fr-FR.js" />
+    <Content Include="assets\global\plugins\bootstrap-wysihtml5\locales\bootstrap-wysihtml5.hr-HR.js" />
+    <Content Include="assets\global\plugins\bootstrap-wysihtml5\locales\bootstrap-wysihtml5.it-IT.js" />
+    <Content Include="assets\global\plugins\bootstrap-wysihtml5\locales\bootstrap-wysihtml5.ja-JP.js" />
+    <Content Include="assets\global\plugins\bootstrap-wysihtml5\locales\bootstrap-wysihtml5.ko-KR.js" />
+    <Content Include="assets\global\plugins\bootstrap-wysihtml5\locales\bootstrap-wysihtml5.lt-LT.js" />
+    <Content Include="assets\global\plugins\bootstrap-wysihtml5\locales\bootstrap-wysihtml5.mo-MD.js" />
+    <Content Include="assets\global\plugins\bootstrap-wysihtml5\locales\bootstrap-wysihtml5.nb-NB.js" />
+    <Content Include="assets\global\plugins\bootstrap-wysihtml5\locales\bootstrap-wysihtml5.nl-NL.js" />
+    <Content Include="assets\global\plugins\bootstrap-wysihtml5\locales\bootstrap-wysihtml5.pl-PL.js" />
+    <Content Include="assets\global\plugins\bootstrap-wysihtml5\locales\bootstrap-wysihtml5.pt-BR.js" />
+    <Content Include="assets\global\plugins\bootstrap-wysihtml5\locales\bootstrap-wysihtml5.ru-RU.js" />
+    <Content Include="assets\global\plugins\bootstrap-wysihtml5\locales\bootstrap-wysihtml5.sk-SK.js" />
+    <Content Include="assets\global\plugins\bootstrap-wysihtml5\locales\bootstrap-wysihtml5.sv-SE.js" />
+    <Content Include="assets\global\plugins\bootstrap-wysihtml5\locales\bootstrap-wysihtml5.tr-TR.js" />
+    <Content Include="assets\global\plugins\bootstrap-wysihtml5\locales\bootstrap-wysihtml5.ua-UA.js" />
+    <Content Include="assets\global\plugins\bootstrap-wysihtml5\locales\bootstrap-wysihtml5.zh-CN.js" />
+    <Content Include="assets\global\plugins\bootstrap-wysihtml5\locales\bootstrap-wysihtml5.zh-TW.js" />
+    <Content Include="assets\global\plugins\bootstrap-wysihtml5\wysihtml5-0.3.0.js" />
+    <Content Include="assets\global\plugins\bootstrap-wysihtml5\wysiwyg-color.css" />
+    <Content Include="assets\global\plugins\xlsx.full.min.js" />
+    <Content Include="assets\plugins\iban.js-master\demo\index.html" />
+    <Content Include="assets\plugins\iban.js-master\demo\js\demo.js" />
+    <Content Include="assets\plugins\iban.js-master\iban.js" />
+    <Content Include="assets\plugins\iban.js-master\test\ibanTest.js" />
+    <Content Include="assets\plugins\iban.js-master\test\simple.html" />
+    <Content Include="assets\plugins\iban.js-master\test\tests.html" />
+    <Content Include="assets\plugins\stickyTable-js\examples\example-ltr.html" />
+    <Content Include="assets\plugins\stickyTable-js\examples\example-popup.html" />
+    <Content Include="assets\plugins\stickyTable-js\examples\example-rtl.html" />
+    <Content Include="assets\plugins\stickyTable-js\examples\libs\bootstrap.min.css" />
+    <Content Include="assets\plugins\stickyTable-js\examples\libs\fancybox_loading%402x.gif" />
+    <Content Include="assets\plugins\stickyTable-js\examples\libs\fancybox_loading.gif" />
+    <Content Include="assets\plugins\stickyTable-js\examples\libs\fancybox_overlay.png" />
+    <Content Include="assets\plugins\stickyTable-js\examples\libs\fancybox_sprite%402x.png" />
+    <Content Include="assets\plugins\stickyTable-js\examples\libs\fancybox_sprite.png" />
+    <Content Include="assets\plugins\stickyTable-js\examples\libs\jquery-3.2.0.min.js" />
+    <Content Include="assets\plugins\stickyTable-js\examples\libs\jquery.fancybox.css" />
+    <Content Include="assets\plugins\stickyTable-js\examples\libs\jquery.fancybox.js" />
+    <Content Include="assets\plugins\stickyTable-js\examples\sample-table.txt" />
+    <Content Include="assets\plugins\stickyTable-js\jquery.stickytable.css" />
+    <Content Include="assets\plugins\stickyTable-js\jquery.stickytable.js" />
+    <Content Include="assets\plugins\stickyTable-js\jquery.stickytable.min.css" />
+    <Content Include="assets\plugins\stickyTable-js\jquery.stickytable.min.js" />
+    <Content Include="assets\plugins\wiris\WIRISplugins.js" />
+    <Content Include="bin\AWSSDK.Chime.dll" />
+    <Content Include="bin\AWSSDK.Chime.pdb" />
+    <Content Include="bin\AWSSDK.Chime.xml" />
+    <Content Include="bin\AWSSDK.Core.dll" />
+    <Content Include="bin\AWSSDK.Core.pdb" />
+    <Content Include="bin\AWSSDK.Core.xml" />
+    <Content Include="bin\AWSSDK.S3.dll" />
+    <Content Include="bin\AWSSDK.S3.pdb" />
+    <Content Include="bin\AWSSDK.S3.xml" />
+    <Content Include="bin\Dapper.dll" />
+    <Content Include="bin\Dapper.xml" />
+    <Content Include="bin\DevExpress.Charts.v15.1.Core.dll" />
+    <Content Include="bin\DevExpress.Data.v15.1.dll" />
+    <Content Include="bin\DevExpress.Data.v15.1.xml" />
+    <Content Include="bin\DevExpress.DataAccess.v15.1.dll" />
+    <Content Include="bin\DevExpress.DataAccess.v15.1.xml" />
+    <Content Include="bin\DevExpress.Docs.v15.1.dll" />
+    <Content Include="bin\DevExpress.Office.v15.1.Core.dll" />
+    <Content Include="bin\DevExpress.Office.v15.1.Core.xml" />
+    <Content Include="bin\DevExpress.Pdf.v15.1.Core.dll" />
+    <Content Include="bin\DevExpress.Pdf.v15.1.Core.xml" />
+    <Content Include="bin\DevExpress.Pdf.v15.1.Drawing.dll" />
+    <Content Include="bin\DevExpress.Pdf.v15.1.Drawing.xml" />
+    <Content Include="bin\DevExpress.PivotGrid.v15.1.Core.dll" />
+    <Content Include="bin\DevExpress.PivotGrid.v15.1.Core.xml" />
+    <Content Include="bin\DevExpress.Printing.v15.1.Core.dll" />
+    <Content Include="bin\DevExpress.Printing.v15.1.Core.xml" />
+    <Content Include="bin\DevExpress.RichEdit.v15.1.Core.dll" />
+    <Content Include="bin\DevExpress.RichEdit.v15.1.Core.xml" />
+    <Content Include="bin\DevExpress.Snap.v15.1.Core.dll" />
+    <Content Include="bin\DevExpress.Snap.v15.1.Core.xml" />
+    <Content Include="bin\DevExpress.Sparkline.v15.1.Core.dll" />
+    <Content Include="bin\DevExpress.Sparkline.v15.1.Core.xml" />
+    <Content Include="bin\DevExpress.Spreadsheet.v15.1.Core.dll" />
+    <Content Include="bin\DevExpress.Spreadsheet.v15.1.Core.xml" />
+    <Content Include="bin\DevExpress.Web.ASPxThemes.v15.1.dll" />
+    <Content Include="bin\DevExpress.Web.v15.1.dll" />
+    <Content Include="bin\DevExpress.Xpo.v15.1.dll" />
+    <Content Include="bin\DevExpress.XtraCharts.v15.1.dll" />
+    <Content Include="bin\DevExpress.XtraCharts.v15.1.xml" />
+    <Content Include="bin\DevExpress.XtraGauges.v15.1.Core.dll" />
+    <Content Include="bin\DevExpress.XtraGauges.v15.1.Core.xml" />
+    <Content Include="bin\DevExpress.XtraReports.v15.1.dll" />
+    <Content Include="bin\DevExpress.XtraReports.v15.1.Web.dll" />
+    <Content Include="bin\DevExpress.XtraReports.v15.1.Web.xml" />
+    <Content Include="bin\DevExpress.XtraReports.v15.1.xml" />
+    <Content Include="bin\DotNetZip.dll" />
+    <Content Include="bin\DotNetZip.xml" />
+    <Content Include="bin\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll" />
+    <Content Include="bin\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.xml" />
+    <Content Include="bin\Microsoft.Web.Infrastructure.dll" />
+    <Content Include="bin\Newtonsoft.Json.dll" />
+    <Content Include="bin\Newtonsoft.Json.xml" />
+    <Content Include="bin\Pusulam.dll" />
+    <Content Include="bin\Pusulam.pdb" />
+    <Content Include="bin\PusulamRapor.dll" />
+    <Content Include="bin\PusulamRapor.pdb" />
+    <Content Include="bin\System.Net.Http.Formatting.dll" />
+    <Content Include="bin\System.Net.Http.Formatting.xml" />
+    <Content Include="bin\System.Web.Cors.dll" />
+    <Content Include="bin\System.Web.Helpers.dll" />
+    <Content Include="bin\System.Web.Helpers.xml" />
+    <Content Include="bin\System.Web.Http.Cors.dll" />
+    <Content Include="bin\System.Web.Http.Cors.xml" />
+    <Content Include="bin\System.Web.Http.dll" />
+    <Content Include="bin\System.Web.Http.WebHost.dll" />
+    <Content Include="bin\System.Web.Http.WebHost.xml" />
+    <Content Include="bin\System.Web.Http.xml" />
+    <Content Include="bin\System.Web.Optimization.dll" />
+    <Content Include="bin\System.Web.Optimization.xml" />
+    <Content Include="bin\System.Web.Razor.dll" />
+    <Content Include="bin\System.Web.Razor.xml" />
+    <Content Include="bin\System.Web.WebPages.Deployment.dll" />
+    <Content Include="bin\System.Web.WebPages.Deployment.xml" />
+    <Content Include="bin\System.Web.WebPages.dll" />
+    <Content Include="bin\System.Web.WebPages.Razor.dll" />
+    <Content Include="bin\System.Web.WebPages.Razor.xml" />
+    <Content Include="bin\System.Web.WebPages.xml" />
+    <Content Include="CkImageUpload.ashx" />
+    <Content Include="Content\Site.css" />
+    <Content Include="EtkinlikYukle.ashx" />
+    <Content Include="Helper\RaporKaydet.aspx" />
+    <Content Include="img\Abide\beceriders.png" />
+    <Content Include="img\Abide\cozulemedi.png" />
+    <Content Include="img\Abide\Cozulemedi_Lise.png" />
+    <Content Include="img\Abide\emoji_confused.png" />
+    <Content Include="img\Abide\emoji_happy.png" />
+    <Content Include="img\Abide\emoji_sad.png" />
+    <Content Include="img\Abide\KismiCozuldu.png" />
+    <Content Include="img\Abide\KismiCozuldu_Lise.png" />
+    <Content Include="img\Abide\TamCozuldu.png" />
+    <Content Include="img\Abide\TamCozuldu_Lise.png" />
+    <Content Include="img\altınkupa.png" />
+    <Content Include="img\arka.jpg" />
+    <Content Include="img\bronzkupa.png" />
+    <Content Include="img\emoji_confused.png" />
+    <Content Include="img\emoji_happy.png" />
+    <Content Include="img\emoji_sad.png" />
+    <Content Include="img\gumuskupa.png" />
+    <Content Include="img\Kiyafet\aa1.JPG" />
+    <Content Include="img\Kiyafet\aa2.jpg" />
+    <Content Include="img\Kiyafet\aa3.JPG" />
+    <Content Include="img\Kiyafet\aa4.JPG" />
+    <Content Include="img\Kiyafet\aa5.JPG" />
+    <Content Include="img\Kiyafet\aa6.jpg" />
+    <Content Include="img\Kiyafet\aa7.JPG" />
+    <Content Include="img\Kiyafet\aa8.JPG" />
+    <Content Include="img\Kiyafet\aa9.jpg" />
+    <Content Include="img\Kiyafet\ol1.JPG" />
+    <Content Include="img\Kiyafet\ol2.JPG" />
+    <Content Include="img\Kiyafet\ol3.JPG" />
+    <Content Include="img\Kiyafet\ol4.JPG" />
+    <Content Include="img\Kiyafet\ol5.JPG" />
+    <Content Include="img\Kiyafet\ol6.JPG" />
+    <Content Include="img\Kiyafet\ol7.JPG" />
+    <Content Include="img\Kiyafet\talimatlar.png" />
+    <Content Include="img\morpa.ico" />
+    <Content Include="img\RehberlikEnvanter_Raporlar\2017\5\10. Sınıf\14468264522.pdf" />
+    <Content Include="img\RehberlikEnvanter_Raporlar\2017\5\10. Sınıf\16331202402.pdf" />
+    <Content Include="img\RehberlikEnvanter_Raporlar\2017\5\10. Sınıf\17369361512.pdf" />
+    <Content Include="img\RehberlikEnvanter_Raporlar\2017\5\10. Sınıf\17462522278.pdf" />
+    <Content Include="img\RehberlikEnvanter_Raporlar\2017\5\10. Sınıf\21122236436.pdf" />
+    <Content Include="img\RehberlikEnvanter_Raporlar\2017\5\10. Sınıf\22567623362.pdf" />
+    <Content Include="img\RehberlikEnvanter_Raporlar\2017\5\10. Sınıf\27002030194.pdf" />
+    <Content Include="img\RehberlikEnvanter_Raporlar\2017\5\10. Sınıf\29296978046.pdf" />
+    <Content Include="img\RehberlikEnvanter_Raporlar\2017\5\10. Sınıf\29476816328.pdf" />
+    <Content Include="img\RehberlikEnvanter_Raporlar\2017\5\10. Sınıf\31570906102.pdf" />
+    <Content Include="img\RehberlikEnvanter_Raporlar\2017\5\10. Sınıf\34843779038.pdf" />
+    <Content Include="img\RehberlikEnvanter_Raporlar\2017\5\10. Sınıf\34951100700.pdf" />
+    <Content Include="img\RehberlikEnvanter_Raporlar\2017\5\10. Sınıf\39496604720.pdf" />
+    <Content Include="img\RehberlikEnvanter_Raporlar\2017\5\10. Sınıf\41683531832.pdf" />
+    <Content Include="img\RehberlikEnvanter_Raporlar\2017\5\10. Sınıf\46147067162.pdf" />
+    <Content Include="img\RehberlikEnvanter_Raporlar\2017\5\10. Sınıf\47680157570.pdf" />
+    <Content Include="img\RehberlikEnvanter_Raporlar\2017\5\10. Sınıf\51007076208.pdf" />
+    <Content Include="img\RehberlikEnvanter_Raporlar\2017\5\10. Sınıf\57760034608.pdf" />
+    <Content Include="img\RehberlikEnvanter_Raporlar\2017\5\10. Sınıf\68215265522 - Kopya %2813%29 - Kopya.pdf" />
+    <Content Include="img\RehberlikEnvanter_Raporlar\2017\5\10. Sınıf\68215265522 - Kopya %2814%29 - Kopya.pdf" />
+    <Content Include="img\RehberlikEnvanter_Raporlar\2017\5\10. Sınıf\68215265522.pdf" />
+    <Content Include="img\RehberlikEnvanter_Raporlar\2017\8\10. Sınıf\11455130808.pdf" />
+    <Content Include="img\RehberlikEnvanter_Raporlar\2017\8\10. Sınıf\14468264522.pdf" />
+    <Content Include="img\RehberlikEnvanter_Raporlar\2017\8\10. Sınıf\15358581804.pdf" />
+    <Content Include="img\RehberlikEnvanter_Raporlar\2017\8\10. Sınıf\16331202402.pdf" />
+    <Content Include="img\RehberlikEnvanter_Raporlar\2017\8\10. Sınıf\17369361512.pdf" />
+    <Content Include="img\RehberlikEnvanter_Raporlar\2017\8\10. Sınıf\17462522278.pdf" />
+    <Content Include="img\RehberlikEnvanter_Raporlar\2017\8\10. Sınıf\21122236436.pdf" />
+    <Content Include="img\RehberlikEnvanter_Raporlar\2017\8\10. Sınıf\21403412580.pdf" />
+    <Content Include="img\RehberlikEnvanter_Raporlar\2017\8\10. Sınıf\22567623362.pdf" />
+    <Content Include="img\RehberlikEnvanter_Raporlar\2017\8\10. Sınıf\27002030194.pdf" />
+    <Content Include="img\RehberlikEnvanter_Raporlar\2017\8\10. Sınıf\29296978046.pdf" />
+    <Content Include="img\RehberlikEnvanter_Raporlar\2017\8\10. Sınıf\29476816328.pdf" />
+    <Content Include="img\RehberlikEnvanter_Raporlar\2017\8\10. Sınıf\31570906102.pdf" />
+    <Content Include="img\RehberlikEnvanter_Raporlar\2017\8\10. Sınıf\34843779038.pdf" />
+    <Content Include="img\RehberlikEnvanter_Raporlar\2017\8\10. Sınıf\34951100700.pdf" />
+    <Content Include="img\RehberlikEnvanter_Raporlar\2017\8\10. Sınıf\39496604720.pdf" />
+    <Content Include="img\RehberlikEnvanter_Raporlar\2017\8\10. Sınıf\40909576886.pdf" />
+    <Content Include="img\RehberlikEnvanter_Raporlar\2017\8\10. Sınıf\41683531832.pdf" />
+    <Content Include="img\RehberlikEnvanter_Raporlar\2017\8\10. Sınıf\46147067162.pdf" />
+    <Content Include="img\RehberlikEnvanter_Raporlar\2017\8\10. Sınıf\47680157570.pdf" />
+    <Content Include="img\RehberlikEnvanter_Raporlar\2017\8\10. Sınıf\49393294160.pdf" />
+    <Content Include="img\RehberlikEnvanter_Raporlar\2017\8\10. Sınıf\51007076208.pdf" />
+    <Content Include="img\RehberlikEnvanter_Raporlar\2017\8\10. Sınıf\57760034608.pdf" />
+    <Content Include="img\RehberlikEnvanter_Raporlar\2017\8\10. Sınıf\68215265522 - Kopya %2813%29 - Kopya.pdf" />
+    <Content Include="img\RehberlikEnvanter_Raporlar\2017\8\10. Sınıf\68215265522 - Kopya %2814%29 - Kopya.pdf" />
+    <Content Include="img\RehberlikEnvanter_Raporlar\2017\8\10. Sınıf\68215265522.pdf" />
+    <Content Include="AbideTaslakYukle.ashx" />
+    <Content Include="AbideResimYukle.ashx" />
+    <Content Include="CevapAnahtariTaslakYukle.ashx" />
+    <Content Include="img\showimage.png" />
+    <Content Include="img\tick.png" />
+    <Content Include="img\wrong.png" />
+    <Content Include="KarmaListeYukle.ashx" />
+    <Content Include="HariciPuanSiraTaslakYukle.ashx" />
+    <Content Include="Helper\ExcelVeriYukle.ashx" />
+    <Content Include="Site\Abide\AbideSinavRaporuHTML.html" />
+    <Content Include="Site\AkilliOgretimBarkod\ExcelYukle.html" />
+    <Content Include="Site\AnaSayfa.html" />
+    <Content Include="Site\Bultenler\BultenEkle.html" />
+    <Content Include="Site\Bultenler\BultenListe.html" />
+    <Content Include="Site\DersCalismaProgrami\KazanimOdevAtama.html" />
+    <Content Include="Site\DersCalismaProgrami\ProgramGor.html" />
+    <Content Include="Site\DersCalismaProgrami\ProgramHazirla.html" />
+    <Content Include="Site\DisKaynak\KademeEkle.html" />
+    <Content Include="Site\DisKaynak\ProjeTanim.html" />
+    <Content Include="Site\EOgrenme\EogrenmeBilgi.html" />
+    <Content Include="Site\GenelKurul\KararGor.html" />
+    <Content Include="Site\GenelKurul\KararGir.html" />
+    <Content Include="Site\GenelKurul\MailIslemleri.html" />
+    <Content Include="Site\GenelKurul\PeriyotEkle.html" />
+    <Content Include="Site\IdariIsler\SubeYetki.html" />
+    <Content Include="Site\Iletisim\Bildirimler.html" />
+    <Content Include="Site\Iletisim\Mesajlar.html" />
+    <Content Include="Site\Iletisim\TopluMesajlar.html" />
+    <Content Include="Site\Iletisim\VeliMesajListesi.html" />
+    <Content Include="Site\Morpa\MorpaGiris.html" />
+    <Content Include="Site\OgrenciBilgiPaylasimi\BilgiEkle.html" />
+    <Content Include="Site\OgrenciBilgiPaylasimi\BilgiListele.html" />
+    <Content Include="Site\Ogrenci\OgrenciIsleri\OBSListesi.html" />
+    <Content Include="Site\Ogrenci\OgrenciIsleri\Bultenler.html" />
+    <Content Include="Site\Ogrenci\OkyanustaYasam\Kiyafet.html" />
+    <Content Include="Site\Ogrenci\Yillik\YillikYaz.html" />
+    <Content Include="Site\Ogretmen\OgretmenBilgileri.html" />
+    <Content Include="Site\OnlineDers\DersProgramiKaldir.html" />
+    <Content Include="Site\OnlineDers\DersProgramiSinif.html" />
+    <Content Include="Site\OnlineDers\DersProgramiGiris.html" />
+    <Content Include="Site\OnlineDers\GenelKlasor.html" />
+    <Content Include="Site\OnlineDers\Ogrenci\DersProgrami.html" />
+    <Content Include="Site\OnlineSinav\OgrenciAtama.html" />
+    <Content Include="Site\OnlineSinav\OgrenciOturumListe.html" />
+    <Content Include="Site\OnlineSinav\OgrenciSinavTakip.html" />
+    <Content Include="Site\OnlineSinav\Ogrenci\OnlineSinavlarim.html" />
+    <Content Include="Site\OnlineSinav\OgrenciOturumSifirla.html" />
+    <Content Include="Site\OnlineSinav\Ogrenci\OnlineTest.html" />
+    <Content Include="Site\OnlineSinav\Ogrenci\TestSinav.html" />
+    <Content Include="Site\OnlineSinav\Ogrenci\SorunBildir.html" />
+    <Content Include="Site\OnlineSinav\OnlineSinavCikti.html" />
+    <Content Include="Site\OnlineSinav\OnlineSinavOnizleme.html" />
+    <Content Include="Site\OnlineSinav\Ogrenci\Sinav.html" />
+    <Content Include="Site\OnlineSinav\OnlineSinavOnizlemeListe.html" />
+    <Content Include="Site\OnlineSinav\OnlineSinavIslem.html" />
+    <Content Include="Site\OSYM\OzelKosullar.html" />
+    <Content Include="Site\Performans\Degerlendirilmeyenler.html" />
+    <Content Include="Site\Performans\KategoriDegerlendirme.html" />
+    <Content Include="Site\Performans\Degerlendirilenler.html" />
+    <Content Include="Site\Performans\PeriyotTanimlama.html" />
+    <Content Include="Site\Rapor\DersCalismaProgrami\OgretmenRapor.html" />
+    <Content Include="Site\Rapor\DersCalismaProgrami\OgrenciRapor.html" />
+    <Content Include="Site\Rapor\Frekans\FrekansOgrenciGelisim.html" />
+    <Content Include="Site\Rapor\Frekans\FrekansSinavOgrenci.html" />
+    <Content Include="Site\Rapor\Frekans\FrekansSinavOgrenciNew.html" />
+    <Content Include="Site\Rapor\Frekans\FrekansEtkiListesi.html" />
+    <Content Include="Site\Rapor\Mete\IbanListesi.html" />
+    <Content Include="Site\Rapor\Sinav\OnlineTestRapor.html" />
+    <Content Include="Site\Rapor\Viu\KullaniciCihazlari.html" />
+    <Content Include="Site\Rapor\Viu\RehberDanismanYoklama.html" />
+    <Content Include="Site\Rapor\Viu\Tatil.html" />
+    <Content Include="Site\Rapor\Viu\ViuTopluMesaj.html" />
+    <Content Include="Site\Rapor\Viu\ViuAramaYetkiListesi.html" />
+    <Content Include="Site\Rehberlik\RehberlikOnline\RehberlikOnlineYukle.html" />
+    <Content Include="Site\Sinav\KazanimDosya.html" />
+    <Content Include="Site\SinifListeleri\SinifListeRaporu.html" />
+    <Content Include="Site\Ogrenci\OgrenciIsleri\OgretmenListesi.html" />
+    <Content Include="Site\Ogrenci\OgrenciIsleri\DersProgrami.html" />
+    <Content Include="Site\SportifKulupler\KulupBelirle.html" />
+    <Content Include="Site\SportifKulupler\KotaBelirle.html" />
+    <Content Include="Site\SportifKulupler\OgrenciKulupler.html" />
+    <Content Include="Site\SportifKulupler\PeriyotBelirle.html" />
+    <Content Include="Site\Tanimlar\DersEkleme.html" />
+    <Content Include="Site\Tanimlar\DersProgrami.html" />
+    <Content Include="Site\Ogrencilerim\Ogrencilerim.html" />
+    <Content Include="Site\Viu\ViuTopluBildirim.html" />
+    <Content Include="Site\Tanimlar\metedeneme.html" />
+    <Content Include="Site\Tkt\Aktarim.html" />
+    <Content Include="Site\UniteTaramaOlcegi\UniteTaramaEtutOlustur.html" />
+    <Content Include="Site\UniteTaramaOlcegi\SinifMaddeAnalizi.html" />
+    <Content Include="Site\Rapor\UniteTaramaOlcegi\UtoKarneListesi.html" />
+    <Content Include="Site\UniteTaramaOlcegi\UniteTaramaSinavSonucListesi.html" />
+    <Content Include="Site\UniteTaramaOlcegi\UniteTaramaSinifRaporu.html" />
+    <Content Include="Site\CurpusStudy\CurpusStudyYukle.html" />
+    <Content Include="Site\UniteTaramaOlcegi\UniteTaramaEksikKazanimCalismaProgrami.html" />
+    <Content Include="Site\UniteTaramaOlcegi\UniteTaramaExcelYukle.html" />
+    <Content Include="Site\UniteTaramaOlcegi\UniteTaramaSinavPuanGiris.html" />
+    <Content Include="Site\UniteTaramaOlcegi\UniteTaramaSinavTanimla.html" />
+    <Content Include="Site\Upgrade\SorularinCozulmeOranlari.html" />
+    <Content Include="Site\Upgrade\UpgradeIslemRapor.html" />
+    <Content Include="Site\Veli\DersCalismaProgrami\ProgramGor.html" />
+    <Content Include="Site\Veli\Fatura\Odeme.html" />
+    <Content Include="Site\Veli\Hedefler\OgrenciHedefTakibi.html" />
+    <Content Include="Site\Veli\MentalUp\MentalUpGiris.html" />
+    <Content Include="Site\Veli\Morpa\MorpaGiris.html" />
+    <Content Include="Site\Veli\OgrenciDegerlendirme\OD_Donemlik.html" />
+    <Content Include="Site\Veli\OgrenciDegerlendirme\OD_Aylik.html" />
+    <Content Include="Site\Veli\OgrenciHarcama\OgrenciHarcamalari.html" />
+    <Content Include="Site\Veli\Rapor\Sinav\RaporOlustur.html" />
+    <Content Include="Site\Veli\Rapor\Sinav\VeliUniteTaramaRaporu.html" />
+    <Content Include="Site\Veli\YetenekGelisim\YG_Karne.html" />
+    <Content Include="Site\Yetkilendirme\KullaniciYetkilendirmeKaldir.html" />
+    <Content Include="Site\Yonetim\DuyuruListesi.html" />
+    <Content Include="Site\Yonetim\DuyuruYonetimi.html" />
+    <Content Include="Site\Yonetim\Parametre.html" />
+    <Content Include="Site\Yonetim\UyariSistemiListe.html" />
+    <Content Include="Site\Yonetim\UyariSistemiIslemleri.html" />
+    <Content Include="Site\Yonetim\OzelSayfaIslemleri.html" />
+    <Content Include="Site\Yonetim\OzelSayfaListe.html" />
+    <Content Include="Site\Yonetim\AdresKisaltma.html" />
+    <Content Include="Site\YYS\YYSSinavOptikYukle.html" />
+    <Content Include="Site\YYS\YYSSinavTanimla.html" />
+    <Content Include="Site\YYS\YYSSinavExcelYukle.html" />
+    <Content Include="Site\Zumre\ZumreLog.html" />
+    <Content Include="Site\Zumre\Bilgiler.html" />
+    <Content Include="Site\IdariIsler\KullaniciYetkiIslemleri.html" />
+    <Content Include="SQL\BurhanAkyuz\02.11.2020.sql" />
+    <Content Include="SQL\BurhanAkyuz\03.11.2020.sql" />
+    <Content Include="SQL\BurhanAkyuz\04.11.2020.sql" />
+    <Content Include="SQL\BurhanAkyuz\09.11.2020.sql" />
+    <Content Include="SQL\BurhanAkyuz\10.11.2020.sql" />
+    <Content Include="SQL\FeritAltıntas\07 - 03.02.2021.sql" />
+    <Content Include="SQL\FeritAltıntas\06 - 02.02.2021.sql" />
+    <Content Include="SQL\FeritAltıntas\05 - 13.01.2021.sql" />
+    <Content Include="SQL\FeritAltıntas\04 - 05.01.2021.sql" />
+    <Content Include="SQL\FeritAltıntas\03- 14.12.2020.sql" />
+    <Content Include="SQL\FeritAltıntas\02- 10.12.2020.sql" />
+    <Content Include="SQL\FeritAltıntas\01- 01.12.2020.sql" />
+    <Content Include="SQL\FeritAltıntas\09 - 17.02.2021.sql" />
+    <Content Include="SQL\FeritAltıntas\12- 15.03.2021.sql" />
+    <Content Include="SQL\FeritAltıntas\11- 15.03.2021.sql" />
+    <Content Include="SQL\FeritAltıntas\10- 17.02.2021.sql" />
+    <Content Include="SQL\FeritAltıntas\08- 11.02.2021.sql" />
+    <Content Include="SQL\FeritAltıntas\22- 23.09.2021.sql" />
+    <Content Include="SQL\FeritAltıntas\25- 08.10.2021.sql" />
+    <Content Include="SQL\FeritAltıntas\24- 08.10.2021.sql" />
+    <Content Include="SQL\FeritAltıntas\23- 24.09.2021.sql" />
+    <Content Include="SQL\FeritAltıntas\21- 13.09.2021.sql" />
+    <Content Include="SQL\FeritAltıntas\20- 28.07.2021.sql" />
+    <Content Include="SQL\FeritAltıntas\19- 09.07.2021.sql" />
+    <Content Include="SQL\FeritAltıntas\18- 08.07.2021.sql" />
+    <Content Include="SQL\FeritAltıntas\17- 01.07.2021.sql" />
+    <Content Include="SQL\FeritAltıntas\16- 21.05.2021.sql" />
+    <Content Include="SQL\FeritAltıntas\15- 21.05.2021.sql" />
+    <Content Include="SQL\FeritAltıntas\14- 18.05.2021.sql" />
+    <Content Include="SQL\FeritAltıntas\13- 28.04.2021.sql" />
+    <Content Include="SQL\FeritAltıntas\26- 22.11.2021.sql" />
+    <Content Include="SQL\GokhanKahraman\06 - 09-02-2021.sql" />
+    <Content Include="SQL\GokhanKahraman\05 - 03-02-2021.sql" />
+    <Content Include="SQL\GokhanKahraman\02 - 08-01-2021.sql" />
+    <Content Include="SQL\GokhanKahraman\03 - 12-01-2021.sql" />
+    <Content Include="SQL\GokhanKahraman\04 - 28-01-2021.sql" />
+    <Content Include="SQL\GokhanKahraman\01 - 30-12-2020.sql" />
+    <Content Include="SQL\GokhanKahraman\09-15-02-2021.sql" />
+    <Content Include="SQL\GokhanKahraman\08-12-02-2021.sql" />
+    <Content Include="SQL\GokhanKahraman\07-09-02-2021.sql" />
+    <Content Include="SQL\GokhanKahraman\eokulv2-13-01-2021.sql" />
+    <Content Include="SQL\KadirCengiz\12 - 23.10.2020.sql" />
+    <Content Include="SQL\KadirCengiz\13 - 28.10.2020.sql" />
+    <Content Include="SQL\KadirCengiz\14 - 05.11.2020.sql" />
+    <Content Include="SQL\KadirCengiz\15 - 10.11.2020.sql" />
+    <Content Include="SQL\KadirCengiz\16 - 11.11.2020.sql" />
+    <Content Include="SQL\KadirCengiz\17 - 16.11.2020.sql" />
+    <Content Include="SQL\KadirCengiz\18 - 21.11.2020.sql" />
+    <Content Include="SQL\KadirCengiz\25 - 05.05.2021.sql" />
+    <Content Include="SQL\KadirCengiz\24 - 30.04.2021.sql" />
+    <Content Include="SQL\KadirCengiz\23 - 20.04.2021.sql" />
+    <Content Include="SQL\KadirCengiz\22 - 13.04.2021.sql" />
+    <Content Include="SQL\KadirCengiz\21 - 01.04.2021.sql" />
+    <Content Include="SQL\KadirCengiz\20 - 07.01.2021.sql" />
+    <Content Include="SQL\KadirCengiz\19 - 28.11.2020.sql" />
+    <Content Include="SQL\KadirCengiz\__temp.sql" />
+    <Content Include="SQL\KadirCengiz\11- 20.10.2020.sql" />
+    <Content Include="SQL\KadirCengiz\10 - 03.10.2020.sql" />
+    <Content Include="SQL\KadirCengiz\09 - 29.09.2020.sql" />
+    <Content Include="SQL\KadirCengiz\08 - 18.09.2020.sql" />
+    <Content Include="SQL\KadirCengiz\07 - 15.09.2020.sql" />
+    <Content Include="SQL\KadirCengiz\06 - 10.09.2020.sql" />
+    <Content Include="SQL\KadirCengiz\05 - 08.09.2020_2.sql" />
+    <Content Include="SQL\KadirCengiz\04 - 08.09.2020.sql" />
+    <Content Include="SQL\KadirCengiz\03 - 28.08.2020.sql" />
+    <Content Include="SQL\KadirCengiz\02 - 25.08.2020.sql" />
+    <Content Include="SQL\KadirCengiz\01 - 24.08.2020.sql" />
+    <Content Include="SQL\MelihAraz\03- 13.08.2021.sql" />
+    <Content Include="SQL\MelihAraz\02- 09.08.2021.sql" />
+    <Content Include="SQL\MelihAraz\01- 04.08.2021.sql" />
+    <Content Include="SQL\SefaCaksu\17.08.2021.sql" />
+    <Content Include="SQL\SefaCaksu\12.04.2021.sql" />
+    <Content Include="SQL\TahsinDalman\04.09.2020.sql" />
+    <Content Include="SQL\TahsinDalman\08.10.2020.sql" />
+    <Content Include="SQL\TahsinDalman\09.10.2020.sql" />
+    <Content Include="SQL\TahsinDalman\13.10.2020.sql" />
+    <Content Include="SQL\TahsinDalman\15.10.2020.sql" />
+    <Content Include="SQL\TahsinDalman\17.10.2020.sql" />
+    <Content Include="SQL\TahsinDalman\20.10.2020.sql" />
+    <Content Include="SQL\TahsinDalman\28.10.2020.sql" />
+    <Content Include="UniteTaramaTaslakYukle.ashx" />
+    <Content Include="img\Kiyafet\ilkokulkiyafetyonetmelik.pdf" />
+    <Content Include="img\Kiyafet\ortaokul_lise_kiyafet_Y.pdf" />
+    <Content Include="OzelKosullarTaslakYukle.ashx" />
+    <Content Include="assets\global\plugins\amazonchime\amazon-chime-sdk.min.js.map" />
+    <Content Include="assets\global\plugins\qrcode\qrcode.min.js" />
+    <Content Include="assets\plugins\iban.js-master\.gitignore" />
+    <Content Include="assets\plugins\iban.js-master\.npmignore" />
+    <Content Include="assets\plugins\iban.js-master\bower.json" />
+    <Content Include="assets\plugins\iban.js-master\demo\.DS_Store" />
+    <Content Include="assets\plugins\iban.js-master\LICENSE" />
+    <Content Include="assets\plugins\iban.js-master\package-lock.json" />
+    <Content Include="assets\plugins\iban.js-master\package.json" />
+    <Content Include="assets\plugins\iban.js-master\README.md" />
+    <Content Include="assets\plugins\stickyTable-js\LICENCE.MIT" />
+    <Content Include="assets\plugins\stickyTable-js\README.md" />
+    <Content Include="bin\Pusulam.dll.config" />
+    <Content Include="bin\PusulamRapor.dll.config" />
+    <Content Include="Dosyalar\ExcelTaslak\KurumDisiOgrenciAtamaTaslak.xlsx" />
+    <Content Include="Dosyalar\ExcelTaslak\Okuma_Sinavi_Sonuc_Yukle.xlsx" />
+    <Content Include="Dosyalar\ExcelTaslak\ExcelZumreTopluKatilimciYukle.xlsx" />
+    <Content Include="libman.json" />
+    <None Include="Properties\PublishProfiles\FTPProfile.pubxml" />
+    <None Include="Properties\PublishProfiles\testIIS.pubxml" />
+    <None Include="Scripts\jquery-1.10.2.intellisense.js" />
+    <Content Include="Global.asax" />
+    <Content Include="img\asagiok.png" />
+    <Content Include="img\favicon.ico" />
+    <Content Include="img\okyanus_image.jpg" />
+    <Content Include="img\okyanus_logoyeni.png" />
+    <Content Include="img\yukariok.png" />
+    <Content Include="index.html" />
+    <Content Include="login.html" />
+    <Content Include="Rapor.aspx" />
+    <Content Include="RaporAbideGenel.aspx" />
+    <Content Include="RaporAraKarne.aspx" />
+    <Content Include="RaporGelisimRaporuLS.aspx" />
+    <Content Include="RaporGelisimRaporuOO.aspx" />
+    <Content Include="RaporKonuAnaliz.aspx" />
+    <Content Include="RaporPost.aspx" />
+    <Content Include="RaporSinavSonuc.aspx" />
+    <Content Include="Scripts\calendarpusulamogrenci.js" />
+    <Content Include="Scripts\jquery-1.10.2.js" />
+    <Content Include="Scripts\jquery-1.10.2.min.js" />
+    <Content Include="Scripts\jquery.cookie.js" />
+    <Content Include="Scripts\jquery-1.10.2.min.map" />
+    <None Include="Scripts\jquery.validate-vsdoc.js" />
+    <Content Include="Scripts\jquery.validate.js" />
+    <Content Include="Scripts\jquery.validate.min.js" />
+    <Content Include="Scripts\jquery.validate.unobtrusive.js" />
+    <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
+    <Content Include="Scripts\MainPage.js" />
+    <Content Include="Scripts\PublicMethods.js" />
+    <Content Include="Scripts\Rapor\amcharts.js" />
+    <Content Include="Scripts\Rapor\jquery.easypiechart.js" />
+    <Content Include="Scripts\Rapor\light.js" />
+    <Content Include="Scripts\Rapor\pie.js" />
+    <Content Include="Scripts\Rapor\serial.js" />
+    <Content Include="Scripts\require.js" />
+    <Content Include="Scripts\Tools.js" />
+    <Content Include="Scripts\vue-resource.min.js" />
+    <Content Include="Scripts\vue.js" />
+    <Content Include="Scripts\vue.min.js" />
+    <Content Include="Site\Abide\AbideGenelRaporlar.html" />
+    <Content Include="Site\Abide\AbideSinavExcelYukle.html" />
+    <Content Include="Site\Abide\AbideSinavKitapcik.html" />
+    <Content Include="Site\Abide\AbideSinavPuanGiris.html" />
+    <Content Include="Site\Abide\AbideSinavRaporHazirlik.html" />
+    <Content Include="Site\Abide\AbideSinavRaporOlustur.html" />
+    <Content Include="Site\Abide\AbideSinavTanimla.html" />
+    <Content Include="Site\Assessment\OgrenciYukle.html" />
+    <Content Include="Site\Assessment\SinavListele.html" />
+    <Content Include="Site\Assessment\SinavTanimla.html" />
+    <Content Include="Site\Degerlendirme\DanismanOgrenci.html" />
+    <Content Include="Site\Degerlendirme\DegerlendirmeYapmayanlar.html" />
+    <Content Include="Site\Degerlendirme\Genel.html" />
+    <Content Include="Site\Degerlendirme\KategoriTanimla.html" />
+    <Content Include="Site\Degerlendirme\Ogrenci.html" />
+    <Content Include="Site\Degerlendirme\PeriyotTanimla.html" />
+    <Content Include="Site\Degerlendirme\Personel.html" />
+    <Content Include="Site\Degerlendirme\RehberlikOgrenci.html" />
+    <Content Include="Site\Degerlendirme\SoruTanimla.html" />
+    <Content Include="Site\Etut\EtutTakip\OgretmenRapor.html" />
+    <Content Include="Site\Etut\EtutTakip\SinifRapor.html" />
+    <Content Include="Site\Etut\EtutTakvimiOV.html" />
+    <Content Include="Site\Etut\EtutTakvimi.html" />
+    <Content Include="Site\Etut\EtutProgramiOV.html" />
+    <Content Include="Site\Etut\EtutProgrami.html" />
+    <Content Include="Site\Etut\EtutSabitOlustur.html" />
+    <Content Include="Site\Etut\Etut.html" />
+    <Content Include="Site\Morpa\MateryalEkle.html" />
+    <Content Include="Site\Morpa\KazanimEkle.html" />
+    <Content Include="Site\Morpa\DersEkle.html" />
+    <Content Include="Site\Odev\KademeYetki.html" />
+    <Content Include="Site\Odev\MorpaListe.html" />
+    <Content Include="Site\Odev\OdevEkle.html" />
+    <Content Include="Site\Odev\OdevKontrol.html" />
+    <Content Include="Site\Odev\OdevListesi.html" />
+    <Content Include="Site\Odev\OdevRapor.html" />
+    <Content Include="Site\Odev\OgrenciOdevListesi.html" />
+    <Content Include="Site\Odev\OgretmenOdevRaporu.html" />
+    <Content Include="Site\Ogrenci\Demo\DemoOgrenci.html" />
+    <Content Include="Site\Ogrenci\Hedefler\HedefBelirleme.html" />
+    <Content Include="Site\Ogrenci\Hedefler\MevcutDurum.html" />
+    <Content Include="Site\Ogrenci\Hedefler\MevcutDurumOO.html" />
+    <Content Include="Site\Ogrenci\OnlineSinavlar\Sinavlarim.html" />
+    <Content Include="Site\Ogrenci\ProjeDonemOdevi\ProjeDonemOdevi.html" />
+    <Content Include="Site\Ogrenci\Takvim\AkademikTakvim.html" />
+    <Content Include="Site\OSYM\TercihListeRapor.html" />
+    <Content Include="Site\OutSide\OSOdevListesi.html" />
+    <Content Include="Site\Personel\ProjeDonemRapor.html" />
+    <Content Include="Site\Rapor\Assessment\SinavaKatilmayanlar.html" />
+    <Content Include="Site\Rapor\Assessment\SinavSoruAnalizi.html" />
+    <Content Include="Site\Rapor\Assessment\SinifSinavRaporu.html" />
+    <Content Include="Site\Rapor\Assessment\OgrenciSinavRaporu.html" />
+    <Content Include="Site\Rapor\Assessment\SinavOgrenciRaporu.html" />
+    <Content Include="Site\Rapor\Frekans\Eski\FrekansKampus2.html" />
+    <Content Include="Site\Rapor\Frekans\FrekansKampus.html" />
+    <Content Include="Site\Rapor\Frekans\FrekansSinifYeni.html" />
+    <Content Include="Site\Rapor\OgrenciBelge\GelisimRaporuLS.html" />
+    <Content Include="Site\Rapor\Sinav\GelisimRaporuLS.html" />
+    <Content Include="Site\Rapor\Sinav\KOSRaporu.html" />
+    <Content Include="Site\Rapor\Sinav\OdulListesi.html" />
+    <Content Include="Site\Rapor\Sinav\LUSRaporu.html" />
+    <Content Include="Site\Rapor\Viu\ViuRaporlar.html" />
+    <Content Include="Site\Rapor\Yazili\LUSRaporu.html" />
+    <Content Include="Site\Rapor\YetenekGelisim\YG_MevcutDagilim.html" />
+    <Content Include="Site\Rapor\YetenekGelisim\YG_SecimYapmayanlar.html" />
+    <Content Include="Site\Rapor\YetenekGelisim\YG_OgrenciSecimleri.html" />
+    <Content Include="Site\Sinav\Bursluluk\BursOraniBelirle.html" />
+    <Content Include="Site\Sinav\Bursluluk\OgrenciIslemleri.html" />
+    <Content Include="Site\Rapor\Yazili\KOSRaporu.html" />
+    <Content Include="Site\Sinav\OgrenciFrekansMuaf.html" />
+    <Content Include="Site\Tkt\KazanimAnalizi.html" />
+    <Content Include="Site\Upgrade\SonucGir.html" />
+    <Content Include="Site\Upgrade\SonucGor.html" />
+    <Content Include="Site\Upgrade\TopluSonucGor.html" />
+    <Content Include="Site\Veli\Rapor\Sinav\GelisimRaporuLS.html" />
+    <Content Include="Site\Veli\Rapor\Sinav\KOSRaporu.html" />
+    <Content Include="Site\Veli\Rapor\Sinav\LUSRaporu.html" />
+    <Content Include="Site\YetenekGelisim\YG_Secim.html" />
+    <Content Include="Site\YetenekGelisim\YG_SecimAyar.html" />
+    <Content Include="Site\YetenekGelisim\YG_TopluKarne.html" />
+    <Content Include="Site\YetenekGelisim\YG_Karne.html" />
+    <Content Include="Site\YetenekGelisim\YG_KotaBelirle.html" />
+    <Content Include="Site\YetenekGelisim\YG_YetenekAciklamaEkle.html" />
+    <Content Include="Site\YetenekGelisim\YG_YorumEkle.html" />
+    <Content Include="Site\YetenekGelisim\YG_PuanGirisi.html" />
+    <Content Include="Site\OSYM\TabanPuanlar.html" />
+    <Content Include="Site\PerformansDegerlendirmeSonuclari\PDSRapor.html" />
+    <Content Include="Site\Personel\ProjeDonemOgretmenSecimli.html" />
+    <Content Include="Site\Personel\ProjeDonem.html" />
+    <Content Include="Site\Personel\Takvim.html" />
+    <Content Include="Site\Rapor\Analiz\SinifDersAnalizi.html" />
+    <Content Include="Site\Rapor\Analiz\MaddeFrekansAnalizi.html" />
+    <Content Include="Site\Rapor\Analiz\OgrenciMaddeAnalizi.html" />
+    <Content Include="Site\Rapor\Analiz\TestMaddeAnalizi.html" />
+    <Content Include="Site\Rapor\Analiz\SinavKonuAnalizi.html" />
+    <Content Include="Site\Rapor\Analiz\GenelSoruAnalizi.html" />
+    <Content Include="Site\Rapor\Analiz\SinifMaddeAnalizi.html" />
+    <Content Include="Site\Rapor\Frekans\FrekansKarneYeni.html" />
+    <Content Include="Site\Rapor\Frekans\FrekansSistemYeni.html" />
+    <Content Include="Site\Rapor\Frekans\Eski\FrekansKarne.html" />
+    <Content Include="Site\Rapor\Frekans\Eski\FrekansSistem.html" />
+    <Content Include="Site\Rapor\Hedef\HedefBelirlemeRapor.html" />
+    <Content Include="Site\Rapor\OgrenciBelge\AraKarne.html" />
+    <Content Include="Site\Rapor\OgrenciBelge\GelisimRaporu.html" />
+    <Content Include="Site\Rapor\OgrenciBelge\GelisimRaporuOO.html" />
+    <Content Include="Site\Rapor\Sinav\GelisimRaporuOO.html" />
+    <Content Include="Site\Rapor\OgrenciBelge\KonuAnalizi.html" />
+    <Content Include="Site\Rapor\OgrenciBelge\SinavSonuclari.html" />
+    <Content Include="Site\Rapor\Sinav\DenemeSinavRaporlari.html" />
+    <Content Include="Site\Rapor\Sinav\OdevTakibi.html" />
+    <Content Include="Site\Rapor\Sinav\OgrenciIzleme.html" />
+    <Content Include="Site\Rapor\Sinav\SinavKatilim.html" />
+    <Content Include="Site\Rapor\Sinav\SinifNetPuanOrtalamalari.html" />
+    <Content Include="Site\Rapor\Sinav\OkulNetPuanOrtalamalari.html" />
+    <Content Include="Site\Rapor\Sinav\GenelYaziliYoklamaSonuclari.html" />
+    <Content Include="Site\Rapor\Sinav\KonuAnalizi.html" />
+    <Content Include="Site\Rapor\Sinav\OgrenciRaporlari.html" />
+    <Content Include="Site\Rapor\Sinav\GelisimRaporu.html" />
+    <Content Include="Site\Rapor\Sinav\SinavIstatistik.html" />
+    <Content Include="Site\Rapor\Sinav\AraKarne.html" />
+    <Content Include="Site\Rapor\Sinav\TopluSinavSonuclari.html" />
+    <Content Include="Site\Rapor\Sinav\SinavSonuclari.html" />
+    <Content Include="Site\Rapor\Sinav\GenelSinavRaporu.html" />
+    <Content Include="Site\Rapor\Sinav\YaziliYoklamaSonuclari.html" />
+    <Content Include="Site\Rapor\Yazili\GenelKazanimAnalizi.html" />
+    <Content Include="Site\Rapor\Yazili\KazanimAnalizi.html" />
+    <Content Include="Site\Rapor\Yazili\KazanimAnaliziOO.html" />
+    <Content Include="Site\Rapor\Yazili\OrtalamaListesi.html" />
+    <Content Include="Site\Rapor\Yazili\PuanaGoreYaziliSonuclari.html" />
+    <Content Include="Site\Rapor\Yazili\SinavaKatilmayanOgrenciler.html" />
+    <Content Include="Site\Rapor\Yazili\SinavAnaliz.html" />
+    <Content Include="Site\Rapor\Yazili\SinifBazindaKazanimAnalizi.html" />
+    <Content Include="Site\Rapor\Yazili\TopluYaziliYoklamaSonuclari.html" />
+    <Content Include="Site\RehberlikEnvanter\RehberlikEnvanterPersonel.html" />
+    <Content Include="Site\RehberlikEnvanter\RehberlikEnvanterOV.html" />
+    <Content Include="Site\RehberlikEnvanter\RehberlikEnvanterTanimlama.html" />
+    <Content Include="Site\Sinav\DersUnite.html" />
+    <Content Include="Site\Sinav\OgrenciDersMuaf.html" />
+    <Content Include="Site\Sinav\KatsayiGirisi.html" />
+    <Content Include="Site\Sinav\CevapAnahtariKullaniciYetki.html" />
+    <Content Include="Site\Sinav\OptikTanimla.html" />
+    <Content Include="Site\Sinav\OptikYukle.html" />
+    <Content Include="Site\Sinav\KarmaListe.html" />
+    <Content Include="Site\Sinav\SinavListele.html" />
+    <Content Include="Site\Sinav\CevapAnahtariDuzenle.html" />
+    <Content Include="Site\Sinav\SinavTanimla.html" />
+    <Content Include="Site\Tkt\SonucGir.html" />
+    <Content Include="Site\Tkt\TopluSonucGor.html" />
+    <Content Include="Site\Tkt\ZekaPuanGor.html" />
+    <Content Include="Site\Tkt\SonucGor.html" />
+    <Content Include="Site\Upgrade\OgrenciListesi.html" />
+    <Content Include="Site\Upgrade\SinavKagidiOlustur.html" />
+    <Content Include="Site\Upgrade\SoruListesi.html" />
+    <Content Include="Site\Upgrade\SoruSayilari.html" />
+    <Content Include="Site\Upgrade\SoruTanimla.html" />
+    <Content Include="Site\Veli\Hedefler\HedefBelirleme.html" />
+    <Content Include="Site\Abide\AbideSinavRaporu.html" />
+    <Content Include="Site\Veli\Rapor\Sinav\AraKarne.html" />
+    <Content Include="Site\Veli\Rapor\Sinav\GelisimRaporu.html" />
+    <Content Include="Site\Veli\Rapor\Sinav\GelisimRaporuOO.html" />
+    <Content Include="Site\Veli\Rapor\Sinav\KonuAnalizi.html" />
+    <Content Include="Site\Veli\Rapor\Sinav\VeliOdevTakibi.html" />
+    <Content Include="Site\Veli\Rapor\Sinav\SinavIstatistik.html" />
+    <Content Include="Site\Veli\Rapor\Sinav\SinavSonuclari.html" />
+    <Content Include="Site\Veli\Rapor\Sinav\YaziliYoklamaSonuclari.html" />
+    <Content Include="Site\Yardim\YardimHazirla.html" />
+    <Content Include="Site\Yazili\YYListele.html" />
+    <Content Include="Site\Yazili\YYNotGiris.html" />
+    <Content Include="Site\Yazili\YYTanimla.html" />
+    <Content Include="Site\Yetkilendirme\KullaniciYetkilendirme.html" />
+    <Content Include="Site\Yetkilendirme\BirimYetkilendirme.html" />
+    <Content Include="SinavKagidi.aspx" />
+    <Content Include="Site\ZekaTest\SonucGir.html" />
+    <Content Include="Site\ZekaTest\SonucListele.html" />
+    <Content Include="Site\ZekaTest\SonucListeleABB.html" />
+    <Content Include="Site\ZumreCalisma\Calismalarim.html" />
+    <Content Include="Site\ZumreCalisma\KatilimciAtama.html" />
+    <Content Include="Site\ZumreCalisma\KatilimciOnaylama.html" />
+    <Content Include="Site\ZumreCalisma\Tanimlama.html" />
+    <Content Include="Site\ZumreCalisma\YaziliGirisi.html" />
+    <Content Include="Site\ZumreCalisma\YaziliIslemleri.html" />
+    <Content Include="Site\ZumreCalisma\YoklamaGirisi.html" />
+    <Content Include="Site\ZumreCalisma\YoklamaIslemleri.html" />
+    <Content Include="VueComponents\Abide\Filtreler.js" />
+    <Content Include="VueComponents\Degerlendirme\Filtreler.js" />
+    <Content Include="VueComponents\DenemeSinavRaporlariFiltreleri.js" />
+    <Content Include="VueComponents\Filtre.js" />
+    <Content Include="VueComponents\FiltreEk.js" />
+    <Content Include="VueComponents\Frekans\Frekans.js" />
+    <Content Include="VueComponents\Genel.js" />
+    <Content Include="VueComponents\idset\Filtreler.js" />
+    <Content Include="VueComponents\KulupFiltreleri.js" />
+    <Content Include="VueComponents\OgrenciBelgeKonuAnaliz.js" />
+    <Content Include="VueComponents\KonuAnaliziFiltreleri.js" />
+    <Content Include="VueComponents\OgrenciBelgeArakarne.js" />
+    <Content Include="VueComponents\OgrenciBelgeSinavSonuclari.js" />
+    <Content Include="VueComponents\OgrenciDegerlendirme.js" />
+    <Content Include="VueComponents\OgrenciHarcama.js" />
+    <Content Include="VueComponents\OgrenciRaporlariFiltreleri.js" />
+    <Content Include="VueComponents\OnlineDers.js" />
+    <Content Include="VueComponents\OnlineSinavFiltreleri.js" />
+    <Content Include="VueComponents\OzelSayfaFiltreleri.js" />
+    <Content Include="VueComponents\SinavFiltreleri.js" />
+    <Content Include="VueComponents\GenelSinavRaporuFiltreleri.js" />
+    <Content Include="VueComponents\SoruTipleri.js" />
+    <Content Include="VueComponents\TopluSinavSonuclariFiltreleri.js" />
+    <Content Include="VueComponents\SinavIstatistikFiltreleri.js" />
+    <Content Include="VueComponents\UniteTarama\Filtreler.js" />
+    <Content Include="VueComponents\UniversiteFiltreleri.js" />
+    <Content Include="VueComponents\Viu\Filtreler.js" />
+    <Content Include="VueComponents\Yardim.js" />
+    <Content Include="VueComponents\YaziliYoklamaFiltreleri.js" />
+    <Content Include="VueComponents\Yazili\Filtreler.js" />
+    <Content Include="VueComponents\YetenekGelisim\Filtreler.js" />
+    <Content Include="VueComponents\YetkilendirmeFiltreleri.js" />
+    <Content Include="VueComponents\YYS\Filtreler.js" />
+    <Content Include="VueComponents\ZekaFiltreleri.js" />
+    <Content Include="VueComponents\SoruFiltreleri.js" />
+    <Content Include="VueComponents\SubeGrupSinif.js" />
+    <Content Include="VueComponents\ZekaTest\Filtreler.js" />
+    <Content Include="VueComponents\ZumreCalisma\Filtreler.js" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="YaziliTaslakYukle.ashx" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AbideResimYukle.ashx.cs">
+      <DependentUpon>AbideResimYukle.ashx</DependentUpon>
+    </Compile>
+    <Compile Include="Controllers\AkilliOgretimBarkod\AkilliOgretimBarkodExcelYukleController.cs" />
+    <Compile Include="Controllers\Bultenler\BultenController.cs" />
+    <Compile Include="Controllers\CurpusStudy\CurpusStudyYukleController.cs" />
+    <Compile Include="Controllers\DersCalismaProgrami\KazanimOdevAtamaController.cs" />
+    <Compile Include="Controllers\DersCalismaProgrami\OgretmenRaporController .cs" />
+    <Compile Include="Controllers\DersCalismaProgrami\OgrenciRaporController.cs" />
+    <Compile Include="Controllers\DersCalismaProgrami\ProgramGorController.cs" />
+    <Compile Include="Controllers\DersCalismaProgrami\ProgramHazirlaController.cs" />
+    <Compile Include="Controllers\DisKaynak\DisKaynakKademeController.cs" />
+    <Compile Include="Controllers\DisKaynak\DisKaynakTanimController.cs" />
+    <Compile Include="Controllers\Eogrenme\EogrenmeController.cs" />
+    <Compile Include="Controllers\GenelKurul\GenelKurulController.cs" />
+    <Compile Include="Controllers\IdariIsler\SubeYetkiController.cs" />
+    <Compile Include="Controllers\IdariIsler\KullaniciYetkiIslemleriController.cs" />
+    <Compile Include="Controllers\Morpa\MorpaController.cs" />
+    <Compile Include="Controllers\Morpa\MorpaGirisController.cs" />
+    <Compile Include="Controllers\OgrenciBilgiPaylasimi\OgrenciBilgiController.cs" />
+    <Compile Include="Controllers\Ogrenci\OgrenciIsleri\OI_BultenListesiController.cs" />
+    <Compile Include="Controllers\Ogrenci\OgrenciIsleri\OI_DersProgramiController.cs" />
+    <Compile Include="Controllers\Ogrenci\OgrenciIsleri\OI_OBSListesiController.cs" />
+    <Compile Include="Controllers\Ogrenci\OgrenciIsleri\OI_OgretmenListesiController.cs" />
+    <Compile Include="Controllers\Ogrenci\OkyanustaYasam\OY_KiyafetListesiController.cs" />
+    <Compile Include="Controllers\Ogrenci\Yillik\YillikYazController.cs" />
+    <Compile Include="Controllers\Ogretmen\OgretmenBilgileriController.cs" />
+    <Compile Include="Controllers\OnlineDers\DersProgramiGirisController.cs" />
+    <Compile Include="Controllers\OnlineDers\DersProgramiKaldirController.cs" />
+    <Compile Include="Controllers\OnlineDers\Ogrenci\OnlineDersProgramiOgrenciController.cs" />
+    <Compile Include="Controllers\OnlineDers\OnlineDersGenelKlasorController.cs" />
+    <Compile Include="Controllers\OnlineDers\OnlineDersProgramiSinifController.cs" />
+    <Compile Include="Controllers\OnlineSinav\Ogrenci\TestSinavController.cs" />
+    <Compile Include="Controllers\OnlineSinav\Ogrenci\OnlineTestController.cs" />
+    <Compile Include="Controllers\OnlineSinav\Ogrenci\SorunBildirController.cs" />
+    <Compile Include="Controllers\OnlineSinav\Ogrenci\OnlineSinavlarimController.cs" />
+    <Compile Include="Controllers\OnlineSinav\Ogrenci\OnlineSinavOgrenciSinavController.cs" />
+    <Compile Include="Controllers\OnlineSinav\OnlineSinavCiktiController.cs" />
+    <Compile Include="Controllers\OnlineSinav\OnlineSinavIslemController.cs" />
+    <Compile Include="Controllers\OnlineSinav\OnlineSinavOgrenciAtamaController.cs" />
+    <Compile Include="Controllers\OnlineSinav\OnlineSinavOgrenciOturumListeController.cs" />
+    <Compile Include="Controllers\OnlineSinav\OnlineSinavOgrenciOturumSifirlaController.cs" />
+    <Compile Include="Controllers\OnlineSinav\OnlineSinavOnizlemeController.cs" />
+    <Compile Include="Controllers\OnlineSinav\OgrenciSinavTakipController.cs" />
+    <Compile Include="Controllers\OnlineSinav\OnlineSinavOnizlemeListeController.cs" />
+    <Compile Include="Controllers\OSYM\OzelKosullarController.cs" />
+    <Compile Include="Controllers\Performans\DegerlendirilmeyenlerController.cs" />
+    <Compile Include="Controllers\Performans\KategoriDegerlendirmeController.cs" />
+    <Compile Include="Controllers\Performans\DegerlendirilenlerController.cs" />
+    <Compile Include="Controllers\Performans\PeriyotTanimlamaController.cs" />
+    <Compile Include="Controllers\Rapor\FrekansV2\FrekansEtkiListesiController.cs" />
+    <Compile Include="Controllers\Rapor\FrekansV2\FrekansOgrenciGelisimController.cs" />
+    <Compile Include="Controllers\Rapor\FrekansV2\FrekansSinavOgrenciController.cs" />
+    <Compile Include="Controllers\Rapor\Sinav\OnlineTestRaporController.cs" />
+    <Compile Include="Controllers\Rapor\UniteTaramaOlcegi\UtoKarneListesiController.cs" />
+    <Compile Include="Controllers\Rapor\Viu\RehberDanismanYoklamaController.cs" />
+    <Compile Include="Controllers\Rapor\Viu\ViuAramaYetkiListesiController.cs" />
+    <Compile Include="Controllers\Rapor\Viu\ViuTopluMesajController.cs" />
+    <Compile Include="Controllers\Rehberlik\RehberlikOnline\RehberlikOnlineYukleController.cs" />
+    <Compile Include="Controllers\Sinav\KazanimDosyaController.cs" />
+    <Compile Include="Controllers\SinifListeleri\SinifListeRaporController.cs" />
+    <Compile Include="Controllers\SportifKulupler\OgrenciKuluplerController.cs" />
+    <Compile Include="Controllers\SportifKulupler\KulupBelirleController.cs" />
+    <Compile Include="Controllers\SportifKulupler\KotaBelirleController.cs" />
+    <Compile Include="Controllers\SportifKulupler\PeriyotBelirleController.cs" />
+    <Compile Include="Controllers\Ogrencilerim\ogrencilerimController.cs" />
+    <Compile Include="Controllers\Viu\ViuTopluBildirimController.cs" />
+    <Compile Include="Controllers\Tanimlar\metedenemeController.cs" />
+    <Compile Include="Controllers\Tanimlar\DersProgramiController.cs" />
+    <Compile Include="Controllers\Tanimlar\DersEklemeController.cs" />
+    <Compile Include="Controllers\Tatil\TatilController.cs" />
+    <Compile Include="Controllers\Tkt\TKTAktarimController.cs" />
+    <Compile Include="Controllers\UniteTaramaOlcegi\UniteTaramaEtutOlusturController.cs" />
+    <Compile Include="Controllers\UniteTaramaOlcegi\UniteTaramaSinavSonucListesiController.cs" />
+    <Compile Include="Controllers\UniteTaramaOlcegi\UniteTaramaSinifMaddeAnaliziController.cs" />
+    <Compile Include="Controllers\UniteTaramaOlcegi\UniteTaramaEksikKazanimCalismaProgramiController.cs" />
+    <Compile Include="Controllers\UniteTaramaOlcegi\UniteTaramaExcelYukleController.cs" />
+    <Compile Include="Controllers\UniteTaramaOlcegi\UniteTaramaSinifRaporController.cs" />
+    <Compile Include="Controllers\UniteTaramaOlcegi\UniteTaramaOlcegiController.cs" />
+    <Compile Include="Controllers\UniteTaramaOlcegi\UniteTaramaSinavPuanGirisController.cs" />
+    <Compile Include="Controllers\Upgrade\SorularinCozulmeOranlariController.cs" />
+    <Compile Include="Controllers\Upgrade\UpgradeIslemRaporController.cs" />
+    <Compile Include="Controllers\Veli\DersCalismaProgrami\VeliProgramGorController.cs" />
+    <Compile Include="Controllers\Veli\Fatura\FaturaOdemeController.cs" />
+    <Compile Include="Controllers\Veli\MentalUp\VeliMentalUpGirisController.cs" />
+    <Compile Include="Controllers\Veli\Morpa\VeliMorpaGirisController.cs" />
+    <Compile Include="Controllers\Veli\OgrenciDegerlendirme\OD_AylikController.cs" />
+    <Compile Include="Controllers\Veli\OgrenciDegerlendirme\OD_DonemlikController.cs" />
+    <Compile Include="Controllers\Veli\OgrenciHarcama\OgrenciHarcamalariController.cs" />
+    <Compile Include="Controllers\Veli\Rapor\Sinav\VeliUniteTaramaRaporuController.cs" />
+    <Compile Include="Controllers\Veli\YetenekGelisim\VeliYGKarneController.cs" />
+    <Compile Include="Controllers\ViuAramaYetki\ViuAramaYetkisiController.cs" />
+    <Compile Include="Controllers\Yetkilendirme\KullaniciYetkilendirmeKaldirController.cs" />
+    <Compile Include="Controllers\Yonetim\DuyuruListeController.cs" />
+    <Compile Include="Controllers\Yonetim\OzelSayfaIslemleriController.cs" />
+    <Compile Include="Controllers\Yonetim\OzelSayfaListeController.cs" />
+    <Compile Include="Controllers\Yonetim\DuyuruYonetimiController.cs" />
+    <Compile Include="Controllers\Yonetim\ParametreController.cs" />
+    <Compile Include="Controllers\Yonetim\UyariSistemiIslemleriController.cs" />
+    <Compile Include="Controllers\Yonetim\UyariSistemiListeController.cs" />
+    <Compile Include="Controllers\YYS\YYSSinavExcelYukleController.cs" />
+    <Compile Include="Controllers\YYS\YYSSinavOptikYukleController.cs" />
+    <Compile Include="Controllers\YYS\YYSSinavTanimlaController.cs" />
+    <Compile Include="Controllers\Zumre\BilgilerController.cs" />
+    <Compile Include="OzelKosullarTaslakYukle.ashx.cs">
+      <DependentUpon>OzelKosullarTaslakYukle.ashx</DependentUpon>
+    </Compile>
+    <Compile Include="UniteTaramaTaslakYukle.ashx.cs">
+      <DependentUpon>UniteTaramaTaslakYukle.ashx</DependentUpon>
+    </Compile>
+    <Compile Include="AbideTaslakYukle.ashx.cs">
+      <DependentUpon>AbideTaslakYukle.ashx</DependentUpon>
+    </Compile>
+    <Compile Include="App_Start\WebApiConfig.cs" />
+    <Compile Include="Baglanti.cs" />
+    <Compile Include="CevapAnahtariTaslakYukle.ashx.cs">
+      <DependentUpon>CevapAnahtariTaslakYukle.ashx</DependentUpon>
+    </Compile>
+    <Compile Include="Controllers\Abide\AbideGenelRaporlarController.cs" />
+    <Compile Include="Controllers\Abide\AbideSinavExcelYukleController.cs" />
+    <Compile Include="Controllers\Abide\AbideSinavKitapcikController.cs" />
+    <Compile Include="Controllers\Abide\AbideSinavPuanGirisController.cs" />
+    <Compile Include="Controllers\Abide\AbideSinavRaporHazirlikController.cs" />
+    <Compile Include="Controllers\Abide\AbideSinavRaporOlusturController.cs" />
+    <Compile Include="Controllers\Abide\AbideSinavRaporuController.cs" />
+    <Compile Include="Controllers\Abide\AbideSinavTanimlaController.cs" />
+    <Compile Include="Controllers\AnasayfaController.cs" />
+    <Compile Include="Controllers\Assessment\AssessmentOgrenciYukleController.cs" />
+    <Compile Include="Controllers\Assessment\AssessmentSinavListeleController.cs" />
+    <Compile Include="Controllers\Assessment\AssessmentSinavTanimlaController.cs" />
+    <Compile Include="Controllers\Degerlendirme\DegerlendirmeDanismanOgrenciController.cs" />
+    <Compile Include="Controllers\Degerlendirme\DegerlendirmeGenelController.cs" />
+    <Compile Include="Controllers\Degerlendirme\DegerlendirmeKategoriTanimlaController.cs" />
+    <Compile Include="Controllers\Degerlendirme\DegerlendirmeOgrenciController.cs" />
+    <Compile Include="Controllers\Degerlendirme\DegerlendirmePersonelController.cs" />
+    <Compile Include="Controllers\Degerlendirme\DegerlendirmeRehberlikOgrenciController.cs" />
+    <Compile Include="Controllers\Degerlendirme\DegerlendirmeSoruTanimlaController.cs" />
+    <Compile Include="Controllers\Degerlendirme\DegerlendirmePeriyotTanimlaController.cs" />
+    <Compile Include="Controllers\Degerlendirme\DegerlendirmeYapmayanlarController.cs" />
+    <Compile Include="Controllers\Etut\EtutController.cs" />
+    <Compile Include="Controllers\Etut\EtutProgramiController.cs" />
+    <Compile Include="Controllers\Etut\EtutProgramiOVController.cs" />
+    <Compile Include="Controllers\Etut\EtutSabitOlusturController.cs" />
+    <Compile Include="Controllers\Etut\EtutTakip\EtutOgretmenRaporController.cs" />
+    <Compile Include="Controllers\Etut\EtutTakip\EtutSinifRaporController.cs" />
+    <Compile Include="Controllers\Etut\EtutTakvimiController.cs" />
+    <Compile Include="Controllers\Etut\EtutTakvimiOVController.cs" />
+    <Compile Include="Controllers\LoginController.cs" />
+    <Compile Include="Controllers\MenuController.cs" />
+    <Compile Include="Controllers\Morpa\MorpaDersEkleController.cs" />
+    <Compile Include="Controllers\Morpa\MorpaKazanimEkleController.cs" />
+    <Compile Include="Controllers\Morpa\MorpaMateryalEkleController.cs" />
+    <Compile Include="Controllers\Odev\OdevEkleController.cs" />
+    <Compile Include="Controllers\Odev\OdevKademeYetkiController.cs" />
+    <Compile Include="Controllers\Odev\OdevKontrolController.cs" />
+    <Compile Include="Controllers\Odev\OdevListesiController.cs" />
+    <Compile Include="Controllers\Odev\OdevMorpaController.cs" />
+    <Compile Include="Controllers\Odev\OdevRaporController.cs" />
+    <Compile Include="Controllers\Odev\OgrenciOdevListesiController.cs" />
+    <Compile Include="Controllers\Odev\OgretmenOdevRaporuController.cs" />
+    <Compile Include="Controllers\Ogrenci\AkademikTakvimController.cs" />
+    <Compile Include="Controllers\Ogrenci\DemoOgrenciController.cs" />
+    <Compile Include="Controllers\Ogrenci\HedefBelirlemeController.cs" />
+    <Compile Include="Controllers\Ogrenci\MevcutDurumController.cs" />
+    <Compile Include="Controllers\Ogrenci\MevcutDurumOOController.cs" />
+    <Compile Include="Controllers\Ogrenci\ProjeDonemOdeviController.cs" />
+    <Compile Include="Controllers\Ogrenci\SinavlarimController.cs" />
+    <Compile Include="Controllers\Ogrenci\TabanPuanlarController.cs" />
+    <Compile Include="Controllers\OSYM\TercihListeRaporController.cs" />
+    <Compile Include="Controllers\OutSide\OSOdevListesiController.cs" />
+    <Compile Include="Controllers\PerformansDegerlendirmeSonuclari\PerformansDegerlendirmeSonuclariPDSRaporController.cs" />
+    <Compile Include="Controllers\Personel\ProjeDonemController.cs" />
+    <Compile Include="Controllers\Personel\ProjeDonemRaporController.cs" />
+    <Compile Include="Controllers\Rapor\Analiz\GenelSoruAnaliziController.cs" />
+    <Compile Include="Controllers\Rapor\Analiz\MaddeFrekansAnaliziController.cs" />
+    <Compile Include="Controllers\Rapor\Analiz\OgrenciMaddeAnaliziController.cs" />
+    <Compile Include="Controllers\Rapor\Analiz\SinavKonuAnaliziController.cs" />
+    <Compile Include="Controllers\Rapor\Analiz\SinifDersAnaliziController.cs" />
+    <Compile Include="Controllers\Rapor\Analiz\SinifMaddeAnaliziController.cs" />
+    <Compile Include="Controllers\Rapor\Analiz\TestMaddeAnaliziController.cs" />
+    <Compile Include="Controllers\Rapor\Assessment\AssessmentOgrenciSinavRaporuController.cs" />
+    <Compile Include="Controllers\Rapor\Assessment\AssessmentSinavaKatilmayanlarController.cs" />
+    <Compile Include="Controllers\Rapor\Assessment\AssessmentSinavOgrenciRaporuController.cs" />
+    <Compile Include="Controllers\Rapor\Assessment\AssessmentSinavSoruAnaliziController.cs" />
+    <Compile Include="Controllers\Rapor\Assessment\AssessmentSinifSinavRaporuController.cs" />
+    <Compile Include="Controllers\Rapor\FrekansV2\FrekansKampusV2Controller.cs" />
+    <Compile Include="Controllers\Rapor\FrekansV2\FrekansKarneV2Controller.cs" />
+    <Compile Include="Controllers\Rapor\FrekansV2\FrekansSinifV2Controller.cs" />
+    <Compile Include="Controllers\Rapor\FrekansV2\FrekansSistemV2Controller.cs" />
+    <Compile Include="Controllers\Rapor\Frekans\FrekansKarneController.cs" />
+    <Compile Include="Controllers\Rapor\Frekans\FrekansSistemController.cs" />
+    <Compile Include="Controllers\Rapor\OgrenciBelge\OgrenciBelgeAraKarneController.cs" />
+    <Compile Include="Controllers\Rapor\OgrenciBelge\OgrenciBelgeGelisimRaporuController.cs" />
+    <Compile Include="Controllers\Rapor\OgrenciBelge\OgrenciBelgeGelisimRaporuLSController.cs" />
+    <Compile Include="Controllers\Rapor\OgrenciBelge\OgrenciBelgeGelisimRaporuOOController.cs" />
+    <Compile Include="Controllers\Rapor\OgrenciBelge\OgrenciBelgeKonuAnaliziController.cs" />
+    <Compile Include="Controllers\Rapor\OgrenciBelge\OgrenciBelgeSinavSonuclariController.cs" />
+    <Compile Include="Controllers\Rapor\Sinav\AraKarneController.cs" />
+    <Compile Include="Controllers\Rapor\Sinav\DenemeSinavRaporlariController.cs" />
+    <Compile Include="Controllers\Rapor\Sinav\GelisimRaporuController.cs" />
+    <Compile Include="Controllers\Rapor\Sinav\GelisimRaporuLSController.cs" />
+    <Compile Include="Controllers\Rapor\Sinav\GelisimRaporuOOController.cs" />
+    <Compile Include="Controllers\Rapor\Sinav\GenelSinavRaporuController.cs" />
+    <Compile Include="Controllers\Rapor\Sinav\GenelYaziliYoklamaSonuclariController.cs" />
+    <Compile Include="Controllers\Rapor\Sinav\KonuAnaliziController.cs" />
+    <Compile Include="Controllers\Rapor\Sinav\OdulListesiController.cs" />
+    <Compile Include="Controllers\Rapor\Sinav\OgrenciKOSRaporuController.cs" />
+    <Compile Include="Controllers\Rapor\Sinav\OgrenciLUSRaporuController.cs" />
+    <Compile Include="Controllers\Rapor\Sinav\OdevTakibiController.cs" />
+    <Compile Include="Controllers\Rapor\Sinav\OgrenciIzlemeController.cs" />
+    <Compile Include="Controllers\Rapor\Sinav\OgrenciRaporlariController.cs" />
+    <Compile Include="Controllers\Rapor\Sinav\OkulNetPuanOrtalamalariController.cs" />
+    <Compile Include="Controllers\Rapor\Sinav\SinavIstatistikController.cs" />
+    <Compile Include="Controllers\Rapor\Sinav\SinavKatilimController.cs" />
+    <Compile Include="Controllers\Rapor\Sinav\SinavSonuclariController.cs" />
+    <Compile Include="Controllers\Rapor\Sinav\SinifNetPuanOrtalamalariController.cs" />
+    <Compile Include="Controllers\Rapor\Sinav\TopluSinavSonuclariController.cs" />
+    <Compile Include="Controllers\Rapor\Sinav\YaziliYoklamaSonuclariController.cs" />
+    <Compile Include="Controllers\Rapor\Viu\ViuRaporlarController.cs" />
+    <Compile Include="Controllers\Rapor\Yazili\GenelKazanimAnaliziController.cs" />
+    <Compile Include="Controllers\Rapor\Yazili\KazanimAnaliziController.cs" />
+    <Compile Include="Controllers\Rapor\Yazili\KazanimAnaliziOOController.cs" />
+    <Compile Include="Controllers\Rapor\Yazili\KOSRaporuController.cs" />
+    <Compile Include="Controllers\Rapor\Yazili\LUSRaporuController.cs" />
+    <Compile Include="Controllers\Rapor\Yazili\OrtalamaListesiController.cs" />
+    <Compile Include="Controllers\Rapor\Yazili\PuanaGoreYaziliSonuclariController.cs" />
+    <Compile Include="Controllers\Rapor\Yazili\SinavaKatilmayanOgrencilerController.cs" />
+    <Compile Include="Controllers\Rapor\Yazili\SinavAnalizController.cs" />
+    <Compile Include="Controllers\Rapor\Yazili\SinifBazindaKazanimAnaliziController.cs" />
+    <Compile Include="Controllers\Rapor\Yazili\TopluYaziliYoklamaSonuclariController.cs" />
+    <Compile Include="Controllers\Rapor\YetenekGelisim\YG_MevcutDagilimController.cs" />
+    <Compile Include="Controllers\Rapor\YetenekGelisim\YG_OgrenciSecimleriController.cs" />
+    <Compile Include="Controllers\Rapor\YetenekGelisim\YG_SecimYapmayanlarController.cs" />
+    <Compile Include="Controllers\RehberlikEnvanter\RehberlikEnvanterController.cs" />
+    <Compile Include="Controllers\RehberlikEnvanter\RehberlikEnvanterOVController.cs" />
+    <Compile Include="Controllers\RehberlikEnvanter\RehberlikEnvanterPersonelController.cs" />
+    <Compile Include="Controllers\RehberlikEnvanter\RehberlikEnvanterTanimlamaController.cs" />
+    <Compile Include="Controllers\Sinav\Bursluluk\BurslulukBursOraniBelirleController.cs" />
+    <Compile Include="Controllers\Sinav\Bursluluk\BurslulukOgrenciIslemleriController.cs" />
+    <Compile Include="Controllers\Sinav\CevapAnahtariDuzenleController.cs" />
+    <Compile Include="Controllers\Sinav\CevapAnahtariKullaniciYetkiController.cs" />
+    <Compile Include="Controllers\Sinav\DersUniteController.cs" />
+    <Compile Include="Controllers\Sinav\KarmaListeController.cs" />
+    <Compile Include="Controllers\Sinav\KatsayiGirisiController.cs" />
+    <Compile Include="Controllers\Sinav\OgrenciDersMuafController.cs" />
+    <Compile Include="Controllers\Sinav\OgrenciFrekansMuafController.cs" />
+    <Compile Include="Controllers\Sinav\OptikTanimlaController.cs" />
+    <Compile Include="Controllers\Sinav\OptikYukleController.cs" />
+    <Compile Include="Controllers\Sinav\SinavListeleController.cs" />
+    <Compile Include="Controllers\Sinav\SinavTanimlaController.cs" />
+    <Compile Include="Controllers\Takvim\TakvimController.cs" />
+    <Compile Include="Controllers\Tkt\SonucGirController.cs" />
+    <Compile Include="Controllers\Tkt\SonucGorController.cs" />
+    <Compile Include="Controllers\Tkt\TKTKazanimAnaliziController.cs" />
+    <Compile Include="Controllers\Tkt\TopluSonucGorController.cs" />
+    <Compile Include="Controllers\Tkt\ZekaPuanGorController.cs" />
+    <Compile Include="Controllers\Upgrade\OgrenciListesiController.cs" />
+    <Compile Include="Controllers\Upgrade\SinavKagidiOlusturController.cs" />
+    <Compile Include="Controllers\Upgrade\SoruEkleController.cs" />
+    <Compile Include="Controllers\Upgrade\SoruListeleController.cs" />
+    <Compile Include="Controllers\Upgrade\SoruSayilariController.cs" />
+    <Compile Include="Controllers\Upgrade\UpgradeSonucGirController.cs" />
+    <Compile Include="Controllers\Upgrade\UpgradeSonucGorController.cs" />
+    <Compile Include="Controllers\Upgrade\UpgradeTopluSonucGorController.cs" />
+    <Compile Include="Controllers\Veli\Hedefler\VeliHedefBelirlemeController.cs" />
+    <Compile Include="Controllers\Veli\Rapor\Sinav\VeliGelisimRaporuController.cs" />
+    <Compile Include="Controllers\Veli\Rapor\Sinav\VeliGelisimRaporuLSController.cs" />
+    <Compile Include="Controllers\Veli\Rapor\Sinav\VeliGelisimRaporuOOController.cs" />
+    <Compile Include="Controllers\Veli\Rapor\Sinav\VeliKOSRaporuController.cs" />
+    <Compile Include="Controllers\Veli\Rapor\Sinav\VeliLUSRaporuController.cs" />
+    <Compile Include="Controllers\Veli\Rapor\Sinav\VeliOdevTakibiController.cs" />
+    <Compile Include="Controllers\Veli\Rapor\Sinav\VeliSinavSonuclariController.cs" />
+    <Compile Include="Controllers\Veli\Rapor\Sinav\VeliKonuAnaliziController.cs" />
+    <Compile Include="Controllers\Veli\Rapor\Sinav\VeliAraKarneController.cs" />
+    <Compile Include="Controllers\Veli\Rapor\Sinav\VeliSinavIstatistikController.cs" />
+    <Compile Include="Controllers\Veli\Rapor\Sinav\VeliYaziliYoklamaSonuclariController.cs" />
+    <Compile Include="Controllers\Yardim\YardimHazirlaController.cs" />
+    <Compile Include="Controllers\Yazili\YYListeleController.cs" />
+    <Compile Include="Controllers\Yazili\YYNotGirisController.cs" />
+    <Compile Include="Controllers\Yazili\YYTanimlaController.cs" />
+    <Compile Include="Controllers\YetenekGelisim\YG_KarneController.cs" />
+    <Compile Include="Controllers\YetenekGelisim\YG_KotaBelirleController.cs" />
+    <Compile Include="Controllers\YetenekGelisim\YG_PuanGirisiController.cs" />
+    <Compile Include="Controllers\YetenekGelisim\YG_SecimAyarController.cs" />
+    <Compile Include="Controllers\YetenekGelisim\YG_SecimController.cs" />
+    <Compile Include="Controllers\YetenekGelisim\YG_TopluKarneController.cs" />
+    <Compile Include="Controllers\YetenekGelisim\YG_YetenekAciklamaEkleController.cs" />
+    <Compile Include="Controllers\YetenekGelisim\YG_YorumEkleController.cs" />
+    <Compile Include="Controllers\Yetkilendirme\BirimYetkilendirmeController.cs" />
+    <Compile Include="Controllers\Yetkilendirme\KullaniciYetkilendirmeController.cs" />
+    <Compile Include="Controllers\ZekaTest\ZekaTestSonucListeleABBController.cs" />
+    <Compile Include="Controllers\ZekaTest\ZekaTestSonucGirController.cs" />
+    <Compile Include="Controllers\ZekaTest\ZekaTestSonucListeleController.cs" />
+    <Compile Include="Controllers\ZumreCalisma\ZumreCalismaCalismalarimController.cs" />
+    <Compile Include="Controllers\ZumreCalisma\ZumreCalismaKatilimciAtamaController.cs" />
+    <Compile Include="Controllers\ZumreCalisma\ZumreCalismaKatilimciOnaylamaController.cs" />
+    <Compile Include="Controllers\ZumreCalisma\ZumreCalismaTanimlamaController.cs" />
+    <Compile Include="Controllers\ZumreCalisma\ZumreCalismaYaziliGirisiController.cs" />
+    <Compile Include="Controllers\ZumreCalisma\ZumreCalismaYaziliIslemleriController.cs" />
+    <Compile Include="Controllers\ZumreCalisma\ZumreCalismaYoklamaGirisiController.cs" />
+    <Compile Include="Controllers\ZumreCalisma\ZumreCalismaYoklamaIslemleriController.cs" />
+    <Compile Include="EtkinlikYukle.ashx.cs">
+      <DependentUpon>EtkinlikYukle.ashx</DependentUpon>
+    </Compile>
+    <Compile Include="FileUpload.ashx.cs">
+      <DependentUpon>FileUpload.ashx</DependentUpon>
+    </Compile>
+    <Compile Include="Global.asax.cs">
+      <DependentUpon>Global.asax</DependentUpon>
+    </Compile>
+    <Compile Include="HariciPuanSiraTaslakYukle.ashx.cs">
+      <DependentUpon>HariciPuanSiraTaslakYukle.ashx</DependentUpon>
+    </Compile>
+    <Compile Include="Helper\ExcelVeriYukle.ashx.cs">
+      <DependentUpon>ExcelVeriYukle.ashx</DependentUpon>
+    </Compile>
+    <Compile Include="Helper\RaporKaydet.aspx.cs">
+      <DependentUpon>RaporKaydet.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Helper\RaporKaydet.aspx.designer.cs">
+      <DependentUpon>RaporKaydet.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="KarmaListeYukle.ashx.cs">
+      <DependentUpon>KarmaListeYukle.ashx</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Rapor.aspx.cs">
+      <DependentUpon>Rapor.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Rapor.aspx.designer.cs">
+      <DependentUpon>Rapor.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="RaporAbideGenel.aspx.cs">
+      <DependentUpon>RaporAbideGenel.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="RaporAbideGenel.aspx.designer.cs">
+      <DependentUpon>RaporAbideGenel.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="RaporAraKarne.aspx.cs">
+      <DependentUpon>RaporAraKarne.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="RaporAraKarne.aspx.designer.cs">
+      <DependentUpon>RaporAraKarne.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="RaporGelisimRaporuLS.aspx.cs">
+      <DependentUpon>RaporGelisimRaporuLS.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="RaporGelisimRaporuLS.aspx.designer.cs">
+      <DependentUpon>RaporGelisimRaporuLS.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="RaporGelisimRaporuOO.aspx.cs">
+      <DependentUpon>RaporGelisimRaporuOO.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="RaporGelisimRaporuOO.aspx.designer.cs">
+      <DependentUpon>RaporGelisimRaporuOO.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="RaporKonuAnaliz.aspx.cs">
+      <DependentUpon>RaporKonuAnaliz.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="RaporKonuAnaliz.aspx.designer.cs">
+      <DependentUpon>RaporKonuAnaliz.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="RaporPost.aspx.cs">
+      <DependentUpon>RaporPost.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="RaporPost.aspx.designer.cs">
+      <DependentUpon>RaporPost.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="RaporSinavSonuc.aspx.cs">
+      <DependentUpon>RaporSinavSonuc.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="RaporSinavSonuc.aspx.designer.cs">
+      <DependentUpon>RaporSinavSonuc.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="SinavOptikUpload.ashx.cs">
+      <DependentUpon>SinavOptikUpload.ashx</DependentUpon>
+    </Compile>
+    <Compile Include="SinavExcelUpload.ashx.cs">
+      <DependentUpon>SinavExcelUpload.ashx</DependentUpon>
+    </Compile>
+    <Compile Include="SinavKagidi.aspx.cs">
+      <DependentUpon>SinavKagidi.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="SinavKagidi.aspx.designer.cs">
+      <DependentUpon>SinavKagidi.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="SinavTaslakYukle.ashx.cs">
+      <DependentUpon>SinavTaslakYukle.ashx</DependentUpon>
+    </Compile>
+    <Compile Include="UniteYukle.ashx.cs">
+      <DependentUpon>UniteYukle.ashx</DependentUpon>
+    </Compile>
+    <Compile Include="Utility\Filter\GzipCompression.cs" />
+    <Compile Include="YaziliTaslakYukle.ashx.cs">
+      <DependentUpon>YaziliTaslakYukle.ashx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="packages.config" />
+    <Content Include="FileUpload.ashx" />
+    <Content Include="Utility\dil.json" />
+    <Content Include="fonts\glyphicons-halflings-regular.woff" />
+    <Content Include="fonts\glyphicons-halflings-regular.ttf" />
+    <Content Include="fonts\glyphicons-halflings-regular.eot" />
+    <Content Include="SinavOptikUpload.ashx" />
+    <Content Include="SinavExcelUpload.ashx" />
+    <Content Include="SinavTaslakYukle.ashx" />
+    <Content Include="UniteYukle.ashx" />
+    <Content Include="VueComponents\star-rating.min.js" />
+    <Content Include="OzelKosullarTaslakYukle.ashx" />
+    <Content Include="Scripts\Jsons\sube.json" />
+    <Content Include="Scripts\Jsons\grup.json" />
+    <Content Include="Scripts\Jsons\sinif.json" />
+    <Content Include="Views\Shared\Error.cshtml" />
+    <Content Include="Views\_ViewStart.cshtml" />
+    <Content Include="Views\Shared\_Layout.cshtml" />
+    <Content Include="Views\web.config" />
+    <None Include="Web.Debug.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
+    <None Include="Web.Release.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="App_Data\" />
+    <Folder Include="Data\" />
+    <Folder Include="img\Duyuru\" />
+    <Folder Include="Scripts\Rapor\images\" />
+    <Folder Include="Views\Mete\" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\licenses.licx" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\PusulamBusiness\PusulamBusiness.csproj">
+      <Project>{5698c870-11bc-461a-bb84-639d87de0e8c}</Project>
+      <Name>PusulamBusiness</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\PusulamRapor\PusulamRapor.csproj">
+      <Project>{0db154d0-94e8-4d14-bff1-a2f1555b6269}</Project>
+      <Name>PusulamRapor</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Analyzer Include="..\packages\AWSSDK.S3.3.5.3.5\analyzers\dotnet\cs\AWSSDK.S3.CodeAnalysis.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Connected Services\" />
+  </ItemGroup>
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" Condition="false" />
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <UseIIS>True</UseIIS>
+          <AutoAssignPort>True</AutoAssignPort>
+          <DevelopmentServerPort>53100</DevelopmentServerPort>
+          <DevelopmentServerVPath>/</DevelopmentServerVPath>
+          <IISUrl>https://Pusulam</IISUrl>
+          <NTLMAuthentication>False</NTLMAuthentication>
+          <UseCustomServer>False</UseCustomServer>
+          <CustomServerUrl>
+          </CustomServerUrl>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\Microsoft.Net.Compilers.1.0.0\build\Microsoft.Net.Compilers.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Net.Compilers.1.0.0\build\Microsoft.Net.Compilers.props'))" />
+    <Error Condition="!Exists('..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.0\build\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.0\build\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props'))" />
+  </Target>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

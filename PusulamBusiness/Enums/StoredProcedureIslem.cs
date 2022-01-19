@@ -29,8 +29,8 @@
         KullaniciTipiListele = 7,
         KullaniciListele = 8,
         SinifAlanListele = 9,
-        EgitimTuruListele=10,
-        OgretmenListele=11
+        EgitimTuruListele = 10,
+        OgretmenListele = 11
     }
 
     public enum sp_FiltreEk
@@ -1189,8 +1189,8 @@
         OnlineDersHerkesiSusturGetir = 15,
         OgretmenOnlineDersProgramiListele = 16,
         OgretmenOnlineDersProgramiKaldir = 17,
-        SinifOnlineDersOgretmenListele = 18,       
-    }  
+        SinifOnlineDersOgretmenListele = 18,
+    }
 
     public enum sp_Fatura
     {
@@ -1365,15 +1365,15 @@
     }
     public enum sp_KullaniciArama
     {
-        OgrenciListele=1,
+        OgrenciListele = 1,
         Brans = 2,
-        YetkiKaldir=3
+        YetkiKaldir = 3
     }
     public enum sp_SubeYetki
     {
         KademeListele = 1,
         KademeYetkiKaydet = 2,
-        KullaniciTipiSubeGetir=3,
+        KullaniciTipiSubeGetir = 3,
         KullaniciTipiSubeKaydet = 4,
         KullaniciTipiListele = 5
     }
@@ -1386,22 +1386,22 @@
     }
     public enum sp_DersProgrami
     {
-        PersonelListele=1,
-        DersProgram=2,
-        DersOgretmen=3,
+        PersonelListele = 1,
+        DersProgram = 2,
+        DersOgretmen = 3,
         DersPersonelKaydet = 4
     }
     public enum sp_DersOgretmenleri
     {
-        DersEkle=1,
-        DersListele=2,
-        DersSil=3,
-        DersGetir=4,
-        DersDuzenle=5
+        DersEkle = 1,
+        DersListele = 2,
+        DersSil = 3,
+        DersGetir = 4,
+        DersDuzenle = 5
 
     }
     public enum sp_OgretmenDersleri
-    {       
+    {
         DersListele = 1,
         DersSil = 2
     }
@@ -1410,5 +1410,17 @@
         DersSaatleriListele = 1,
         DersSaatleriKaydet = 2
     }
-    
+
+    public enum sp_metedeneme
+    {
+        listele = 1
+    }
+    public enum sp_ogrencilerim
+    {
+        Ogrencilerimilistele = 1
+    }
+    public enum sp_ViuTopluBildirim
+    {
+        Sinif_listesi = 3
+    }    
 }

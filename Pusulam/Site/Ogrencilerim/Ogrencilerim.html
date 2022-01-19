@@ -1,0 +1,96 @@
+﻿<div class="row" id="app">
+    <div class="col-md-12">
+
+
+        <div class="portlet box blue-hoki dd-item" style="border:none">
+            <div class="portlet-title dd-handle" data-toggle='collapse' data-target='#filters' style="cursor:pointer;">
+                <div class="caption">
+                    <i class="icon-magnifier"></i>
+                    <span class="caption-subject bold uppercase"> Öğrencilerim </span>
+                    <span class="caption-helper"></span>
+                </div>
+                <div class='actions'>
+                    <a href='javascript:;' class='btn btn-default btn-sm' style='border:none;'>
+                        <i class='fa fa-chevron-down'></i>
+                    </a>
+                </div>
+            </div>
+            <!-- BEGIN PORTLET-->
+            <div class="portlet-body form collapse in">
+                <form role="form" style="padding:12px 20px">
+                    <div class="row">
+                        <div class="portlet-body">
+                            
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>FOTOĞRAF</th>
+                                            <th>TC KİMLİK NO</th>
+                                            <th>AD SOYAD</th>
+                                            <th>KAMPÜS</th>
+                                            <th>SINIF</th>
+                                            <th>İŞLEM</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr v-for="u in liste">
+                                            <td v-if="u.OGRENCI_FOTO==''">
+                                                <img src="../../../img/okyanus_image.jpg" class='img-rounded' height="60" width="60" style="position:center" />
+                                            </td>
+                                            <td v-else>
+                                                <img :src='"data:image/png;base64,"+ u.OGRENCI_FOTO' class='img-rounded' height="60" width="60" style="position:center" />
+                                            </td>
+                                            <td>{{u.OGRENCI_TC}}</td>
+                                            <td>{{u.OGRENCI_AD}} {{u.OGRENCI_SOYAD}}</td>
+                                            <td>{{u.OGRENCI_KAMPUS}}</td>
+                                            <td>{{u.OGRENCI_SINIFI}}</td>
+                                            <td><input style="float:left;margin: 10px;" type="button" class="btn btn-success" v-on:click="DemoLogin(u)" value="Giriş Yap"></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                           
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    var vue = new Vue({
+        el: "#app",
+        name: "ogrencilerim.html",
+
+        data: {
+            controller: 'ogrencilerim',
+            liste: []
+        },
+
+        mounted() {
+
+            var p = {
+                TCKIMLIKNO: session.TCKIMLIKNO,
+                OTURUM: session.OTURUM
+            };
+            WebPost(this, this.controller, "Ogrencilerimilistele", p, "#app", "Yükleniyor...", function (data, parent) {
+                parent.liste = JSON.parse(data);
+            });
+
+        },
+
+        methods: {
+
+            DemoLogin(u) {
+                debugger;
+                window.open('https://pusulam.okyanuskoleji.k12.tr/index.html?TC=' + u.OGRENCI_TC + '&OTURUM=' + u.OGRENCI_OTURUM, '_blank');
+                return;
+            }
+
+        },
+
+        
+
+    });
+</script>
