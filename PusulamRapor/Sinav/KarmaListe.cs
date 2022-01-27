@@ -24,10 +24,11 @@ namespace PusulamRapor.Sinav
         public int ID_BURSLULUKDOSYA { get; set; }
         public string BURS_SINAVTARIH { get; set; }
         public string BURS_SEANS { get; set; }
+        public string DONEM { get; set; }
 
         DataSet ds = new DataSet();
 
-        public KarmaListe(string tc, string oturum, string sqlJSON, string secenek, string kendiSinif, string TCGozuksunMu, string bursluluk, string sinavTarih, string yeniDagit, string sinifKapasite, string idBurslulukDosya, string bursSinavTarih, string bursSeans)
+        public KarmaListe(string tc, string oturum, string sqlJSON, string secenek, string kendiSinif, string TCGozuksunMu, string bursluluk, string sinavTarih, string yeniDagit, string sinifKapasite, string idBurslulukDosya, string bursSinavTarih, string bursSeans,string donem)
         {
             InitializeComponent();
             TCKIMLIKNO = tc;
@@ -40,7 +41,7 @@ namespace PusulamRapor.Sinav
             BURSLULUK = Convert.ToBoolean(bursluluk);
             YENIDAGIT = Convert.ToBoolean(yeniDagit);
             SINIFKAPASITE = Convert.ToBoolean(sinifKapasite);
-
+            DONEM = donem;
             ID_BURSLULUKDOSYA = Convert.ToInt32(idBurslulukDosya);
             BURS_SINAVTARIH = bursSinavTarih;
             BURS_SEANS = bursSeans;
@@ -78,6 +79,7 @@ namespace PusulamRapor.Sinav
 
                     b.ParametreEkle("@ID_BURSLULUKDOSYA", ID_BURSLULUKDOSYA);
                     b.ParametreEkle("@SEANS", BURS_SEANS);
+                    b.ParametreEkle("@DONEM", DONEM);
 
                     b.ParametreEkle("@ISLEM", islem); // Rapor
                     b.ParametreEkle("@ID_MENU", 1147);

@@ -71,11 +71,31 @@
     <Reference Include="DevExpress.Charts.v15.1.Core, Version=15.1.8.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
     <Reference Include="DevExpress.Data.v15.1, Version=15.1.8.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
     <Reference Include="DevExpress.DataAccess.v15.1, Version=15.1.8.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.Docs.v15.1, Version=15.1.8.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>bin\DevExpress.Docs.v15.1.dll</HintPath>
+    </Reference>
     <Reference Include="DevExpress.Office.v15.1.Core, Version=15.1.8.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.Pdf.v15.1.Core, Version=15.1.8.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>bin\DevExpress.Pdf.v15.1.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="DevExpress.Pdf.v15.1.Drawing, Version=15.1.8.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>bin\DevExpress.Pdf.v15.1.Drawing.dll</HintPath>
+    </Reference>
     <Reference Include="DevExpress.PivotGrid.v15.1.Core, Version=15.1.8.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
     <Reference Include="DevExpress.Printing.v15.1.Core, Version=15.1.8.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
     <Reference Include="DevExpress.RichEdit.v15.1.Core, Version=15.1.8.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.Snap.v15.1.Core, Version=15.1.8.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>bin\DevExpress.Snap.v15.1.Core.dll</HintPath>
+    </Reference>
     <Reference Include="DevExpress.Sparkline.v15.1.Core, Version=15.1.8.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.Spreadsheet.v15.1.Core, Version=15.1.8.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>bin\DevExpress.Spreadsheet.v15.1.Core.dll</HintPath>
+    </Reference>
     <Reference Include="DevExpress.Web.ASPxThemes.v15.1, Version=15.1.8.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
     <Reference Include="DevExpress.Web.v15.1, Version=15.1.8.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
     <Reference Include="DevExpress.Xpo.v15.1, Version=15.1.8.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
@@ -302,6 +322,7 @@
     <Content Include="bin\System.Web.WebPages.Razor.xml" />
     <Content Include="bin\System.Web.WebPages.xml" />
     <Content Include="CkImageUpload.ashx" />
+    <Content Include="Content\Site.css" />
     <Content Include="EtkinlikYukle.ashx" />
     <Content Include="Helper\RaporKaydet.aspx" />
     <Content Include="img\Abide\beceriders.png" />
@@ -469,10 +490,10 @@
     <Content Include="Site\SportifKulupler\OgrenciKulupler.html" />
     <Content Include="Site\SportifKulupler\PeriyotBelirle.html" />
     <Content Include="Site\Tanimlar\DersEkleme.html" />
-    <Content Include="Site\Tanimlar\DersSaatleri.html" />
-    <Content Include="Site\Tanimlar\OgretmenDersleri.html" />
-    <Content Include="Site\Tanimlar\DersOgretmenleri.html" />
     <Content Include="Site\Tanimlar\DersProgrami.html" />
+    <Content Include="Site\Ogrencilerim\Ogrencilerim.html" />
+    <Content Include="Site\Viu\ViuTopluBildirim.html" />
+    <Content Include="Site\Tanimlar\metedeneme.html" />
     <Content Include="Site\Tkt\Aktarim.html" />
     <Content Include="Site\UniteTaramaOlcegi\UniteTaramaEtutOlustur.html" />
     <Content Include="Site\UniteTaramaOlcegi\SinifMaddeAnalizi.html" />
@@ -542,8 +563,6 @@
     <Content Include="SQL\FeritAltıntas\15- 21.05.2021.sql" />
     <Content Include="SQL\FeritAltıntas\14- 18.05.2021.sql" />
     <Content Include="SQL\FeritAltıntas\13- 28.04.2021.sql" />
-    <Content Include="SQL\FeritAltıntas\28- 03.01.2022.sql" />
-    <Content Include="SQL\FeritAltıntas\27- 25.12.2021.sql" />
     <Content Include="SQL\FeritAltıntas\26- 22.11.2021.sql" />
     <Content Include="SQL\GokhanKahraman\06 - 09-02-2021.sql" />
     <Content Include="SQL\GokhanKahraman\05 - 03-02-2021.sql" />
@@ -949,9 +968,9 @@
     <Compile Include="Controllers\SportifKulupler\KulupBelirleController.cs" />
     <Compile Include="Controllers\SportifKulupler\KotaBelirleController.cs" />
     <Compile Include="Controllers\SportifKulupler\PeriyotBelirleController.cs" />
-    <Compile Include="Controllers\Tanimlar\OgretmenDersleriController.cs" />
-    <Compile Include="Controllers\Tanimlar\DersSaatleriController.cs" />
-    <Compile Include="Controllers\Tanimlar\DersOgretmenleriController.cs" />
+    <Compile Include="Controllers\Ogrencilerim\ogrencilerimController.cs" />
+    <Compile Include="Controllers\Viu\ViuTopluBildirimController.cs" />
+    <Compile Include="Controllers\Tanimlar\metedenemeController.cs" />
     <Compile Include="Controllers\Tanimlar\DersProgramiController.cs" />
     <Compile Include="Controllers\Tanimlar\DersEklemeController.cs" />
     <Compile Include="Controllers\Tatil\TatilController.cs" />
@@ -1307,6 +1326,10 @@
     <Content Include="Scripts\Jsons\sube.json" />
     <Content Include="Scripts\Jsons\grup.json" />
     <Content Include="Scripts\Jsons\sinif.json" />
+    <Content Include="Views\Shared\Error.cshtml" />
+    <Content Include="Views\_ViewStart.cshtml" />
+    <Content Include="Views\Shared\_Layout.cshtml" />
+    <Content Include="Views\web.config" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -1316,9 +1339,10 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Data\" />
     <Folder Include="img\Duyuru\" />
     <Folder Include="Scripts\Rapor\images\" />
-    <Folder Include="Site\NewFolder1\" />
+    <Folder Include="Views\Mete\" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\licenses.licx" />

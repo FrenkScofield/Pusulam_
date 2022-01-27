@@ -1,0 +1,56 @@
+﻿USE [Pusulam]
+GO
+
+/****** Object:  Table [dbo].[DersOgretmen]    Script Date: 25.12.2021 14:35:05 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[DersOgretmen](
+	[ID_DERSOGRETMEN] [int] IDENTITY(1,1) NOT NULL,
+	[ID_DERS] [int] NOT NULL,
+	[ID_OGRETMEN] [int] NOT NULL,
+	[ID_SINIF] [int] NOT NULL,
+	[ID_EGITIMTURU] [int] NOT NULL,
+	[TUR] [int] NULL,
+	[DONEMKOD] [varchar](4) NULL,
+	[ID_KAYDEDEN] [int] NULL,
+	[KAYITTARIH] [datetime] NULL,
+	[ID_DEGISTIREN] [int] NULL,
+	[DEGISTIRMETARIH] [datetime] NULL,
+	[SINIFTIP] [nvarchar](6) NULL,
+	[GUID] [varchar](200) NULL,
+	[TC_OGRETMEN] [char](11) NULL,
+ CONSTRAINT [PK_DersOgretmen] PRIMARY KEY CLUSTERED 
+(
+	[ID_DERS] ASC,
+	[ID_OGRETMEN] ASC,
+	[ID_SINIF] ASC,
+	[ID_EGITIMTURU] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[DersOgretmen] ADD  CONSTRAINT [DF_DersOgretmen_KAYITTARIH]  DEFAULT (getdate()) FOR [KAYITTARIH]
+GO
+
+
+SET IDENTITY_INSERT Pusulam..DersOgretmen ON;
+insert into Pusulam..DersOgretmen (ID_DERSOGRETMEN,
+	   ID_DERS,
+	   ID_OGRETMEN,
+	   ID_SINIF,
+	   ID_EGITIMTURU,
+	   TUR,
+	   DONEMKOD,
+	   ID_KAYDEDEN,
+	   KAYITTARIH,
+	   ID_DEGISTIREN,
+	   DEGISTIRMETARIH,
+	   SINIFTIP,
+	   GUID,
+	   TC_OGRETMEN)
+select * from eokul_v2..DersOgretmen
+SET IDENTITY_INSERT Pusulam..DersOgretmen OFF;

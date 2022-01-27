@@ -1,0 +1,273 @@
+﻿<div class="row" id="app">
+    <div class="col-md-12">
+        <div class="portlet box blue-hoki dd-item" style="border:none">
+            <div class="portlet-title dd-handle" data-toggle='collapse' data-target='#filters' style="cursor:pointer;">
+                <div class="caption">
+                    <i class="icon-magnifier"></i>
+                    <span class="caption-subject bold uppercase"> Filtreleme </span>
+                    <span class="caption-helper"></span>
+                </div>
+                <div class='actions'>
+                    <a href='javascript:;' class='btn btn-default btn-sm' style='border:none;'>
+                        <i class='fa fa-chevron-down'></i>
+                    </a>
+                </div>
+            </div>
+            <!-- BEGIN PORTLET-->
+            <div class="portlet-body form collapse in">
+                <form role="form" style="padding:12px 20px">
+                    <div class="row">
+                        <div class="row col-md-6">
+                            <c-sube :controller="controller"
+                                    @OnChange="SubeSelected">
+                            </c-sube>
+                        </div>
+                        <div class="row col-md-6">
+                            <!--Rehber Öğretmen -->
+
+                            <c-ders-personel :controller="controller"
+                                             :id_sinif="ID_SINIF"
+                                             @OnChange="RehberSelected"
+                                             id_kullanici_tipi="26"
+                                             label="Rehber Öğretmen">
+                            </c-ders-personel>
+                        </div>
+                        <div class="row col-md-6">
+                            <c-kademe3 :controller="controller"
+                                       @OnChange="Kademe3Selected">
+                            </c-kademe3>
+                        </div>
+                        <div class="row col-md-6">
+                            <!--Danışman Öğretmen -->
+                            <c-ders-personel :controller="controller"
+                                             :id_sinif="ID_SINIF"
+                                             @OnChange="DanismanSelected"
+                                             id_kullanici_tipi="100"
+                                             label="Danışman Öğretmen">
+                            </c-ders-personel>
+                        </div>
+                        <div class="row col-md-6">
+                            <c-sinif :controller="controller"
+                                     :idkademe3="idkademe3"
+                                     @OnChange="SinifSelected"
+                                     :idsube="ID_SUBE">
+                            </c-sinif>
+                        </div>
+
+                        <div class="row col-md-6">
+                            <!--Müdür -->
+                            <c-ders-personel :controller="controller"
+                                             :id_sinif="ID_SINIF"
+                                             @OnChange="MudurSelected"
+                                             id_kullanici_tipi="53"
+                                             label="Müdür">
+                            </c-ders-personel>
+                        </div>
+                        <div class="row col-md-6">
+                            <div class="form-group" style="margin-top:10px;">
+                                <div class="col-md-12 text-left">
+                                    <button type="button" class="btn green" @click="PersonelKaydet()">Seçilenleri Kaydet</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row col-md-6">
+                            <!--Müdür Yardımcısı -->
+                            <c-ders-personel :controller="controller"
+                                             :id_sinif="ID_SINIF"
+                                             @OnChange="MudurYardimciSelected"
+                                             id_kullanici_tipi="54"
+                                             label="Müdür Yardımcısı">
+                            </c-ders-personel>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="portlet box blue-hoki dd-item" style="border:none">
+            <div class="portlet-body form collapse in" v-if="LISTELE==1">
+                <form role="form" style="padding:12px 20px">
+                    <div class="row">
+                        <table class="table table-striped table-bordered table-hover table-checkable order-column" id="tblListe">
+                            <thead>
+                                <tr>
+                                    <th style="text-align:center;">SAAT</th>
+                                    <th style="text-align:center;">PAZARTESİ</th>
+                                    <th style="text-align:center;">SALI</th>
+                                    <th style="text-align:center;">ÇARŞAMBA</th>
+                                    <th style="text-align:center;">PERŞEMBE</th>
+                                    <th style="text-align:center;">CUMA</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="odd gradeX" v-for="u in LIST_DERSPROGRAM">
+                                    <td class="col-md-1">{{u.SAAT}}</td>
+                                    <td class="col-md-2" style="text-align:center;">
+                                        <div>
+                                            <select class="selectpicker" v-model="SelectedID" @change="OnChange" data-live-search="true" :title="u.PAZARTESI">
+                                                <option v-for="o in LIST_OGRETMEN" :value="o.ID_OGRETMEN">{{o.DERSAD + ' ('+o.OGRETMENAD+ '-' + o.EGITIMTURU+ ')'}}</option>
+                                            </select>
+                                        </div>
+
+                                    </td>
+                                    <td class="col-md-2" style="text-align:center;">
+                                        <div>
+                                            <select class="selectpicker" :id="u.DERS" v-model="SelectedID" @change="OnChange" data-live-search="true" :title="u.SALI">
+                                                <option v-for="o in LIST_OGRETMEN" :value="o.ID_OGRETMEN">{{o.DERSAD + ' ('+o.OGRETMENAD+ '-' + o.EGITIMTURU+ ')'}}</option>
+                                            </select>
+                                        </div>
+
+                                    </td>
+                                    <td class="col-md-2" style="text-align:center;">
+                                        <div>
+                                            <select class="selectpicker" v-model="SelectedID" @change="OnChange" data-live-search="true" :title="u.CARSAMBA">
+                                                <option v-for="o in LIST_OGRETMEN" :value="o.ID_OGRETMEN">{{o.DERSAD + ' ('+o.OGRETMENAD+ '-' + o.EGITIMTURU+ ')'}}</option>
+                                            </select>
+                                        </div>
+
+                                    </td>
+                                    <td class="col-md-2" style="text-align:center;">
+                                        <div>
+                                            <select class="selectpicker" v-model="SelectedID" @change="OnChange(u)" data-live-search="true" :title="u.PERSEMBE">
+                                                <option v-for="o in LIST_OGRETMEN" :value="o.ID_OGRETMEN">{{o.DERSAD + ' ('+o.OGRETMENAD+ '-' + o.EGITIMTURU+ ')'}}</option>
+                                            </select>
+                                        </div>
+
+                                    </td>
+                                    <td class="col-md-2" style="text-align:center;">
+                                        <div>
+                                            <select class="selectpicker" v-model="SECILI_OGRETMEN" @change="OnChange(u.DERS,5)" data-live-search="true" :title="u.CUMA">
+                                                <option v-for="o in LIST_OGRETMEN" :value="[{DERS_ADI:o}]">{{o.DERSAD + ' ('+o.OGRETMENAD+ '-' + o.EGITIMTURU+ ')'}}</option>
+                                            </select>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                            <div class="form-group" style="margin-top:10px;">
+                                <div class="col-md-12 text-right">
+                                    <button type="button" class="btn green" @click="Kaydet()">Kaydet</button>
+                                </div>
+                            </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+    </div>
+</div>
+<!--<script src="../../../VueComponents/GenelSinavRaporuFiltreleri.js?v=18"></script>-->
+<script src="../../../VueComponents/Filtre.js"></script>
+
+<script>
+    var vue = new Vue({
+        el: "#app",
+        name: "DersProgrami.html",
+
+        data: {
+            controller: 'DersProgrami',
+            idkademe3: 0,
+            ID_SUBE: 0,
+            ID_SINIF: 0,
+            TC_REHBER: '',
+            TC_DANISMAN: '',
+            TC_MUDUR: '',
+            TC_MUDURYARDIMCI: '',
+            LIST_DERSPROGRAM: [],
+            LISTELE: 0,
+            LIST_OGRETMEN: [],
+            SelectedID: ['0'],
+            SECILI_OGRETMEN: '',
+            LIST_DERS: []
+        },
+        methods: {
+
+            OnChange(DERS, GUN) {
+                var GUN = { ID_DERS: this.SECILI_OGRETMEN[0].DERS_ADI.ID_DERS, ID_DERSOGRETMEN: this.SECILI_OGRETMEN[0].DERS_ADI.ID_DERSOGRETMEN, DERS: DERS, GUN: GUN, ID_SINIF: this.ID_SINIF, ID_SUBE: this.ID_SUBE };
+                this.LIST_DERS.push(GUN);
+            },
+            SubeSelected(item) {
+                this.ID_SUBE = item;
+            },
+            Kademe3Selected(item) {
+                this.idkademe3 = item;
+
+            },
+            SinifSelected(item) {
+                this.ID_SINIF = item;
+                this.LISTELE = 1;
+                this.OgretmenGetir();
+                this.DersProgramGetir();
+            },
+            RehberSelected(item) {
+                this.TC_REHBER = item;
+            },
+            DanismanSelected(item) {
+                this.TC_DANISMAN = item;
+            },
+            MudurSelected(item) {
+                this.TC_MUDUR = item;
+            },
+            MudurYardimciSelected(item) {
+                this.TC_MUDURYARDIMCI = item;
+            },
+            DersProgramGetir() {
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    ID_SINIF: this.ID_SINIF
+                };
+                WebPost(this, this.controller, "DersProgramiGetir", p, "#app", "Yükleniyor...", function (data, parent) {
+                    parent.LIST_DERSPROGRAM = JSON.parse(data);
+                    /*  parent.deneme(parent.LIST_DERSPROGRAM);*/
+                });
+            },
+            OgretmenGetir() {
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    ID_SINIF: this.ID_SINIF
+                }
+
+                WebPost(this, this.controller, "DersOgretmenGetir", p, "#app", "Yükleniyor...", function (data, parent) {
+                    parent.LIST_OGRETMEN = JSON.parse(data);
+
+                });
+            },
+            PersonelKaydet() {
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    ID_SINIF: this.ID_SINIF,
+                    TC_REHBER: this.TC_REHBER,
+                    TC_DANISMAN: this.TC_DANISMAN,
+                    TC_MUDUR: this.TC_MUDUR,
+                    TC_MUDURYARDIMCI: this.TC_MUDURYARDIMCI
+                };
+                WebPost(this, this.controller, "DersPersonelKaydet", p, "#app", "Yükleniyor...", function (data, parent) {
+                    Alert_Info("Başarılı bir şekilde kaydedildi.")
+                });
+            },
+            Kaydet() {
+                return;
+            }
+            //deneme(val) {
+            //    var veri = "";
+            //    for (var o = 0; o < val.length; o++) {
+            //        veri += "<tr> <td class='col-md-1'>" + val[o].SAAT+ "</td>"
+            //        veri += "<td> <select class ='selectpicker' id='ders" + o + "'  data-live-search='true'></select ></td>"
+            //        veri += "<td> <select class ='selectpicker' id='ders" + o + 1 + "'  data-live-search='true'></select ></td>"
+            //        veri += "<td> <select class ='selectpicker' id='ders" + o + 2 + "'  data-live-search='true'></select ></td>"
+            //        veri += "<td> <select class ='selectpicker' id='ders" + o + 3 + "'  data-live-search='true'></select ></td>"
+            //        veri += "<td> <select class ='selectpicker' id='ders" + o + 4 + "'  data-live-search='true'></select ></td> </tr>"
+            //    }
+            //    for (var i = 0; i < length; i++) {
+
+            //    }
+            //    $("#tbody").html(veri);
+            //}
+
+        }
+
+    });
+</script>

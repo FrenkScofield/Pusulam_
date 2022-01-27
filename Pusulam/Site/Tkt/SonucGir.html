@@ -359,6 +359,7 @@
                 WebPost(this, "SonucGir", "TKTOgrenciCevapListele", p, '', '', function (data, parent) {
                     if (data != null) {
                         parent.KATEGORISORU_LISTESI = data;
+                        console.log(data);
 
                         vue.$nextTick(function () {
                             $('#btn_Tarih').datepicker({
@@ -377,8 +378,9 @@
                             );
 
                             $("#btn_Tarih").datepicker().datepicker("setDate", new Date());
+                            if (data.length > 0) { vue.TARIH = data[0].TARIH; }
 
-                            vue.TARIH = data[0].TARIH;
+                        
 
                             $('#soru_modal').modal();
                         });

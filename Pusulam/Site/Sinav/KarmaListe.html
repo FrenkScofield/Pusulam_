@@ -65,7 +65,7 @@
                         </c-bursluluk-tarih-seans>
 
                         <div class="row col-md-2" style="margin-top: 0px !important;">
-                            <div  style="height:34px; vertical-align:middle;">
+                            <div style="height:34px; vertical-align:middle;">
                                 <div class="md-checkbox" style="margin:auto!important; height:20px; margin:0px; margin-top:6px; display:block;">
                                     <input type="checkbox" v-model="tcGorunsun" id="tcGorunsun" class="md-check" v-bind:true-value="true" v-bind:false-value="false" />
                                     <label for="tcGorunsun">
@@ -266,7 +266,7 @@
         name: "KarmaListe",
 
         data: {
-            controller:"KarmaListe",
+            controller: "KarmaListe",
             DONEM: '',
             TARIH: '',
             ID_SINAV: 0,
@@ -503,6 +503,7 @@
                             + ";" + this.ID_BURSLULUKDOSYA
                             + ";" + this.BURS_SINAVTARIH
                             + ";" + this.BURS_SEANS
+                            + ";" + this.DONEM
 
                             , '_blank');
                     }
@@ -522,7 +523,8 @@
 
                             '@' + this.ID_BURSLULUKDOSYA +
                             '@' + this.BURS_SINAVTARIH +
-                            '@' + this.BURS_SEANS;
+                            '@' + this.BURS_SEANS +
+                            '@' + this.DONEM;
 
                         var xForm = document.createElement("form");
                         xForm.target = "rapor";
@@ -533,10 +535,11 @@
                         xInput.type = "text";
                         xInput.name = "p";
                         xInput.value = params;
+
                         xForm.appendChild(xInput);
                         xForm.hidden = "hidden";
                         document.body.appendChild(xForm);
-
+                        console.log(xForm)
                         map = window.open("", "rapor", "");
 
                         if (map) {

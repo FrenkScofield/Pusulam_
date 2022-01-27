@@ -1,0 +1,322 @@
+﻿<div class="page-head">
+    <!-- BEGIN PAGE TITLE -->
+    <div class="page-title col-md-12">
+        <h1>
+            Ders Öğretmenleri <small>Ders Öğretmenleri</small> <span onclick="YardimGoster(ID_MENU);" class="pull-right" style="cursor:pointer;"><img src="assets/global/img/info.gif" class="info-image-icon" /> </span>
+        </h1>
+    </div>
+    <!-- END PAGE TITLE -->
+</div>
+<div class="row" id="app">
+    <div class="col-md-12">
+        <div class="portlet box blue-hoki dd-item" style="border:none">
+            <div class="portlet-title dd-handle" data-toggle='collapse' data-target='#filters' style="cursor:pointer;">
+                <div class="caption">
+                    <i class="icon-magnifier"></i>
+                    <span class="caption-subject bold uppercase"> Dersleri Öğretmenleri </span>
+                    <span class="caption-helper"></span>
+                </div>
+                <div class='actions'>
+                    <a href='javascript:;' class='btn btn-default btn-sm' style='border:none;'>
+                        <i class='fa fa-chevron-down'></i>
+                    </a>
+                </div>
+            </div>
+            <!-- BEGIN PORTLET-->
+            <div class="portlet-body form collapse in">
+                <form role="form" style="padding:12px 20px">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="row">
+                                <c-donem :controller="controller"
+                                         @OnChange="DonemSelected">
+                                </c-donem>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="row">
+                                <c-ogretmenlist :controller="controller"
+                                                :id_sinif="ID_SINIF"
+                                                :idsube="ID_SUBE"
+                                                :donem="DONEM"
+                                                :id_ogretmen="ID_OGRETMEN"
+                                                @OnChange="OgretmenSelected">
+                                </c-ogretmenlist>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="row">
+                                <c-sube :controller="controller"
+                                        @OnChange="SubeSelected">
+                                </c-sube>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="row">
+                                <c-ders :controller="controller"
+                                        :idkademe3="ID_KADEME3"
+                                        :idsube="ID_SUBE"
+                                        @OnChange="DersSelected">
+
+                                </c-ders>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="row">
+                                <c-kademe3 :controller="controller"
+                                           :idsube="ID_SUBE"
+                                           @OnChange="Kademe3Selected">
+                                </c-kademe3>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="row">
+                                <c-egitim-turu :controller="controller"
+                                               @OnChange="EgitimTuruSelected">
+
+                                </c-egitim-turu>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+
+                            <div class="row">
+                                <c-sinif :controller="controller"
+                                         :idsube="ID_SUBE"
+                                         :idkademe3="ID_KADEME3"
+                                         @OnChange="SinifSelected">
+                                </c-sinif>
+                            </div>
+                        </div>
+
+                    </div>
+
+
+
+
+                    <div class="row">
+                        <div class="form-group" style="margin-top:10px;">
+                            <div class="col-md-12 text-right">
+                                <button type="button" class="btn green" @click="Kaydet">Kaydet</button>
+                            </div>
+                        </div>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-12">
+        <div class="portlet light">
+            <div class="portlet-title">
+                <div class="caption">
+                    <i class="icon-list font-green"></i>
+                    <span class="caption-subject bold font-green uppercase"> Ders Listesi </span>
+                    <span class="caption-helper"></span>
+
+                </div>
+                <div>
+                    <!--<div class="text-right">
+                        <a class="text-success" style="cursor:pointer;" @click="KaydetModal">Ders Ekle</a>
+                    </div>-->
+                </div>
+            </div>
+            <!-- BEGIN PORTLET-->
+            <div class="portlet-body form">
+                <form role="form">
+                    <div class="portlet light bordered">
+                        <div class="portlet-body" style="width:100%">
+                            <table class="table table-striped table-bordered table-hover table-checkable" width="100%" id="tblListe">
+                                <thead>
+                                    <tr>
+                                        <th>DERS ADI</th>
+                                        <th>EĞİTİM TÜRÜ</th>
+                                        <th>ÖĞRETMEN ADI</th>
+                                        <th>SİL</th>
+                                        <th>DÜZENLE</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="odd gradeX" v-for="u in LISTE">
+                                        <td>{{u.DERSAD}}</td>
+                                        <td>{{u.EGITIMTURU}}</td>
+                                        <td>{{u.OGRETMENAD}}</td>
+                                        <td class="text-center "><a style="cursor:pointer" @click="Sil(u.ID_DERSOGRETMEN)"><i class="text-danger fa fa-trash fa-lg "></i></a></td>
+                                        <td class="text-center"><a style="cursor:pointer" @click="ModalDuzenle(u.ID_DERSOGRETMEN)"><i class="fa fa-edit fa-lg "></i></a></td>
+
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <!-- END PORTLET-->
+        </div>
+    </div>
+    <div id="DuzenleModal" class="modal fade" tabindex="-1" data-replace="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                    <h4 class="modal-title">
+                        Ders Düzenleme
+                    </h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-body form-horizontal">
+                        <div class="portlet-body form">
+                            <div class="col-md-12">
+                                <div class="row">
+                                    <c-egitim-turu :controller="controller"
+                                                   @OnChange="EgitimTuruSelected">
+
+                                    </c-egitim-turu>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="row">
+                                    <c-ogretmenlist :controller="controller"
+                                                    :id_sinif="ID_SINIF"
+                                                    :idsube="ID_SUBE"
+                                                    :donem="DONEM"
+                                                    @OnChange="OgretmenSelected">
+                                    </c-ogretmenlist>
+                                </div>
+                            </div>
+                            <div class="col-md-12 text-right">
+                                <div class="row">
+                                    <button type="button" class="btn green" @click="Duzenle">Duzenle</button>
+                                    <button type="button" class="btn default" data-dismiss="modal">Kapat</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer" style="padding-top:0px!important;">
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+<script src="../../VueComponents/Filtre.js"></script>
+<script src="../../VueComponents/FiltreEk.js"></script>
+<script src="scripts/Tools.js"></script>
+
+<script>
+    var vue = new Vue({
+
+        el: "#app",
+        name: "DersOgretmenleri.html",
+
+        data: {
+            ID_KADEME3: 0,
+            controller: "DersOgretmenleri",
+            DONEM: "",
+            LISTE: [],
+            ID_DERS: 0,
+            ID_SUBE: 0,
+            ID_KADEME3: 0,
+            ID_SINIF: 0,
+            ID_EGITIMTURU: 0,
+            TC_OGRETMEN: '',
+            ID_OGRETMEN: 0,
+            ID_DERSOGRETMEN: 0
+        },
+        methods: {
+            SubeSelected(ID_SUBE) {
+                this.ID_SUBE = ID_SUBE;
+                this.ID_KADEME3 = 0;
+            },
+            Kademe3Selected(ID_KADEME3) {
+                this.ID_KADEME3 = ID_KADEME3;
+                this.ID_SINIF = 0;
+
+            },
+            SinifSelected(ID_SINIF) {
+                this.ID_SINIF = ID_SINIF;
+                this.Listele();
+            },
+            DonemSelected(DONEM) {
+                this.DONEM = DONEM;
+            },
+            EgitimTuruSelected(ID_EGITIMTURU) {
+                this.ID_EGITIMTURU = ID_EGITIMTURU;
+            },
+            DersSelected(ID_DERS) {
+                this.ID_DERS = ID_DERS
+            },
+            OgretmenSelected(ID_OGRETMEN) {
+                this.ID_OGRETMEN = ID_OGRETMEN;
+            },
+            Listele() {
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    ID_SINIF: this.ID_SINIF,
+                    DONEM: this.DONEM
+                };
+
+                WebPost(this, this.controller, 'DersOgretmenListele', p, '', '', function (data, parent) {
+                    parent.LISTE = JSON.parse(data);
+                    ListeOlustur('tblListe');
+                });
+            },
+            Sil(ID_DERSOGRETMEN) {
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    ID_DERSOGRETMEN: ID_DERSOGRETMEN
+                }
+                Alert_Confirm("Ders Öğretmen Silme", "Ders öğretmenini silmek istediğinize emin misiniz ?", function () {
+                    WebPost(this, this.controller, 'DersSil', p, '', '', function (data, parent) {
+                        parent.Listele();
+                    });
+                });
+            },
+            ModalDuzenle(ID_DERSOGRETMEN) {
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    ID_DERSOGRETMEN: ID_DERSOGRETMEN
+                }
+                WebPost(this, this.controller, 'DuzenleModal', p, '', '', function (data, parent) {
+                    parent.ID_EGITIMTURU = JSON.parse(data)[0].ID_EGITIMTURU;
+                    parent.ID_DERSOGRETMEN = JSON.parse(data)[0].ID_DERSOGRETMEN;
+                    $('#DuzenleModal').modal();
+                });
+            },
+            Duzenle() {
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    ID_DERSOGRETMEN: this.ID_DERSOGRETMEN,
+                    ID_EGITIMTURU: this.ID_EGITIMTURU,
+                    ID_OGRETMEN: this.ID_OGRETMEN
+                }
+                WebPost(this, this.controller, 'Duzenle', p, '', '', function (data, parent) {
+                    parent.Listele();
+                });
+            },
+            Kaydet() {
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    ID_DERS: this.ID_DERS,
+                    ID_OGRETMEN: this.ID_OGRETMEN,
+                    ID_SINIF: this.ID_SINIF,
+                    ID_EGITIMTURU: this.ID_EGITIMTURU,
+                    DONEM: this.DONEM,
+                }
+                WebPost(this, this.controller, 'DersKaydet', p, '', '', function (data, parent) {
+                    parent.Listele();
+                });
+            }
+
+        }
+    });
+</script>

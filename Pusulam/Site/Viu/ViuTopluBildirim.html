@@ -1,0 +1,205 @@
+﻿<head>
+    <script src="/Scripts/Tools.js"></script>
+    <script src="../../../assets/global/plugins/nouislider/jquery.nouislider.js"></script>
+</head>
+
+<div class="row" id="app">
+    <div class="col-md-12">
+
+
+        <div class="portlet box blue-hoki dd-item" style="border:none">
+            <div class="portlet-title dd-handle" data-toggle='collapse' data-target='#filters' style="cursor:pointer;">
+                <div class="caption">
+                    <i class="icon-magnifier"></i>
+                    <span class="caption-subject bold uppercase"> Viu Toplu Bildirim </span>
+                    <span class="caption-helper"></span>
+                </div>
+                <div class='actions'>
+                    <a href='javascript:;' class='btn btn-default btn-sm' style='border:none;'>
+                        <i class='fa fa-chevron-down'></i>
+                    </a>
+                </div>
+            </div>
+            <!-- BEGIN PORTLET-->
+            <div class="portlet-body form collapse in">
+                <form role="form" style="padding:12px 20px">
+                    <div class="row">
+                        <div class="col-sm-8">
+
+                            <div class="col-sm-6">
+                                <div class="row">
+                                    <c-sube-multi :controller="controller"
+                                                  @onchange="SubeSelected">
+                                    </c-sube-multi>
+                                </div>
+                            </div>
+
+                            <div class="col-sm-6">
+                                <div class="row">
+                                    <c-kademe3-multi :controller="controller"
+                                                     :idsubelist="ID_SUBEs"
+                                                     @OnChange="Kademe3Selected">
+                                    </c-kademe3-multi>
+                                </div>
+                            </div>
+
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    <label>Dokuman Link</label>
+                                    <input id="msg" type="text" class="form-control" v-model="dokuman_link">
+                                </div>
+                            </div>
+
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    <b>Buton Adı</label>
+                                    <input id="msg" type="text" class="form-control" v-model="buton_adi">
+                                </div>
+                            </div>
+
+                            <div class="col-sm-12">
+                                <div class="form-group">
+                                    <label for="comment"><b>Bildirim Metni</b></label>
+                                    <textarea class="form-control" rows="5" v-model="bildirim_metni"></textarea>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="col-sm-4">
+
+                            <div class="form-group">
+                                <div class="btn-group btn-group-justified">
+                                    <a class="btn btn-default" v-on:click="sinif_getir()">Detay</a>
+                                    <a v-show="gorunurluk" class="btn btn-default" v-on:click="gonder()">Gonder</a>
+                                </div>
+                                <br>
+                                <table v-show="gorunurluk" class="table table-bordered" v-for="u in Bilgiler">
+                                    <thead>
+                                        <tr><th colspan="4">Kampus-Sınıf-Veli-Ögrenci sayıları gelmiyor ise bir önceki bildirim gönderilmektedir. </th></tr>
+                                        <tr>
+                                            <th>Kampüs</th>
+                                            <th>Sınıf</th>
+                                            <th>Veli</th>
+                                            <th>Ögrenci</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>{{ u.Kampus_Sayisi }}</td>
+                                            <td>{{ u.Sinif_Sayisi }}</td>
+                                            <td>{{ u.Veli_Sayisi}}</td>
+                                            <td>{{ u.Ogrenci_Sayisi }}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+
+    </div>
+</div>
+<script src="../../VueComponents/Filtre.js"></script>
+
+<script>
+
+    var vue = new Vue({
+        el: "#app",
+        name: "ViuTopluBildirim.html",
+
+        data: {
+            controller: 'ViuTopluBildirim',
+            Sube_id_ad: [],
+            Grup_id_ad: [],
+            Bilgiler: [],
+            secili_kampusler: [],
+            secili_gruplar: [],
+            gorunurluk: false,
+            bildirim_metni: '',
+            dokuman_link: '',
+            buton_adi: '',
+            ID_SUBEs: [],
+            ID_Kademe3: []
+        },
+
+        mounted() {
+
+            var p = {
+                TCKIMLIKNO: session.TCKIMLIKNO,
+                OTURUM: session.OTURUM
+            };
+
+        },
+
+        methods: {
+
+            sinif_getir() {
+                if (this.ID_SUBEs.length > 0 && this.ID_Kademe3.length > 0) {
+
+                    this.gorunurluk = true;
+
+                    var p = {
+                        TCKIMLIKNO: session.TCKIMLIKNO,
+                        OTURUM: session.OTURUM,
+                        secili_kampusler: this.ID_SUBEs.toString(),
+                        secili_gruplar: this.ID_Kademe3.toString(),
+                        yapilacak_is: 'listeolustur',
+                        atilacak_bildirim: this.bildirim_metni,
+                        dokuman_link: this.dokuman_link,
+                        buton_adi: this.buton_adi
+                    };
+
+                    WebPost(this, this.controller, "Sinif_listesi", p, "#app", "Yükleniyor...", function (data, parent) {
+                        parent.Bilgiler = JSON.parse(data);
+                    });
+
+                } else {
+                    Alert_Info("En az 1 Kampüs, Grup seçmelisiniz")
+                }
+            },
+
+            gonder() {
+
+                if (this.bildirim_metni.length > 0) {
+
+                    this.gorunurluk = false;
+
+                    var p = {
+                        TCKIMLIKNO: session.TCKIMLIKNO,
+                        OTURUM: session.OTURUM,
+                        secili_kampusler: this.secili_kampusler.toString(),
+                        secili_gruplar: this.secili_gruplar.toString(),
+                        yapilacak_is: 'bildirimgonder',
+                        atilacak_bildirim: this.bildirim_metni,
+                        dokuman_link: this.dokuman_link,
+                        buton_adi: this.buton_adi
+                    };
+
+                    WebPostResponsuz(this.controller, "Sinif_listesi", p);
+                }
+
+                else {
+                    Alert_Info("Bildirim Metnini boş bıraktınız.")
+                }
+
+            },
+
+            SubeSelected(value) {
+                this.ID_SUBEs = value;
+            },
+
+            Kademe3Selected(value) {
+                this.ID_Kademe3 = value;
+            }
+
+
+        }
+
+    });
+
+</script>

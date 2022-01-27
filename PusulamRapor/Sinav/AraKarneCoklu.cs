@@ -167,7 +167,7 @@ namespace PusulamRapor.Sinav
                     }
                 }
                 else
-                {
+                {  
                     DataTable dt3 = t3.Select("ID_SINAVTURU = " + idSinavTuru.ToString()).CopyToDataTable();
                     DataTable dt4 = t4.Select("ID_SINAVTURU = " + idSinavTuru.ToString()).CopyToDataTable();
 

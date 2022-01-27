@@ -146,6 +146,24 @@ namespace PusulamBusiness
             return json != null ? json.Replace("\"selected\":1", "\"selected\":true"):"";
         }
 
+        public string OgretmenSinifListesi(JObject j)
+        {
+            j.Add("ISLEM", (int)sp_Filtre.OgretmenListele);
+            j.Add("ID_MENU", ID_MENU);
+
+            string json = "";
+
+            using (IDbConnection db = new SqlConnection(conStr))
+            {
+                if (db.State == ConnectionState.Closed)
+                    db.Open();
+                json = db.ExecuteScalar<string>("sp_Filtre", j.ToDictionary(), commandTimeout: 600, commandType: CommandType.StoredProcedure);
+            }
+
+            json = json == null ? "" : json;
+            return json != null ? json.Replace("\"selected\":1", "\"selected\":true") : "";
+        }
+
         public string KullaniciListele(JObject j)
         {
             j.Add("ISLEM", (int)sp_Filtre.KullaniciListele);

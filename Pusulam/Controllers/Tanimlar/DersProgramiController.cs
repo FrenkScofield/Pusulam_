@@ -8,10 +8,9 @@ using System.Web.Http;
 
 namespace Pusulam.Controllers.Tanimlar
 {
-    [GzipCompression]
-    public class DersEklemeController : ApiController
+    public class DersProgramiController : ApiController
     {
-        internal int ID_MENU = (int)EMenu.DersEkleme;
+        internal int ID_MENU = (int)EMenu.DersProgrami;
         public Object Kademe3Listele(JObject j)
         {
             try
@@ -27,8 +26,6 @@ namespace Pusulam.Controllers.Tanimlar
                 throw ex;
             }
         }
-
-       
         public Object EgitimTuruListesi(JObject j)
         {
             try
@@ -59,14 +56,14 @@ namespace Pusulam.Controllers.Tanimlar
                 throw ex;
             }
         }
-        public Object DuzenleModal(JObject j)
+        public Object SubeListele(JObject j)
         {
             try
             {
-                using (Channel2<DDersEkleme> c = new Channel2<DDersEkleme>(ID_MENU))
+                using (Channel2<DFiltre> c = new Channel2<DFiltre>(ID_MENU))
                 {
 
-                    return c._cs.DuzenleModal(j);
+                    return c._cs.SubeListele(j);
                 }
             }
             catch (Exception ex)
@@ -74,15 +71,14 @@ namespace Pusulam.Controllers.Tanimlar
                 throw ex;
             }
         }
-
-        public Object Duzenle(JObject j)
+        public Object SinifListele(JObject j)
         {
             try
             {
-                using (Channel2<DDersEkleme> c = new Channel2<DDersEkleme>(ID_MENU))
+                using (Channel2<DFiltre> c = new Channel2<DFiltre>(ID_MENU))
                 {
 
-                    return c._cs.Duzenle(j);
+                    return c._cs.SinifListele(j);
                 }
             }
             catch (Exception ex)
@@ -90,14 +86,14 @@ namespace Pusulam.Controllers.Tanimlar
                 throw ex;
             }
         }
-        public Object Kaydet(JObject j)
+        public Object SinifPersonel(JObject j)
         {
             try
             {
-                using (Channel2<DDersEkleme> c = new Channel2<DDersEkleme>(ID_MENU))
+                using (Channel2<DDersProgrami> c = new Channel2<DDersProgrami>(ID_MENU))
                 {
 
-                    return c._cs.Kaydet(j);
+                    return c._cs.SinifPersonel(j);
                 }
             }
             catch (Exception ex)
@@ -105,5 +101,54 @@ namespace Pusulam.Controllers.Tanimlar
                 throw ex;
             }
         }
+        public Object DersProgramiGetir(JObject j)
+        {
+            try
+            {
+                using (Channel2<DDersProgrami> c = new Channel2<DDersProgrami>(ID_MENU))
+                {
+
+                    return c._cs.DersProgramiGetir(j);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        public Object DersOgretmenGetir(JObject j)
+        {
+            try
+            {
+                using (Channel2<DDersProgrami> c = new Channel2<DDersProgrami>(ID_MENU))
+                {
+
+                    return c._cs.DersOgretmenGetir(j);
+                }
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+        }
+        public Object DersPersonelKaydet(JObject j)
+        {
+            try
+            {
+                using (Channel2<DDersProgrami> c = new Channel2<DDersProgrami>(ID_MENU))
+                {
+
+                    return c._cs.DersPersonelKaydet(j);
+                }
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+        }
+
+
     }
 }

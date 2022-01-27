@@ -9,34 +9,18 @@ using System.Web.Http;
 namespace Pusulam.Controllers.Tanimlar
 {
     [GzipCompression]
-    public class DersEklemeController : ApiController
+    public class OgretmenDersleriController : ApiController
     {
-        internal int ID_MENU = (int)EMenu.DersEkleme;
-        public Object Kademe3Listele(JObject j)
-        {
-            try
-            {
-                using (Channel c = new Channel())
-                {
-                    c.DFiltre.ID_MENU = ID_MENU;
-                    return c.DFiltre.Kademe3Listele(j);
-                }
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-
+        internal int ID_MENU = (int)EMenu.OgretmenDersleri;
        
-        public Object EgitimTuruListesi(JObject j)
+        public Object OgretmenListele(JObject j)
         {
             try
             {
-                using (Channel c = new Channel())
+                using (Channel2<DFiltre> c = new Channel2<DFiltre>(ID_MENU) )
                 {
-                    c.DFiltre.ID_MENU = ID_MENU;
-                    return c.DFiltre.EgitimTuruListesi(j);
+                   
+                    return c._cs.OgretmenSinifListesi(j);
                 }
             }
             catch (Exception ex)
@@ -44,11 +28,57 @@ namespace Pusulam.Controllers.Tanimlar
                 throw ex;
             }
         }
+       
+        public Object DonemListele(JObject j)
+        {
+            try
+            {
+                using (Channel c = new Channel())
+                {
+                    c.DFiltre.ID_MENU = ID_MENU;
+                    return c.DFiltre.DonemListele(j);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        public Object SubeListele(JObject j)
+        {
+            try
+            {
+                using (Channel c = new Channel())
+                {
+                    c.DFiltre.ID_MENU = ID_MENU;
+                    return c.DFiltre.SubeListele(j);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        public Object DersOgretmenListele(JObject j)
+        {
+            try
+            {
+                using (Channel2<DDersOgretmenleri> c = new Channel2<DDersOgretmenleri>(ID_MENU))
+                {
+                    return c._cs.DersListele(j);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+      
         public Object DersListele(JObject j)
         {
             try
             {
-                using (Channel2<DDersEkleme> c = new Channel2<DDersEkleme>(ID_MENU))
+                using (Channel2<DOgretmenDersleri> c = new Channel2<DOgretmenDersleri>(ID_MENU))
                 {
 
                     return c._cs.DersListele(j);
@@ -59,14 +89,14 @@ namespace Pusulam.Controllers.Tanimlar
                 throw ex;
             }
         }
-        public Object DuzenleModal(JObject j)
+        public Object DersSil(JObject j)
         {
             try
             {
-                using (Channel2<DDersEkleme> c = new Channel2<DDersEkleme>(ID_MENU))
+                using (Channel2<DOgretmenDersleri> c = new Channel2<DOgretmenDersleri>(ID_MENU))
                 {
 
-                    return c._cs.DuzenleModal(j);
+                    return c._cs.DersSil(j);
                 }
             }
             catch (Exception ex)
@@ -75,35 +105,11 @@ namespace Pusulam.Controllers.Tanimlar
             }
         }
 
-        public Object Duzenle(JObject j)
-        {
-            try
-            {
-                using (Channel2<DDersEkleme> c = new Channel2<DDersEkleme>(ID_MENU))
-                {
 
-                    return c._cs.Duzenle(j);
-                }
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-        public Object Kaydet(JObject j)
-        {
-            try
-            {
-                using (Channel2<DDersEkleme> c = new Channel2<DDersEkleme>(ID_MENU))
-                {
 
-                    return c._cs.Kaydet(j);
-                }
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
+
+
+
+
     }
 }
