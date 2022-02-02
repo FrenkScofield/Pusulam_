@@ -121,6 +121,7 @@
     <Compile Include="Tanimlar\DDersProgrami.cs" />
     <Compile Include="Tanimlar\DDersEkleme.cs" />
     <Compile Include="Tkt\DTKTAktarim.cs" />
+    <Compile Include="KitapOkuma\DKitapOkuma.cs" />
     <Compile Include="Utiliy\DBase.cs" />
     <Compile Include="Degerlendirme\DDegerlendirme.cs" />
     <Compile Include="DersCalismaProgrami\DDersCalismaProgrami.cs" />
