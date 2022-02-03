@@ -267,16 +267,19 @@
                 });
             },
             Sil(ID_DERSOGRETMEN) {
+
                 var p = {
                     TCKIMLIKNO: session.TCKIMLIKNO,
                     OTURUM: session.OTURUM,
                     ID_DERSOGRETMEN: ID_DERSOGRETMEN
-                }
-                Alert_Confirm("Ders Öğretmen Silme", "Ders öğretmenini silmek istediğinize emin misiniz ?", function () {
+                };
+
+                Alert_Confirm("Öğretmen Dersi Silme", "Öğretmenin dersini silmek istediğinize emin misiniz ?", () => {
                     WebPost(this, this.controller, 'DersSil', p, '', '', function (data, parent) {
                         parent.Listele();
                     });
                 });
+
             },
             ModalDuzenle(ID_DERSOGRETMEN) {
                 var p = {
