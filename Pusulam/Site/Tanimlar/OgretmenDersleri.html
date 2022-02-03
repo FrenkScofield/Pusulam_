@@ -158,13 +158,14 @@
                     ListeOlustur('tblListe');
                 });
             },
-            Sil(ID_DERSOGRETMEN) {
+            Sil(ID_DERSOGRETMEN) {      
                 var p = {
                     TCKIMLIKNO: session.TCKIMLIKNO,
                     OTURUM: session.OTURUM,
                     ID_DERSOGRETMEN: ID_DERSOGRETMEN
-                }
-                Alert_Confirm("Öğretmen Dersi Silme", "Öğretmenin dersini silmek istediğinize emin misiniz ?", function () {
+                };
+
+                Alert_Confirm("Öğretmen Dersi Silme", "Öğretmenin dersini silmek istediğinize emin misiniz ?", () => {
                     WebPost(this, this.controller, 'DersSil', p, '', '', function (data, parent) {
                         parent.Listele();
                     });
