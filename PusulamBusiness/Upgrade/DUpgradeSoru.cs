@@ -286,7 +286,7 @@ namespace PusulamBusiness.Upgrade
                 }
                 return liste;
             }
-            catch (Exception ex)
+            catch (Exception ex)  
             {
                 new DHataLog().HataLogKaydet(j, ex);
                 throw ex;
