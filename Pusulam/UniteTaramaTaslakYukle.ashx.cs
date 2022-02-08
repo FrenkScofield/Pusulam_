@@ -18,6 +18,7 @@ namespace Pusulam
         public int SORUNO { get; set; }
         public string KAZANIMKOD { get; set; }
         public int PUAN { get; set; }
+        public string CEVAP { get; set; }
     }
 
     //public class UniteTaramaYorum
@@ -149,6 +150,8 @@ namespace Pusulam
                     soru.KAZANIMKOD = dtSO.Rows[i]["Kazanım ID"].ToString();
                    // soru.BECERI = dtSO.Rows[i]["Beceri"].ToString();
                     soru.PUAN = Convert.ToInt32(dtSO.Rows[i]["Puan Değeri"]);
+                    soru.PUAN = Convert.ToInt32(dtSO.Rows[i]["Puan Değeri"]);
+                    soru.CEVAP = dtSO.Rows[i]["CEVAP"].ToString();
                     uniteTarama.Add(soru);
                 }
 

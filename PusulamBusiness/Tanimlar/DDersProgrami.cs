@@ -197,6 +197,23 @@ namespace PusulamBusiness.Tanimlar
 
             return json;
         }
+        public string DersProgramKaydet(JObject j)
+        {
+            j.Add("ISLEM", (int)sp_DersProgrami.DersProgramKaydet);
+            j.Add("ID_MENU", ID_MENU);
+            j.Add("IP", getIp.GetUser_IP());
+            string json = "";
+
+            using (IDbConnection db = new SqlConnection(conStr))
+            {
+                if (db.State == ConnectionState.Closed)
+                    db.Open();
+                json = db.ExecuteScalar<string>("sp_DersProgrami", j.ToDictionary(), commandTimeout: 600, commandType: CommandType.StoredProcedure);
+            }
+
+            return json;
+        }
+        
 
     }
 }

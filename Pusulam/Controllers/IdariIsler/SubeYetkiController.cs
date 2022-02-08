@@ -32,7 +32,7 @@ namespace Pusulam.Controllers.IdariIsler.SubeYetki
         {
             try
             {
-                using (Channel2<DSubeYetki> c = new Channel2<DSubeYetki>(ID_MENU))
+                using (Channel2<DFiltre> c = new Channel2<DFiltre>(ID_MENU))
                 {
                     return c._cs.KullaniciTipiListele(j);
                 }

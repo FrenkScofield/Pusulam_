@@ -499,3 +499,51 @@ Vue.component("c-sinif-multi", {
         $('.selectpicker').selectpicker('refresh');
     }
 });
+Vue.component("c-ogrenci-veli", {
+    props: ['controller', 'tc'],
+    template: `
+                <div class="form-md-line-input">
+                    <div class="col-md-2">
+                        <label>Öğrenci: </label>
+                    </div>
+                    <div class="col-md-6">
+                        <select class ="selectpicker form-control" v-model="SelectedID" @change="OnChange" data-live-search="true">
+                            <option value="0">Öğrenci Seçiniz..</option>
+                            <option v-for="u in Liste" v-bind:value="u.TCKIMLIKNO">{{u.AD + ' '+u.SOYAD}}</option>
+                        </select>
+                    </div>
+                </div>
+        `
+    ,
+
+    data: function () {
+        return {
+            SelectedID: 0,
+            Liste: []
+        }
+    },
+    mounted() {
+        var p = { TCKIMLIKNO: session.TCKIMLIKNO, OTURUM: session.OTURUM };
+
+        WebPost(this, this.controller, "OgrenciListelebyVeli", p, '', '', function (data, parent) {
+            parent.Liste = data;
+            parent.$nextTick(function () {
+                if (parent.Liste.length == 1) {
+                    parent.SelectedID = data[0].TCKIMLIKNO;
+                    this.$emit('onchange', parent.SelectedID)
+                }
+            });
+        })
+    },
+    methods: {
+        OnChange() {
+            this.$emit('onchange', this.SelectedID)
+        },
+    },
+
+
+    updated() {
+        $('.selectpicker').selectpicker('refresh');
+    }
+
+});

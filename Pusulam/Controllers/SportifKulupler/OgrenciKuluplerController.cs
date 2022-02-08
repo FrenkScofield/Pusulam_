@@ -133,5 +133,19 @@ namespace Pusulam.Controllers.SportifKulupler
                 throw ex;
             }
         }
+        public Object YetkiKontrol(JObject j)
+        {
+            try
+            {
+                using (Channel2<DOgrenciKulupler> c = new Channel2<DOgrenciKulupler>(ID_MENU))
+                {
+                    return c._cs.YetkiKontrol(j);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
     }
 }

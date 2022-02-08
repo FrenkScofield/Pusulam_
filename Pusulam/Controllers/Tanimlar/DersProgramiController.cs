@@ -148,6 +148,22 @@ namespace Pusulam.Controllers.Tanimlar
                 throw ex;
             }
         }
+        public Object DersProgramKaydet(JObject j)
+        {
+            try
+            {
+                using (Channel2<DDersProgrami> c = new Channel2<DDersProgrami>(ID_MENU))
+                {
+
+                    return c._cs.DersProgramKaydet(j);
+                }
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+        }
 
 
     }

@@ -381,8 +381,9 @@
                     <h4 class="modal-title bold">
                         {{OGRENCIYUKLEME.ADSOYAD}}
                         <small style="color:white">
-                            Kantin Kart Yükleme Listesi
+                            Kantin Kart Yükleme Listesi (Kart No: {{barkod}})
                         </small>
+
                     </h4>
                 </div>
                 <div class="modal-body" style="padding:0px;">
@@ -414,6 +415,7 @@
                 <div class="modal-footer">
                     <button type="button" class="btn default" data-dismiss="modal">Kapat</button>
                 </div>
+               
             </div>
         </div>
     </div>
@@ -439,7 +441,7 @@
             ID_KANTIN: 3,
             ID_URUNGRUP: 0,
             TOPLAMYUKLEME: 0,
-
+            barkod:'',
             YIL: [],
 
             KART: {
@@ -792,11 +794,14 @@
                         }
                     ]
                 };
+                debugger;
+                console.log(p);
                 ListeTemizle(vue.HARCAMALIST);
                 this.TOPLAMTUTAR = 0;
                 WebPostLink(vue, 'https://kantin.okyanuskoleji.k12.tr/API/EskiKantin/CariYuklemelerListesi', p, '', '', function (data) {
                     if (data.DURUM && data.NESNE != null) {
                         vue.OGRENCIYUKLEME = JSON.parse(data.NESNE)[0];//.YUKLEMELIST;
+                        vue.barkod = JSON.parse(data.NESNE)[0].BARKOD
                         $("#modalYuklemeListesi").modal();
                         ListeOlustur("YuklemeTablo");
                     }

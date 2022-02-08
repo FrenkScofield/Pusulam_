@@ -14,9 +14,9 @@ using System.IO;
 using System.Linq;
 using System.Web;
 
-namespace PusulamBusiness.Sinav
+namespace PusulamBusiness.UniteTarama
 {
-    public class DSinav : DBase
+    public class DUniteOptikTanimla : DBase
     {
         GetIp getIp = new GetIp();
         public List<MSinavTuru> SinavTuruListele(JObject j)
@@ -1202,7 +1202,7 @@ namespace PusulamBusiness.Sinav
         {
             try
             {
-                j.Add("ISLEM", (int)sp_Sinav.OptikListele);
+                j.Add("ISLEM", (int)sp_UniteTaramaOptik.OptikListele);
                 j.Add("ID_MENU", ID_MENU);
                 j.Add("IP", getIp.GetUser_IP());
 
@@ -1210,7 +1210,7 @@ namespace PusulamBusiness.Sinav
                 using (IDbConnection db = new SqlConnection(conStr))
                 {
                     if (db.State == ConnectionState.Closed) db.Open();
-                    liste = db.Query<MOptikKoordinat>("sp_Sinav", j.ToDictionary(), commandTimeout: 600, commandType: CommandType.StoredProcedure).ToList();
+                    liste = db.Query<MOptikKoordinat>("sp_UniteTaramaOptik", j.ToDictionary(), commandTimeout: 600, commandType: CommandType.StoredProcedure).ToList();
                 }
                 return liste;
             }
@@ -1225,7 +1225,7 @@ namespace PusulamBusiness.Sinav
         {
             try
             {
-                j.Add("ISLEM", (int)sp_Sinav.OptikKaydet);
+                j.Add("ISLEM", (int)sp_UniteTaramaOptik.OptikKaydet);
                 j.Add("ID_MENU", ID_MENU);
                 j.Add("IP", getIp.GetUser_IP());
 
@@ -1233,7 +1233,7 @@ namespace PusulamBusiness.Sinav
                 using (IDbConnection db = new SqlConnection(conStr))
                 {
                     if (db.State == ConnectionState.Closed) db.Open();
-                    sonuc = db.ExecuteScalar<int>("sp_Sinav", j.ToDictionary(), commandTimeout: 600, commandType: CommandType.StoredProcedure);
+                    sonuc = db.ExecuteScalar<int>("sp_UniteTaramaOptik", j.ToDictionary(), commandTimeout: 600, commandType: CommandType.StoredProcedure);
                 }
                 return sonuc;
             }

@@ -2207,3 +2207,67 @@ Vue.component("c_dersunite", {
         
     },
 });
+
+
+Vue.component("c-sinav-donem-unite", {
+    props: ['controller', 'id_kademe3', 'donem'],
+    template: `
+                <div class="form-md-line-input">
+                    <label class="control-label col-md-3" style="vertical-align:middle;">Sınav </label>
+                    <div class="col-md-9">
+                        <select class ="selectpicker form-control" v-model="SelectedID" @change="OnChange">
+                            <option value="0">Seçiniz..</option>
+                            <option v-for="u in Liste" v-bind:value="u.ID_UNITETARAMASINAV">{{u.AD}}</option>
+                        </select>
+                    </div>
+                </div>
+        `
+    ,
+
+    data: function () {
+        return {
+            SelectedID: 0,
+            Liste: []
+        }
+    },
+
+    methods: {
+        OnChange() {
+                  
+            if (this.SelectedID == undefined)
+                this.SelectedID = this.Liste[0].ID_UNITETARAMASINAV;
+            this.$emit('onchange', this.SelectedID);
+        },
+        Yenile() {
+            var _this = this;
+            var p = { TCKIMLIKNO: session.TCKIMLIKNO, OTURUM: session.OTURUM, ID_KADEME3: this.id_kademe3, DONEM: this.donem };
+            WebPost(this, this.controller, "UniteSinavListeleKademeDonem", p, '', '', function (data, parent) {
+                parent.Liste = JSON.parse(data);
+            });
+        }
+    },
+
+    mounted() {
+
+    },
+
+    updated() {
+        $('.selectpicker').selectpicker('refresh');
+    },
+
+    watch: {
+        id_kademe3() {
+            this.Yenile();
+        },
+        id_sinavturu() {
+            this.Yenile();
+        },
+        donem() {
+            this.Yenile();
+        },
+        idsinav() {
+            this.SelectedID = this.idsinav;
+            this.$emit('onchange', this.idsinav);
+        },
+    },
+});

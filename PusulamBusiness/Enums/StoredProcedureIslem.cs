@@ -263,7 +263,8 @@
         YonergeSil = 50,
         YonergeGuncelle = 51,
         SinavDegerlendirmeLog = 52,
-        UniteTaramaSinavListele = 53
+        UniteTaramaSinavListele = 53,
+        UniteSinavListeleKademeDonem = 54
     }
 
     public enum sp_DersUnite
@@ -1331,7 +1332,8 @@
         KulupEkle = 15,
         KontrolKotaEkle = 16,
         Kademe3ListelebyKullanici = 17,
-        YetenekKulupKontrol = 18
+        YetenekKulupKontrol = 18,
+        YetkiKontrol=19
     }
 
     public enum sp_DisKaynak
@@ -1389,7 +1391,8 @@
         PersonelListele = 1,
         DersProgram = 2,
         DersOgretmen = 3,
-        DersPersonelKaydet = 4
+        DersPersonelKaydet = 4,
+        DersProgramKaydet = 5
     }
     public enum sp_DersOgretmenleri
     {
@@ -1410,17 +1413,20 @@
         DersSaatleriListele = 1,
         DersSaatleriKaydet = 2
     }
-
-    public enum sp_metedeneme
+    public enum sp_UniteTaramaOptik
     {
-        listele = 1
+        OptikListele = 1,
+        OptikKaydet = 2,
+        OptikBelliMi = 3,
+        DosyaKaydet = 4
     }
     public enum sp_ogrencilerim
     {
-        Ogrencilerimilistele = 1
+        Ogrencilerimilistele=1
     }
     public enum sp_ViuTopluBildirim
     {
-        Sinif_listesi = 3
-    }    
+        Sinif_listesi=1
+    }
+
 }

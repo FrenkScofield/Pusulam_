@@ -108,6 +108,7 @@
     <Compile Include="Models\Ortak\MPeriyot.cs" />
     <Compile Include="Models\Ortak\MKulup.cs" />
     <Compile Include="OgrenciBilgiPaylasimi\DOgrenciBilgiPaylasimi.cs" />
+    <Compile Include="Ogrencilerim\Dogrencilerim.cs" />
     <Compile Include="Ogretmen\DOgretmen.cs" />
     <Compile Include="Ortak\DMobilBirimYetki.cs" />
     <Compile Include="Performans\DPerformans.cs" />
@@ -121,6 +122,8 @@
     <Compile Include="Tanimlar\DDersProgrami.cs" />
     <Compile Include="Tanimlar\DDersEkleme.cs" />
     <Compile Include="Tkt\DTKTAktarim.cs" />
+    <Compile Include="UniteTarama\DUniteOptikYukle.cs" />
+    <Compile Include="UniteTarama\DUniteOptikTanimla.cs" />
     <Compile Include="Utiliy\DBase.cs" />
     <Compile Include="Degerlendirme\DDegerlendirme.cs" />
     <Compile Include="DersCalismaProgrami\DDersCalismaProgrami.cs" />
@@ -241,6 +244,7 @@
     <Compile Include="Utiliy\JObjectExtensions.cs" />
     <Compile Include="Veli\DFatura.cs" />
     <Compile Include="Veli\DOgrenciHarcama.cs" />
+    <Compile Include="Viu\DViuTopluBildirim.cs" />
     <Compile Include="Yardim\DYardimHazirla.cs" />
     <Compile Include="Yazili\DYaziliYoklama.cs" />
     <Compile Include="Yonetim\DOzelSayfa.cs" />

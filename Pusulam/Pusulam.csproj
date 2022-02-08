@@ -474,6 +474,8 @@
     <Content Include="Site\Tanimlar\DersOgretmenleri.html" />
     <Content Include="Site\Tanimlar\DersProgrami.html" />
     <Content Include="Site\Tkt\Aktarim.html" />
+    <Content Include="Site\UniteTaramaOlcegi\OptikTanimla.html" />
+    <Content Include="Site\UniteTaramaOlcegi\OptikYukle.html" />
     <Content Include="Site\UniteTaramaOlcegi\UniteTaramaEtutOlustur.html" />
     <Content Include="Site\UniteTaramaOlcegi\SinifMaddeAnalizi.html" />
     <Content Include="Site\Rapor\UniteTaramaOlcegi\UtoKarneListesi.html" />
@@ -904,6 +906,7 @@
     <Compile Include="Controllers\Morpa\MorpaController.cs" />
     <Compile Include="Controllers\Morpa\MorpaGirisController.cs" />
     <Compile Include="Controllers\OgrenciBilgiPaylasimi\OgrenciBilgiController.cs" />
+    <Compile Include="Controllers\Ogrencilerim\ogrencilerimController.cs" />
     <Compile Include="Controllers\Ogrenci\OgrenciIsleri\OI_BultenListesiController.cs" />
     <Compile Include="Controllers\Ogrenci\OgrenciIsleri\OI_DersProgramiController.cs" />
     <Compile Include="Controllers\Ogrenci\OgrenciIsleri\OI_OBSListesiController.cs" />
@@ -956,6 +959,8 @@
     <Compile Include="Controllers\Tanimlar\DersEklemeController.cs" />
     <Compile Include="Controllers\Tatil\TatilController.cs" />
     <Compile Include="Controllers\Tkt\TKTAktarimController.cs" />
+    <Compile Include="Controllers\UniteTaramaOlcegi\UniteOptikYukleController.cs" />
+    <Compile Include="Controllers\UniteTaramaOlcegi\UniteOptikTanimlaController.cs" />
     <Compile Include="Controllers\UniteTaramaOlcegi\UniteTaramaEtutOlusturController.cs" />
     <Compile Include="Controllers\UniteTaramaOlcegi\UniteTaramaSinavSonucListesiController.cs" />
     <Compile Include="Controllers\UniteTaramaOlcegi\UniteTaramaSinifMaddeAnaliziController.cs" />
