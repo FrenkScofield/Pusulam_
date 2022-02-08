@@ -476,6 +476,7 @@
     <Content Include="Site\Tkt\Aktarim.html" />
     <Content Include="Site\UniteTaramaOlcegi\OptikTanimla.html" />
     <Content Include="Site\UniteTaramaOlcegi\OptikYukle.html" />
+    <Content Include="Site\KitapOkuma\KitapOkuma.html" />
     <Content Include="Site\UniteTaramaOlcegi\UniteTaramaEtutOlustur.html" />
     <Content Include="Site\UniteTaramaOlcegi\SinifMaddeAnalizi.html" />
     <Content Include="Site\Rapor\UniteTaramaOlcegi\UtoKarneListesi.html" />
@@ -959,8 +960,6 @@
     <Compile Include="Controllers\Tanimlar\DersEklemeController.cs" />
     <Compile Include="Controllers\Tatil\TatilController.cs" />
     <Compile Include="Controllers\Tkt\TKTAktarimController.cs" />
-    <Compile Include="Controllers\UniteTaramaOlcegi\UniteOptikYukleController.cs" />
-    <Compile Include="Controllers\UniteTaramaOlcegi\UniteOptikTanimlaController.cs" />
     <Compile Include="Controllers\UniteTaramaOlcegi\UniteTaramaEtutOlusturController.cs" />
     <Compile Include="Controllers\UniteTaramaOlcegi\UniteTaramaSinavSonucListesiController.cs" />
     <Compile Include="Controllers\UniteTaramaOlcegi\UniteTaramaSinifMaddeAnaliziController.cs" />

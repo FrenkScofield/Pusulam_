@@ -1429,4 +1429,11 @@
         Sinif_listesi=1
     }
 
+        Sinif_listesi = 3
+    }    
+
+    public enum sp_KitapOkuma
+    {
+        Kitap_Listele = 1
+    }
 }

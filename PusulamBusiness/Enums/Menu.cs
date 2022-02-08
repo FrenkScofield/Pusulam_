@@ -292,5 +292,7 @@
         DersSaatleri = 1428,
         ogrencilerim = 1430,
         ViuTopluBildirim = 1431,
+        ViuTopluBildirim = 1431,
+        KitapOkuma = 1500
     }
 }

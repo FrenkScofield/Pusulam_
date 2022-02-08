@@ -452,7 +452,7 @@ namespace PusulamBusiness.Ogrenci
             }
         }
 
-        public string DersMuafOgrenciListele(JObject j)//JSON GELİYOR
+        public string DersMuafOgrenciListele(JObject j)//JSON GELİYOR 
         {
             try
             {

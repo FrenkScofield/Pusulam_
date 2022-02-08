@@ -58,7 +58,7 @@
     <Reference Include="System.Web" />
     <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Web.Helpers">
-      <HintPath>..\Pusulam\bin\System.Web.Helpers.dll</HintPath>
+      <HintPath>C:\Users\kamran.alibayli\Downloads\System.Web.Helpers.dll</HintPath>
     </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -124,6 +124,7 @@
     <Compile Include="Tkt\DTKTAktarim.cs" />
     <Compile Include="UniteTarama\DUniteOptikYukle.cs" />
     <Compile Include="UniteTarama\DUniteOptikTanimla.cs" />
+    <Compile Include="KitapOkuma\DKitapOkuma.cs" />
     <Compile Include="Utiliy\DBase.cs" />
     <Compile Include="Degerlendirme\DDegerlendirme.cs" />
     <Compile Include="DersCalismaProgrami\DDersCalismaProgrami.cs" />
