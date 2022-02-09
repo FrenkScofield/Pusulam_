@@ -324,7 +324,7 @@ Vue.component("c-kullanici-tipi-multi", {
             ListeTemizle(this.Liste);
             var p = { TCKIMLIKNO: session.TCKIMLIKNO, OTURUM: session.OTURUM };
             WebPost(this, this.controller, "KullaniciTipiListele", p, '', '', function (data, parent) {
-                parent.Liste = data;
+                parent.Liste = JSON.parse(data);
                 if (data != "[]") {
                     parent.Liste.unshift({ ID_KULLANICITIPI: 0, AD: 'Tümünü Seç' });
                 }
