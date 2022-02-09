@@ -128,12 +128,12 @@
                                         <td v-if="ID_KADEME3 !=4" class="text-left">
                                             <ol style="padding-left: 16px !important;">
                                                 <li v-for="o in u.OGRLIST">
-                                                    <a style="cursor:pointer" class="text-primary" @click="OgrenciGiris(o.OTURUM,o.TCKIMLIKNO)">{{o.ADSOYAD}}</a>
+                                                    <a style="cursor:pointer" class="text-primary" @click="Giris(o.OTURUM,o.TCKIMLIKNO)">{{o.ADSOYAD}}</a>
                                                 </li>
                                             </ol>
                                         </td>
                                         <td class="text-center col-sm-1">
-                                            <a class="text-success" style="cursor:pointer;" @click="Giris(u.K_ANAHTAR)"><i class="fa fa-sign-in fa-lg"></i></a>
+                                            <a class="text-success" style="cursor:pointer;" @click="Giris(u.OTURUM,u.TC)"><i class="fa fa-sign-in fa-lg"></i></a>
                                         </td>
                                         <td class="text-center col-sm-1">
                                             <a style="cursor:pointer;" @click="YetkiKaldir(u.TC)">
@@ -256,35 +256,10 @@
                     ListeOlustur('tblListe');
                 });
             },
-            Giris(K_ANAHTAR) {
-                var p = {
-                    TCKIMLIKNO: session.TCKIMLIKNO,
-                    OTURUM: session.OTURUM,
-                    K_ANAHTAR: K_ANAHTAR
-                }
-                debugger;
-                WebPost(this, this.controller, "Giris", p, '', '', function (data, parent) {
-                    if (data != null) {
-                        $.removeCookie("K");
-                        debugger;
-                        var expDate;
-                        if (vue.beniHatirla) {
-                            expDate = 1;
-                        }
-                        else {
-                            expDate = new Date();
-                            expDate.setTime(expDate.getTime() + (24 * 60 * 60 * 1000)); // 24 saat  (3 * 60)
-                        }
-                        $.cookie("K", JSON.stringify(data), { expires: expDate });
-                        window.location.replace("AnaSayfa.html#AnaSayfa");
-                        location.reload();
-                    }
-                });
-            },
-            OgrenciGiris(oturum, tc) {
+    
+            Giris(oturum, tc) {
                 var url = "https://pusulam.okyanuskoleji.k12.tr/index.html?TC=" + tc + "&OTURUM=" + oturum;
                 window.open(url);
-
             },
             YetkiKaldir(tc) {
                 var p = {
