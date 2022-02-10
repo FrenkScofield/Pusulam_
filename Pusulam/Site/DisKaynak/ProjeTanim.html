@@ -122,7 +122,7 @@
 
                 WebPost(this, this.controller, "Liste", p, '', '', function (data, parent) {
                     parent.LISTE = JSON.parse(data);
-                    ListeOlustur('tblListe');
+                    //ListeOlustur('tblListe');
                 })
             },
             YeniProje() {
@@ -141,7 +141,6 @@
                 this.DISKAYNAK.PROJE = proje;
                 this.DISKAYNAK.URL = url;
                 this.DISKAYNAK.AKTIF = aktif;
-
             },
             Kaydet() {
                 if (this.DISKAYNAK.PROJE == '') {
@@ -152,9 +151,7 @@
                 if (this.DISKAYNAK.URL == '') {
                     Alert_Warning("URL boş geçilemez.");
                     return;
-                }
-
-            
+                }          
 
                 var p = {
                     TCKIMLIKNO: session.TCKIMLIKNO,

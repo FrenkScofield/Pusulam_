@@ -66,7 +66,7 @@
                                     <td style="text-align:left!important;">{{u.PROJE}}</td>
                                     <td>{{u.AD}}</td>
                                     <td>{{u.ALAN}}</td>
-                                    <td class="col-sm-1 text-center"><a class="text-danger" @click="SilUyari(u.ID_KADEME3, u.ID_DISKAYNAK)"><i class="fa fa-trash"></i></a></td>
+                                    <td class="col-sm-1 text-center"><a class="text-danger" @click="SilUyari(u.ID_KADEME3, u.ID_DISKAYNAK, u.ALAN)"><i class="fa fa-trash"></i></a></td>
                                 </tr>
                             </tbody>
                         </table>
@@ -115,7 +115,7 @@
                 };
 
                 WebPost(this, this.controller, "ProjeListe", p, '', '', function (data, parent) {
-                    parent.PROJELER = JSON.parse(data);
+                    parent.PROJELER = JSON.parse(data);                 
                 })
             },
             Kaydet() {
@@ -130,7 +130,10 @@
                 
                 WebPost(this, this.controller, "Ekle", p, '', '', function (data, parent) {
                     Alert_Info("Gruplar projeye başarı ile eklendi.");
+                    parent.Listele();
                 })
+
+                
             },
             Listele() {
                 var p = {
@@ -139,17 +142,18 @@
                 };
 
                 WebPost(this, this.controller, "Liste", p, '', '', function (data, parent) {
-                    parent.LISTE = JSON.parse(data);
-                    ListeOlustur('tblListe');
+                    parent.LISTE = JSON.parse(data);                   
                 })
+                
             },
-            SilUyari(idKademe, idDisKaynak) {
-                Alert_Confirm("Emin misiniz?", "Ödevi silmek istediğinizden emin misiniz?", function () {
+            SilUyari(idKademe, idDisKaynak, alan) {
+                Alert_Confirm("Emin misiniz?", "Projeyi silmek istediğinizden emin misiniz?", function () {
                     var p = {
                         TCKIMLIKNO: session.TCKIMLIKNO,
                         OTURUM: session.OTURUM,
                         ID_KADEME3: idKademe,
-                        ID_DISKAYNAK: idDisKaynak
+                        ID_DISKAYNAK: idDisKaynak,
+                        ALAN: alan
                     };
 
                     WebPost(vue, vue.controller, "Sil", p, '', '', function (data, parent) {
