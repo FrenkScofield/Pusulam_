@@ -104,24 +104,24 @@
                                     <td class="col-md-1">{{u.SAAT}}</td>
                                     <td class="col-md-2" style="text-align:center;">
                                         <div>
-                                            <select class="selectpicker" v-model="SECILI_OGRETMEN" @change="OnChange(u.DERS,1)" data-live-search="true" :title="u.PAZARTESI">
-                                                <option v-for="o in LIST_OGRETMEN" :value="[{DERS_ADI:o}]" if="u.ID_DERS>0">{{o.ID_DERS>0 ? o.DERSAD + ' ('+o.OGRETMENAD+ '-' + o.EGITIMTURU+ ')' :''}}</option>
+                                            <select class="selectpicker" v-model="SECILI_OGRETMEN" v-on:change="OnChange(u.DERS,1)" data-live-search="true" :title="u.PAZARTESI">
+                                                <option v-for="o in LIST_OGRETMEN" :value="[{DERS_ADI:o}]" >{{o.ID_DERS>0 ? o.DERSAD + ' ('+o.OGRETMENAD+ '-' + o.EGITIMTURU+ ')' :' '}}</option>
                                             </select>
                                         </div>
 
                                     </td>
                                     <td class="col-md-2" style="text-align:center;">
                                         <div>
-                                            <select class="selectpicker" :id="u.DERS" v-model="SECILI_OGRETMEN" @change="OnChange(u.DERS,2)" data-live-search="true" :title="u.SALI">
-                                                <option v-for="o in LIST_OGRETMEN" :value="[{DERS_ADI:o}]" if="u.ID_DERS>0">{{o.ID_DERS>0 ? o.DERSAD + ' ('+o.OGRETMENAD+ '-' + o.EGITIMTURU+ ')' :''}}</option>
+                                            <select class="selectpicker" :id="u.DERS" v-model="SECILI_OGRETMEN" v-on:change="OnChange(u.DERS,2)" data-live-search="true" :title="u.SALI">
+                                                <option v-for="o in LIST_OGRETMEN" :value="[{DERS_ADI:o}]" >{{o.ID_DERS>0 ? o.DERSAD + ' ('+o.OGRETMENAD+ '-' + o.EGITIMTURU+ ')' :' '}}</option>
                                             </select>
                                         </div>
 
                                     </td>
                                     <td class="col-md-2" style="text-align:center;">
                                         <div>
-                                            <select class="selectpicker" v-model="SECILI_OGRETMEN" @change="OnChange(u.DERS,3)" data-live-search="true" :title="u.CARSAMBA">
-                                                <option v-for="o in LIST_OGRETMEN" :value="[{DERS_ADI:o}]" if="u.ID_DERS>0">{{o.ID_DERS>0 ? o.DERSAD + ' ('+o.OGRETMENAD+ '-' + o.EGITIMTURU+ ')' :''}}</option>
+                                            <select class="selectpicker" v-model="SECILI_OGRETMEN" v-on:change="OnChange(u.DERS,3)" data-live-search="true" :title="u.CARSAMBA">
+                                                <option v-for="o in LIST_OGRETMEN" :value="[{DERS_ADI:o}]">{{o.ID_DERS>0 ? o.DERSAD + ' ('+o.OGRETMENAD+ '-' + o.EGITIMTURU+ ')' :' '}}</option>
                                             </select>
                                         </div>
 
@@ -129,16 +129,16 @@
                                     <td class="col-md-2" style="text-align:center;">
                                         <div>
                                                     
-                                            <select class="selectpicker" v-model="SECILI_OGRETMEN" @change="OnChange(u.DERS,4)" data-live-search="true" :title="u.PERSEMBE">
-                                                <option v-for="o in LIST_OGRETMEN" :value="[{DERS_ADI:o}]" if="u.ID_DERS>0">{{o.ID_DERS>0 ? o.DERSAD + ' ('+o.OGRETMENAD+ '-' + o.EGITIMTURU+ ')' :''}}</option>
+                                            <select class="selectpicker" v-model="SECILI_OGRETMEN" v-on:change="OnChange(u.DERS,4)" data-live-search="true" :title="u.PERSEMBE">
+                                                <option v-for="o in LIST_OGRETMEN" :value="[{DERS_ADI:o}]">{{o.ID_DERS>0 ? o.DERSAD + ' ('+o.OGRETMENAD+ '-' + o.EGITIMTURU+ ')' :' '}}</option>
                                             </select>
                                         </div>
 
                                     </td>
                                     <td class="col-md-2" style="text-align:center;">
                                         <div>
-                                            <select class="selectpicker" v-model="SECILI_OGRETMEN" @change="OnChange(u.DERS,5)" data-live-search="true" :title="u.CUMA">
-                                                <option v-for="o in LIST_OGRETMEN" :value="[{DERS_ADI:o}]" if="u.ID_DERS>0">{{o.ID_DERS>0 ? o.DERSAD + ' ('+o.OGRETMENAD+ '-' + o.EGITIMTURU+ ')' :''}}</option>
+                                            <select class="selectpicker" v-model="SECILI_OGRETMEN" v-on:change="OnChange(u.DERS,5)" data-live-search="true" :title="u.CUMA">
+                                                <option v-for="o in LIST_OGRETMEN" :value="[{DERS_ADI:o}]" >{{o.ID_DERS>0 ? o.DERSAD + ' ('+o.OGRETMENAD+ '-' + o.EGITIMTURU+ ')' :' '}}</option>
                                             </select>
                                         </div>
                                     </td>
@@ -182,10 +182,11 @@
             LIST_DERS: []
         },
         methods: {
-
-            OnChange(DERS, GUN) {
-                var GUN = { ID_DERS: this.SECILI_OGRETMEN[0].DERS_ADI.ID_DERS, ID_DERSOGRETMEN: this.SECILI_OGRETMEN[0].DERS_ADI.ID_DERSOGRETMEN, DERSSAAT: DERS, GUN: GUN, ID_SINIF: this.ID_SINIF, ID_SUBE: this.ID_SUBE };
-                this.LIST_DERS.push(GUN);
+            OnChange(DERS, GUN) {              
+                var GUNCELLEME = { ID_DERS: this.SECILI_OGRETMEN[0].DERS_ADI.ID_DERS, ID_DERSOGRETMEN: this.SECILI_OGRETMEN[0].DERS_ADI.ID_DERSOGRETMEN, DERSSAAT: DERS, GUN: GUN, ID_SINIF: this.ID_SINIF, ID_SUBE: this.ID_SUBE };
+                this.LIST_DERS.push(GUNCELLEME);
+                console.log(this.LIST_DERS);
+                this.SECILI_OGRETMEN = '';
             },
             SubeSelected(item) {
                 this.ID_SUBE = item;
@@ -200,7 +201,8 @@
                 this.OgretmenGetir();
                 this.DersProgramGetir();
                 $('.selectpicker').selectpicker('refresh');
-
+                this.SECILI_OGRETMEN='';
+                this.LIST_DERS=[];
             },
             RehberSelected(item) {
                 this.TC_REHBER = item;
@@ -237,11 +239,8 @@
                 WebPost(this, this.controller, "DersOgretmenGetir", p, "#app", "Yükleniyor...", function (data, parent) {
                     parent.LIST_OGRETMEN = JSON.parse(data);
                     $('.selectpicker').selectpicker('refresh');
-
-
                 });
             },
-
             PersonelKaydet() {
                 var p = {
                     TCKIMLIKNO: session.TCKIMLIKNO,
@@ -258,17 +257,20 @@
             },
             Kaydet() {
                 var p = {
-                    TCKIMLIKNO : session.TCKIMLIKNO,
-                    OTURUM:session.OTURUM,
-                    SQLJSON : JSON.stringify(this.LIST_DERS)
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    SQLJSON: JSON.stringify(this.LIST_DERS)
                 };
                 WebPost(this, this.controller, "DersProgramKaydet", p, "#app", "Yükleniyor...", function (data, parent) {
                     Alert_Info("Başarılı bir şekilde kaydedildi.")
                 });
+                this.SECILI_OGRETMEN = '';
+                this.LIST_DERS = [];
             }
-            
+
 
         }
+      
 
     });
 </script>
