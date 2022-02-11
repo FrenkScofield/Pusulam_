@@ -115,7 +115,8 @@
                 };
 
                 WebPost(this, this.controller, "ProjeListe", p, '', '', function (data, parent) {
-                    parent.PROJELER = JSON.parse(data);                 
+                    parent.PROJELER = JSON.parse(data);
+                    ListeOlustur('tblListe');
                 })
             },
             Kaydet() {
@@ -130,18 +131,21 @@
                 
                 WebPost(this, this.controller, "Ekle", p, '', '', function (data, parent) {
                     Alert_Info("Gruplar projeye başarı ile eklendi.");
-                    parent.Listele();
-                })
-                
+                    ListeOlustur('tblListe');
+                });
+
+                this.Listele();
             },
             Listele() {
+
                 var p = {
                     TCKIMLIKNO: session.TCKIMLIKNO,
                     OTURUM: session.OTURUM,
                 };
 
                 WebPost(this, this.controller, "Liste", p, '', '', function (data, parent) {
-                    parent.LISTE = JSON.parse(data);                   
+                    parent.LISTE = JSON.parse(data);
+                    ListeOlustur('tblListe');
                 })
                 
             },
