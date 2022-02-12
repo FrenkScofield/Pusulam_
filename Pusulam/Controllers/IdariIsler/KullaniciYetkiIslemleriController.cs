@@ -145,5 +145,20 @@ namespace Pusulam.Controllers.IdariIsler.KullaniciYetkiIslemleri
             }
         }
 
+        public Object SifreSifirla(JObject j)
+        {
+            try
+            {
+                using (Channel2<DKullaniciYetkiIslemleri> c = new Channel2<DKullaniciYetkiIslemleri>(ID_MENU))
+                {
+                    return c._cs.SifreSifirla(j);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
     }
 }

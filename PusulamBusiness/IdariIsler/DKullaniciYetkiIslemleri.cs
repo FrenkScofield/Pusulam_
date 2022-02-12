@@ -136,5 +136,29 @@ namespace PusulamBusiness.IdariIsler
                 throw ex;
             }
         }
+
+        public string SifreSifirla(JObject j)
+        {
+            try
+            {
+                j.Add("ISLEM", (int)sp_KullaniciArama.SifreSifirla);
+                j.Add("ID_MENU", ID_MENU);
+                j.Add("IP", getIp.GetUser_IP());
+
+                string json = "";
+                using (IDbConnection db = new SqlConnection(conStr))
+                {
+                    if (db.State == ConnectionState.Closed)
+                        db.Open();
+                    json = db.ExecuteScalar<string>("sp_KullaniciArama", j.ToDictionary(), commandTimeout: 600, commandType: CommandType.StoredProcedure);
+                }
+                return json;
+            }
+            catch (Exception ex)
+            {
+                new DHataLog().HataLogKaydet(j, ex);
+                throw ex;
+            }
+        }
     }
 }

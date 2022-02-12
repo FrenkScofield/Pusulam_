@@ -109,7 +109,8 @@
                                         <th>Yetkili Şubeler</th>
                                         <th v-if="ID_KADEME3 !=4">Velisi Olduğu Öğrenciler</th>
                                         <th>Giriş</th>
-                                        <th>Şifre Yetki</th>
+                                        <th>Şifre Değiştirme Yetkisi</th>
+                                        <th>Şifre Sıfırlama</th>
                                     </tr>
                                 </thead>
                                 <tbody v-show="Filtre">
@@ -121,7 +122,7 @@
                                         </td>
                                         <td>{{u.TC}}</td>
                                         <td>{{u.ADSOYAD}}</td>
-                                        <td>{{u.YETKI}}</td>
+                                        <td>{{u.YETKI}}{{u.SINIF_AD}}</td>
                                         <td class="text-center col-sm-1">
                                             <a class="text-info" style="cursor:pointer;" @click="YetkiList(u.YetkiliOlduguSubeler)"><i class="fa fa-list fa-lg"></i></a>
                                         </td>
@@ -136,10 +137,17 @@
                                             <a class="text-success" style="cursor:pointer;" @click="Giris(u.OTURUM,u.TC)"><i class="fa fa-sign-in fa-lg"></i></a>
                                         </td>
                                         <td class="text-center col-sm-1">
-                                            <a style="cursor:pointer;" @click="YetkiKaldir(u.TC)">
-                                            <i v-if="!u.SIFREDEGISTIRMEYETKI" class="fa fa-eye fa-lg text-danger"></i>
-                                            <i v-if="u.SIFREDEGISTIRMEYETKI" class="fa fa-eye-slash fa-lg text-warning"></i>
+                                            <a  v-if="u.TECHPASS==0" style="cursor:pointer;" @click="YetkiKaldir(u.TC)">
+                                                <i v-if="u.TECHPASS==0 && !u.SIFREDEGISTIRMEYETKI" class="fa fa-eye fa-lg text-danger"></i>
+                                                <i v-if="u.TECHPASS==0 &&  u.SIFREDEGISTIRMEYETKI" class="fa fa-eye-slash fa-lg text-warning"></i>
                                             </a>
+                                            <a v-if="u.TECHPASS==1" style="cursor:pointer;">Techpass</a>
+                                        </td>
+                                        <td class="text-center col-sm-1">
+                                            <a v-if="u.TECHPASS==0" style="cursor:pointer;" @click="Sifresifirla(u.TC,1)">Rasgele</a>
+                                            <br v-if="u.TECHPASS==0" />
+                                            <a v-if="u.TECHPASS==0" style="cursor:pointer;" @click="Sifresifirla(u.TC,2)">okyanus</a>
+                                            <a v-if="u.TECHPASS==1" style="cursor:pointer;">Techpass</a>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -199,7 +207,8 @@
             ID_KADEME3: 0,
             KADEME3: false,
             YETKILIST: "",
-            BRANS_MI: false
+            BRANS_MI: false,
+            TECHPASS: 0
         },
 
         mounted() {
@@ -255,6 +264,7 @@
                     parent.LISTE = JSON.parse(data);
                     ListeOlustur('tblListe');
                 });
+                
             },
             Giris(oturum, tc) {
                 var url = "https://pusulam.okyanuskoleji.k12.tr/index.html?TC=" + tc + "&OTURUM=" + oturum;
@@ -275,8 +285,20 @@
             },
             YetkiList(val) {
                 this.YETKILIST = val;
-                $('#YetkiListeModal').modal();
+                $('#YetkiListeModal').modal();             
+            },
+            Sifresifirla(tc, tur) {
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    SIFIRLANACAKTC: tc,
+                    SIFIRLAMATUR: tur
+                };             
+               WebPost(this, this.controller, "SifreSifirla", p, '', '', function (data, parent) {
+                   Alert_Basic("Sifre Sıfırlama", "Oluşturulan Şifre : " + data)
+               });
             }
+
         }
     });
 </script>

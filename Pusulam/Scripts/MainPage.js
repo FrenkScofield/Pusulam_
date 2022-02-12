@@ -521,6 +521,10 @@ var vueanasayfa = new Vue({
                         this.ERRSUCCESS = 1;
                         this.BUTTONDISABLE = true;
                     }
+                    else if (JSON.parse(data)[0].ERRCODE === 1) {     
+                        this.ERRSUCCESS = 0;
+                        this.BUTTONDISABLE = false;
+                    }
                     parent.MessageGoster(message, 3000, this.ERRSUCCESS);
                     this.OLDPASS = '';
                     this.NEWPASS = '';

@@ -1363,13 +1363,14 @@
     {
         Kaydet = 2,
         Liste = 1,
-        Duzenle = 3,
+        Duzenle = 3
     }
     public enum sp_KullaniciArama
     {
         OgrenciListele = 1,
         Brans = 2,
-        YetkiKaldir = 3
+        YetkiKaldir = 3,
+        SifreSifirla = 4
     }
     public enum sp_SubeYetki
     {
