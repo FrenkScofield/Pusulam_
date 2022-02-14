@@ -135,7 +135,7 @@
                                         <th>EĞİTİM TÜRÜ</th>
                                         <th>ÖĞRETMEN ADI</th>
                                         <th>SİL</th>
-                                        <th>DÜZENLE</th>
+                                        <!--<th>DÜZENLE</th>-->
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -144,8 +144,7 @@
                                         <td>{{u.EGITIMTURU}}</td>
                                         <td>{{u.OGRETMENAD}}</td>
                                         <td class="text-center "><a style="cursor:pointer" @click="Sil(u.ID_DERSOGRETMEN)"><i class="text-danger fa fa-trash fa-lg "></i></a></td>
-                                        <td class="text-center"><a style="cursor:pointer" @click="ModalDuzenle(u.ID_DERSOGRETMEN)"><i class="fa fa-edit fa-lg "></i></a></td>
-
+                                        <!--<td class="text-center"><a style="cursor:pointer" @click="ModalDuzenle(u.ID_DERSOGRETMEN)"><i class="fa fa-edit fa-lg "></i></a></td> -->
                                     </tr>
                                 </tbody>
                             </table>
@@ -186,12 +185,14 @@
                                     </c-ogretmenlist>
                                 </div>
                             </div>
+
                             <div class="col-md-12 text-right">
                                 <div class="row">
                                     <button type="button" class="btn green" @click="Duzenle">Duzenle</button>
                                     <button type="button" class="btn default" data-dismiss="modal">Kapat</button>
                                 </div>
                             </div>
+
                         </div>
                     </div>
                 </div>
@@ -316,6 +317,9 @@
                     DONEM: this.DONEM,
                 }
                 WebPost(this, this.controller, 'DersKaydet', p, '', '', function (data, parent) {
+                    if (data != null) {
+                        Alert_Info(data);
+                    }
                     parent.Listele();
                 });
             }
