@@ -312,14 +312,14 @@
                                                    @OnChange="SinavSelected"
                                                    v-show="idsinavturu>0">
                                     </c-sinav-multi>
-                                    <c-ders-st controller="Etut"
+                                    <c-ders-etut-tek controller="Etut"
                                                :idsinavturu="idsinavturu"
                                                :idkademe3="idkademe3"
                                                :idsiniflist="idsiniflist"
                                                :donem="donemSinav"
                                                :ogrencidonem="donem"
                                                @OnChange="DersSelected">
-                                    </c-ders-st>
+                                    </c-ders-etut-tek>
 
 
                                     <input style="float:right;margin: 10px;" type="button" class="btn btn-success" v-on:click="Getir" value="Raporla">
@@ -422,7 +422,7 @@
                                     <div class="md-checkbox" style="margin:auto!important;height:20px; margin:10px; display:block; float:right;">
                                         <input type="checkbox" v-model="AkademiOgrt" id="AkademiOgrt" class="md-check" v-bind:true-value="true" v-bind:false-value="false" />
                                         <label for="AkademiOgrt">
-                                            Akademi Öğretmenleri
+                                            Tüm Öğretmenler
                                             <span></span>
                                             <span class="check"></span>
                                             <span class="box"></span>
@@ -431,11 +431,12 @@
                                 </div>
                                 <div class="form-group">
 
-                                    <c-sube-ogretmen controller="Etut"
+                                    <c-sube-ogretmen-sinif controller="Etut"
                                                      :idsube="idsube"
-                                                     :idders="AkademiOgrt? -99 : idders"
+                                                     :idders="AkademiOgrt ? -99 : idders"
+                                                     :idsiniflist="idsiniflist"
                                                      @OnChange="SubeOgretmenSelected">
-                                    </c-sube-ogretmen>
+                                    </c-sube-ogretmen-sinif>
                                 </div>
                                 <div class="form-group">
                                     <label class="control-label col-md-3">Yer</label>
@@ -605,6 +606,7 @@
             idetutsiniflist: [],
             idsube: 0,
             idders: 0,
+            idsiniflist: [],
             tcogretmen: '',
             TARIH: '',
 
