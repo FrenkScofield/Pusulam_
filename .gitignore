@@ -9,3 +9,6 @@ Api/Logs/log.txt
 *.pubxml
 *.pubxml.user
 *.publishproj
+Pusulam/Web.config
+PusulamAPI/Web.config
+PusulamSinav/Web.config
