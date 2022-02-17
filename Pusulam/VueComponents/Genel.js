@@ -661,15 +661,17 @@ Vue.component("c-tablo-ogr-check", {
                 <table :id="tabloadi">
                     <thead id="c-tablo-header">
                         <tr>
-                            <th v-for="col in columns">{{col}}</th>
+                            <th>TCKIMLIKNO</th>
+                            <th>ADSOYAD</th>
+                            <th>ORTALAMA</th>
                             <th>Seç</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr v-for="(row,index) in rows"  style="cursor:pointer">
-                            <td v-for="col in columns"  v-on:click="OnChangeTd(row,col)">
+                            <td v-for="col in columns">
                                 <span v-html="row[col]"></span>
-                            </td>
+                            </td> 
                             <td>
                                 <div style="height:34px; vertical-align:middle;">
                                     <div class="md-checkbox" style="margin:auto!important; height:20px; margin:0px; margin-top:6px; display:block;">

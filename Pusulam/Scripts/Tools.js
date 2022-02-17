@@ -42,6 +42,17 @@ function getDistinct(data, key) {
     });
     return distList;
 }
+
+function getDistinctOnlyTick(data, key, tickkey) {
+    var distList = [];
+    $.each(data, function (j, item) {
+        if (distList.indexOf(item[key]) == -1 && item[tickkey] == true) {
+            distList.push(item[key]);
+        }
+    });
+    return distList;
+}
+
 function getDistinctTek(data) {
     var distList = [];
     $.each(data, function (j, item) {
