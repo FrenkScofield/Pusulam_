@@ -282,7 +282,7 @@
         KulupKotaBelirle = 2409,
         OgrenciKulupler = 1417,
         DiskaynakKademeEkle = 1420,
-        KullaniciYetkiIslemleri = 2420,
+        KullaniciYetkiIslemleri = 1435,
         DiskaynakKademeTanim = 1421,
         TktAktarim = 1422,
         DersProgrami = 1424,
