@@ -72,10 +72,10 @@
                         </div>
                         <div class="col-md-6">
                             <div class="row">
-                                <c-egitim-turu :controller="controller"
+                                <c-egitim-turu-multi :controller="controller"
                                                @OnChange="EgitimTuruSelected">
 
-                                </c-egitim-turu>
+                                </c-egitim-turu-multi>
                             </div>
                         </div>
 
@@ -223,7 +223,7 @@
             ID_SUBE: 0,
             ID_KADEME3: 0,
             ID_SINIF: 0,
-            ID_EGITIMTURU: 0,
+            ID_EGITIMTURU: [],
             TC_OGRETMEN: '',
             ID_OGRETMEN: 0,
             ID_DERSOGRETMEN: 0
@@ -313,7 +313,7 @@
                     ID_DERS: this.ID_DERS,
                     ID_OGRETMEN: this.ID_OGRETMEN,
                     ID_SINIF: this.ID_SINIF,
-                    ID_EGITIMTURU: this.ID_EGITIMTURU,
+                    ID_EGITIMTURU: JSON.stringify(this.ID_EGITIMTURU),
                     DONEM: this.DONEM,
                 }
                 WebPost(this, this.controller, 'DersKaydet', p, '', '', function (data, parent) {
