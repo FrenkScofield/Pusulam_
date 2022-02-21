@@ -2162,6 +2162,70 @@ Vue.component("c-ders-personel", {
     },
 });
 
+Vue.component("c-ders-personel-multi", {
+    props: ['controller', 'idset', 'id_sinif', 'id_kullanici_tipi', 'label'],
+    template: `
+                <div class ="form-md-line-input">
+                    <label class ="control-label col-md-3" style="vertical-align:middle;">{{label}} </label>
+                    <div class ="col-md-9">
+                        <select multiple="true"class ="selectpicker form-control" v-model="SelectedID" @change="OnChange" title="Seçiniz..." >
+                            <option v-for="u in Liste" v-bind:value="u.TCKIMLIKNO" >{{u.ADSOYAD}}</option>
+                        </select>
+                    </div>
+                </div>
+        `
+    ,
+    data: function () {
+        return {
+            TCKIMLIKNO: '',
+            Liste: [],
+            SelectedID: []
+        }
+    },
+    methods: {
+        OnChange() {
+            this.$emit('onchange', this.SelectedID)
+        },
+
+        GetData() {
+            if (this.id_sinif > 0) {                
+                var p = { TCKIMLIKNO: session.TCKIMLIKNO, OTURUM: session.OTURUM, ID_SINIF: this.id_sinif, ID_KULLANICITIPI: this.id_kullanici_tipi };
+                WebPost(this, this.controller, "SinifPersonel", p, '', '', function (data, parent) {
+                    if (data != null) {
+                        parent.Liste = JSON.parse(data);
+                        for (i = 0; i < parent.Liste.length; i++) {
+                            if (parent.Liste[i].SELECTED > 0) {                             
+                                parent.SelectedID.push(parent.Liste[i].TCKIMLIKNO);
+                            }
+                        }                      
+                        parent.OnChange();
+                    }
+                });
+            }
+            ListeTemizle(this.SelectedID);
+
+        }
+    },
+
+    mounted() {
+        this.GetData();
+    },
+
+    watch: {
+        idset() {
+            this.SelectedID = (this.idset == undefined || this.idset == null) ? 0 : this.idset;
+            this.OnChange();
+        },
+        id_sinif() {
+            this.GetData();
+        }
+    },
+
+    updated() {
+        $('.selectpicker').selectpicker('refresh');
+    },
+});
+
 
 
 Vue.component("c-egitim-turu", {
