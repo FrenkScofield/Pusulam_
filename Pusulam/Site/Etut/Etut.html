@@ -243,7 +243,7 @@
         <h1>
             Etüt
 
-             <span onclick="YardimGoster(ID_MENU);" class="pull-right" style="cursor:pointer;"><img src="assets/global/img/info.gif" class="info-image-icon" /> </span>
+            <span onclick="YardimGoster(ID_MENU);" class="pull-right" style="cursor:pointer;"><img src="assets/global/img/info.gif" class="info-image-icon" /> </span>
         </h1>
     </div>
 </div>
@@ -312,14 +312,14 @@
                                                    @OnChange="SinavSelected"
                                                    v-show="idsinavturu>0">
                                     </c-sinav-multi>
-                                    <c-ders-st controller="Etut"
-                                               :idsinavturu="idsinavturu"
-                                               :idkademe3="idkademe3"
-                                               :idsiniflist="idsiniflist"
-                                               :donem="donemSinav"
-                                               :ogrencidonem="donem"
-                                               @OnChange="DersSelected">
-                                    </c-ders-st>
+                                    <c-ders-etut-tek controller="Etut"
+                                                     :idsinavturu="idsinavturu"
+                                                     :idkademe3="idkademe3"
+                                                     :idsiniflist="idsiniflist"
+                                                     :donem="donemSinav"
+                                                     :ogrencidonem="donem"
+                                                     @OnChange="DersSelected">
+                                    </c-ders-etut-tek>
 
 
                                     <input style="float:right;margin: 10px;" type="button" class="btn btn-success" v-on:click="Getir" value="Raporla">
@@ -390,18 +390,23 @@
                             </div>
                             <div class="form-group" id="UniteKazanimDiv" style="max-height:500px; overflow-y:auto;">
                                 <div class="col-md-12 form-group">
-                                    <c-tablo tabloadi="OgrTablo"
+                                    <!--<c-tablo tabloadi="OgrTablo"
                                              :gelendata="TblListeOgr"
                                              :istisna="TblListeOgrIstisna">
-                                    </c-tablo>
+                                    </c-tablo>-->
+                                    <c-tablo-ogr-check tabloadi="OgrTablo"
+                                                       :gelendata="TblListeOgr"
+                                                       :istisna="TblListeOgrIstisna"
+                                                       @onchangechk="chkOgrSelected">
+                                    </c-tablo-ogr-check>
                                 </div>
                             </div>
 
                             <div class="form-group" style="padding: 15px;" v-if="TblListeOgr.length>0">
-                                <div  class="pull-right">
-                                    Seçilen Öğrenci Sayısı : <label style="color:darkred; font-weight: bold;">{{TblListeOgr.length}}</label>
+                                <div class="pull-right">
+                                    Seçilen Öğrenci Sayısı : <label style="color:darkred; font-weight: bold;">{{SecilenOgrenciSayisi}}</label>
                                 </div>
-                                
+
                                 <button class="btn green" onclick="tableToExcel('OgrTablo', 'Etüt Öğrenci Listesi')">Öğrenci Listesini Excel'e Aktar</button>
                             </div>
                         </div>
@@ -422,7 +427,7 @@
                                     <div class="md-checkbox" style="margin:auto!important;height:20px; margin:10px; display:block; float:right;">
                                         <input type="checkbox" v-model="AkademiOgrt" id="AkademiOgrt" class="md-check" v-bind:true-value="true" v-bind:false-value="false" />
                                         <label for="AkademiOgrt">
-                                            Akademi Öğretmenleri
+                                            Tüm Öğretmenler
                                             <span></span>
                                             <span class="check"></span>
                                             <span class="box"></span>
@@ -431,11 +436,12 @@
                                 </div>
                                 <div class="form-group">
 
-                                    <c-sube-ogretmen controller="Etut"
-                                                     :idsube="idsube"
-                                                     :idders="AkademiOgrt? -99 : idders"
-                                                     @OnChange="SubeOgretmenSelected">
-                                    </c-sube-ogretmen>
+                                    <c-sube-ogretmen-sinif controller="Etut"
+                                                           :idsube="idsube"
+                                                           :idders="AkademiOgrt ? -99 : idders"
+                                                           :idsiniflist="idsiniflist"
+                                                           @OnChange="SubeOgretmenSelected">
+                                    </c-sube-ogretmen-sinif>
                                 </div>
                                 <div class="form-group">
                                     <label class="control-label col-md-3">Yer</label>
@@ -555,7 +561,7 @@
                     <!--     <button type="button" class="btn btn-primary" id="DuyuruSilButton" onclick="DuyuruSil();">
                     Arşivle</button>-->
                     <button type="button" class="btn btn-default" style="float:right" data-dismiss="modal"> Kapat </button>
-                    
+
                     <button type="button" id="EtutTab" class="btn blue" style="float:right" v-on:click="EtuteGec" v-if="tab==1"> Etüt Oluştur </button>
 
                     <button class="btn green" id="EtutKayit" idetut="0" style="float:right" v-on:click="EtutOlustur" v-if="tab==2">Kaydet</button>
@@ -600,11 +606,12 @@
             TblListeKonu: [],
 
             TblListeOgr: [],
-            TblListeOgrIstisna: ["ID_DERS", "KOD", "DERSAD", "UNITE", "KONU", "ORT", "ID_SINIF"],
+            TblListeOgrIstisna: ["ID_DERS", "KOD", "DERSAD", "UNITE", "KONU", "ORT", "ID_SINIF", "SECILI"],
 
             idetutsiniflist: [],
             idsube: 0,
             idders: 0,
+            idsiniflist: [],
             tcogretmen: '',
             TARIH: '',
 
@@ -636,6 +643,7 @@
 
             limit: ["0.00", "100.00"],
             AkademiOgrt: false,
+            SecilenOgrenciSayisi: 0,
 
         },
 
@@ -714,6 +722,15 @@
             SubeOgretmenSelected(item) {
                 this.tcogretmen = item;
             },
+            chkOgrSelected(item) {
+                ticksecim= 0;
+                $.each(this.TblListeOgr, function (j, item) {
+                    if (item['SECILI'] == true) {
+                        ticksecim++;
+                    }
+                });
+                this.SecilenOgrenciSayisi = ticksecim;
+            },
 
             Getir() {
                 var _this = this;
@@ -768,10 +785,9 @@
                         }
                     });
                 }
-                //this.$nextTick(() => { });
             },
 
-            EtutTabloTdClick(item) {             
+            EtutTabloTdClick(item) {
                 var _this = this;
                 if (item[0][item[1]].indexOf("%") != 0) {
                     return;
@@ -865,8 +881,17 @@
                         );
                 });
 
+                ticksecim = 0;
+                $.each(this.TblListeOgr, function (j, item) {
+                    if (item['SECILI'] == true) {
+                        ticksecim++;
+                    }
+                });
+                this.SecilenOgrenciSayisi = ticksecim;
+
             },
             EtutOlustur() {
+
                 var _this = this;
 
                 var EtutAciklama = $("#EtutAciklama").val();
@@ -875,8 +900,8 @@
                 var EtutSaat = $("#EtutSaat").val();
                 var EtutSure = $("#EtutSure").val();
 
-                var ogrenciList = getDistinct(_this.TblListeOgr, "TCKIMLIKNO");
-
+                var ogrenciList = getDistinctOnlyTick(_this.TblListeOgr, "TCKIMLIKNO", "SECILI");
+                console.log(ogrenciList);
 
 
                 var konuList = getDistinct($.grep(_this.TblListeKonu, function (el, j) {

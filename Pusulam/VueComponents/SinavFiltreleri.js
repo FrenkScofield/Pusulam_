@@ -772,6 +772,80 @@ Vue.component("c-ders-st", {
         },
     },
 });
+
+Vue.component("c-ders-etut-tek", {
+    props: ['controller', 'idsinavturu', 'idkademe3', 'idsiniflist', 'donem', 'ogrencidonem'],
+    template: `
+                <div class="form-md-line-input">
+                    <div class="col-md-2">
+                        <select multiple="false" class ="selectpicker form-control" v-model="SelectedID" @change="OnChange"   title="Ders Seçiniz...">
+                            <option v-for="u in Liste" v-bind:value="u.ID">{{u.AD}}</option>
+                        </select>
+                    </div>
+                </div>
+        `
+
+    ,
+
+    data: function () {
+        return {
+            SelectedID: [],
+            Liste: [],
+            tumu: false,
+        }
+    },
+
+    methods: {
+
+        OnChange() {
+            var secili = this.SelectedID;
+            this.SelectedID = [];
+            this.SelectedID.push(JSON.parse(secili));
+            var secili = "";
+            this.$emit('onchange', this.SelectedID);
+        },
+
+        Yenile() {
+            var _idkademe3 = this.idkademe3;
+            var _idsinavturu = this.idsinavturu;
+            var _this = this;
+            _this.Liste = [];
+            var p = { TCKIMLIKNO: session.TCKIMLIKNO, OTURUM: session.OTURUM, ID_SINAVTURU: _idsinavturu, ID_KADEME3: _idkademe3, ID_SINIFs: JSON.stringify(this.idsiniflist), DONEM: this.donem, OGRENCIDONEM: this.ogrencidonem };
+            WebPost(this, this.controller, "SinavTuruDersleriListele", p, '', '', function (data, parent) {
+                //_this.Liste = JSON.parse(data)[0].t1;
+                $.each(JSON.parse(data)[0].t1, function (j, el) {
+                    _this.Liste.push({ ID: el.ID, AD: el.AD });
+                });
+            })
+        }
+    },
+
+    mounted() {
+        this.Yenile();
+    },
+
+    updated() {
+        $('.selectpicker').selectpicker('refresh');
+    },
+
+    watch: {
+        idsinavturu() {
+            this.Yenile();
+        },
+        tc() {
+            this.Yenile();
+        },
+        idsiniflist() {
+            this.Yenile();
+        },
+        donem() {
+            this.Yenile();
+        },
+        ogrencidonem() {
+            this.Yenile();
+        },
+    },
+});
 //----------------------------------------------------------------------------------------------
 //Sınav Puan Türü Componenti
 //----------------------------------------------------------------------------------------------
@@ -1454,9 +1528,6 @@ Vue.component("c-sube-ogretmen", {
             this.$emit('onchange', this.SelectedID);
         },
         Yenile() {
-            console.log("sube ogr")
-            console.log(this.idsube)
-            console.log(this.idders)
             var p = { TCKIMLIKNO: session.TCKIMLIKNO, OTURUM: session.OTURUM, ID_SUBE: this.idsube, ID_DERS: this.idders };
             WebPost(this, this.controller, "SubeOgretmenListe", p, '', '', function (data, parent) {
                 parent.Liste = JSON.parse(data)[0].TblListeOgretmen;;
@@ -1513,6 +1584,56 @@ Vue.component("c-sube-ogretmen-yan", {
             var p = { TCKIMLIKNO: session.TCKIMLIKNO, OTURUM: session.OTURUM, ID_SUBE: this.idsube, ID_DERS: this.idders };
             WebPost(this, this.controller, "SubeOgretmenListe", p, '', '', function (data, parent) {
                 parent.Liste = JSON.parse(data)[0].TblListeOgretmen;;
+            });
+        }
+    },
+
+    mounted() {
+
+    },
+
+    updated() {
+        $('.selectpicker').selectpicker('refresh');
+    },
+
+    watch: {
+        idders() {
+            this.Yenile();
+        },
+        idsube() {
+            this.Yenile();
+        },
+    },
+});
+
+Vue.component("c-sube-ogretmen-sinif", {
+    props: ['controller', 'idsube', 'idders','idsiniflist'],
+    template: `
+                <div class="form-md-line-input">
+                    <div class="col-md-12">
+                        <select class ="selectpicker form-control" v-model="SelectedID" @change="OnChange" title="Öğretmen Seçiniz...">
+                            <option v-for="u in Liste" v-bind:value="u.TCKIMLIKNO">{{u.ADSOYAD}}</option>
+                        </select>
+                    </div>
+                </div>
+            `
+    ,
+
+    data: function () {
+        return {
+            SelectedID: 0,
+            Liste: []
+        }
+    },
+
+    methods: {
+        OnChange() {
+            this.$emit('onchange', this.SelectedID);
+        },
+        Yenile() {
+            var p = { TCKIMLIKNO: session.TCKIMLIKNO, OTURUM: session.OTURUM, ID_SUBE: this.idsube, ID_DERS: this.idders, ID_SINIFs: JSON.stringify(this.idsiniflist)};
+            WebPost(this, this.controller, "SubeOgretmenListe", p, '', '', function (data, parent) {
+                parent.Liste = JSON.parse(data)[0].TblListeOgretmen;
             });
         }
     },

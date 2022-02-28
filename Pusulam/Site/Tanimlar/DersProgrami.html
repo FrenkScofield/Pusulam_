@@ -25,12 +25,12 @@
                         <div class="row col-md-6">
                             <!--Rehber Öğretmen -->
 
-                            <c-ders-personel :controller="controller"
+                            <c-ders-personel-multi :controller="controller"
                                              :id_sinif="ID_SINIF"
                                              @OnChange="RehberSelected"
                                              id_kullanici_tipi="26"
                                              label="Rehber Öğretmen">
-                            </c-ders-personel>
+                            </c-ders-personel-multi>
                         </div>
                         <div class="row col-md-6">
                             <c-kademe3 :controller="controller"
@@ -72,12 +72,12 @@
                         </div>
                         <div class="row col-md-6">
                             <!--Müdür Yardımcısı -->
-                            <c-ders-personel :controller="controller"
+                            <c-ders-personel-multi :controller="controller"
                                              :id_sinif="ID_SINIF"
                                              @OnChange="MudurYardimciSelected"
                                              id_kullanici_tipi="54"
                                              label="Müdür Yardımcısı">
-                            </c-ders-personel>
+                            </c-ders-personel-multi>
                         </div>
                     </div>
                 </form>
@@ -170,10 +170,10 @@
             idkademe3: 0,
             ID_SUBE: 0,
             ID_SINIF: 0,
-            TC_REHBER: '',
-            TC_DANISMAN: '',
-            TC_MUDUR: '',
-            TC_MUDURYARDIMCI: '',
+            TC_REHBER: [],
+            TC_DANISMAN: [],
+            TC_MUDUR: [],
+            TC_MUDURYARDIMCI: [],
             LIST_DERSPROGRAM: [],
             LISTELE: 0,
             LIST_OGRETMEN: [],
@@ -185,7 +185,6 @@
             OnChange(DERS, GUN) {              
                 var GUNCELLEME = { ID_DERS: this.SECILI_OGRETMEN[0].DERS_ADI.ID_DERS, ID_DERSOGRETMEN: this.SECILI_OGRETMEN[0].DERS_ADI.ID_DERSOGRETMEN, DERSSAAT: DERS, GUN: GUN, ID_SINIF: this.ID_SINIF, ID_SUBE: this.ID_SUBE };
                 this.LIST_DERS.push(GUNCELLEME);
-                console.log(this.LIST_DERS);
                 this.SECILI_OGRETMEN = '';
             },
             SubeSelected(item) {
@@ -246,10 +245,10 @@
                     TCKIMLIKNO: session.TCKIMLIKNO,
                     OTURUM: session.OTURUM,
                     ID_SINIF: this.ID_SINIF,
-                    TC_REHBER: this.TC_REHBER,
+                    TC_REHBER: JSON.stringify(this.TC_REHBER),
                     TC_DANISMAN: this.TC_DANISMAN,
                     TC_MUDUR: this.TC_MUDUR,
-                    TC_MUDURYARDIMCI: this.TC_MUDURYARDIMCI
+                    TC_MUDURYARDIMCI: JSON.stringify(this.TC_MUDURYARDIMCI)
                 };
                 WebPost(this, this.controller, "DersPersonelKaydet", p, "#app", "Yükleniyor...", function (data, parent) {
                     Alert_Info("Başarılı bir şekilde kaydedildi.")
