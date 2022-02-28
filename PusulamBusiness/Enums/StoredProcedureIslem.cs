@@ -1433,6 +1433,6 @@
 
     public enum sp_KitapOkuma
     {
-        Kitap_Listele = 1
+        Kitap_Listele = 3
     }
 }

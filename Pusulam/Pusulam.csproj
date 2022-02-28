@@ -904,6 +904,7 @@
     <Compile Include="Controllers\GenelKurul\GenelKurulController.cs" />
     <Compile Include="Controllers\IdariIsler\SubeYetkiController.cs" />
     <Compile Include="Controllers\IdariIsler\KullaniciYetkiIslemleriController.cs" />
+    <Compile Include="Controllers\KitapOkuma\KitapOkumaController.cs" />
     <Compile Include="Controllers\Morpa\MorpaController.cs" />
     <Compile Include="Controllers\Morpa\MorpaGirisController.cs" />
     <Compile Include="Controllers\OgrenciBilgiPaylasimi\OgrenciBilgiController.cs" />

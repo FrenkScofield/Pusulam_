@@ -103,95 +103,12 @@
 </c-grup-single>
 <input style="float:right;margin: 10px;" type="button" class="btn btn-success" v-on:click="Getir" value="Listele">-->
 <!--Filter. END-->
-<!--Modal new Add Book. Start-->
-<!--<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content" style=" width: 129%;">
-            <div class="modal-header">
-                <h4 class="modal-title" id="exampleModalLabel">YENİ KİTAP EKLE</h4>
-
-            </div>
-            <div class="modal-body">
-                <c-grup-single style=" margin-left: -11px; width: 101%;" :controller="controller"
-                               @OnChange="SubeSelected">
-                </c-grup-single>
-                <c-grup-single style=" margin-left: -11px; width: 101%;" :controller="controller"
-                               @OnChange="SubeSelected">
-                </c-grup-single>
-                <c-sınıf-single :controller="controller"
-                                :idsubelist="ID_SUBEs"
-                                :idset="ID_KADEME3"
-                                @OnChange="Kademe3Selected">
-                </c-sınıf-single>
-                <div class="row">
-                    <div class="form-md-line-input ">
-                        <label class="control-label col-md-3" style="vertical-align:middle;">Kitap Adı </label>
-                        <div class="col-md-9">
-                            <input type="text" placeholder="Kitap Adı" class="form-control spesificStyle" v-model="SINAVADI" />
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="form-md-line-input">
-                        <label class="control-label col-md-3" style="vertical-align:middle;">Açıklama </label>
-                        <div class="col-md-9">
-                            <input type="text" placeholder="Açıklama" class="form-control spesificStyle" v-model="SINAVADI" />
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="form-md-line-input">
-                        <label class="control-label col-md-3" style="vertical-align:middle;">Başlangıç tarihi</label>
-                        <div class="col-md-9">
-                            <input type="date" class="form-control spesificStyle" v-model="SINAVADI" />
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="form-md-line-input">
-                        <label class="control-label col-md-3" style="vertical-align:middle;">Bitiş Tarihi</label>
-                        <div class="col-md-9">
-                            <input type="date" class="form-control spesificStyle" v-model="SINAVADI" />
-                        </div>
-                    </div>
-                </div>
-
-                <div class="row">
-                    <div class="form-md-line-input">
-                        <label class="control-label col-md-3">Kitap Kapağı</label>
-                        <div class="col-md-9">
-                            <div class="fileinput fileinput-new" data-provides="fileinput">
-                                <div class="input-group" style="width:115%!important;">
-                                    <div class="form-control uneditable-input input-fixed input-medium" data-trigger="fileinput" style="width: 100% !important; height: 34px;">
-                                        <i class="fa fa-file fileinput-exists"></i>&nbsp;
-                                        <span class="fileinput-filename"> </span>
-                                    </div>
-                                    <span class="input-group-addon btn default btn-file">
-                                        <span class="fileinput-new"> Dosya Seç </span>
-                                        <span class="fileinput-exists"> Değiştir </span>
-                                        <input type="file" name="..." id="yonergeDosya">
-                                    </span>
-                                    <a href="javascript:;" class="input-group-addon btn red fileinput-exists" data-dismiss="fileinput"> Sil </a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">İPTAL</button>
-                <button type="button" class="btn btn-success">EKLE</button>
-            </div>
-        </div>
-    </div>
-</div>-->
-<!--Modal new Add Book. END-->
 <!--</div>-->
 <!--list datas. Start-->
 <!--<div class="col-md-8">-->
 <!--style=" border: 1px solid #c9c9c9; width: 99.8% !important;"-->
 <!--<table id="tblKitapListele" class="table table-striped table-bordered table-sm" cellspacing="0">
-    <thead>
+    <th ead>
         <tr>
             <th class="th-sm">
                 ADI
@@ -208,14 +125,14 @@
         </tr>
     </thead>
     <tbody>
-        <tr v-for="u in LISTE">-->
-<!--<td v-if="u.FOTOGRAF==''">
+        <tr v-for="u in LISTE">
+        <td v-if="u.FOTOGRAF==''">
     <img src="../../../img/okyanus_image.jpg" class='img-rounded' height="60" width="60" style="position:center" />
 </td>
 <td v-else>
     <img :src='"data:image/png;base64,"+ u.FOTOGRAF' class='img-rounded' height="60" width="60" style="position:center" />
-</td>-->
-<!--<td>{{u.K_ADI}}</td>
+</td>
+                <td>{{u.K_ADI}}</td>
                 <td>{{u.K_BAS_TRH}}</td>
                 <td>{{u.K_BIT_TARIH}}</td>
                 <td><input style="float:right;margin: 10px;" type="button" class="btn btn-success" v-on:click="DemoLogin(u)" value="Giriş Yap"></td>
@@ -409,29 +326,113 @@
                     </a>
                 </div>
             </div>
+
+            <!--Modal new Add Book. Start-->
+            <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content" style=" width: 129%;">
+                        <div class="modal-header">
+                            <h4 class="modal-title" id="exampleModalLabel">YENİ KİTAP EKLE</h4>
+
+                        </div>
+                        <div class="modal-body">
+                            <div class="row">
+                                <c-kademe3 :controller="controller"
+                                           @OnChange="Kademe3Selected">
+                                </c-kademe3>
+                            </div>
+                            <div class="row">
+                                <c-sinif-alan-multi :controller="controller"
+                                                    @OnChange="SinifAlanSelected">
+                                </c-sinif-alan-multi>
+                            </div>
+                            <div class="row">
+                                <div class="form-md-line-input ">
+                                    <label class="control-label col-md-3" style="vertical-align:middle;">Kitap Adı </label>
+                                    <div class="col-md-9">
+                                        <input type="text" placeholder="Kitap Adı" class="form-control spesificStyle" v-model="SINAVADI" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="form-md-line-input">
+                                    <label class="control-label col-md-3" style="vertical-align:middle;">Açıklama </label>
+                                    <div class="col-md-9">
+                                        <input type="text" placeholder="Açıklama" class="form-control spesificStyle" v-model="SINAVADI" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="form-md-line-input">
+                                    <label class="control-label col-md-3" style="vertical-align:middle;">Başlangıç tarihi</label>
+                                    <div class="col-md-9">
+                                        <input type="date" class="form-control spesificStyle" v-model="SINAVADI" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="form-md-line-input">
+                                    <label class="control-label col-md-3" style="vertical-align:middle;">Bitiş Tarihi</label>
+                                    <div class="col-md-9">
+                                        <input type="date" class="form-control spesificStyle" v-model="SINAVADI" />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="form-md-line-input">
+                                    <label class="control-label col-md-3">Kitap Kapağı</label>
+                                    <div class="col-md-9">
+                                        <div class="fileinput fileinput-new" data-provides="fileinput">
+                                            <div class="input-group" style="width:115%!important;">
+                                                <div class="form-control uneditable-input input-fixed input-medium" data-trigger="fileinput" style="width: 100% !important; height: 34px;">
+                                                    <i class="fa fa-file fileinput-exists"></i>&nbsp;
+                                                    <span class="fileinput-filename"> </span>
+                                                </div>
+                                                <span class="input-group-addon btn default btn-file">
+                                                    <span class="fileinput-new"> Dosya Seç </span>
+                                                    <span class="fileinput-exists"> Değiştir </span>
+                                                    <input type="file" name="..." id="yonergeDosya">
+                                                </span>
+                                                <a href="javascript:;" class="input-group-addon btn red fileinput-exists" data-dismiss="fileinput"> Sil </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">İPTAL</button>
+                                <button type="button" class="btn btn-success">EKLE</button>
+                            </div>
+                        </div>
+                </div>
+            </div>
+            <!--Modal new Add Book. END-->
+
             <div class="portlet-body form collapse in" id="filters">
                 <form role="form" style="padding:12px 20px">
                     <div class="form-body form-group-lg form-horizontal row" style="padding: 0px;margin-top: 0px !important;">
-
+                        <!--Click button open Modal. Start-->
+                        <div class="col-lg-12">
+                            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal" style="float: right; margin: -10px 6px 12px; font-size: 14px;">
+                                YENİ KİTAP EKLE
+                            </button>
+                        </div>
+                        <!--Click button open Modal. END-->
                         <div class="portlet light col-md-12" id="FiltreDivOgretmen" style="margin:0px; border-bottom-style: solid;border-bottom-width: 3px;border-bottom-color: rgb(0, 173, 239);">
                             <div class="portlet-body">
                                 <div class="form-inline">
-                                    <c-grup-single controller="KitapOkuma"
-                                                   @OnChange="SubeSelected">
-                                    </c-grup-single>
-                                    <c-sinif-alan-multi controller="GenelSinavRaporu"
+                                    <!--<c-sube :controller="controller"
+                                            @OnChange="SubeSelected">
+                                    </c-sube>-->
+                                    <c-kademe3 :controller="controller"
+                                               @OnChange="Kademe3Selected">
+                                    </c-kademe3>
+                                    <c-sinif-alan-multi :controller="controller"
                                                         @OnChange="SinifAlanSelected">
                                     </c-sinif-alan-multi>
-                                    <!--<c-kademe3 controller="KitapOkuma"
-                                               :idsube="idsube"
-                                               @OnChange="Kademe3Selected">
-                                    </c-kademe3>-->
-                                    <!--<c-sinif-tumu controller="KitapOkuma"
-                                                  :idsube="idsube"
-                                                  :idkademe3="idkademe3"
-                                                  @OnChange="SinifSelected">
-                                    </c-sinif-tumu>-->
-                                    <input style="float:right;margin: 10px;" type="button" class="btn btn-success" v-on:click="Getir" value="Listele">
+                                    <input style="float:right;margin: 10px;" type="button" class="btn btn-success" v-on:click="Listele" value="Listele">
                                 </div>
                             </div>
                         </div>
@@ -448,12 +449,18 @@
                 <table id="TblOgr">
                     <thead>
                         <tr>
-                            <th>FOTOĞRAF</th>
-                            <th>TC KİMLİK NO</th>
-                            <th>AD SOYAD</th>
-                            <th>ÖĞRENCİ NO</th>
-                            <th>SINIF</th>
-                            <th>İŞLEM</th>
+                            <th class="th-sm">
+                                ADI
+                            </th>
+                            <th class="th-sm">
+                                BASLAMA TARIHI
+                            </th>
+                            <th class="th-sm">
+                                BITME TARIHI
+                            </th>
+                            <th>
+                                GUNCERLE - SIL
+                            </th>
                         </tr>
                     </thead>
                     <tbody>
@@ -470,12 +477,27 @@
                             <td><input style="float:right;margin: 10px;" type="button" class="btn btn-success" v-on:click="DemoLogin(u)" value="Giriş Yap"></td>
                         </tr>
                     </tbody>
+                    <tfoot>
+                        <tr>
+                            <th class="th-sm">
+                                ADI
+                            </th>
+                            <th class="th-sm">
+                                BASLAMA TARIHI
+                            </th>
+                            <th class="th-sm">
+                                BITME TARIHI
+                            </th>
+                            <th>
+                                GUNCERLE - SIL
+                            </th>
+                        </tr>
+                    </tfoot>
                 </table>
             </div>
         </div>
     </div>
 </div>
-<script src="../../../VueComponents/SinavIstatistikFiltreleri.js?v=3"></script>
 <script src="../../../VueComponents/Genel.js?v=3"></script>
 <script src="../../VueComponents/Filtre.js"></script>
 <script>
@@ -483,20 +505,22 @@
 
     var vue = new Vue({
         el: "#app",
-        name: "DemoOgrenci.html",
+        name: "KitapOkuma",
+
 
         data: {
+            controller: "KitapOkuma",
             TCKIMLIKNO: '',
             DONEM: 0,
             idsinav: 0,
-            idsube: 0,
+            /* idsube: 0,*/
             idkademe3: 0,
             idsinif: 0,
             tcogrenci: '',
             oturumogrenci: '',
-
+            /*idsube: [],*/
             LISTE: [],
-
+            sinifAlanList: 0,
             divOgrenci: 0,
         },
 
@@ -517,85 +541,80 @@
                 this.Getir();
             },
 
-            SubeSelected(item) {
-                this.idsube = item;
-                //this.idkademe3 = 0;
-                //this.idsinif = 0;
-                //this.divOgrenci = 0;
+            //SubeSelected(item) {
+            //    this.idsube = item;
+            //    this.idkademe3 = 0;
+            //    //this.idsinif = 0;
+            //    //this.divOgrenci = 0;
+            //},
+            Kademe3Selected(val) {
+                this.idkademe3 = val;
             },
             SinifAlanSelected(item) {
                 //this.sinifAlanList = $.grep(item, function (el,i) { return el!='Tümü' });
                 this.sinifAlanList = item;
                 this.divAc = 0;
             },
-            //Kademe3Selected(item) {
-            //    this.idkademe3 = item;
-            //    this.idsinif = 0;
-            //    this.divOgrenci = 0;
-            //},
-            //SinifSelected(item) {
-            //    this.idsinif = item;
-            //    this.divOgrenci = 0;
-            //    //this.Getir();
+            //Kaydet() {
+
+            //    vue.$forceUpdate();
+
+
+            //    var p = {
+            //        TCKIMLIKNO: session.TCKIMLIKNO,
+            //        OTURUM: session.OTURUM,
+            //        ID_SINIF: this.idsinif,
+            //        ETUTLIST: JSON.stringify(this.DersProgramiList)
+            //    };
+            //    WebPost(this, "EtutSabitOlustur", "EtutSabitKaydet", p, "#app", "Yükleniyor...", function (data, parent) {
+
+            //        if (data) {
+            //            Alert_Info("Kayıt Yapıldı");
+            //        } else {
+            //            Alert_Error("Kayıt Yapılırken Hata Oluştu.");
+            //        }
+            //    });
             //},
 
-            Getir() {
-                var _this = this;
-                //this.htmlYaz = '<div class="col-md-12"><div>';
-                if ((this.idsube == undefined || this.idsube == "0"
-               /* )|| (this.idkademe3 == undefined || this.idkademe3 == "0"*/)
-                ) {
-                    Alert_Warning("Şube ve Sınıf Kademesi seçmeniz gerekmektedir.");
-                    _this.divOgrenci = 0;
-                    return;
-                }
-                this.divOgrenci = 1;
+
+
+            Listele() {
                 var p = {
                     TCKIMLIKNO: session.TCKIMLIKNO,
                     OTURUM: session.OTURUM,
-                    ID_SUBE: this.idsube,
-                    //ID_SINIF: this.idsinif,
-                    //ID_KADEME3: this.idkademe3
+                    /* ID_SUBE: this.idsube,*/
+                    ID_SINIF: this.sinifAlanList,
+                    ID_KADEME3: this.idkademe3
                 };
 
-
-                WebPost(this, "KitapOkuma", "DonemListele", p, "#app", "Yükleniyor...", function (data, parent) {
-                    if (JSON.parse(data)[0] != null) {
-                        _this.LISTE = JSON.parse(data)[0].Kitap_Listele;
-                        
-
-                        $("#TblOgr").DataTable().destroy();
-                        _this.$nextTick(function () {
-                            _this.ListeOlustur('TblOgr');
-                        });
-
-                    }
-                    else {
-                        Alert_Warning("Öğrenci Bulunamadı..!");
-                        _this.divOgrenci = 0;
-                        return;
-                    }
+                WebPost(this, this.controller, "DonemListele", p, "#app", "Yükleniyor...", function (data, parent) {
+                    parent.LISTE = JSON.parse(data);
+                    ListeOlustur('TblOgr');
                 });
             },
+
+
+
+
 
             DemoLogin(u) {
                 window.open('https://pusulam.okyanuskoleji.k12.tr/index.html?TC=' + u.TCKIMLIKNO + '&OTURUM=' + u.OTURUM, '_blank');
                 return;
             },
 
-            ListeOlustur(tabloAdi) {
-                this.tblSorular = $('#' + tabloAdi).DataTable(
-                    {
-                        "search": {
-                            "caseInsensitive": true
-                        },
-                        "aaSorting": [[3, 'asc']],
-                        language: {
-                            "url": "./Utility/dil.json"
+            //ListeOlustur(tabloAdi) {
+            //    this.tblSorular = $('#' + tabloAdi).DataTable(
+            //        {
+            //            "search": {
+            //                "caseInsensitive": true
+            //            },
+            //            "aaSorting": [[3, 'asc']],
+            //            language: {
+            //                "url": "./Utility/dil.json"
 
-                        },
-                    });
-            },
+            //            },
+            //        });
+            //},
 
         },
     });

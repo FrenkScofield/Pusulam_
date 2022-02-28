@@ -19,8 +19,8 @@ namespace Pusulam.Controllers.KitapOkuma
             {
                 using (Channel2<DKitapOkuma> c = new Channel2<DKitapOkuma>(ID_MENU))
                 {
-                    
-                    return c._cs.DonemListele(j); 
+
+                    return c._cs.DonemListele(j);
                 }
             }
             catch (Exception ex)
@@ -31,13 +31,45 @@ namespace Pusulam.Controllers.KitapOkuma
 
 
 
-        public Object SubeListele(JObject j)
+        //public Object SubeListele(JObject j)
+        //{
+        //    try
+        //    {
+        //        using (Channel2<DFiltre> c = new Channel2<DFiltre>(ID_MENU))
+        //        {
+        //            return c._cs.SubeListele(j);
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw ex;
+        //    }
+
+        //}
+        public Object Kademe3Listele(JObject j)
         {
+
             try
             {
                 using (Channel2<DFiltre> c = new Channel2<DFiltre>(ID_MENU))
                 {
-                    return c._cs.SubeListele(j);
+                    return c._cs.Kademe3Listele(j);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public Object SinifAlanListele(JObject j)
+        {
+
+            try
+            {
+                using (Channel2<DFiltre> c = new Channel2<DFiltre>(ID_MENU))
+                {
+                    return c._cs.SinifAlanListele(j);
                 }
             }
             catch (Exception ex)
