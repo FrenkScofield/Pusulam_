@@ -924,7 +924,12 @@
         SinavOgrenciListele = 32,
         SinifMaddeAnalizi = 33,
         SinifMaddeAnaliziRapor = 34,
-        BildirimListele = 35
+        BildirimListele = 35,
+        OptikListele = 36,
+        OptikKaydet = 37,
+        CevapAnahtariGetir = 38,
+        DogruCevapGuncelle = 39,
+        SinavDegerlendir = 40
     }
     public enum sp_Degerlendirme
     {
@@ -1414,12 +1419,21 @@
         DersSaatleriListele = 1,
         DersSaatleriKaydet = 2
     }
-    public enum sp_UniteTaramaOptik
+    public enum sp_UniteTaramaOlcegi
     {
-        OptikListele = 1,
-        OptikKaydet = 2,
-        OptikBelliMi = 3,
-        DosyaKaydet = 4
+        DonemListele = 1,
+        Kademe3Listele = 2,
+        SinavListele = 3,
+        OptikYukle = 4,
+        OptikDetayGetir = 5,
+        OptikTumDetay = 6,
+        OptikSil = 7,
+        OgrenciEslestir = 8,
+        OgrenciEslestirTamamla = 9,
+        OgrenciMukerrer = 10,
+        MukerrerIdSil = 11
+       
+
     }
     public enum sp_ogrencilerim
     {

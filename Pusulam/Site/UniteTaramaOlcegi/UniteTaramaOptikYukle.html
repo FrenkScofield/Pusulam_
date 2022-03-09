@@ -1,0 +1,579 @@
+﻿
+<style>
+    td {
+        vertical-align: middle !important;
+    }
+
+    .row {
+        margin-top: 10px !important;
+    }
+
+    .blink {
+        animation: blinker 1.1s linear infinite;
+    }
+
+    @keyframes blinker {
+        50% {
+            opacity: 0;
+        }
+    }
+</style>
+
+<div class="page-head">
+    <!-- BEGIN PAGE TITLE -->
+    <div class="page-title col-md-12">
+        <h1>
+            Optik Yükle
+        </h1>
+    </div>
+    <!-- END PAGE TITLE -->
+</div>
+
+<div class="row" id="app">
+
+    <div class="modal draggable fade" id="ModalEslestir" tabindex="-1" role="dialog" aria-hidden="true" style="display: none;">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div id="ModalBody" class="modal-body" style="background-color:#eff3f8;">
+                    <table class="table table-striped table-bordered table-hover table-checkable">
+                        <thead>
+                            <tr>
+                                <th>Kampüs</th>
+                                <th>Sınıf</th>
+                                <th>TC</th>
+                                <th>Ad</th>
+                                <th>Soyad</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="odd gradeX" v-for="u in LIST_ESLESEN_OGRENCILER">
+                                <td>{{u.KAMPUS}}</td>
+                                <td>{{u.SINIFAD}}</td>
+                                <td>{{u.OGRENCITC}}</td>
+                                <td>{{u.OGRENCIAD}}</td>
+                                <td>{{u.OGRENCISOYAD}}</td>
+                                <td><button type="button" class="btn btn-primary btn-xs" @click="OgrenciEslestir(ID_ESLESEN_OGRENCI,u.OGRENCITC)" style="float:right"> Esleştir </button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" style="float:right" data-dismiss="modal"> Kapat </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal draggable fade" id="ModalMukerrer" tabindex="-1" role="dialog" aria-hidden="true" style="display: none;">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div id="ModalBody" class="modal-body" style="background-color:#eff3f8;">
+                    <table class="table table-striped table-bordered table-hover table-checkable">
+                        <thead>
+                            <tr>
+                                <th>Kampüs</th>
+                                <th>Sınıf</th>
+                                <th>TC</th>
+                                <th>Ad</th>
+                                <th>Soyad</th>
+                                <th>Optik</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="odd gradeX" v-for="u in LIST_MUKERRERTC">
+                                <td>{{u.SUBEAD}}</td>
+                                <td>{{u.OGRENCITC}}</td>
+                                <td>{{u.OGRENCIAD}}</td>
+                                <td>{{u.OGRENCISOYAD}}</td>
+                                <td colspan="5">{{u.OPTIKLER}}</td>
+                                <td><button type="button" class="btn btn-danger btn-xs" @click="MukerrerSil(u.ID)" style="float:right"> Sil </button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" style="float:right" data-dismiss="modal"> Kapat </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row" style="margin:0px!important;">
+        <div class="col-md-6">
+            <div class="portlet light">
+                <div class="portlet-title">
+                    <div class="caption">
+                        <i class="icon-magnifier font-green"></i>
+                        <span class="caption-subject bold font-green uppercase"> Filtre </span>
+                        <span class="caption-helper"></span>
+                    </div>
+                </div>
+                <!-- BEGIN PORTLET-->
+                <div class="portlet-body form">
+                    <form role="form">
+                        <div class="form-body form-horizontal">
+
+                            <div class="row">
+                                <div class="form-md-line-input">
+                                    <label class="control-label col-md-3" style="vertical-align:middle;">Dönem </label>
+                                    <div class="col-md-9">
+                                        <select class="selectpicker form-control" v-model="ID_DONEM" @change="OnChange">
+                                            <option value="0">Seçiniz..</option>
+                                            <option v-for="u in LIST_Donem" v-bind:value="u.DONEM">{{u.ACIKLAMA}}</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="form-md-line-input">
+                                    <label class="control-label col-md-3" style="vertical-align:middle;">Grup </label>
+                                    <div class="col-md-9">
+                                        <select class="selectpicker form-control" v-model="ID_KADEME3" @change="OnChange">
+                                            <option value="0">Seçiniz..</option>
+                                            <option v-for="u in LIST_KADEME3" v-bind:value="u.ID_KADEME3">{{u.AD}}</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row" v-show="DEGERLENDIRME_VARMI">
+                                <div class="form-md-line-input">
+                                    <label class="control-label col-md-3" style="vertical-align:middle;">Sınav </label>
+                                    <div class="col-md-9">
+                                        <select class="selectpicker form-control" v-model="ID_SINAV" @change="OnChange">
+                                            <option value="0">Seçiniz..</option>
+                                            <option v-for="u in LIST_SINAV" v-bind:value="u.ID_UNITETARAMASINAV">{{u.AD}}</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </form>
+
+                </div>
+                <!-- END PORTLET-->
+            </div>
+        </div>
+        <div class="col-md-6" v-show="ID_SINAV>0 && DEGERLENDIRME_VARMI>0">
+            <div class="portlet light">
+                <div class="portlet-title">
+                    <div class="caption">
+                        <i class="icon-list font-green"></i>
+                        <span class="caption-subject bold font-green uppercase"> OPTİK YÜKLE (ID_SINAV : {{ID_SINAV}})</span>
+                        <span class="caption-helper"></span>
+                    </div>
+                </div>
+                <div class="tools" style="color:#32c5d2!important;">
+                    <div class="row" style="margin:0px;">
+                        <div class="form-md-line-input" style="line-height:44px; vertical-align:middle;">
+                            <span id="app" v-cloak>
+                                <input type="file" name="sendfile" id="sendfile" @change='upload' multiple>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row" style="margin:0px!important;">
+        <div class="row" style="margin:0px!important;" v-show="ID_SINAV>0 && DEGERLENDIRME_VARMI>0">
+            <div class="col-md-6">
+                <div class="portlet-body form">
+                    <form role="form">
+                        <div class="portlet light bordered">
+                            <div class="portlet-title">
+                                <div class="caption">
+                                    <span class="caption-subject bold font-green uppercase"> BİLGİLER (ID_SINAV : {{ID_SINAV}})</span>
+                                    <span class="caption-helper"></span>
+                                </div>
+                            </div>
+                            <div class="portlet-body">
+                                <table class="table table-striped table-bordered table-hover table-checkable">
+                                    <thead>
+                                        <tr>
+                                            <th>Yükleme Sayısı</th>
+                                            <th>Hatalı TC</th>
+                                            <th>Tekrarlı TC</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr class="odd gradeX" v-for="u in LIST_Bilgiler">
+                                            <td><span @click="DETAY('yuklemeler')">{{u.YUKLENMESAYISI}}</span></td>
+                                            <td><span @click="DETAY('hatalitc')">{{u.HATALITC}}</span></td>
+                                            <td><span @click="DETAY('tekrarlitc')">{{u.TEKRARTC}}</span></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="col-md-6" v-show="ID_SINAV>0 && DEGERLENDIRME_VARMI>0 && DETAYGOR!='' ">
+                <div class="portlet light">
+
+                    <div class="portlet-title">
+                        <div class="caption">
+                            <span class="caption-subject bold font-green uppercase"> {{DETAYGOR}} (ID_SINAV : {{ID_SINAV}})</span>
+                            <span class="caption-helper"></span>
+                        </div>
+                    </div>
+
+                    <div class="portlet-body" v-show="DETAYGOR=='YUKLEMELER'">
+                        <table class="table table-striped table-bordered table-hover table-checkable" id="tblListeTARIH">
+                            <thead>
+                                <tr>
+                                    <th>Tarih</th>
+                                    <th>Yükleyen</th>
+                                    <th>Öğrenci Sayısı</th>
+                                    <th>Kampüs</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="odd gradeX" v-for="u in LIST_TARIH">
+                                    <td>{{u.YUKLENMETARIH}}</td>
+                                    <td>{{u.YUKLEYEN}}</td>
+                                    <td>{{u.OGRENCISAYISI}}</td>
+                                    <td>{{u.SUBEAD}}</td>
+                                    <td><input type="button" class="btn btn-danger" value="Sil" @click="Sil(u.YUKLENMETARIH,u.YUKLEYENTC)"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="portlet-body" v-show="DETAYGOR=='HATALI TC'">
+                        <p class="font-green blink">
+                            ID sutununa tıklayarak o öğrencinin TC'sini güncelleyebilirsiniz.
+                        </p>
+                        <table class="table table-striped table-bordered table-hover table-checkable" id="tblListeHATALITC">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Öğrenci Ad</th>
+                                    <th>Öğrenci Soyad</th>
+                                    <th>Öğrenci TC</th>
+                                    <th>Yükleyen </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="odd gradeX" v-for="u in LIST_HATALITC">
+                                    <td><a @click="eslestir(u.ID,u.OGRENCIAD,u.OGRENCISOYAD,u.OGRENCITC)">{{u.ID}}</a></td>
+                                    <td>{{u.OGRENCIAD}}</td>
+                                    <td>{{u.OGRENCISOYAD}}</td>
+                                    <td>{{u.OGRENCITC}}</td>
+                                    <td>{{u.YUKLEYEN}}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="portlet-body" v-show="DETAYGOR=='TEKRARLI YÜKLEMELER'">
+                        <table class="table table-striped table-bordered table-hover table-checkable" id="tblListeBENZERTC">
+                            <thead>
+                                <tr>
+                                    <th>Yükleme Miktarı</th>
+                                    <th>Öğrenci Ad</th>
+                                    <th>Öğrenci Soyad</th>
+                                    <th>Öğrenci TC</th>
+                                    <th>Kampüs </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="odd gradeX" v-for="u in LIST_BENZERTC">
+                                    <td><a @click="Mukerrer(u.OGRENCITC)">{{u.ADET}}</a></td>
+                                    <td>{{u.OGRENCIAD}}</td>
+                                    <td>{{u.OGRENCISOYAD}}</td>
+                                    <td>{{u.OGRENCITC}}</td>
+                                    <td>{{u.SUBEAD}}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var vue = new Vue({
+
+        el: "#app",
+        name: "UniteTaramaOptikYukle.html",
+
+        data: {
+            controller: 'UniteTaramaOptikYukle',
+            LIST_Donem: [],
+            LIST_KADEME3: [],
+            LIST_SINAV: [],
+            ID_DONEM: 0,
+            ID_KADEME3: 0,
+            DEGERLENDIRME_VARMI: 0,
+            ID_SINAV: 0,
+            TEMP_ID_KADEME3: 0,
+            LIST_Bilgiler: [],
+            DETAYGOR: '',
+            LIST_TARIH: [],
+            LIST_HATALITC: [],
+            LIST_BENZERTC: [],
+            LIST_ESLESEN_OGRENCILER: [],
+            ID_ESLESEN_OGRENCI: 0,
+            LIST_MUKERRERTC: []
+        },
+
+        mounted() {
+            var p = {
+                TCKIMLIKNO: session.TCKIMLIKNO,
+                OTURUM: session.OTURUM,
+            };
+
+            WebPost(this, this.controller, "DonemListele", p, '#app', 'Yükleniyor..', function (data, parent) {
+                if (data != null && data.length > 0) {
+                    parent.LIST_Donem = JSON.parse(data);
+                }
+            });
+
+            WebPost(this, this.controller, "Kademe3Listele", p, '#app', 'Yükleniyor..', function (data, parent) {
+                if (data != null && data.length > 0) {
+                    parent.LIST_KADEME3 = JSON.parse(data);
+                }
+            });
+        },
+
+        methods: {
+
+            OnChange() {
+
+                if (this.TEMP_ID_KADEME3 != this.ID_KADEME3) { //kademe3 degişirse yukleme pencere gızlımek ıcın
+                    this.DEGERLENDIRME_VARMI = 0;
+                    this.ID_SINAV = 0;
+                }
+
+                this.TEMP_ID_KADEME3 = this.ID_KADEME3;
+
+                if (this.ID_DONEM > 0 && this.ID_KADEME3 > 0) {
+                    var p = {
+                        TCKIMLIKNO: session.TCKIMLIKNO,
+                        OTURUM: session.OTURUM,
+                        ID_DONEM: this.ID_DONEM,
+                        ID_KADEME3: this.ID_KADEME3,
+                        ID_SINAV: this.ID_SINAV
+                    };
+
+                    WebPost(this, this.controller, "SinavListele", p, '#app', 'Yükleniyor..', function (data, parent) {
+                        if (data != null && data.length > 0) {
+                            parent.LIST_SINAV = JSON.parse(data);
+                            parent.DEGERLENDIRME_VARMI = 1;
+                        }
+                        else {
+                            parent.DEGERLENDIRME_VARMI = 0;
+                            parent.ID_SINAV = 0;
+                        }
+                    });
+
+                    if (this.ID_SINAV > 0) {
+                        WebPost(this, this.controller, "OptikDetayGetir", p, '#app', 'Yükleniyor..', function (data, parent) {
+                            if (data != null && data.length > 0) {
+                                parent.LIST_Bilgiler = JSON.parse(data);
+                            }
+                        });
+                    }
+
+                }
+
+            },
+
+            async upload() {
+                const files = event.target.files;
+                const uploadList = [];
+                const data = [];
+                var id = 0;
+
+                const readFileAsync = file => new Promise(resolve => {
+                    const reader = new FileReader();
+                    reader.onload = evt => resolve(evt.target.result);
+                    reader.readAsText(file, "windows-1254");
+                })
+
+                for (let i = 0; i < files.length; i++) {
+                    uploadList.push(await readFileAsync(files[i]));
+                }
+
+                event.target.value = null;
+
+                for (k = 0; k < uploadList.length; k++) {
+                    const lines = uploadList[k].split('\r\n');
+                    for (var i = 0; i < lines.length; i++) {
+                        if (lines[i].length > 11) {
+                            data[id] = lines[i];
+                            id++;
+                        }
+                    }
+                }
+
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    ID_SINAV: this.ID_SINAV,
+                    OPTIKDATA: JSON.stringify(data)
+                };
+
+                WebPost(this, this.controller, "OptikYukle", p, '#app', 'Yükleniyor..', function (data, parent) {
+                    if (data == "HATA") {
+                        Alert_Info("Bu Sınav İçin Optik Tanımlanmamıştır.");
+                    }
+                    else {
+                        Alert_Info(data + " öğrenci optik bilgisi yüklenmiştir.");
+                    }
+                });
+
+                setTimeout(() => { this.DETAY('yuklemeler'); this.OnChange(); }, 500);
+
+            },
+
+            DETAY(islem) {
+
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    ID_SINAV: this.ID_SINAV,
+                };
+
+                WebPost(this, this.controller, "OptikDetayGetir", p, '#app', 'Yükleniyor..', function (data, parent) {
+                    if (data != null && data.length > 0) {
+                        parent.LIST_Bilgiler = JSON.parse(data);
+                    }
+                });
+
+                WebPost(this, this.controller, "OptikTumDetay", p, '#app', 'Yükleniyor..', function (data, parent) {
+                    if (data != null && data.length > 0) {
+                        parent.LIST_TARIH = (JSON.parse(data)[0]['TARIH']);
+                        parent.LIST_HATALITC = (JSON.parse(data)[0]['HATALITC']);
+                        parent.LIST_BENZERTC = (JSON.parse(data)[0]['BENZERTC']);
+                        ListeOlustur('tblListeTARIH');
+                        ListeOlustur('tblListeHATALITC');
+                        ListeOlustur('tblListeBENZERTC');
+                    }
+                });
+
+                if (islem == 'yuklemeler') {
+                    this.DETAYGOR = 'YUKLEMELER';
+                }
+                else if (islem == 'hatalitc') {
+                    this.DETAYGOR = 'HATALI TC';
+                }
+                else if (islem == 'tekrarlitc') {
+                    this.DETAYGOR = 'TEKRARLI YÜKLEMELER';
+                }
+
+            },
+
+            Sil(TARIH, YUKLEYEN) {
+
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    SILINECEK_TARIH: TARIH,
+                    SILINECEK_YUKLEYEN: YUKLEYEN
+                };
+
+                WebPost(this, this.controller, "OptikSil", p, '#app', 'Yükleniyor..', function (data, parent) {
+                    if (data > 0) {
+                        Alert_Info(data + " öğrenci optiği silinmiştir.");
+                    }
+                });
+
+                this.DETAY('yuklemeler');
+                this.OnChange();
+
+            },
+
+            eslestir(ID, AD, SOYAD, TC) {
+
+                this.LIST_ESLESEN_OGRENCILER = [];
+                this.ID_ESLESEN_OGRENCI = ID;
+
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    ID_KADEME3: this.ID_KADEME3,
+                    ID: ID,
+                    OGRENCIAD: AD,
+                    OGRENCISOYAD: SOYAD,
+                    OGRENCITC: TC
+                };
+
+                WebPost(this, this.controller, "OgrenciEslestir", p, '#app', 'Yükleniyor..', function (data, parent) {
+                    if (data.length != []) {
+                        parent.LIST_ESLESEN_OGRENCILER=JSON.parse(data);
+                    }
+                });
+
+                $("#ModalEslestir").modal();
+            },
+
+            OgrenciEslestir(ID, TC) {
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    UTO_OGRENCI_ID: ID,
+                    OGRENCITC: TC
+                };
+
+                WebPost(this, this.controller, "OgrenciEslestirTamamla", p, '#app', 'Yükleniyor..', function (data, parent) {
+                    
+                });
+
+                $("#ModalEslestir").modal("toggle");
+                this.DETAY('hatalitc');
+                this.OnChange();
+            },
+
+            Mukerrer(TC) {
+                this.LIST_MUKERRERTC = [];
+
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    OGRENCITC: TC,
+                    ID_SINAV: this.ID_SINAV
+                };
+
+                WebPost(this, this.controller, "OgrenciMukerrer", p, '#app', 'Yükleniyor..', function (data, parent) {
+                    if (data.length != []) {
+                        parent.LIST_MUKERRERTC = JSON.parse(data);
+                    }
+                });
+
+                $("#ModalMukerrer").modal();
+            },
+
+            MukerrerSil(ID, SINAV_ID) {
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    UTO_OGRENCI_ID: ID                   
+                };
+
+                WebPost(this, this.controller, "MukerrerIdSil", p, '#app', 'Yükleniyor..', function (data, parent) {
+
+                });
+
+                $("#ModalMukerrer").modal("toggle");
+                this.DETAY('tekrarlitc');
+                this.OnChange();
+            },
+
+        },
+
+        updated() {
+            $('.selectpicker').selectpicker('refresh');
+        },
+
+    });
+
+</script>

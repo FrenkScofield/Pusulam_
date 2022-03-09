@@ -137,5 +137,85 @@ namespace Pusulam.Controllers.Abide
                 throw ex;
             }
         }
+
+        public Object OptikListele(JObject j)
+        {
+            try
+            {
+                using (Channel c = new Channel())
+                {
+                    c.DbUniteTarama.ID_MENU = ID_MENU;
+                    return c.DbUniteTarama.OptikListele(j);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public Object OptikKaydet(JObject j)
+        {
+            try
+            {
+                using (Channel c = new Channel())
+                {
+                    c.DbUniteTarama.ID_MENU = ID_MENU;
+                    return c.DbUniteTarama.OptikKaydet(j);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public Object CevapAnahtariGetir(JObject j)
+        {
+            try
+            {
+                using (Channel c = new Channel())
+                {
+                    c.DbUniteTarama.ID_MENU = ID_MENU;
+                    return c.DbUniteTarama.CevapAnahtariGetir(j);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public Object DogruCevapGuncelle(JObject j)
+        {
+            try
+            {
+                using (Channel c = new Channel())
+                {
+                    c.DbUniteTarama.ID_MENU = ID_MENU;
+                    return c.DbUniteTarama.DogruCevapGuncelle(j);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        public Object SinavDegerlendir(JObject j)
+        {
+            try
+            {
+                using (Channel c = new Channel())
+                {
+                    c.DbUniteTarama.ID_MENU = ID_MENU;
+                    return c.DbUniteTarama.SinavDegerlendir(j);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
     }
 }

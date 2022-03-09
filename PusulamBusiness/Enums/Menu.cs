@@ -292,6 +292,8 @@
         DersSaatleri = 1428,
         ogrencilerim = 1430,
         ViuTopluBildirim = 1431,       
-        KitapOkuma = 1500
+        KitapOkuma = 1500,
+        UniteTaramaOptikYukle = 1432,
+        UniteTaramaOptikTanimla = 1429
     }
 }

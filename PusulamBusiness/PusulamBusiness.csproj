@@ -122,6 +122,7 @@
     <Compile Include="Tanimlar\DDersProgrami.cs" />
     <Compile Include="Tanimlar\DDersEkleme.cs" />
     <Compile Include="Tkt\DTKTAktarim.cs" />
+    <Compile Include="UniteTarama\DUniteTaramaOlcegi.cs" />
     <Compile Include="UniteTarama\DUniteOptikYukle.cs" />
     <Compile Include="UniteTarama\DUniteOptikTanimla.cs" />
     <Compile Include="KitapOkuma\DKitapOkuma.cs" />

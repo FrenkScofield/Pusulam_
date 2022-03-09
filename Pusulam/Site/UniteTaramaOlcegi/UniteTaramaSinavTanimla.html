@@ -89,6 +89,55 @@
         </div>
     </div>
 
+    <div id="OgrenciOptik_modal" class="modal fade in" tabindex="-1" data-replace="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                    <h4 class="modal-title">Öğrenci Optik Bilgisi</h4>
+                </div>
+                <div class="modal-body" style="padding-bottom:0px;">
+
+                    <form class="form-inline">
+                        <div class="form-group">
+                            <label class="form-control" for="pwd">Öğrenci TC Kimlik :</label>
+                            <input class="form-control" type="number" v-model="OptikDetayTcOgrenci">
+                            <button class="btn green form-control" type="button" @click="OgrenciOptikGetir(OptikDetayTcOgrenci)">Optik Getir</button>
+                        </div>
+                    </form>
+
+                    <table class="table table-striped table-bordered table-hover table-checkable" v-if="OGRENCI_OPTIGI.length>0">
+                        <thead>
+                            <tr>
+                                <th style="text-align: left;">Soru No</th>
+                                <th style="text-align: left;">Ders</th>
+                                <th style="text-align: left;">Sorunun Puanı</th>
+                                <th style="text-align: left;">Öğrenci Yanıt</th>
+                                <th style="text-align: left;">Doğru Yanıt</th>
+                                <th style="text-align: left;">Aldığı Puan</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="odd gradeX" v-for="u in OGRENCI_OPTIGI">
+                                <td style="text-align: left;">{{u.SORUNO}}</td>
+                                <td style="text-align: left;">{{u.DERSAD}}</td>
+                                <td style="text-align: left;">{{u.MAX_PUAN}}</td>
+                                <td style="text-align: left;">{{u.OGRENCIVERDIGICEVAP}}</td>
+                                <td style="text-align: left;">{{u.CEVAP}}</td>
+                                <td style="text-align: left;">{{u.DEGERLENDIRMEPUANI}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn default" data-dismiss="modal">Kapat</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="col-md-12" v-if="Liste.length>0">
         <div class="portlet light">
             <div class="portlet-title">
@@ -106,14 +155,16 @@
                             <table class="table table-striped table-bordered table-hover table-checkable">
                                 <thead>
                                     <tr>
-                                        <th>ID</th>
-                                        <th>AD</th>
-                                        <th>SINAV GRUP</th>
-                                        <th>TARIH</th>
-                                        <th>KİTAPÇIK SAYISI</th>
-                                        <th>AD - SOYAD</th>
-                                        <th>ÖĞRENCİ VELİ GÖRSÜN</th>
-                                        <th>İŞLEMLER</th>
+                                        <th style="vertical-align:middle;">ID</th>
+                                        <th style="vertical-align:middle;">AD</th>
+                                        <th style="vertical-align:middle;">SINAV GRUP</th>
+                                        <th style="vertical-align:middle;">TARIH</th>
+                                        <th style="vertical-align:middle;">KİTAPÇIK SAYISI</th>
+                                        <th style="vertical-align:middle;">AD - SOYAD</th>
+                                        <th style="vertical-align:middle;">ÖĞRENCİ VELİ GÖRSÜN</th>
+                                        <th style="vertical-align:middle;">OPTİK YÜKLEME ve PUAN GİRİŞİ</th>
+                                        <th style="vertical-align:middle;">SINAV ÖZELLİKLERİ (XLSX) <br /><a href="https://pusulam.okyanuskoleji.k12.tr/Dosyalar/SinavTemplate/UNITETARAMATASLAK.xlsx">TASLAK</a> </th>
+                                        <th style="vertical-align:middle;">İŞLEMLER</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -125,22 +176,41 @@
                                         <td>{{u.KITAPCIKSAYISI}}</td>
                                         <td>{{u.ADSOYAD}}</td>
                                         <td>
-                                            <div class="col-md-9" style="height:34px; vertical-align:middle;">
-                                                <div class="md-checkbox" style="margin:auto!important; width:20px!important; height:20px; margin:0px; margin-top:6px; display:block;">
-                                                    <input type="checkbox" v-model="u.OVGORSUN" :id="u.ID_UNITETARAMASINAV+'OVGORSUN'" class="md-check" v-bind:true-value="true" v-bind:false-value="false" @click="OVGorsunDegistir(u)" />
-                                                    <label :for="u.ID_UNITETARAMASINAV+'OVGORSUN'">
-                                                        <span></span>
-                                                        <span class="check"></span>
-                                                        <span class="box"></span>
-                                                    </label>
-                                                </div>
+                                            <!--<div class="col-md-9" style="height:34px; vertical-align:middle;">-->
+                                            <div class="md-checkbox" style="margin:auto!important; width:20px!important; height:20px; margin:0px; margin-top:6px; display:block;">
+                                                <input type="checkbox" v-model="u.OVGORSUN" :id="u.ID_UNITETARAMASINAV+'OVGORSUN'" class="md-check" v-bind:true-value="true" v-bind:false-value="false" @click="OVGorsunDegistir(u)" />
+                                                <label :for="u.ID_UNITETARAMASINAV+'OVGORSUN'">
+                                                    <span></span>
+                                                    <span class="check"></span>
+                                                    <span class="box"></span>
+                                                </label>
+                                            </div>
+                                            <!--</div>-->
+                                        </td>
+                                        <td>
+                                            <!--<div class="col-md-9" style="height:34px; vertical-align:middle;">-->
+                                            <div class="md-checkbox" style="margin:auto!important; width:20px!important; height:20px; margin:0px; margin-top:6px; display:block;">
+                                                <input type="checkbox" v-model="u.DEGERLENDIRME" :id="u.ID_UNITETARAMASINAV+'DEGERLENDIRME'" class="md-check" v-bind:true-value="true" v-bind:false-value="false" @click="OVGorsunDegistir(u)" />
+                                                <label :for="u.ID_UNITETARAMASINAV+'DEGERLENDIRME'">
+                                                    <span></span>
+                                                    <span class="check"></span>
+                                                    <span class="box"></span>
+                                                </label>
+                                            </div>
+                                            <!--</div>-->
+                                        </td>
+                                        <td>
+                                            <div v-if="u.TANIMLISORUSAYISI==0">
+                                                <input type="file" :id="u.ID_UNITETARAMASINAV" class="filestyle" data-badge="false" accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" class="btn yellow" @change="exceldosyaoku($event,u.ID_UNITETARAMASINAV)" multiple>
                                             </div>
                                         </td>
                                         <td>
-                                            <button type="button" class="btn green" @click="DuzenleModal(u.ID_UNITETARAMASINAV, u.AD, u.KITAPCIKSAYISI)">Düzenle</button>
-                                            <button type="button" class="btn red" @click="Sil(u.ID_UNITETARAMASINAV, u.AD)">Sil</button>
-                                            <button type="button" class="btn info" @click="Bildirim(u.ID_UNITETARAMASINAV)">Bildirim Gonder</button>
-
+                                            <button type="button" class="btn btn-info" @click="DuzenleModal(u.ID_UNITETARAMASINAV, u.AD, u.KITAPCIKSAYISI)">Düzenle</button>
+                                            <button type="button" class="btn btn-warning" @click="Sil(u.ID_UNITETARAMASINAV, u.AD)">Sil</button>
+                                            <button type="button" class="btn btn-danger" @click="Bildirim(u.ID_UNITETARAMASINAV)">Bildirim Gonder</button>
+                                            <button type="button" class="btn btn-success" @click="OptikTanimla(u.ID_UNITETARAMASINAV)">Optik Tanımla</button>
+                                            <button type="button" class="btn btn-primary" @click="Degerlendir(u.ID_UNITETARAMASINAV)">Değerlendir</button>
+                                            <button type="button" class="btn btn-default" @click="OgrenciOptikGetirModal(u.ID_UNITETARAMASINAV)">Öğrenci Optik</button>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -152,9 +222,111 @@
             <!-- END PORTLET-->
         </div>
     </div>
+
+    <div class="col-md-4" v-if="Optik_Liste.length>0 && LIST_SINAV_OZELLIK.length==0">
+        <div class="portlet light">
+            <div class="portlet-title">
+                <div class="caption">
+                    <i class="icon-list font-green"></i>
+                    <span class="caption-subject bold font-green uppercase"> Optik Listesi {{Optik_Sinav_ID}} </span>
+                    <span class="caption-helper"></span>
+                </div>
+            </div>
+            <!-- BEGIN PORTLET-->
+            <div class="portlet-body form">
+                <form role="form">
+                    <div class="portlet light bordered">
+                        <div class="portlet-body">
+                            <table class="table table-striped table-bordered table-hover table-checkable">
+                                <thead>
+                                    <tr>
+                                        <th style="text-align: left;">Kolon Adı</th>
+                                        <th>Başlangıç</th>
+                                        <th>Karakter Sayısı</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="odd gradeX" v-for="u in Optik_Liste">
+                                        <td style="text-align: left;">{{u.AD}} ({{u.ID}})</td>
+                                        <td><input type="text" class='form-control' style="text-align:center;" v-model="u.BASLANGIC" onkeypress='return event.charCode >= 44 && event.charCode <= 57' onclick='javascript: if(this.value==0)this.value = ""' /></td>
+                                        <td><input type="text" class='form-control' style="text-align:center;" v-model="u.KARAKTERSAYISI" onkeypress='return event.charCode >= 44 && event.charCode <= 57' onclick='javascript: if(this.value==0)this.value = ""' /></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div style="text-align:right;">
+                        <button type="button" class="btn green" @click="OptikKaydet()" id="KAYDETBTN">Optik Kaydet</button>
+                    </div>
+                </form>
+            </div>
+            <!-- END PORTLET-->
+        </div>
+    </div>
+
+    <div class="col-md-8" v-if="Optik_Liste.length>0 && LIST_SINAV_OZELLIK.length==0">
+        <div class="portlet light">
+            <div class="portlet-title">
+                <div class="caption">
+                    <i class="icon-list font-green"></i>
+                    <span class="caption-subject bold font-green uppercase"> Cevap Anahtarı {{Optik_Sinav_ID}} </span>
+                    <span class="caption-helper"></span>
+                </div>
+            </div>
+            <!-- BEGIN PORTLET-->
+            <div class="portlet-body form">
+                <form role="form">
+                    <div class="portlet light bordered">
+                        <div class="portlet-body">
+                            <table class="table table-striped table-bordered table-hover table-checkable" id="tblCevapAnahtari">
+                                <thead>
+                                    <tr>
+                                        <th style="text-align: left;">ID</th>
+                                        <th style="text-align: left;">SORUNO</th>
+                                        <th style="text-align: left;">DERSAD</th>
+                                        <th style="text-align: left;">KAZANIM KOD</th>
+                                        <th style="text-align: left;">PUAN</th>
+                                        <th style="text-align: left;">DOĞRU ŞIK</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="odd gradeX" v-for="u in Optik_Cevap_Anahtari">
+                                        <td style="text-align: left;">{{u.ID_UNITETARAMASORU}}</td>
+                                        <td style="text-align: left;">{{u.SORUNO}}</td>
+                                        <td style="text-align: left;">{{u.DERSAD}} ({{u.ID_DERS}})</td>
+                                        <td><input type="text" class='form-control' style="text-align:center;" v-model="u.KAZANIMKOD" /></td>
+                                        <td><input type="text" class='form-control' style="text-align:center;" v-model="u.PUAN" onkeypress='return event.charCode >= 44 && event.charCode <= 57' onclick='javascript: if(this.value==0)this.value = ""' /></td>
+                                        <td style="text-align: left;">
+                                            <div>
+                                                <select class="form-control" v-model="u.CEVAP">
+                                                    <option value='' :selected="u.CEVAP == '' "></option>
+                                                    <option value='A' :selected="u.CEVAP == 'A' ">A</option>
+                                                    <option value='B' :selected="u.CEVAP == 'B' ">B</option>
+                                                    <option value='C' :selected="u.CEVAP == 'C' ">C</option>
+                                                    <option value='D' :selected="u.CEVAP == 'D' ">D</option>
+                                                    <option value='E' :selected="u.CEVAP == 'E' ">E</option>
+                                                    <option value='HID' :selected="u.CEVAP == 'HID' ">HERKES İÇİN DOĞRU</option>
+                                                    <option value='KS' :selected="u.CEVAP == 'KS' ">KLASİK SORU</option>
+                                                </select>
+                                            </div>
+                                        </td>
+                                </tbody>
+                            </table>
+                            <div style="text-align:right;">
+                                <button type="button" class="btn green" @click="SinavOzellikleriKaydet(Optik_Sinav_ID)" id="KAYDETBTN">Sınav Özellikleri Kaydet</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <!-- END PORTLET-->
+        </div>
+    </div>
+
 </div>
 
 <script src="VueComponents/SinavFiltreleri.js?v=4"></script>
+<script src="../../VueComponents/xlsx.core.min.js"></script> <!--excel dosya okuma filrereader-->
 
 <script>
     var vue = new Vue({
@@ -170,21 +342,30 @@
             ID_UNITETARAMASINAV: 0,
             KITAPCIKSAYISI: 1,
             TCKIMLIKNOx: '',
+            Optik_Liste: [],
+            Optik_Sinav_ID: 0,
+            Optik_Cevap_Anahtari: [],
+            SINAV_ID: 0,
+            OptikDetayTcOgrenci: 0,
+            OGRENCI_OPTIGI: [],
+            LIST_SINAV_OZELLIK: []
         },
 
         mounted() {
-            this.TCKIMLIKNOx = session.TCKIMLIKNO;
+            this.TCKIMLIKNOx = session.TCKIMLIKNO
         },
 
         methods: {
             DonemSelected(val) {
                 this.DONEM = val;
                 this.SinavListele();
+                this.Optik_Liste = [];
             },
 
             SinavGrupSelected(val) {
                 this.ID_KADEME3 = val;
                 this.SinavListele();
+                this.Optik_Liste = [];
             },
 
             DuzenleSinavGrupSelected(val) {
@@ -266,30 +447,237 @@
             },
             Bildirim(ID) {
                 window.location.replace('/anasayfa.html#Rapor/Viu/ViuTopluMesaj?UniteTarama=' + ID);
+            },
+
+            OptikTanimla(ID) {
+                if (this.ID_KADEME3 > 0) {
+                    this.Optik_Cevap_Anahtari = [];
+                    var p = {
+                        TCKIMLIKNO: session.TCKIMLIKNO,
+                        OTURUM: session.OTURUM,
+                        SINAV_ID: ID,
+                        ID_KADEME3: this.ID_KADEME3
+                    };
+                    WebPost(this, 'UniteTaramaOlcegi', "OptikListele", p, '', '', function (data, parent) {
+                        if (data != null || data != undefined) {
+                            parent.Optik_Liste = JSON.parse(data);
+                            parent.Optik_Sinav_ID = parent.Optik_Liste[0].SINAV_ID;
+                        } else {
+                            parent.Optik_Liste = [];
+                        }
+                    });
+                    WebPost(this, 'UniteTaramaOlcegi', "CevapAnahtariGetir", p, '', '', function (data, parent) {
+                        if (data != null || data != undefined) {
+                            parent.Optik_Cevap_Anahtari = JSON.parse(data);
+                            ListeOlusturTemizleyerek('tblCevapAnahtari', 0);
+                        } else {
+                            parent.Optik_Cevap_Anahtari = [];
+                        }
+                    });
+
+                }
+            },
+
+            OptikKaydet() {
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    SQLJSON: JSON.stringify(this.Optik_Liste),
+                    ID_KADEME3: this.ID_KADEME3
+                };
+                WebPost(this, "UniteTaramaOlcegi", "OptikKaydet", p, '', '', function (data, parent) {
+                    if (data != null || data != undefined) {
+                        Alert_Info('Optik Kaydedildi.');
+                    }
+                });
 
             },
+
             OVGorsunDegistir(item) {
                 var p = {
                     TCKIMLIKNO: session.TCKIMLIKNO,
                     OTURUM: session.OTURUM,
                     ID_UNITETARAMASINAV: item.ID_UNITETARAMASINAV,
-                    OVGORSUN: item.OVGORSUN
+                    OVGORSUN: item.OVGORSUN,
+                    DEGERLENDIRME: item.DEGERLENDIRME
                 };
 
                 WebPost(this, "UniteTaramaOlcegi", "OVGorsunDegistir", p, '', '', function (data, parent) {
                     if (data != null || data != undefined) {
-                        if (data == 1) {
-                            Alert_Info("Ünite Tarama Ölçeği Sınavının Öğrenci Veli Görsün Özelliği Düzenlendi");
-                        }
-                        else {
-                            Alert_Info("Ünite Tarama Ölçeği Sınavının Öğrenci Veli Görsün Özelliği Düzenlenemedi");
+                        if (data == 0) {
+                            Alert_Info("Düzenleme Yapılamadı.");
                         }
                     }
                     else {
                         Alert_Warning("Liste Bulunamadı!");
                     }
                 });
+
             },
-        }
+
+            SinavOzellikleriKaydet(ID) {
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    ID_UNITETARAMASORU: ID,
+                    SQLJSON: JSON.stringify(this.Optik_Cevap_Anahtari)
+                };
+
+                console.log(p);
+
+                WebPost(this, "UniteTaramaOlcegi", "DogruCevapGuncelle", p, '', '', function (data, parent) {
+                    if (data > 0) {
+                        Alert_Info("Sınav Özellikleri Kayıt Edilmiştir.");
+                    }
+                    else {
+                        Alert_Error("Sınav Özellikleri kayıt edilememiştir.")
+                    }
+                });
+            },
+
+            Degerlendir(ID) {
+                if (this.ID_KADEME3 > 0) {
+                    var p = {
+                        TCKIMLIKNO: session.TCKIMLIKNO,
+                        OTURUM: session.OTURUM,
+                        SINAV_ID: ID,
+                    };
+                    WebPost(this, "UniteTaramaOlcegi", "SinavDegerlendir", p, '', '', function (data, parent) {
+                        Alert_Info(data);
+                    });
+                }
+            },
+
+            OgrenciOptikGetirModal(ID) {
+                $('#OgrenciOptik_modal').modal();
+                this.SINAV_ID = ID;
+            },
+
+            OgrenciOptikGetir(TC) {
+                if (TC != null) {
+                    var p = {
+                        TCKIMLIKNO: session.TCKIMLIKNO,
+                        OTURUM: session.OTURUM,
+                        SINAV_ID: this.SINAV_ID,
+                        O_TCKIMLIKNO: TC,
+                    };
+                    WebPost(this, "UniteTaramaOlcegi", "SinavDegerlendir", p, '', '', function (data, parent) {
+                        parent.OGRENCI_OPTIGI = JSON.parse(data);
+                    });
+                }
+            },
+
+            //handleFile(e, ID_SINAV) {
+            //    var files = e.target.files;
+            //    var i, f;
+            //    var title;
+            //    var choice;
+            //    var result;
+            //    var roa;
+            //    for (i = 0, f = files[i]; i != files.length; ++i) {
+            //        var reader = new FileReader();
+            //        var name = f.name;
+            //        reader.onload = function (e) {
+            //            var data = e.target.result;
+
+            //            var workbook = XLSX.read(data,
+            //                {
+            //                    type: 'binary'
+            //                });
+            //            var sheet_name_list = workbook.SheetNames;
+
+            //            sheet_name_list.forEach(function (y) {
+            //                roa = XLSX.utils.sheet_to_json(workbook.Sheets[y]);
+            //                if (roa.length > 0) {
+            //                    result = roa;
+            //                }
+            //            });
+            //            vue.LIST_SINAV_OZELLIK = result;
+            //        };
+            //        reader.readAsArrayBuffer(f);
+            //    }
+            //    var p = {
+            //        TCKIMLIKNO: session.TCKIMLIKNO,
+            //        OTURUM: session.OTURUM,
+            //        SINAV_ID: ID_SINAV,
+            //        SQLJSON: vue.LIST_SINAV_OZELLIK
+            //    };
+
+            //    console.log(p);
+
+            //    WebPost(this, "UniteTaramaExcelYukle", "SinavBilgiEkle", p, '', '', function (data, parent) {
+            //        //Alert_Info_Refresh(data);
+            //    });
+            //},
+
+
+            exceldosyaoku(e, ID_SINAV) {
+                var files = e.target.files;
+                var i, f;
+                var title;
+                var choice;
+                var result;
+                var roa;
+                for (i = 0, f = files[i]; i != files.length; ++i) {
+                    var reader = new FileReader();
+                    var name = f.name;
+                    reader.onload = function (e) {
+                        var data = e.target.result;
+
+                        var workbook = XLSX.read(data,
+                            {
+                                type: 'binary'
+                            });
+                        var sheet_name_list = workbook.SheetNames;
+
+                        sheet_name_list.forEach(function (y) {
+                            roa = XLSX.utils.sheet_to_json(workbook.Sheets[y]);
+                            if (roa.length > 0) {
+                                result = roa;
+                            }
+                        });
+                        vue.LIST_SINAV_OZELLIK = result;
+                    };
+                    reader.readAsArrayBuffer(f);
+                }
+                setTimeout(function () {
+
+                    vue.sqlxlsgonder(ID_SINAV);
+
+                }, 500);
+               
+            },
+
+            sqlxlsgonder(ID_SINAV) {
+
+                var p = {
+                    TCKIMLIKNO: session.TCKIMLIKNO,
+                    OTURUM: session.OTURUM,
+                    SINAV_ID: ID_SINAV,
+                    SQLJSON: JSON.stringify(this.LIST_SINAV_OZELLIK)
+                };
+
+                console.log(p);
+
+                WebPost(this, "UniteTaramaExcelYukle", "SinavBilgiEkle", p, '', '', function (data, parent) {
+                    if (data > 0) {
+                        Alert_Info_Refresh("Sınav tanımlama tamamlanmıştır. Soru Sayısı : " + data);
+                    }
+                    else {
+                        Alert_Info_Refresh("Tanımlama yapılamamıştır.");
+                    }
+                    
+                });
+
+            },
+
+
+
+
+        },
+
+
+
     });
+
 </script>

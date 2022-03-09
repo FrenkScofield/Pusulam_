@@ -1,0 +1,74 @@
+﻿<style>
+    td {
+        vertical-align: middle !important;
+    }
+
+    .row {
+        margin-top: 10px !important;
+    }
+</style>
+
+<div class="page-head">
+    <!-- BEGIN PAGE TITLE -->
+    <div class="page-title col-md-12">
+        <h1>
+            Optik Tanımla
+        </h1>
+    </div>
+    <!-- END PAGE TITLE -->
+</div>
+
+<div class="row" id="app">
+    <div class="row" style="margin:0px!important;">
+        <div class="col-md-6">
+            <div class="portlet light">
+                <div class="portlet-title">
+                    <div class="caption">
+                        <i class="icon-magnifier font-green"></i>
+                        <span class="caption-subject bold font-green uppercase"> Filtre </span>
+                        <span class="caption-helper"></span>
+                    </div>
+                </div>
+                <!-- BEGIN PORTLET-->
+                <div class="portlet-body form">
+                    <form role="form">
+                        <div class="form-body form-horizontal">
+
+
+                        </div>
+                    </form>
+
+                </div>
+                <!-- END PORTLET-->
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var vue = new Vue({
+
+        el: "#app",
+        name: "UniteTaramaOptikTanimla.html",
+
+        data: {
+            controller: 'UniteTaramaOptikTanimla',
+            
+        },
+
+        mounted() {
+           
+        },
+
+        methods: {
+
+           
+        },
+
+        updated() {
+            $('.selectpicker').selectpicker('refresh');
+        }
+
+    });
+
+</script>

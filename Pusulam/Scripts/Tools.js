@@ -1757,6 +1757,36 @@ function ListeOlustur(tabloAdi, sort) {
         var tbl = $('#' + tabloAdi).DataTable(
             {
                 "aaSorting": sort,
+                //dom: 'Bfrtip',
+                //buttons: [
+                //    'excel'
+                //],
+                language: {
+                    "url": "./Utility/dil.json"
+                    ,
+                    "select": {
+                        "rows": "%d satır seçildi."
+                    }
+                },
+            });
+    })
+}
+
+function ListeOlusturTemizleyerek(tabloAdi, sort) {
+    sort = sort == undefined ? [[0, 'asc']] : sort;
+
+    $('#' + tabloAdi).dataTable().fnClearTable(0);
+    $('#' + tabloAdi).dataTable().fnDraw();
+    $('#' + tabloAdi).DataTable().clear();
+    $('#' + tabloAdi).DataTable().destroy();
+    vue.$nextTick(() => {
+        var tbl = $('#' + tabloAdi).DataTable(
+            {
+                "aaSorting": sort,
+                //dom: 'Bfrtip',
+                //buttons: [
+                //    'excel'
+                //],
                 language: {
                     "url": "./Utility/dil.json"
                     ,
