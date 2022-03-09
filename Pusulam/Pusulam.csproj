@@ -476,8 +476,6 @@
     <Content Include="Site\Tkt\Aktarim.html" />
     <Content Include="Site\UniteTaramaOlcegi\UniteTaramaOptikTanimla.html" />
     <Content Include="Site\UniteTaramaOlcegi\UniteTaramaOptikYukle.html" />
-    <Content Include="Site\UniteTaramaOlcegi\OptikTanimla.html" />
-    <Content Include="Site\UniteTaramaOlcegi\OptikYukle.html" />
     <Content Include="Site\KitapOkuma\KitapOkuma.html" />
     <Content Include="Site\UniteTaramaOlcegi\UniteTaramaEtutOlustur.html" />
     <Content Include="Site\UniteTaramaOlcegi\SinifMaddeAnalizi.html" />
