@@ -187,6 +187,7 @@
                 this.idsinif = item;
             },
             Kaydet() {
+                debugger;
                 console.log(this.idsinif)
                 if (this.KAYIT == true) {
                     if (this.idsinif.length == 0 || this.idsinif ==0) {
@@ -244,7 +245,7 @@
                         ID_BULTEN: this.ID_BULTEN
                     };
                 }
-                
+                debugger;
                 WebPost(this, this.controller, metot, p, '', '', function (data, parent) {
                     
                     if (data) {

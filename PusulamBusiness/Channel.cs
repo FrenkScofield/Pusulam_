@@ -7,6 +7,7 @@ using PusulamBusiness.DisOgrenciApi;
 using PusulamBusiness.Etut;
 using PusulamBusiness.Frekans;
 using PusulamBusiness.GenelListeler;
+using PusulamBusiness.KitapOkuma;
 using PusulamBusiness.MentulUp;
 using PusulamBusiness.Mobile;
 using PusulamBusiness.Morpa;
@@ -1272,7 +1273,20 @@ namespace PusulamBusiness
             }
         }
 
-       
+        private DKitapOkuma dKitapOkuma = new DKitapOkuma();
+        public DKitapOkuma DKitapOkuma
+        {
+            get
+            {
+                if (dKitapOkuma == null)
+                {
+                    dKitapOkuma = new DKitapOkuma();
+                }
+                return dKitapOkuma;
+            }
+        }
+
+
         public void Dispose()
         {
             GC.SuppressFinalize(this);

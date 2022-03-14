@@ -185,7 +185,8 @@
             DonemSelected(DONEM) {
                 this.DONEM = DONEM;
             },
-            PeriyotEkle() {
+            
+            PeriyotEkle() { 
                 vue = this;
                 var basTarih = $("#dpBasTarih").val();
                 var bitTarih = $("#dpBitTarih").val();
@@ -202,7 +203,6 @@
                     BITISTARIH: bitTarih,
                     DONEM: this.DONEM
                 };
-
                 WebPost(this, this.controller, "PeriyotTanimla", p, '', '', function (data, parent) {
                     if (data) {
                         vue.Listele();
