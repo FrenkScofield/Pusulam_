@@ -211,7 +211,7 @@ namespace PusulamBusiness.UniteTarama
             }
         }
 
-        public bool SinavBilgiEkle(JObject j)
+        public string SinavBilgiEkle(JObject j)
         {
             try
             {
@@ -219,14 +219,14 @@ namespace PusulamBusiness.UniteTarama
                 j.Add("ID_MENU", ID_MENU);
                 j.Add("IP", getIp.GetUser_IP());
 
-                int result = -1;
+                string json = "";
                 using (IDbConnection db = new SqlConnection(conStr))
                 {
                     if (db.State == ConnectionState.Closed)
                         db.Open();
-                    result = db.Execute("sp_UniteTarama", j.ToDictionary(), commandTimeout: 600, commandType: CommandType.StoredProcedure);
+                    json = db.ExecuteScalar<string>("sp_UniteTarama", j.ToDictionary(), commandTimeout: 600, commandType: CommandType.StoredProcedure);
                 }
-                return result > 0;
+                return json;
             }
             catch (Exception ex)
             {
@@ -793,6 +793,126 @@ namespace PusulamBusiness.UniteTarama
                 {
                     if (db.State == ConnectionState.Closed) db.Open();
                     json = (string)db.ExecuteScalar("sp_UniteTarama", j.ToDictionary(), commandTimeout: 600, commandType: CommandType.StoredProcedure);
+                }
+                return json;
+            }
+            catch (Exception ex)
+            {
+                new DHataLog().HataLogKaydet(j, ex);
+                throw ex;
+            }
+        }
+
+        public string OptikListele(JObject j)
+        {
+            try
+            {
+                j.Add("ISLEM", (int)sp_UniteTarama.OptikListele);
+                j.Add("ID_MENU", ID_MENU);
+                j.Add("IP", getIp.GetUser_IP());
+
+                string json = "";
+                using (IDbConnection db = new SqlConnection(conStr))
+                {
+                    if (db.State == ConnectionState.Closed)
+                        db.Open();
+                    json = db.ExecuteScalar<string>("sp_UniteTarama", j.ToDictionary(), commandTimeout: 600, commandType: CommandType.StoredProcedure);
+                }
+                return json;
+            }
+            catch (Exception ex)
+            {
+                new DHataLog().HataLogKaydet(j, ex);
+                throw ex;
+            }
+        }
+
+        public string OptikKaydet(JObject j)
+        {
+            try
+            {
+                j.Add("ISLEM", (int)sp_UniteTarama.OptikKaydet);
+                j.Add("ID_MENU", ID_MENU);
+                j.Add("IP", getIp.GetUser_IP());
+
+                string json = "";
+                using (IDbConnection db = new SqlConnection(conStr))
+                {
+                    if (db.State == ConnectionState.Closed)
+                        db.Open();
+                    json = db.ExecuteScalar<string>("sp_UniteTarama", j.ToDictionary(), commandTimeout: 600, commandType: CommandType.StoredProcedure);
+                }
+                return json;
+            }
+            catch (Exception ex)
+            {
+                new DHataLog().HataLogKaydet(j, ex);
+                throw ex;
+            }
+        }
+
+        public string CevapAnahtariGetir(JObject j)
+        {
+            try
+            {
+                j.Add("ISLEM", (int)sp_UniteTarama.CevapAnahtariGetir);
+                j.Add("ID_MENU", ID_MENU);
+                j.Add("IP", getIp.GetUser_IP());
+
+                string json = "";
+                using (IDbConnection db = new SqlConnection(conStr))
+                {
+                    if (db.State == ConnectionState.Closed)
+                        db.Open();
+                    json = db.ExecuteScalar<string>("sp_UniteTarama", j.ToDictionary(), commandTimeout: 600, commandType: CommandType.StoredProcedure);
+                }
+                return json;
+            }
+            catch (Exception ex)
+            {
+                new DHataLog().HataLogKaydet(j, ex);
+                throw ex;
+            }
+        }
+
+        public string DogruCevapGuncelle(JObject j)
+        {
+            try
+            {
+                j.Add("ISLEM", (int)sp_UniteTarama.DogruCevapGuncelle);
+                j.Add("ID_MENU", ID_MENU);
+                j.Add("IP", getIp.GetUser_IP());
+
+                string json = "";
+                using (IDbConnection db = new SqlConnection(conStr))
+                {
+                    if (db.State == ConnectionState.Closed)
+                        db.Open();
+                    json = db.ExecuteScalar<string>("sp_UniteTarama", j.ToDictionary(), commandTimeout: 600, commandType: CommandType.StoredProcedure);
+                }
+                return json;
+            }
+            catch (Exception ex)
+            {
+                new DHataLog().HataLogKaydet(j, ex);
+                throw ex;
+            }
+        }
+
+        public string SinavDegerlendir(JObject j)
+        {
+            try
+            {
+                j.Add("ISLEM", (int)sp_UniteTarama.SinavDegerlendir);
+                j.Add("ID_MENU", ID_MENU);
+                j.Add("IP", getIp.GetUser_IP());
+
+                string json = "";
+                using (IDbConnection db = new SqlConnection(conStr))
+                {
+                    if (db.State == ConnectionState.Closed)
+                        db.Open();
+                    json = db.ExecuteScalar<string>("sp_UniteTarama", j.ToDictionary(), commandTimeout: 600, commandType: CommandType.StoredProcedure);
                 }
                 return json;
             }

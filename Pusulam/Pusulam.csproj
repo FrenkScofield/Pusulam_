@@ -474,8 +474,8 @@
     <Content Include="Site\Tanimlar\DersOgretmenleri.html" />
     <Content Include="Site\Tanimlar\DersProgrami.html" />
     <Content Include="Site\Tkt\Aktarim.html" />
-    <Content Include="Site\UniteTaramaOlcegi\OptikTanimla.html" />
-    <Content Include="Site\UniteTaramaOlcegi\OptikYukle.html" />
+    <Content Include="Site\UniteTaramaOlcegi\UniteTaramaOptikTanimla.html" />
+    <Content Include="Site\UniteTaramaOlcegi\UniteTaramaOptikYukle.html" />
     <Content Include="Site\KitapOkuma\KitapOkuma.html" />
     <Content Include="Site\UniteTaramaOlcegi\UniteTaramaEtutOlustur.html" />
     <Content Include="Site\UniteTaramaOlcegi\SinifMaddeAnalizi.html" />
@@ -870,6 +870,7 @@
     <Content Include="VueComponents\UniteTarama\Filtreler.js" />
     <Content Include="VueComponents\UniversiteFiltreleri.js" />
     <Content Include="VueComponents\Viu\Filtreler.js" />
+    <Content Include="VueComponents\xlsx.core.min.js" />
     <Content Include="VueComponents\Yardim.js" />
     <Content Include="VueComponents\YaziliYoklamaFiltreleri.js" />
     <Content Include="VueComponents\Yazili\Filtreler.js" />
@@ -961,6 +962,7 @@
     <Compile Include="Controllers\Tanimlar\DersEklemeController.cs" />
     <Compile Include="Controllers\Tatil\TatilController.cs" />
     <Compile Include="Controllers\Tkt\TKTAktarimController.cs" />
+    <Compile Include="Controllers\UniteTaramaOlcegi\UniteTaramaOptikYukleController.cs" />
     <Compile Include="Controllers\UniteTaramaOlcegi\UniteTaramaEtutOlusturController.cs" />
     <Compile Include="Controllers\UniteTaramaOlcegi\UniteTaramaSinavSonucListesiController.cs" />
     <Compile Include="Controllers\UniteTaramaOlcegi\UniteTaramaSinifMaddeAnaliziController.cs" />

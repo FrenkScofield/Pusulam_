@@ -1198,52 +1198,6 @@ namespace PusulamBusiness.UniteTarama
             }
         }
 
-        public List<MOptikKoordinat> OptikListele(JObject j)
-        {
-            try
-            {
-                j.Add("ISLEM", (int)sp_UniteTaramaOptik.OptikListele);
-                j.Add("ID_MENU", ID_MENU);
-                j.Add("IP", getIp.GetUser_IP());
-
-                List<MOptikKoordinat> liste;
-                using (IDbConnection db = new SqlConnection(conStr))
-                {
-                    if (db.State == ConnectionState.Closed) db.Open();
-                    liste = db.Query<MOptikKoordinat>("sp_UniteTaramaOptik", j.ToDictionary(), commandTimeout: 600, commandType: CommandType.StoredProcedure).ToList();
-                }
-                return liste;
-            }
-            catch (Exception ex)
-            {
-                new DHataLog().HataLogKaydet(j, ex);
-                throw ex;
-            }
-        }
-
-        public int OptikKaydet(JObject j) 
-        {
-            try
-            {
-                j.Add("ISLEM", (int)sp_UniteTaramaOptik.OptikKaydet);
-                j.Add("ID_MENU", ID_MENU);
-                j.Add("IP", getIp.GetUser_IP());
-
-                int sonuc = 0;
-                using (IDbConnection db = new SqlConnection(conStr))
-                {
-                    if (db.State == ConnectionState.Closed) db.Open();
-                    sonuc = db.ExecuteScalar<int>("sp_UniteTaramaOptik", j.ToDictionary(), commandTimeout: 600, commandType: CommandType.StoredProcedure);
-                }
-                return sonuc;
-            }
-            catch (Exception ex)
-            {
-                new DHataLog().HataLogKaydet(j, ex);
-                throw ex;
-            }
-        }
-
         public List<MDosya> DosyaListele(JObject j)
         {
             try
