@@ -269,9 +269,9 @@
 
                     WebPost(this, 'UniteTaramaSinavPuanGiris', 'OgrenciListele', p, '', '', function (data, parent) {
                         if (data != null && data != '[]') {
-                            vue.OGRENCILIST = JSON.parse(data);
+                            parent.OGRENCILIST = JSON.parse(data);
                         } else {
-                            vue.OGRENCILIST = [];
+                            parent.OGRENCILIST = [];
                             Alert_Warning("Bir hata oluştu!");
                         }
                     });
@@ -330,13 +330,13 @@
             },
 
             PuanKaydet() {
-                var cont = true;
-                for (var i = 0; i < this.SORULIST.length; i++) {
-                    if (this.SORULIST[i].PUAN == null || this.SORULIST[i].PUAN == 'null') {
-                        cont = false;
-                    }
-                }
-                if (cont) {
+                //var cont = true;
+                //for (var i = 0; i < this.SORULIST.length; i++) {
+                //    if (this.SORULIST[i].PUAN == null || this.SORULIST[i].PUAN == 'null') {
+                //        cont = false;
+                //    }
+                //}
+                //if (cont) {
                     var p = {
                         TCKIMLIKNO: session.TCKIMLIKNO,
                         OTURUM: session.OTURUM,
@@ -354,9 +354,9 @@
                             Alert_Warning("Bir hata oluştu!");
                         }
                     });
-                } else {
-                    Alert_Warning("Tüm sorular için puan seçimi yaptığınızdan emin olunuz!");
-                }
+                //} else {
+                //    Alert_Warning("Tüm sorular için puan seçimi yaptığınızdan emin olunuz!");
+                //}
             },
 
             PuanSil(TCKIMLIKNO, DERS) {
