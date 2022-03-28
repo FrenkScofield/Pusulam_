@@ -225,7 +225,7 @@
         data: {
             controller: "KitapOkuma",
             TCKIMLIKNO: '',
-           /* DONEM: 0,*/
+           /* DONEM: 0,*/ 
           /*  idsinav: 0,*/
             /* idsube: 0,*/
             idkademe3: 0,
@@ -329,7 +329,7 @@
                     BASLAMATARIHI: basTarih,
                     BITMETARIHI: bitTarih,
                     ID_EKLENENKITAP: this.ID_EKLENENKITAP
-                };
+                };    
                 WebPost(this, this.controller, "Kaydet", p, "#app", "Yükleniyor...", function (data, parent) {
                     debugger;
                     if (data) {
