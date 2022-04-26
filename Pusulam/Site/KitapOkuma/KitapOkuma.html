@@ -236,7 +236,7 @@
             LISTE: [],
             sinifAlanList: 0,
           /*  divOgrenci: 0,*/
-            ID_EKLENENKITAP: 0,
+            ID_KITAP: 0,
             KITAP_ADI: '',
             KITAP_ACIKLAMA: ''
         },
@@ -315,7 +315,7 @@
                 var bitTarih = $("#dpBitTarih").val();
 
                 if (basTarih == '' || bitTarih == '') {
-                    Alert_Error("Lütfen tüm alanları doldurunuz!x")
+                    Alert_Error("Lütfen tüm alanları doldurunuz!")
                     return;
                 }
                 var p = {
@@ -324,16 +324,16 @@
                     /* ID_SUBE: this.idsube,*/
                     ID_SINIF: this.sinifAlanList,
                     ID_KADEME3: this.idkademe3,
-                    KITAPADI: this.KITAP_ADI,
-                    ACIKLAMA: this.KITAP_ACIKLAMA,
-                    BASLAMATARIHI: basTarih,
-                    BITMETARIHI: bitTarih,
-                    ID_EKLENENKITAP: this.ID_EKLENENKITAP
+                    K_ADI: this.KITAP_ADI,
+                    K_ACIKLAMA: this.KITAP_ACIKLAMA,
+                    K_BAS_TRH: basTarih,
+                    K_BIT_TARIH: bitTarih,
+                    ID_KITAP: this.ID_KITAP
                 };    
                 WebPost(this, this.controller, "Kaydet", p, "#app", "Yükleniyor...", function (data, parent) {
                     debugger;
                     if (data) {
-                        parent.ID_EKLENENKITAP = JSON.parse(data);
+                        parent.ID_KITAP = JSON.parse(data);
                         
 
                         let x = document.getElementById("ImgKitap");
@@ -343,7 +343,7 @@
                             formData.append("file", x.files[0]);
                             formData.append("TCKIMLIKNO", session.TCKIMLIKNO);
                             formData.append("OTURUM", session.OTURUM);
-                            formData.append("ID_EKLENENKITAP", data);
+                            formData.append("ID_KITAP", data);
                             $.ajax({
                                 url: vue.controller + '/DosyaKaydet',
                                 processData: false,
